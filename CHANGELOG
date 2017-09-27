@@ -1,0 +1,20 @@
+1.5.0 add storage page ; refactor authorization page ; extract logo into own module ; upgrade dependencies
+1.4.5 fix Safari-11 webkitSubtle error
+1.4.4 add timeout on authorize new access
+1.4.3 improve error handling on signup/signin
+1.4.2 fix CSP
+1.4.1 fix window focus on copy username in Firefox
+1.4.0 add new feature: focus on target window on copy username ; fix Quicksand font integration ; add support for meta documents
+1.3.0 activate newsletter subscription on signup
+1.2.5 fix memory leak from PouchDB EventEmitter
+1.2.4 revert wanadoo.fr replacement
+1.2.3 add browser icons to browser incompatibility screen
+1.2.2 authorization screen: fine-tune locales and token card layout
+1.2.1 improve error feedback and fix error handling on signin ; fix signup edge case (disconnected after server signup completion) ; fix remote http calls
+1.2.0 add browser incompatibility screen
+1.1.0 add support for error query parameter
+1.0.4 sanitize email on signup/signin & replace wanadoo.fr
+1.0.3 fix handling of language setting ; add noscript button ; fix app title ; fix murx reducer ; add missing locales
+1.0.2 fix links on signin screens
+1.0.1 fix support for signup query parameter ; fix online help link
+1.0.0 initial version
