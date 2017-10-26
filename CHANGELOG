@@ -1,4 +1,12 @@
-1.5.0 add storage page ; refactor authorization page ; extract logo into own module ; upgrade dependencies
+1.5.9 storage-page add premium account view
+1.5.8 storage-page: add free-space header
+1.5.7 payments-service: optimize Bluesnap BuyNow params; storage-page: remove vertical margin in card body
+1.5.6 storage-page: add support for i18n pricing key from backend
+1.5.4 switch Bluesnap config to production
+1.5.3 refactor localization into dedicated module
+1.5.2 fix locales, add storage page header
+1.5.1 replace premium icon and fix premium card title
+1.5.0 add storage page; refactor authorization page ; extract logo into own module ; upgrade dependencies
 1.4.5 fix Safari-11 webkitSubtle error
 1.4.4 add timeout on authorize new access
 1.4.3 improve error handling on signup/signin
