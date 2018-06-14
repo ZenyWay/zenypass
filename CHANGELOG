@@ -1,3 +1,56 @@
+1.8.12 fix startup for samsung internet browser
+1.8.11 bypass unresponsive chrome incognito test && assert sufficient free quota
+1.8.10 MEUDx tokens
+1.8.9 close navbar and dropdown on outer click
+1.8.8 bump dependencies, tinyify bundle, add manifest/favicons
+1.8.7 remove rAF sync
+1.8.6 fix strict-lock assert for records with timeout-lock
+1.8.5 accelerate rendering
+1.8.4 enable strict-lock on display password
+1.8.3 activate strict lock on new card
+1.8.2 add temporary disable of strict-lock on login
+1.8.1 fix locale regression
+1.8.0 persistent record vault cache
+  initial implementation
+1.7.13 enhance persistent storage management
+  add private browsing detection
+1.7.12 auth-dialog: add autofocus
+1.7.11 navbar: close dropdown on href select & fix help option
+1.7.10 fix broken UI functionality
+  replace morphdom with nanomorph
+1.7.9 home-page: add scroll to first-steps on DOM mount
+  replace yo-yo with bel/morphdom, add on-load module
+1.7.8 navbar: fix handling of dropdown entry with href
+1.7.7 login: add unknown-credentials dialog
+  info-dialog: add support for footer buttons
+1.7.6 home-page: optimize layout of first-steps card
+1.7.5 home-page: fix positioning of first-steps card
+1.7.4 home-page: fix settings initialization
+1.7.3 fix new authorization
+  fix pouch-vault#_toPouchAllDocsResponse
+  refactor zp-service#getAuthorizationDoc$
+  record-list: fix handling of deleted cards
+  backend-service: fix handling of fetch headers
+  tentative fix of NODE_ENV in staging
+1.7.1 add missing style hash and localization files
+1.7.0 initial on-boarding implementation
+  locale: extend API
+  refactor changes APIs and fix settings initialization
+  zp-service/record-service#getRecord$: refactor implementation
+  home-page: fix settings initialization
+  doc-vault: refactor getChange$ API
+  pouch-vault: refactor getChange$, allDoc$ and allDocs,
+  remove pending prop from change API
+  payment-service: remove unused imports
+  home-page: add on-boarding card & menu entry
+  home-page,zp-service: add synced settings
+  murx: fix precedence of initial model
+  bump dependencies
+  key-service: fix next available uaid
+1.6.2 payment-service: update detection of immediate charge
+1.6.1 storage-page: fix local
+1.6.0 storage-page: add support for Kickstarter tokens
+1.5.10 fix storage-page locales
 1.5.9 storage-page add premium account view
 1.5.8 storage-page: add free-space header
 1.5.7 payments-service: optimize Bluesnap BuyNow params; storage-page: remove vertical margin in card body
