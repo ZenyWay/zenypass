@@ -14,5 +14,11 @@
  * Limitations under the License.
  */
 //
-export { render } from 'inferno'
+export {
+  render,
+  Component,
+  ComponentClass,
+  InfernoChildren as Children,
+  SFC
+} from 'inferno'
 export { createElement } from 'inferno-create-element'

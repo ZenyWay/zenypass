@@ -54,7 +54,7 @@ export interface RecordFieldProps {
   className: string
   autocomplete: 'off'|'on'
   autocorrect: 'off'|'on'
-  onChange: (event: TextEvent) => void
+  onChange: (value: string) => void
   onToggle: (event: MouseEvent) => void
   onCopy: (event: MouseEvent) => void
   disabled: boolean
@@ -92,7 +92,7 @@ export default function ({
             <InputGroupIcon icon={_icon} fw />
           ) : (
             <Button
-              id={`${id}.toggle-button`}
+              id={`${id}_toggle-button`}
               icon={_icon}
               outline
               onClick={onToggle}
@@ -102,7 +102,7 @@ export default function ({
       )}
       <Input
         type={isCleartextPassword ? 'text' : type}
-        id={`${id}.${isConcealedPassword ? 'concealed-' : ''}input`}
+        id={`${id}_${isConcealedPassword ? 'concealed-' : ''}input`}
         className="form-control"
         value={value}
         placeholder={_placeholder}
@@ -115,13 +115,13 @@ export default function ({
       <InputGroupAppend>
         {isConcealedPassword ? (
           <Button
-            id={`${id}.copy-button`}
+            id={`${id}_copy-button`}
             icon="fa-copy"
             outline
             onClick={onCopy}
           />
         ) : (
-          <CopyButton id={`${id}.copy-button`} value={value} outline />
+          <CopyButton id={`${id}_copy-button`} value={value} outline />
         )}
       </InputGroupAppend>
     </InputGroup>

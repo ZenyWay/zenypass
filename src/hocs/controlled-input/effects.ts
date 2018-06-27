@@ -24,17 +24,12 @@ import {
 
 function callChangeHandlerOnPristine(_, state$) {
   return state$.pipe(
-    onTransitionToState('pristine'),
+    distinctUntilKeyChanged('state'),
+    filter(isState('pristine')),
     skip(1), // skip initial state
     map(callChangeHandler),
     ignoreElements()
   )
-}
-
-function onTransitionToState(state) {
-  return function(state$) {
-    return state$.pipe(distinctUntilKeyChanged('state'), filter(isState(state)))
-  }
 }
 
 function isState(value) {

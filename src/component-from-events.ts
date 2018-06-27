@@ -16,10 +16,12 @@
 import redux, { connect as _connect } from 'component-from-stream-redux'
 import componentFromStream, {
   Component,
+  ComponentClass,
   ComponentFromStreamConstructor,
   Children,
   Operator,
-  OperatorFactory
+  OperatorFactory,
+  SFC
 } from './component-from-props'
 import { map } from 'rxjs/operators'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
@@ -28,9 +30,11 @@ import compose from 'basic-compose'
 export {
   Children,
   Component,
+  ComponentClass,
   ComponentFromStreamConstructor,
   componentFromStream,
   OperatorFactory,
+  SFC,
   redux
 }
 

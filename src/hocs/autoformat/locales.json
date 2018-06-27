@@ -1,0 +1,10 @@
+{
+  "en": {
+    "Please enter a valid email": "Please enter a valid email",
+    "Please enter a valid url": "Please enter a valid url"
+  },
+  "fr": {
+    "Please enter a valid email": "Veuillez saisir un courriel valide s.v.p.",
+    "Please enter a valid url": "Veuillez saisir une addresse web valide s.v.p."
+  }
+}

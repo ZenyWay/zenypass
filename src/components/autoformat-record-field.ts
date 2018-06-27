@@ -12,17 +12,15 @@
  * Limitations under the License.
  */
 //
-import createAutoformat, { AutoformatProps } from './autoformat'
-import createControlledInput, { ControlledInputProps } from './controlled-input'
-import createCopyButton, { CopyButtonProps } from './copy-button'
-export {
+import {
+  createAutoformat,
+  AutoformatProps,
   Children,
   Component,
   ComponentFromStreamConstructor
-} from 'component-from-events'
+} from 'hocs'
+import RecordField from './record-field'
 
-export {
-  createAutoformat, AutoformatProps,
-  createControlledInput, ControlledInputProps,
-  createCopyButton, CopyButtonProps
-}
+export default createAutoformat(RecordField)
+
+export { AutoformatProps }

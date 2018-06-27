@@ -15,13 +15,25 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
+import { classes } from 'utils'
 
 export interface InputProps {
   type: string
+  invalid: boolean
+  className: string
   [prop: string]: any
 }
 
-export default function ({ type, ...attrs }: Partial<InputProps>) {
+export default function ({
+  type,
+  invalid,
+  className,
+  ...attrs
+}: Partial<InputProps>) {
   const Tag = type === 'textarea' ? type : 'input'
-  return <Tag type={type} {...attrs} />
+  return <Tag
+    type={type}
+    className={classes(invalid && 'is-invalid', className)}
+    {...attrs}
+  />
 }

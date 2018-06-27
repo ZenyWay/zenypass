@@ -16,7 +16,7 @@
 /** @jsx createElement */
 import 'symbol-observable' // polyfill
 import { createElement, render } from 'create-element'
-import { RecordField } from 'components'
+import { AutoformatRecordField } from 'components'
 import createL10n from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:app:')
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
@@ -25,7 +25,7 @@ function App () {
   return (
     <div>
       <h1>{l10n`Welcome to ZenyPass!`}</h1>
-      <RecordField type="email" onChange={debug} />
+      <AutoformatRecordField type="csv" icon="fa-list-ul" onChange={debug} />
     </div>
   )
 }

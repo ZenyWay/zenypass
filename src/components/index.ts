@@ -14,6 +14,7 @@
  * Limitations under the License.
  */
 //
+import AutoformatRecordField, { AutoformatProps } from './autoformat-record-field'
 import Button, { ButtonProps } from './button'
 import CopyButton, { CopyButtonProps } from './copy-button'
 import ControlledInput, { ControlledInputProps } from './controlled-input'
@@ -30,6 +31,7 @@ import Input, { InputProps } from './input'
 import RecordField, { RecordFieldProps } from './record-field'
 
 export {
+  AutoformatRecordField, AutoformatProps,
   Button, ButtonProps,
   CopyButton, CopyButtonProps,
   ControlledInput, ControlledInputProps,

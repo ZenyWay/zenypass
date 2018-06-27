@@ -16,14 +16,19 @@
 import createAutomataReducer from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { forType, keepIfEqual, pluck, update } from 'utils'
+import {
+  forType,
+  keepIfEqual,
+  mapPayload,
+  pluck
+} from 'utils'
 
 const inProps = propCursor('props')
 const intoValue = into('value')
 
 const automata = {
   pristine: {
-    PROPS: intoValue(pluck('value')),
+    PROPS: intoValue(mapPayload(pluck('value'))),
     INPUT: 'dirty'
   },
   dirty: {
@@ -33,6 +38,6 @@ const automata = {
 
 export default compose.into(0)(
   createAutomataReducer(automata, 'pristine'),
-  forType('INPUT')(intoValue(pluck('target', 'value'))),
-  forType('PROPS')(inProps(keepIfEqual()(update)))
+  forType('INPUT')(intoValue(mapPayload(pluck('target', 'value')))),
+  forType('PROPS')(inProps(keepIfEqual()(mapPayload())))
 )

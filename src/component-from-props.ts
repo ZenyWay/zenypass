@@ -19,14 +19,16 @@ import createComponentFromStreamFactory, {
   Operator as GenericOperator,
   OperatorFactory as GenericOperatorFactory
 } from 'component-from-stream'
-import { Component, InfernoChildren as Children } from 'inferno'
+import { Component, ComponentClass, Children, SFC } from 'create-element'
 import { Observable, from } from 'rxjs'
 
 export {
   Children,
   Component,
+  ComponentClass,
   ComponentFromStreamConstructor,
-  ComponentFromStreamFactory
+  ComponentFromStreamFactory,
+  SFC
 }
 export type Operator<I={},O=I> = GenericOperator<I,O,Observable<I>,Observable<O>>
 export type OperatorFactory<A=void,I={},O=I> =

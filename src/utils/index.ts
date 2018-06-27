@@ -14,6 +14,8 @@
  * Limitations under the License.
  */
 // TODO split into dedicated files
+export { Either, right, left } from './either'
+
 export function shallowEqual(a, b) {
   if (a === b) {
     return true
@@ -56,19 +58,9 @@ export function identity(v) {
   return v
 }
 
-// reducers
-export function keepIfEqual(equal = shallowEqual) {
-  return function(reduce) {
-    return function(previous, action) {
-      const update = reduce(previous, action)
-      return equal(update, previous) ? previous : update
-    }
-  }
-}
-
-export function pluck(...keys) {
-  return function(_, { payload }) {
-    let res = payload
+export function pluck <T>(...keys) {
+  return function(obj: object): T {
+    let res: any = obj
     for (const key of keys) {
       if (!res) {
         return
@@ -79,8 +71,26 @@ export function pluck(...keys) {
   }
 }
 
-export function update(_, { payload }) {
-  return payload
+export function always <T>(value) {
+  return function(): T {
+    return value
+  }
+}
+
+// reducers
+export function keepIfEqual(equal = shallowEqual) {
+  return function(reduce) {
+    return function(previous, action) {
+      const update = reduce(previous, action)
+      return equal(update, previous) ? previous : update
+    }
+  }
+}
+
+export function mapPayload <I,O>(project = identity as (val: I) => O) {
+  return function <A extends { payload: I }>(_, { payload }: A) {
+    return project(payload)
+  }
 }
 
 export function forType(type) {
@@ -90,6 +100,17 @@ export function forType(type) {
     }
   }
 }
+
+export function apply (...keys) {
+  return function (...args) {
+    return function (_, value) {
+      const fn = pluck<Function>(...keys)(value)
+      return fn(...args)
+    }
+  }
+}
+
+export type Reducer<S, V> = (state: S, value: V) => S
 
 // jsx helper
 export function classes(...classes: string[]): string {
