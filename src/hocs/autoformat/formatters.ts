@@ -19,28 +19,33 @@ import { Either, right, left } from 'utils'
 
 export { Either, right }
 
-export type Formatter<V> = (value: V) => Either<V>
+export type Formatter<V> = (value: V) => Either<V, FormatError<V>>
+
+export interface FormatError<V> {
+  value: V
+  error: Error
+}
 
 const IS_ACCEPTABLE_URL = // 1 = protocol, 2 = auth, 3 = domain, 4 = port, 5 = path
   /^(?:\w+?:\/\/)?(?:[^@/?]+@)?(?:(?:[^.:/?]+\.)+?[^.:/?]{2,})(?::\d{2,5})?(?:[/?].*)?$/
 const HAS_PROTOCOL = /^\w+:\/\//
 
-function formatUrl(value: string): Either<string,Error> {
+function formatUrl(value: string): Either<string,FormatError<string>> {
   return IS_ACCEPTABLE_URL.test(value)
     ? right(HAS_PROTOCOL.test(value) ? value : `https://${value}`)
-    : left(new Error('Invalid URL'))
+    : left({ value, error: new Error('Invalid URL') })
 }
 
 const IS_ACCEPTABLE_EMAIL = /^[^@]+@[^@]+$/
 
-function formatEmail(value: string): Either<string,Error> {
+function formatEmail(value: string): Either<string,FormatError<string>> {
   return IS_ACCEPTABLE_EMAIL.test(value)
     ? right(value)
-    : left(new Error('Invalid Email'))
+    : left({ value, error: new Error('Invalid Email') })
 }
 
 const CSV_SEPARATOR = /[\s,]+/
-function formatCsv(value: string): Either<string[],Error> {
+function formatCsv(value: string): Either<string[],FormatError<string>> {
   return right(value.split(CSV_SEPARATOR).filter(Boolean))
 }
 

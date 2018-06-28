@@ -34,6 +34,6 @@ const automata = {
 export default compose.into(0)(
   createAutomataReducer(automata, 'valid'),
   forType('VALID_CHANGE')(intoValue(mapPayload())),
-  forType('CHANGE')(intoValue(mapPayload())),
+  forType('INVALID_CHANGE')(intoValue(mapPayload(pluck('value')))),
   forType('PROPS')(inProps(keepIfEqual()(mapPayload())))
 )
