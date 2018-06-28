@@ -31,7 +31,7 @@ const IS_ACCEPTABLE_URL = // 1 = protocol, 2 = auth, 3 = domain, 4 = port, 5 = p
 const HAS_PROTOCOL = /^\w+:\/\//
 
 function formatUrl(value: string): Either<string,FormatError<string>> {
-  return IS_ACCEPTABLE_URL.test(value)
+  return !value || IS_ACCEPTABLE_URL.test(value)
     ? right(HAS_PROTOCOL.test(value) ? value : `https://${value}`)
     : left({ value, error: new Error('Invalid URL') })
 }
@@ -39,7 +39,7 @@ function formatUrl(value: string): Either<string,FormatError<string>> {
 const IS_ACCEPTABLE_EMAIL = /^[^@]+@[^@]+$/
 
 function formatEmail(value: string): Either<string,FormatError<string>> {
-  return IS_ACCEPTABLE_EMAIL.test(value)
+  return !value || IS_ACCEPTABLE_EMAIL.test(value)
     ? right(value)
     : left({ value, error: new Error('Invalid Email') })
 }
