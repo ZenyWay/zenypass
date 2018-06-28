@@ -36,6 +36,7 @@ export interface ControlledInputProps {
   value: string,
   autocorrect: 'off'|'on'
   autocomplete: 'off'|'on'
+  onChange: (value: string) => void
   [prop: string]: any
 }
 
@@ -52,11 +53,12 @@ interface ControlledInputState {
 }
 
 function mapStateToProps({ props, value }: ControlledInputState) {
-  return { ...props, value }
+  const { onChange, ...attrs } = props
+  return { ...attrs, value }
 }
 
 const mapDispatchToProps = createActionDispatchers({
-  onChange: 'CHANGE',
+  onBlur: 'BLUR', // https://github.com/infernojs/inferno/issues/1361
   onInput: 'INPUT'
 })
 
@@ -65,7 +67,7 @@ export interface InputProps {
   value: string
   autocorrect: 'off'|'on'
   autocomplete: 'off'|'on'
-  onChange: (event: TextEvent) => void
+  onBlur: (event: TextEvent) => void
   onInput: (event: TextEvent) => void
 }
 

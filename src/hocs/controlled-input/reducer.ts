@@ -32,7 +32,7 @@ const automata = {
     INPUT: 'dirty'
   },
   dirty: {
-    CHANGE: 'pristine'
+    BLUR: 'pristine'
   }
 }
 
