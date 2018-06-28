@@ -23,6 +23,7 @@ import { initDevTools } from 'react-devtools'
 initDevTools()
 
 const attrs = {
+  locale: 'fr',
   onChange: action('CHANGE')
 }
 const onToggleCleartext = action('TOGGLE_CLEARTEXT')
@@ -41,86 +42,84 @@ storiesOf('AutoformatRecordField', module)
   ))
   .add('csv', () => (
     <AutoformatRecordField
+      {...attrs}
       id='csv'
       type='csv'
-      icon='fa-list-ul'
-      placeholder='Values...'
       value={['comma', 'separated', 'values']}
-      {...attrs}
     />
   ))
   .add('email', () => (
     <AutoformatRecordField
+      {...attrs}
       id='email'
       type='email'
       value='john.doe@example.com'
-      {...attrs}
     />
   ))
   .add('password', () => (
     <AutoformatRecordField
+      {...attrs}
       id='password'
       type='password'
       value='P@ssw0rd'
       onToggle={onToggleCleartext}
       onCopy={onCopyPassword}
-      {...attrs}
     />
   ))
   .add('password-cleartext', () => (
     <AutoformatRecordField
+      {...attrs}
       id='password'
       type='password'
       value='P@ssw0rd'
       onToggle={onToggleCleartext}
       onCopy={onCopyPassword}
       cleartext
-      {...attrs}
     />
   ))
   .add('textarea', () => (
     <AutoformatRecordField
+      {...attrs}
       id='textarea'
       type='textarea'
       value='Rob says wow !'
-      {...attrs}
     />
   ))
   .add('url', () => (
     <AutoformatRecordField
+      {...attrs}
       id='url'
       type='url'
       value='https://example.com'
-      {...attrs}
     />
   ))
   .add('url-copy', () => (
     <AutoformatRecordField
+      {...attrs}
       id='url-copy'
       type='url'
       value='https://example.com'
       copy
-      {...attrs}
     />
   ))
   .add('url-disabled', () => (
     <AutoformatRecordField
+      {...attrs}
       id='url-disabled'
       type='url'
       value='https://example.com'
       disabled
-      {...attrs}
     />
   ))
   /*
   .add('url-copy-disabled', () => (
     <RecordField
+      {...attrs}
       id='url-copy-disabled'
       type='url'
       value='https://example.com'
       copy
       disabled
-      {...attrs}
     />
   ))
   */

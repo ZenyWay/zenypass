@@ -19,29 +19,31 @@ import InputGroup, {
   InputGroupPrepend,
   InputGroupAppend,
   InputGroupIcon
-} from './input-group'
-import Button from './button'
-import CopyButton from './copy-button'
-import Input from './controlled-input'
+} from '../input-group'
+import Button from '../button'
+import CopyButton from '../copy-button'
+import Input from '../controlled-input'
 import createL10n from 'basic-l10n'
 import { classes } from 'utils'
+const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
+const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
 export const DEFAULT_ICONS = {
   cleartext: 'fa-eye-slash',
   email: 'fa-envelope',
-  input: 'fa-question',
   password: 'fa-eye',
+  text: 'fa-question',
   textarea: 'fa-sticky-note',
   url: 'fa-bookmark'
 }
 
 export const DEFAULT_PLACEHOLDERS = {
-  cleartext: 'Password...',
-  email: 'Email...',
-  input: 'Input...',
-  password: 'Password...',
-  textarea: 'Text...',
-  url: 'Url...'
+  cleartext: 'Password',
+  email: 'Email',
+  password: '',
+  text: 'Content',
+  textarea: 'Text',
+  url: 'Url'
 }
 
 export interface RecordFieldProps {
@@ -75,15 +77,17 @@ export default function ({
   onToggle,
   onCopy,
   disabled,
+  locale,
   ...attrs
 }: Partial<RecordFieldProps>) {
+  l10n.locale = locale || l10n.locale
   const isPassword = type === 'password'
   const isCleartextPassword = isPassword && cleartext
   const isConcealedPassword = isPassword && !cleartext
   const _icon = icon
     || DEFAULT_ICONS[isCleartextPassword ? 'cleartext' : type]
-  const _placeholder = placeholder
-    || DEFAULT_PLACEHOLDERS[isCleartextPassword ? 'cleartext' : type]
+  const _placeholder = value && placeholder
+    || `${l10n(DEFAULT_PLACEHOLDERS[isCleartextPassword ? 'cleartext' : type])}...`
   return (
     <InputGroup id={id} className={className}>
       {!_icon ? null : (

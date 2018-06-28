@@ -59,7 +59,7 @@
     "basic-compose": "^4.0.1",
     "basic-cursors": "^2.2.0",
     "basic-fsa-factories": "^1.0.0",
-    "basic-l10n": "^1.0.1",
+    "basic-l10n": "^1.1.0",
     "clipboard-copy": "^2.0.0",
     "component-from-stream": "^0.17.0",
     "component-from-stream-redux": "^0.5.7",
