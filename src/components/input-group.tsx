@@ -59,6 +59,9 @@ export function InputGroupText({
   return <div className={classes('input-group-text', className)} {...attrs} />
 }
 
-export function InputGroupIcon(props: Partial<IconProps>) {
-  return <InputGroupText><Icon {...props} /></InputGroupText>
+export function InputGroupIcon({
+  className,
+  ...attrs
+}: Partial<IconProps>) {
+  return <InputGroupText className={className}><Icon {...attrs} /></InputGroupText>
 }

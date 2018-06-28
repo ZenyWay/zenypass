@@ -71,6 +71,7 @@ export default function ({
   placeholder,
   icon,
   className,
+  invalid,
   autocomplete = 'off',
   autocorrect = 'off',
   onChange,
@@ -84,8 +85,9 @@ export default function ({
   const isPassword = type === 'password'
   const isCleartextPassword = isPassword && cleartext
   const isConcealedPassword = isPassword && !cleartext
-  const _icon = icon
-    || DEFAULT_ICONS[isCleartextPassword ? 'cleartext' : type]
+  const _icon = invalid
+    ? 'fa-times'
+    : icon || DEFAULT_ICONS[isCleartextPassword ? 'cleartext' : type]
   const _placeholder = value && placeholder
     || `${l10n(DEFAULT_PLACEHOLDERS[isCleartextPassword ? 'cleartext' : type])}...`
   return (
@@ -93,7 +95,11 @@ export default function ({
       {!_icon ? null : (
         <InputGroupPrepend>
           {!isPassword || !onToggle ? (
-            <InputGroupIcon icon={_icon} fw />
+            <InputGroupIcon
+              className={classes(invalid && 'border-danger text-danger')}
+              icon={_icon}
+              fw
+            />
           ) : (
             <Button
               id={`${id}_toggle-button`}
@@ -107,7 +113,8 @@ export default function ({
       <Input
         type={isCleartextPassword ? 'text' : type}
         id={`${id}_${isConcealedPassword ? 'concealed-' : ''}input`}
-        className="form-control"
+        className={'form-control'}
+        invalid={invalid}
         value={value}
         placeholder={_placeholder}
         autocomplete={autocomplete}
