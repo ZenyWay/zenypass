@@ -15,6 +15,8 @@
  */
 //
 import { configure } from '@storybook/react'
+import { initDevTools } from 'react-devtools'
+initDevTools()
 
 const stories = require.context('../stories', true, /\.jsx$/)
 

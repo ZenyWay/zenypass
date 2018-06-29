@@ -19,8 +19,6 @@ import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import { AutoformatRecordField } from 'components'
-import { initDevTools } from 'react-devtools'
-initDevTools()
 
 const attrs = {
   locale: 'fr',
