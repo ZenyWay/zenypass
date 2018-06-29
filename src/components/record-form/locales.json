@@ -1,16 +1,14 @@
 {
   "en": {
-    "Content": "Content",
-    "Email": "Email",
+    "Comments": "Comments",
     "Keywords": "Keywords",
     "Password": "Password",
-    "Url": "Url"
+    "Username": "Username"
   },
   "fr": {
-    "Content": "Contenu",
-    "Email": "Courriel",
-    "Keywords": "Etiquettes",
+    "Comments": "Commentaires",
+    "Keywords": "Mots clés",
     "Password": "Mot de passe",
-    "Url": "Addresse web"
+    "Username": "Identifiant"
   }
 }

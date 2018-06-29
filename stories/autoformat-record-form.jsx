@@ -38,12 +38,15 @@ const attrs = {
 }
 
 storiesOf('AutoformatRecordForm', module)
-  .add('default', () => (
-    <RecordForm {...attrs} />
-  ))
   .add('disabled', () => (
     <RecordForm {...attrs} disabled />
   ))
-  .add('cleartext', () => (
+  .add('disabled-cleartext', () => (
+    <RecordForm {...attrs} disabled cleartext />
+  ))
+  .add('enabled', () => (
+    <RecordForm {...attrs} />
+  ))
+  .add('enabled-cleartext', () => (
     <RecordForm {...attrs} cleartext />
   ))

@@ -21,26 +21,23 @@ import InputGroup, {
   InputGroupIcon
 } from '../input-group'
 import Button from '../button'
-import CopyButton from '../copy-button'
 import Input from '../controlled-input'
-import createL10n from 'basic-l10n'
+import createL10n, { L10nTag } from 'basic-l10n'
 import { classes } from 'utils'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
 export const DEFAULT_ICONS = {
-  cleartext: 'fa-eye-slash',
   email: 'fa-envelope',
-  password: 'fa-eye',
+  password: 'fa-key fa-flip-vertical',
   text: 'fa-question',
   textarea: 'fa-sticky-note',
   url: 'fa-bookmark'
 }
 
 export const DEFAULT_PLACEHOLDERS = {
-  cleartext: 'Password',
   email: 'Email',
-  password: '',
+  password: 'Password',
   text: 'Content',
   textarea: 'Text',
   url: 'Url'
@@ -50,15 +47,13 @@ export interface RecordFieldProps {
   type: string
   id: string
   value: string
-  cleartext: string
   placeholder: string
   icon: string
   className: string
   autocomplete: 'off'|'on'
   autocorrect: 'off'|'on'
   onChange: (value: string) => void
-  onToggle: (event: MouseEvent) => void
-  onCopy: (event: MouseEvent) => void
+  onIconClick: (event: MouseEvent) => void
   disabled: boolean
   [prop: string]: any
 }
@@ -67,7 +62,6 @@ export default function ({
   type,
   id,
   value,
-  cleartext,
   placeholder,
   icon,
   className,
@@ -75,26 +69,19 @@ export default function ({
   autocomplete = 'off',
   autocorrect = 'off',
   onChange,
-  onToggle,
-  onCopy,
+  onIconClick,
   disabled,
   locale,
+  children,
   ...attrs
 }: Partial<RecordFieldProps>) {
-  l10n.locale = locale || l10n.locale
-  const isPassword = type === 'password'
-  const isCleartextPassword = isPassword && cleartext
-  const isConcealedPassword = isPassword && !cleartext
-  const _icon = invalid
-    ? 'fa-times'
-    : icon || DEFAULT_ICONS[isCleartextPassword ? 'cleartext' : type]
-  const _placeholder = value && placeholder
-    || `${l10n(DEFAULT_PLACEHOLDERS[isCleartextPassword ? 'cleartext' : type])}...`
+  l10n.locale = locale || l10n.locale // impure !!! TODO fix this
+  const _icon = invalid ? 'fa-times' : icon || DEFAULT_ICONS[type]
   return (
     <InputGroup id={id} className={className}>
       {!_icon ? null : (
         <InputGroupPrepend>
-          {!isPassword || !onToggle ? (
+          {!onIconClick ? (
             <InputGroupIcon
               className={classes(invalid && 'border-danger text-danger')}
               icon={_icon}
@@ -105,36 +92,34 @@ export default function ({
               id={`${id}_toggle-button`}
               icon={_icon}
               outline
-              onClick={onToggle}
+              onClick={onIconClick}
             />
           )}
         </InputGroupPrepend>
       )}
       <Input
-        type={isCleartextPassword ? 'text' : type}
-        id={`${id}_${isConcealedPassword ? 'concealed-' : ''}input`}
+        type={type}
+        id={`${id}_input`}
         className={'form-control'}
         invalid={invalid}
         value={value}
-        placeholder={_placeholder}
+        placeholder={
+          placeholder || formatPlaceholder(l10n, DEFAULT_PLACEHOLDERS[type])
+        }
         autocomplete={autocomplete}
         autocorrect={autocorrect}
-        disabled={disabled || isConcealedPassword}
+        disabled={disabled}
         onChange={onChange}
         {...attrs}
       />
-      <InputGroupAppend>
-        {isConcealedPassword ? (
-          <Button
-            id={`${id}_copy-button`}
-            icon="fa-copy"
-            outline
-            onClick={onCopy}
-          />
-        ) : (
-          <CopyButton id={`${id}_copy-button`} value={value} outline />
-        )}
-      </InputGroupAppend>
+      {children}
     </InputGroup>
   )
+}
+
+function formatPlaceholder (
+  l10n: L10nTag,
+  placeholder: string
+): string {
+  return placeholder && `${l10n(placeholder)}...`
 }

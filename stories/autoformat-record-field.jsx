@@ -64,17 +64,6 @@ storiesOf('AutoformatRecordField', module)
       onCopy={onCopyPassword}
     />
   ))
-  .add('password-cleartext', () => (
-    <AutoformatRecordField
-      {...attrs}
-      id='password'
-      type='password'
-      value='P@ssw0rd'
-      onToggle={onToggleCleartext}
-      onCopy={onCopyPassword}
-      cleartext
-    />
-  ))
   .add('textarea', () => (
     <AutoformatRecordField
       {...attrs}
