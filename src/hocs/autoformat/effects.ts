@@ -16,8 +16,13 @@
 import DEFAULT_FORMATTERS, { right } from './formatters'
 import { createActionFactories } from 'basic-fsa-factories'
 import {
+  distinctUntilKeyChanged,
   filter,
+  ignoreElements,
   map,
+  pluck,
+  skip,
+  tap,
   withLatestFrom
 } from 'rxjs/operators'
 
@@ -39,10 +44,24 @@ function formatAndCreateEvent([ { payload }, { props } ]) {
   return format(payload).unwrap(onInvalidChange, onValidChange)
 }
 
+function callChangeHandlerOnValidChange(event$, state$) {
+  return event$.pipe(
+    filter(ofType('VALID_CHANGE')),
+    withLatestFrom(state$),
+    pluck('1'),
+    map(callChangeHandler),
+    ignoreElements()
+  )
+}
+
 function ofType(type: string) {
   return function(event: { type: string }) {
     return event.type === type
   }
 }
 
-export default [formatAndCreateEventOnChange]
+function callChangeHandler({ props, value }) {
+  props.onChange(value)
+}
+
+export default [formatAndCreateEventOnChange, callChangeHandlerOnValidChange]
