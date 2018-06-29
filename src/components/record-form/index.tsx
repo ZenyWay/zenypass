@@ -16,6 +16,7 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import AutoformatRecordField from '../autoformat-record-field'
+import RecordField from '../record-field'
 import Button from '../button'
 import createL10n from 'basic-l10n'
 import { classes } from 'utils'
@@ -24,6 +25,7 @@ const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
 export const DEFAULT_ICONS: Partial<RecordFormIcons> = {
   keywords: 'fa-tags',
+  username: 'fa-user'
 }
 
 export const DEFAULT_PLACEHOLDERS: Partial<RecordFormPlaceholders> = {
@@ -89,7 +91,7 @@ export default function ({
 				onChange={onChange.bind(void 0, 'url')}
 				disabled={disabled}
 			/>
-			<AutoformatRecordField
+			<RecordField
 				type="email"
 				id={`${id}_email`}
 				className="mb-2"
