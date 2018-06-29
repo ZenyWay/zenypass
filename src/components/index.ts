@@ -29,6 +29,7 @@ import InputGroup, {
 }  from './input-group'
 import Input, { InputProps } from './input'
 import RecordField, { RecordFieldProps } from './record-field'
+import RecordForm, { RecordFormProps, Record } from './record-form'
 
 export {
   AutoformatRecordField, AutoformatProps,
@@ -39,5 +40,6 @@ export {
   InputGroup, InputGroupProps,
   InputGroupAppend, InputGroupPrepend, InputGroupText, InputGroupIcon, InputGroupAddonProps,
   Input, InputProps,
-  RecordField, RecordFieldProps
+  RecordField, RecordFieldProps,
+  RecordForm, RecordFormProps, Record
 }

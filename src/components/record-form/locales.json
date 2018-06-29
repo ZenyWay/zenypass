@@ -1,0 +1,16 @@
+{
+  "en": {
+    "Content": "Content",
+    "Email": "Email",
+    "Keywords": "Keywords",
+    "Password": "Password",
+    "Url": "Url"
+  },
+  "fr": {
+    "Content": "Contenu",
+    "Email": "Courriel",
+    "Keywords": "Etiquettes",
+    "Password": "Mot de passe",
+    "Url": "Addresse web"
+  }
+}
