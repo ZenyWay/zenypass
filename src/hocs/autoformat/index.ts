@@ -12,8 +12,6 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-/** @jsx createElement */
-import { createElement } from 'create-element'
 import reducer from './reducer'
 import effects from './effects'
 import componentFromEvents, {
@@ -36,15 +34,20 @@ export {
 }
 
 export interface AutoformatProps {
-  type: string // TODO union type
-  value: string[]|string
-  format: (value: string) => Either<string>
+  type?: string // TODO union type
+  value?: string[]|string
+  format?: (value: string) => Either<string>
   onChange: (value: string) => void
-  [prop: string]: any
+  [attr: string]: any
+}
+
+const DEFAULT_PROPS: Partial<ControlledInputProps> = {
+  type: 'text',
+  value: ''
 }
 
 interface AutoformatState {
-  props: Partial<AutoformatProps>
+  props: AutoformatProps
   state: 'invalid'|'valid'
   value: string[]|string
 }
@@ -61,22 +64,26 @@ const mapDispatchToProps = createActionDispatchers({
   onChange: 'CHANGE'
 })
 
-export interface InputProps {
-  type: string // TODO union type
-  value: string
-  onChange: (event: TextEvent) => void
+export interface ControlledInputProps {
+  type?: string // TODO union type
+  value?: string
+  onChange: (value: string) => void
   [prop: string]: any
 }
 
-export default function <P extends InputProps>(
-  Input: ComponentClass<P>|SFC<P>
-): ComponentFromStreamConstructor<Component<Partial<AutoformatProps>,{}>, Children> {
-  return componentFromEvents(
-    (props: P) => (<Input {...props} />),
+export default function <P extends ControlledInputProps>(
+  Input: SFC<P>
+): ComponentClass<AutoformatProps> {
+  const AutoformatControlledInput = componentFromEvents<AutoformatProps,P>(
+    Input,
     () => tap(console.log.bind(console, 'autoformat:EVENT:')),
     redux(reducer, ...effects),
     () => tap(console.log.bind(console, 'autoformat:STATE:')),
     connect(mapStateToProps, mapDispatchToProps),
     () => tap(console.log.bind(console, 'autoformat:PROPS:'))
   )
+
+  AutoformatControlledInput.defaultProps = DEFAULT_PROPS
+
+  return AutoformatControlledInput
 }

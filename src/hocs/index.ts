@@ -16,9 +16,9 @@ import createAutoformat, { AutoformatProps } from './autoformat'
 import createControlledInput, { ControlledInputProps } from './controlled-input'
 import createCopyButton, { CopyButtonProps } from './copy-button'
 export {
-  Children,
   Component,
-  ComponentFromStreamConstructor
+  ComponentClass,
+  SFC
 } from 'component-from-events'
 
 export {

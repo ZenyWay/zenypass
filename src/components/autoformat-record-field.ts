@@ -15,9 +15,7 @@
 import {
   createAutoformat,
   AutoformatProps,
-  Children,
-  Component,
-  ComponentFromStreamConstructor
+  ComponentClass
 } from 'hocs'
 import RecordField from './record-field'
 

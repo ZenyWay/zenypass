@@ -41,13 +41,13 @@ export const DEFAULT_PLACEHOLDERS: Partial<RecordFormPlaceholders> = {
 
 export interface RecordFormProps {
   record: Record
-  cleartext: boolean
-  disabled: boolean
+  cleartext?: boolean
+  disabled?: boolean
   onChange: (field: keyof Record, value: string[]|string) => void
   onCopyPassword: (event: MouseEvent) => void
   onToggleCleartext: (event: MouseEvent) => void
-  icons: RecordFormIcons
-  placeholders: RecordFormPlaceholders
+  icons?: RecordFormIcons
+  placeholders?: RecordFormPlaceholders
   locale: string
   [prop: string]: any
 }

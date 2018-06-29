@@ -45,7 +45,7 @@ export function connect <S={},P={}>(
   return compose.into(0)(map, _connect(mapStateToProps, mapDispatchToProps))
 }
 
-export default function <Q = {}, P = any>(
+export default function <P, Q>(
   render: (props: Q) => Children,
   factory: OperatorFactory<StandardAction<P>, any, any>,
   ...factories: OperatorFactory<StandardAction<P>, any, any>[]
@@ -55,5 +55,5 @@ export default function <Q = {}, P = any>(
     createActionFactory('PROPS'),
     factory,
     ...factories
-  )
+  ) as ComponentClass<P>
 }

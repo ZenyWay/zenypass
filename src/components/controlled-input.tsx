@@ -12,15 +12,17 @@
  * Limitations under the License.
  */
 //
+/** @jsx createElement */
+import { createElement } from 'create-element'
 import {
   createControlledInput,
   ControlledInputProps,
-  Children,
-  Component,
-  ComponentFromStreamConstructor
+  ComponentClass
 } from 'hocs'
-import Input from './input'
+import Input, { InputProps } from './input'
 
-export default createControlledInput(Input)
+export default createControlledInput(
+  (props: InputProps) => <Input {...props} />
+)
 
 export { ControlledInputProps }

@@ -12,14 +12,16 @@
  * Limitations under the License.
  */
 //
+/** @jsx createElement */
+import { createElement } from 'create-element'
 import {
   createCopyButton,
   CopyButtonProps,
-  Children,
-  Component,
-  ComponentFromStreamConstructor
+  ComponentClass
 } from 'hocs'
-import Button from './button'
+import Button, { ButtonProps } from './button'
 
-export default createCopyButton(Button)
+export default createCopyButton(
+  (props: ButtonProps) => (<Button {...props} />)
+)
 export { CopyButtonProps }

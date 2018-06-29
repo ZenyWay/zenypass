@@ -15,11 +15,8 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import InputGroup, {
-  InputGroupPrepend,
-  InputGroupAppend,
-  InputGroupIcon
-} from '../input-group'
+import IconLabelInputGroup from '../icon-label-input-group'
+import InputGroup, { InputGroupAppend } from '../input-group'
 import Button from '../button'
 import Input from '../controlled-input'
 import createL10n, { L10nTag } from 'basic-l10n'
@@ -78,25 +75,12 @@ export default function ({
   l10n.locale = locale || l10n.locale // impure !!! TODO fix this
   const _icon = invalid ? 'fa-times' : icon || DEFAULT_ICONS[type]
   return (
-    <InputGroup id={id} className={className}>
-      {!_icon ? null : (
-        <InputGroupPrepend>
-          {!onIconClick ? (
-            <InputGroupIcon
-              className={classes(invalid && 'border-danger text-danger')}
-              icon={_icon}
-              fw
-            />
-          ) : (
-            <Button
-              id={`${id}_toggle-button`}
-              icon={_icon}
-              outline
-              onClick={onIconClick}
-            />
-          )}
-        </InputGroupPrepend>
-      )}
+    <IconLabelInputGroup
+      id={id}
+      className={className}
+      icon={_icon}
+      onIconClick={onIconClick}
+    >
       <Input
         type={type}
         id={`${id}_input`}
@@ -113,7 +97,7 @@ export default function ({
         {...attrs}
       />
       {children}
-    </InputGroup>
+    </IconLabelInputGroup>
   )
 }
 

@@ -18,9 +18,11 @@ import effects from './effects'
 import componentFromEvents, {
   Children,
   Component,
+  ComponentClass,
   ComponentFromStreamConstructor,
+  SFC,
   connect,
-  redux
+  redux,
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { tap } from 'rxjs/operators'
@@ -32,10 +34,10 @@ export {
 }
 
 export interface ControlledInputProps {
-  type: string // TODO union type
-  value: string,
-  autocorrect: 'off'|'on'
-  autocomplete: 'off'|'on'
+  type?: string // TODO union type
+  value?: string,
+  autocorrect?: 'off'|'on'
+  autocomplete?: 'off'|'on'
   onChange: (value: string) => void
   [prop: string]: any
 }
@@ -63,18 +65,19 @@ const mapDispatchToProps = createActionDispatchers({
 })
 
 export interface InputProps {
-  type: string // TODO union type
-  value: string
-  autocorrect: 'off'|'on'
-  autocomplete: 'off'|'on'
-  onBlur: (event: TextEvent) => void
-  onInput: (event: TextEvent) => void
+  type?: string // TODO union type
+  value?: string
+  autocorrect?: 'off'|'on'
+  autocomplete?: 'off'|'on'
+  onBlur?: (event: TextEvent) => void
+  onInput?: (event: TextEvent) => void
+  [attr: string]: any
 }
 
-export default function (
-  Input: (props: InputProps) => Children
-): ComponentFromStreamConstructor<Component<Partial<ControlledInputProps>,{}>, Children> {
-  const ControlledInput = componentFromEvents(
+export default function <P extends InputProps>(
+  Input: SFC<P>
+): ComponentClass<ControlledInputProps> {
+  const ControlledInput = componentFromEvents<ControlledInputProps,P>(
     Input,
     () => tap(console.log.bind(console, 'controlled-input:EVENT:')),
     redux(reducer, ...effects),
@@ -83,7 +86,7 @@ export default function (
     () => tap(console.log.bind(console, 'controlled-input:PROPS:'))
   )
 
-  ;(ControlledInput as any).defaultProps = DEFAULT_PROPS
+  ControlledInput.defaultProps = DEFAULT_PROPS
 
   return ControlledInput
 }
