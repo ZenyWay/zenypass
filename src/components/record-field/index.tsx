@@ -18,7 +18,8 @@ import { createElement } from 'create-element'
 import IconLabelInputGroup from '../icon-label-input-group'
 import InputGroup, { InputGroupAppend } from '../input-group'
 import Button from '../button'
-import Input from '../controlled-input'
+import PassiveInput from '../input'
+import ControlledInput from '../controlled-input'
 import createL10n, { L10nTag } from 'basic-l10n'
 import { classes } from 'utils'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
@@ -75,6 +76,7 @@ export default function ({
 }: Partial<RecordFieldProps>) {
   l10n.locale = locale || l10n.locale // impure !!! TODO fix this
   const _icon = error ? 'fa-times' : icon || DEFAULT_ICONS[type]
+  const Input = disabled ? PassiveInput : ControlledInput
   return (
     <IconLabelInputGroup
       id={id}

@@ -16,7 +16,7 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import AutoformatRecordField from '../autoformat-record-field'
-import RecordField from '../record-field'
+import ControlledRecordField from '../record-field'
 import { InputGroupAppend } from '../input-group'
 import CopyButton from '../copy-button'
 import Button from '../button'
@@ -83,10 +83,11 @@ export default function ({
 }: Partial<RecordFormProps>) {
   const { id, url, username, password, keywords, comments } = record
   l10n.locale = locale || l10n.locale // impure !!! TODO fix this
+  const RecordField = disabled ? ControlledRecordField : AutoformatRecordField
 
   return (
     <form key={id} id={id} {...attrs}>
-      <AutoformatRecordField
+      <RecordField
         type="url"
         id={`${id}_url`}
         className="mb-2"
@@ -97,7 +98,7 @@ export default function ({
         disabled={disabled}
         locale={locale}
       />
-      <RecordField
+      <ControlledRecordField
         type="email"
         id={`${id}_username`}
         className="mb-2"
@@ -111,8 +112,8 @@ export default function ({
         <InputGroupAppend>
           <CopyButton id={`${id}_copy-button`} value={username} outline />
         </InputGroupAppend>
-      </RecordField>
-      <RecordField
+      </ControlledRecordField>
+      <ControlledRecordField
         type={cleartext ? 'text' : 'password'}
         id={`${id}_password`}
         className="mb-2"
@@ -136,8 +137,8 @@ export default function ({
             <CopyButton id={`${id}_password__copy-button`} value={password} outline />
           )}
         </InputGroupAppend>
-      </RecordField>
-      <AutoformatRecordField
+      </ControlledRecordField>
+      <RecordField
         type="csv"
         id={`${id}_keywords`}
         className="mb-2"
@@ -148,7 +149,7 @@ export default function ({
         disabled={disabled}
         locale={locale}
       />
-      <RecordField
+      <ControlledRecordField
         type="textarea"
         id={`${id}_comments`}
         className="mb-2"
