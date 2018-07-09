@@ -13,55 +13,39 @@
  * Limitations under the License.
  */
 //
-import DEFAULT_FORMATTERS, { right } from './formatters'
 import { createActionFactories } from 'basic-fsa-factories'
 import {
-  distinctUntilKeyChanged,
   filter,
   ignoreElements,
   map,
   pluck,
-  skip,
   tap,
   withLatestFrom
 } from 'rxjs/operators'
 
-const { onInvalidChange, onValidChange } = createActionFactories({
-  onInvalidChange: 'INVALID_CHANGE',
-  onValidChange: 'VALID_CHANGE'
-})
-
-function formatAndCreateEventOnChange(event$, state$) {
+function callChangeHandlerOnValidChange(event$, state$) {
   return event$.pipe(
     filter(ofType('CHANGE')),
     withLatestFrom(state$),
-    map(formatAndCreateEvent),
-  )
-}
-
-function formatAndCreateEvent([ { payload }, { props } ]) {
-  const format = props.format || DEFAULT_FORMATTERS[props.type] || right
-  return format(payload).unwrap(onInvalidChange, onValidChange)
-}
-
-function callChangeHandlerOnValidChange(event$, state$) {
-  return event$.pipe(
-    filter(ofType('VALID_CHANGE')),
-    withLatestFrom(state$),
     pluck('1'),
+    filter(isValidChange),
     map(callChangeHandler),
     ignoreElements()
   )
 }
 
-function ofType(type: string) {
+function ofType (type: string) {
   return function(event: { type: string }) {
     return event.type === type
   }
 }
 
-function callChangeHandler({ props, value }) {
+function isValidChange ({ props, value, error }) {
+  return !error && props.value !== value
+}
+
+function callChangeHandler ({ props, value }) {
   props.onChange(value)
 }
 
-export default [formatAndCreateEventOnChange, callChangeHandlerOnValidChange]
+export default [callChangeHandlerOnValidChange]

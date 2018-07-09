@@ -13,7 +13,6 @@
  * Limitations under the License.
  */
 //
-import createAutomataReducer from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
 import {
@@ -26,18 +25,12 @@ import {
 const inProps = propCursor('props')
 const intoValue = into('value')
 
-const automata = {
-  pristine: {
-    PROPS: intoValue(mapPayload(pluck('value'))),
-    INPUT: 'dirty'
-  },
-  dirty: {
-    BLUR: 'pristine'
-  }
-}
-
 export default compose.into(0)(
-  createAutomataReducer(automata, 'pristine'),
   forType('INPUT')(intoValue(mapPayload(pluck('target', 'value')))),
-  forType('PROPS')(inProps(keepIfEqual()(mapPayload())))
+  forType('PROPS')(
+    compose.into(0)(
+      intoValue(mapPayload(pluck('value'))),
+      inProps(mapPayload())
+    )
+  )
 )

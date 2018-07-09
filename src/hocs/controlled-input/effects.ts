@@ -14,27 +14,32 @@
  */
 //
 import {
-  distinctUntilKeyChanged,
   ignoreElements,
   filter,
   map,
-  skip,
-  tap
+  pluck,
+  tap,
+  withLatestFrom
 } from 'rxjs/operators'
 
-function callChangeHandlerOnPristine(_, state$) {
-  return state$.pipe(
-    distinctUntilKeyChanged('state'),
-    filter(isState('pristine')),
-    skip(1), // skip initial state
+function callChangeHandlerOnBlurWhenIsChange(event$, state$) {
+  return event$.pipe(
+    filter(ofType('BLUR')),
+    withLatestFrom(state$),
+    pluck('1'),
+    filter(isChange),
     map(callChangeHandler),
     ignoreElements()
   )
 }
 
-function isState(value) {
-  return function({ state }) {
-    return state === value
+function isChange ({ props, value }) {
+  return props.value !== value
+}
+
+function ofType (type) {
+  return function (event) {
+    return event.type === type
   }
 }
 
@@ -42,4 +47,4 @@ function callChangeHandler({ props, value }) {
   props.onChange(value)
 }
 
-export default [callChangeHandlerOnPristine]
+export default [callChangeHandlerOnBlurWhenIsChange]

@@ -25,7 +25,8 @@ import componentFromEvents, {
   redux,
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { tap } from 'rxjs/operators'
+import { distinctUntilChanged, tap } from 'rxjs/operators'
+import { shallowEqual } from 'utils'
 
 export {
   Children,
@@ -83,6 +84,7 @@ export default function <P extends InputProps>(
     redux(reducer, ...effects),
     () => tap(console.log.bind(console, 'controlled-input:STATE:')),
     connect(mapStateToProps, mapDispatchToProps),
+    () => distinctUntilChanged(shallowEqual),
     () => tap(console.log.bind(console, 'controlled-input:PROPS:'))
   )
 

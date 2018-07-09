@@ -44,6 +44,7 @@ export interface RecordFieldProps {
   type: string
   id: string
   value: string
+  error: string
   placeholder: string
   icon: string
   className: string
@@ -59,10 +60,10 @@ export default function ({
   type,
   id,
   value,
+  error,
   placeholder,
   icon,
   className,
-  invalid,
   autocomplete = 'off',
   autocorrect = 'off',
   onChange,
@@ -73,7 +74,7 @@ export default function ({
   ...attrs
 }: Partial<RecordFieldProps>) {
   l10n.locale = locale || l10n.locale // impure !!! TODO fix this
-  const _icon = invalid ? 'fa-times' : icon || DEFAULT_ICONS[type]
+  const _icon = error ? 'fa-times' : icon || DEFAULT_ICONS[type]
   return (
     <IconLabelInputGroup
       id={id}
@@ -85,7 +86,7 @@ export default function ({
         type={type}
         id={`${id}_input`}
         className={'form-control'}
-        invalid={invalid}
+        invalid={!!error}
         value={value}
         placeholder={
           placeholder || formatPlaceholder(l10n, DEFAULT_PLACEHOLDERS[type])
@@ -96,6 +97,7 @@ export default function ({
         onChange={onChange}
         {...attrs}
       />
+      {error ? <small className='invalid-feedback'>{error}</small>: null}
       {children}
     </IconLabelInputGroup>
   )

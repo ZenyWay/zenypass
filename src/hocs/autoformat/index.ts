@@ -14,6 +14,7 @@
  */
 import reducer from './reducer'
 import effects from './effects'
+import { Formatter } from './formatters'
 import componentFromEvents, {
   Children,
   Component,
@@ -25,7 +26,6 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { tap } from 'rxjs/operators'
-import { Either } from 'utils'
 
 export {
   Children,
@@ -36,7 +36,7 @@ export {
 export interface AutoformatProps {
   type?: string // TODO union type
   value?: string[]|string
-  format?: (value: string) => Either<string>
+  format?: Formatter<string>
   onChange: (value: string) => void
   [attr: string]: any
 }
@@ -48,16 +48,17 @@ const DEFAULT_PROPS: Partial<ControlledInputProps> = {
 
 interface AutoformatState {
   props: AutoformatProps
-  state: 'invalid'|'valid'
   value: string[]|string
+  error?: string
 }
 
-function mapStateToProps ({ props, state, value }: AutoformatState) {
+function mapStateToProps (
+  { props, value, error }: AutoformatState
+): Partial<ControlledInputProps> {
   const { onChange, type, ...attrs } = props // drop onChange
   const csv = type === 'csv'
-  const _value = csv && Array.isArray(value) ? value.join(',') : value
-  const invalid = state === 'invalid'
-  return { ...attrs, type: csv ? 'text' : type, invalid, value: _value }
+  const _value = csv && Array.isArray(value) ? value.join(',') : value as string
+  return { ...attrs, type: csv ? 'text' : type, value: _value, error }
 }
 
 const mapDispatchToProps = createActionDispatchers({
@@ -67,6 +68,7 @@ const mapDispatchToProps = createActionDispatchers({
 export interface ControlledInputProps {
   type?: string // TODO union type
   value?: string
+  error?: string
   onChange: (value: string) => void
   [prop: string]: any
 }
@@ -80,6 +82,9 @@ export default function <P extends ControlledInputProps>(
     redux(reducer, ...effects),
     () => tap(console.log.bind(console, 'autoformat:STATE:')),
     connect(mapStateToProps, mapDispatchToProps),
+    // let props through, even if same as previous:
+    // might need to refresh content of ControlledInput,
+    // e.g. if formatting resets value from changed to previous.
     () => tap(console.log.bind(console, 'autoformat:PROPS:'))
   )
 

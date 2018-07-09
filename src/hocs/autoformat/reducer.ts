@@ -13,27 +13,34 @@
  * Limitations under the License.
  */
 //
-import createAutomataReducer from 'automata-reducer'
+import DEFAULT_FORMATTERS from './formatters'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { forType, keepIfEqual, mapPayload, pluck } from 'utils'
+import { forType, mapPayload, pluck } from 'utils'
 
 const inProps = propCursor('props')
 const intoValue = into('value')
 
-const automata = {
-  valid: {
-    PROPS: intoValue(mapPayload(pluck('value'))),
-    INVALID_CHANGE: 'invalid'
-  },
-  invalid: {
-    VALID_CHANGE: 'valid'
-  }
-}
-
 export default compose.into(0)(
-  createAutomataReducer(automata, 'valid'),
-  forType('VALID_CHANGE')(intoValue(mapPayload())),
-  forType('INVALID_CHANGE')(intoValue(mapPayload(pluck('value')))),
-  forType('PROPS')(inProps(keepIfEqual()(mapPayload())))
+  forType('CHANGE')(
+    compose.into(0)(
+      formatIfDefined,
+      intoValue(mapPayload())
+    )
+  ),
+  forType('PROPS')(
+    compose.into(0)(
+      intoValue(mapPayload(pluck('value'))),
+      inProps(mapPayload())
+    )
+  )
 )
+
+function formatIfDefined (state) {
+  const { props, value, error } = state
+  const format = props.format || DEFAULT_FORMATTERS[props.type]
+  const update = format ? format(value) : { value }
+  return update.value !== value || update.error !== error
+    ? { ...state, value: update.value, error: update.error }
+    : state
+}

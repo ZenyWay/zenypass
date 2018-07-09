@@ -14,8 +14,6 @@
  * Limitations under the License.
  */
 // TODO split into dedicated files
-export { Either, right, left } from './either'
-
 export function shallowEqual(a, b) {
   if (a === b) {
     return true
@@ -97,15 +95,6 @@ export function forType(type) {
   return function(reduce) {
     return function(state, action) {
       return action.type === type ? reduce(state, action) : state
-    }
-  }
-}
-
-export function apply (...keys) {
-  return function (...args) {
-    return function (_, value) {
-      const fn = pluck<Function>(...keys)(value)
-      return fn(...args)
     }
   }
 }

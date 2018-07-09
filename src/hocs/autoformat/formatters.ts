@@ -15,42 +15,34 @@
 //
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { Either, right, left } from 'utils'
 
-export { Either, right }
-
-export type Formatter<V> = (value: V) => Either<V, FormatError<V>>
-
-export interface FormatError<V> {
-  value: V
-  error: Error
-}
+export type Formatter<V> = (value: V) => { value: V, error?: string }
 
 const IS_ACCEPTABLE_URL = // 1 = protocol, 2 = auth, 3 = domain, 4 = port, 5 = path
   /^(?:\w+?:\/\/)?(?:[^@/?]+@)?(?:(?:[^.:/?]+\.)+?[^.:/?]{2,})(?::\d{2,5})?(?:[/?].*)?$/
 const HAS_PROTOCOL = /^\w+:\/\//
 
-function formatUrl(value: string): Either<string,FormatError<string>> {
+function formatUrl(value: string) {
   return !value || IS_ACCEPTABLE_URL.test(value)
-    ? right(HAS_PROTOCOL.test(value) ? value : `https://${value}`)
-    : left({ value, error: new Error('Invalid URL') })
+    ? { value: HAS_PROTOCOL.test(value) ? value : `https://${value}` }
+    : { value, error: 'Invalid URL' }
 }
 
-const IS_ACCEPTABLE_EMAIL = /^[^@]+@[^@]+$/
+const IS_ACCEPTABLE_EMAIL = /^[^@]+@[^@.]+\.[^@.]+$/
 
-function formatEmail(value: string): Either<string,FormatError<string>> {
+function formatEmail(value: string) {
   return !value || IS_ACCEPTABLE_EMAIL.test(value)
-    ? right(value)
-    : left({ value, error: new Error('Invalid Email') })
+    ? { value }
+    : { value, error: 'Invalid Email' }
 }
 
 const CSV_SEPARATOR = /[\s,]+/
-function formatCsv(value: string): Either<string[],FormatError<string>> {
-  return right(value.split(CSV_SEPARATOR).filter(Boolean))
+function formatCsv(value: string) {
+  return { value: value.split(CSV_SEPARATOR).filter(Boolean) }
 }
 
 export default {
   url: formatUrl,
   email: formatEmail,
   csv: formatCsv
-}
+} as { [type: string]: Formatter<any> }
