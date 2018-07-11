@@ -13,7 +13,7 @@ module.exports = (baseConfig, env, config) => {
     test: /\.tsx?$/,
     include: [
       path.resolve(__dirname, '../src'),
-      // path.resolve(__dirname, '../stories'),
+      path.resolve(__dirname, '../stubs'),
     ],
     loader: require.resolve('ts-loader'),
     options: {

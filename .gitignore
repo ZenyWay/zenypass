@@ -9,4 +9,5 @@ tmp/
 **/*.swp
 **/*.tgz
 .DS_Store
+.vs/
 .vscode/

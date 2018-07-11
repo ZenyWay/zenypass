@@ -39,7 +39,7 @@ export interface ControlledInputProps {
   value?: string,
   autocorrect?: 'off'|'on'
   autocomplete?: 'off'|'on'
-  onChange: (value: string) => void
+  onChange?: (value: string) => void
   [prop: string]: any
 }
 

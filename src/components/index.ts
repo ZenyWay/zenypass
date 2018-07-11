@@ -14,10 +14,19 @@
  * Limitations under the License.
  */
 //
+import AuthenticationModal, { AuthenticationModalProps } from './authentication-modal'
+import AuthorizationCard, { AuthorizationCardProps } from './authorization-card'
+import AuthorizedBrowserCard, { AuthorizedBrowserCardProps } from './authorized-browser-card'
 import AutoformatRecordField, { AutoformatProps } from './autoformat-record-field'
 import Button, { ButtonProps } from './button'
 import CopyButton, { CopyButtonProps } from './copy-button'
 import ControlledInput, { ControlledInputProps } from './controlled-input'
+import ControlledAuthenticationModal, {
+  ControlledAuthenticationModalProps
+} from './controlled-authentication-modal'
+import ControlledAuthorizationCard, {
+  ControlledAuthorizationProps
+} from './controlled-authorization-card'
 import Icon, { IconProps } from './icon'
 import InputGroup, {
   InputGroupProps,
@@ -33,10 +42,15 @@ import RecordField, { RecordFieldProps } from './record-field'
 import RecordForm, { RecordFormProps, Record } from './record-form'
 
 export {
+  AuthenticationModal, AuthenticationModalProps,
+  AuthorizationCard, AuthorizationCardProps,
+  AuthorizedBrowserCard, AuthorizedBrowserCardProps,
   AutoformatRecordField, AutoformatProps,
   Button, ButtonProps,
   CopyButton, CopyButtonProps,
   ControlledInput, ControlledInputProps,
+  ControlledAuthenticationModal, ControlledAuthenticationModalProps,
+  ControlledAuthorizationCard, ControlledAuthorizationProps,
   Icon, IconProps,
   InputGroup, InputGroupProps,
   InputGroupAppend, InputGroupPrepend, InputGroupText, InputGroupIcon, InputGroupAddonProps,
