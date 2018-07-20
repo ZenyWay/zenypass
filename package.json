@@ -91,7 +91,7 @@
     "coveralls": "^3.0.1",
     "cpx": "^1.5.0",
     "envify": "^4.1.0",
-    "eslint": "^5.0.1",
+    "eslint-plugin-typescript": "^0.12.0",
     "extract-zip": "^1.6.7",
     "http-server": "^0.11.1",
     "inferno-clone-vnode": "^5.2.0",
@@ -114,10 +114,13 @@
     "pkg-dir-cli": "^2.1.0",
     "remap-istanbul": "^0.11.1",
     "rimraf": "^2.6.2",
+    "standard": "^11.0.1",
     "ts-loader": "^3.5.0",
     "tsify": "^4.0.0",
     "tslint": "^5.10.0",
+    "tslint-config-standard": "^7.1.0",
     "typescript": "2.8.4",
+    "typescript-eslint-parser": "^16.0.1",
     "uglify-es": "^3.3.9",
     "uglifyify": "^5.0.1",
     "undebuggify": "^1.1.0",
@@ -125,5 +128,11 @@
   },
   "aliasify": {
     "aliases": {}
+  },
+  "standard": {
+    "parser": "typescript-eslint-parser",
+    "plugins": [
+      "typescript"
+    ]
   }
 }
