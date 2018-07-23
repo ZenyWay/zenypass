@@ -33,7 +33,7 @@ const copyToClipboard = require('clipboard-copy')
 const expired = createActionFactory('EXPIRED')
 const copied = createActionFactory('COPIED')
 
-function timeoutAfterDisabled(_, state$) {
+function timeoutAfterDisabled (_, state$) {
   const disabled$ = state$.pipe(
     pluck('state'),
     distinctUntilChanged(),
@@ -48,11 +48,11 @@ function timeoutAfterDisabled(_, state$) {
   )
 }
 
-function timeout(ms) {
+function timeout (ms) {
   return observable(expired()).pipe(delay(ms))
 }
 
-function copyToClipboardOnClick(event$, state$) {
+function copyToClipboardOnClick (event$, state$) {
   const click$ = event$.pipe(
     filter(ofType('CLICK')),
     pluck('payload'),
@@ -69,18 +69,18 @@ function copyToClipboardOnClick(event$, state$) {
   )
 }
 
-function preventDefault(event) {
+function preventDefault (event) {
   event.preventDefault()
 }
 
-function equals(v) {
-  return function(val) {
+function equals (v) {
+  return function (val) {
     return v === val
   }
 }
 
-function ofType(t) {
-  return function({ type }) {
+function ofType (t) {
+  return function ({ type }) {
     return type === t
   }
 }

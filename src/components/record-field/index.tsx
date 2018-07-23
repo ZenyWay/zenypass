@@ -49,8 +49,8 @@ export interface RecordFieldProps {
   placeholder: string
   icon: string
   className: string
-  autocomplete: 'off'|'on'
-  autocorrect: 'off'|'on'
+  autocomplete: 'off' | 'on'
+  autocorrect: 'off' | 'on'
   onChange: (value: string) => void
   onIconClick: (event: MouseEvent) => void
   disabled: boolean
@@ -99,7 +99,7 @@ export default function ({
         onChange={onChange}
         {...attrs}
       />
-      {error ? <small className='invalid-feedback'>{error}</small>: null}
+      {error ? <small className='invalid-feedback'>{error}</small> : null}
       {children}
     </IconLabelInputGroup>
   )

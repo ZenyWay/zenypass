@@ -17,12 +17,10 @@ import {
   ignoreElements,
   filter,
   map,
-  pluck,
-  sample,
-  tap
+  sample
 } from 'rxjs/operators'
 
-function callChangeHandlerOnBlurWhenIsChange(event$, state$) {
+function callChangeHandlerOnBlurWhenIsChange (event$, state$) {
   const blur$ = event$.pipe(filter(ofType('BLUR')))
 
   return state$.pipe(
@@ -48,7 +46,7 @@ function ofType (type) {
   }
 }
 
-function callChangeHandler({ props, value }) {
+function callChangeHandler ({ props, value }) {
   props.onChange(value)
 }
 

@@ -21,7 +21,6 @@ import { InputGroupAppend } from '../input-group'
 import CopyButton from '../copy-button'
 import Button from '../button'
 import createL10n, { L10nTag } from 'basic-l10n'
-import { classes } from 'utils'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
@@ -43,7 +42,7 @@ export interface RecordFormProps {
   record: Record
   cleartext?: boolean
   disabled?: boolean
-  onChange: (field: keyof Record, value: string[]|string) => void
+  onChange: (field: keyof Record, value: string[] | string) => void
   onCopyPassword: (event: MouseEvent) => void
   onToggleCleartext: (event: MouseEvent) => void
   icons?: RecordFormIcons
@@ -63,7 +62,7 @@ export interface Record {
   login: boolean
 }
 
-export type RecordFormIcons = KVMap<RecordFormInputFields|'cleartext',string>
+export type RecordFormIcons = KVMap<RecordFormInputFields | 'cleartext',string>
 export type RecordFormPlaceholders = KVMap<RecordFormInputFields,string>
 export type RecordFormInputFields = Exclude<keyof Record,'id'>
 
@@ -88,9 +87,9 @@ export default function ({
   return (
     <form key={id} id={id} {...attrs}>
       <RecordField
-        type="url"
+        type='url'
         id={`${id}_url`}
-        className="mb-2"
+        className='mb-2'
         icon={getIcon(icons, 'url')}
         placeholder={getPlaceholder(l10n, placeholders, 'url')}
         value={url}
@@ -99,9 +98,9 @@ export default function ({
         locale={locale}
       />
       <ControlledRecordField
-        type="email"
+        type='email'
         id={`${id}_username`}
-        className="mb-2"
+        className='mb-2'
         icon={getIcon(icons, 'username')}
         placeholder={getPlaceholder(l10n, placeholders, 'username')}
         value={username}
@@ -116,7 +115,7 @@ export default function ({
       <ControlledRecordField
         type={cleartext ? 'text' : 'password'}
         id={`${id}_password`}
-        className="mb-2"
+        className='mb-2'
         icon={getIcon(icons, cleartext ? 'cleartext' : 'password')}
         placeholder={cleartext && getPlaceholder(l10n, placeholders, 'password')}
         value={cleartext ? password : '*****'}
@@ -129,7 +128,7 @@ export default function ({
           {!cleartext ? (
             <Button
               id={`${id}_password_copy-button`}
-              icon="fa-copy"
+              icon='fa-copy'
               outline
               onClick={onCopyPassword}
             />
@@ -139,9 +138,9 @@ export default function ({
         </InputGroupAppend>
       </ControlledRecordField>
       <RecordField
-        type="csv"
+        type='csv'
         id={`${id}_keywords`}
-        className="mb-2"
+        className='mb-2'
         icon={getIcon(icons, 'keywords')}
         placeholder={getPlaceholder(l10n, placeholders, 'keywords')}
         value={keywords}
@@ -150,13 +149,13 @@ export default function ({
         locale={locale}
       />
       <ControlledRecordField
-        type="textarea"
+        type='textarea'
         id={`${id}_comments`}
-        className="mb-2"
+        className='mb-2'
         icon={getIcon(icons, 'comments')}
         placeholder={getPlaceholder(l10n, placeholders, 'comments')}
         value={comments}
-        rows="3"
+        rows='3'
         onChange={onChange.bind(void 0, 'comments')}
         disabled={disabled}
         locale={locale}

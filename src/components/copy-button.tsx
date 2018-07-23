@@ -16,8 +16,7 @@
 import { createElement } from 'create-element'
 import {
   createCopyButton,
-  CopyButtonProps,
-  ComponentClass
+  CopyButtonProps
 } from 'hocs'
 import Button, { ButtonProps } from './button'
 

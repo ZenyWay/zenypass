@@ -13,12 +13,10 @@
  */
 //
 /** @jsx createElement */
-import { createElement } from 'create-element'
 import AuthorizationCard from './authorization-card'
 import {
   createControlledAuthorization,
-  ControlledAuthorizationProps,
-  ComponentClass
+  ControlledAuthorizationProps
 } from 'hocs'
 
 export { ControlledAuthorizationProps }

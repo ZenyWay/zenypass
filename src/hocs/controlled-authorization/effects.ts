@@ -3,33 +3,30 @@
  */
 //
 
-import { createActionFactory, StandardAction } from "basic-fsa-factories"
+import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   catchError,
   concat,
-  distinctUntilChanged,
   filter,
   map,
   pluck,
-  sample,
   switchMap,
   takeUntil,
-  tap,
   withLatestFrom
-} from "rxjs/operators"
+} from 'rxjs/operators'
 import { Observable, of as observable } from 'rxjs'
 import authorize from '../../../stubs/stubs_service'
 
-export { StandardAction}
+export { StandardAction }
 
-const onServerToken = createActionFactory("SERVER_TOKEN")
-const onServerError = createActionFactory("SERVER_ERROR")
-const onServerDone = createActionFactory("SERVER_DONE")
-const authenticationError = createActionFactory("AUTH_ERROR")
+const onServerToken = createActionFactory('SERVER_TOKEN')
+const onServerError = createActionFactory('SERVER_ERROR')
+const onServerDone = createActionFactory('SERVER_DONE')
+const authenticationError = createActionFactory('AUTH_ERROR')
 
 const log = (label: string) => console.log.bind(console, label)
 
-function getTokenOnClickFromInit(event$, state$: Observable<{}>) {
+function getTokenOnClickFromInit (event$, state$: Observable<{}>) {
 
   const authenticating$ = event$.pipe(
     filter(ofType('PASSWORD')),
@@ -57,21 +54,21 @@ function getTokenOnClickFromInit(event$, state$: Observable<{}>) {
   }
 }
 
-function dealWithError(err) {
+function dealWithError (err) {
   const err$ = observable(err && err.message)
   return err$.pipe(err.status === 401
     ? map(authenticationError)
     : map(onServerError))
 }
 
-function isEqual(ref) {
-  return function(val) {
+function isEqual (ref) {
+  return function (val) {
     return ref === val
   }
 }
 
-function ofType(type) {
-  return function(action) {
+function ofType (type) {
+  return function (action) {
     return action.type === type
   }
 }

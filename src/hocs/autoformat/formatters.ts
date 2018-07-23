@@ -22,7 +22,7 @@ const IS_ACCEPTABLE_URL = // 1 = protocol, 2 = auth, 3 = domain, 4 = port, 5 = p
   /^(?:\w+?:\/\/)?(?:[^@/?]+@)?(?:(?:[^.:/?]+\.)+?[^.:/?]{2,})(?::\d{2,5})?(?:[/?].*)?$/
 const HAS_PROTOCOL = /^\w+:\/\//
 
-function formatUrl(value: string) {
+function formatUrl (value: string) {
   return !value || IS_ACCEPTABLE_URL.test(value)
     ? { value: HAS_PROTOCOL.test(value) ? value : `https://${value}` }
     : { value, error: 'Invalid URL' }
@@ -30,14 +30,14 @@ function formatUrl(value: string) {
 
 const IS_ACCEPTABLE_EMAIL = /^[^@]+@[^@.]+\.[^@.]+$/
 
-function formatEmail(value: string) {
+function formatEmail (value: string) {
   return !value || IS_ACCEPTABLE_EMAIL.test(value)
     ? { value }
     : { value, error: 'Invalid Email' }
 }
 
 const CSV_SEPARATOR = /[\s,]+/
-function formatCsv(value: string) {
+function formatCsv (value: string) {
   return { value: value.split(CSV_SEPARATOR).filter(Boolean) }
 }
 

@@ -25,7 +25,7 @@ function App () {
   return (
     <div>
       <h1>{l10n`Welcome to ZenyPass!`}</h1>
-      <AutoformatRecordField type="csv" icon="fa-list-ul" onChange={debug} />
+      <AutoformatRecordField type='csv' icon='fa-list-ul' onChange={debug} />
     </div>
   )
 }

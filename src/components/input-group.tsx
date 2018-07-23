@@ -38,28 +38,28 @@ export default function ({
   />
 }
 
-export function InputGroupPrepend({
+export function InputGroupPrepend ({
   className,
   ...attrs
 }: Partial<InputGroupAddonProps>) {
   return <div className={classes('input-group-prepend', className)} {...attrs} />
 }
 
-export function InputGroupAppend({
+export function InputGroupAppend ({
   className,
   ...attrs
 }: Partial<InputGroupAddonProps>) {
   return <div className={classes('input-group-append', className)} {...attrs} />
 }
 
-export function InputGroupText({
+export function InputGroupText ({
   className,
   ...attrs
 }: Partial<InputGroupAddonProps>) {
   return <div className={classes('input-group-text', className)} {...attrs} />
 }
 
-export function InputGroupIcon({
+export function InputGroupIcon ({
   className,
   ...attrs
 }: Partial<IconProps>) {

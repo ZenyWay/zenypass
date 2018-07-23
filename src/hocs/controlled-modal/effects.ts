@@ -17,12 +17,10 @@ import {
   ignoreElements,
   filter,
   map,
-  pluck,
-  sample,
-  tap
+  sample
 } from 'rxjs/operators'
 
-function callOnSubmit(event$, state$) {
+function callOnSubmit (event$, state$) {
   const submit$ = event$.pipe(filter(ofType('SUBMIT')))
 
   return state$.pipe(
@@ -43,7 +41,7 @@ function ofType (type) {
   }
 }
 
-function callSubmitHandler({ props, value }) {
+function callSubmitHandler ({ props, value }) {
   props.onSubmit(value)
 }
 

@@ -2,13 +2,13 @@
  * Clément Bonet
  */
 //
-import createAutomataReducer from "automata-reducer"
-import { propCursor, into } from "basic-cursors"
-import compose from "basic-compose"
-import { forType, mapPayload } from "../../utils"
+import createAutomataReducer from 'automata-reducer'
+import { propCursor, into } from 'basic-cursors'
+import compose from 'basic-compose'
+import { forType, mapPayload } from '../../utils'
 
-const inProps = propCursor("props")
-const intoToken = into("token")
+const inProps = propCursor('props')
+const intoToken = into('token')
 const intoError = into('error')
 const intoErrorPassword = into('errorPassword')
 const mapPayloadIntoError = intoError(mapPayload())
@@ -33,6 +33,6 @@ const automata = {
 }
 
 export default compose.into(0)(
-  createAutomataReducer(automata, "init"),
-  forType("PROPS")(inProps(mapPayload()))
+  createAutomataReducer(automata, 'init'),
+  forType('PROPS')(inProps(mapPayload()))
 )

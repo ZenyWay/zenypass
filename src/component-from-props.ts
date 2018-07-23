@@ -30,9 +30,8 @@ export {
   ComponentFromStreamFactory,
   SFC
 }
-export type Operator<I={},O=I> = GenericOperator<I,O,Observable<I>,Observable<O>>
-export type OperatorFactory<A=void,I={},O=I> =
+export type Operator<I= {},O= I> = GenericOperator<I,O,Observable<I>,Observable<O>>
+export type OperatorFactory<A= void,I= {},O= I> =
   GenericOperatorFactory<A,I,O,Observable<I>,Observable<O>>
 
-export default createComponentFromStreamFactory(Component, from) as
-  ComponentFromStreamFactory<Component<any, any>, Children>
+export default createComponentFromStreamFactory(Component, from)

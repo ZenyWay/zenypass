@@ -22,10 +22,9 @@ import componentFromEvents, {
   ComponentFromStreamConstructor,
   SFC,
   connect,
-  redux,
+  redux
 } from '../../component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { tap } from 'rxjs/operators'
 
 export {
   Children,
@@ -39,8 +38,8 @@ export interface ControlledModalProps {
   [prop: string]: any
 }
 
-function mapStateToProps({ props, value }) {
-  return {...props, value }
+function mapStateToProps ({ props, value }) {
+  return { ...props, value }
 }
 
 const mapDispatchToProps = createActionDispatchers({
@@ -48,7 +47,7 @@ const mapDispatchToProps = createActionDispatchers({
   onSubmit: ['SUBMIT', preventDefault]
 })
 
-function preventDefault(event: Event) {
+function preventDefault (event: Event) {
   event.preventDefault()
   return event
 }
@@ -67,13 +66,13 @@ export default function <P extends ModalProps>(
   const ControlledInput = componentFromEvents<
     ControlledModalProps & { [K in Exclude<keyof P, 'onInput'>]: P[K] },
     P
-  >(
+(
     Modal,
-    //() => tap(console.log.bind(console, 'controlled-modal:EVENT:')),
+    // () => tap(console.log.bind(console, 'controlled-modal:EVENT:')),
     redux(reducer, ...effects),
-    //() => tap(console.log.bind(console, 'controlled-modal:STATE:')),
-    connect(mapStateToProps, mapDispatchToProps),
-    //() => tap(console.log.bind(console, 'controlled-modal:PROPS:'))
+    // () => tap(console.log.bind(console, 'controlled-modal:STATE:')),
+    connect(mapStateToProps, mapDispatchToProps)
+    // () => tap(console.log.bind(console, 'controlled-modal:PROPS:'))
   )
 
   return ControlledInput

@@ -13,7 +13,6 @@
  */
 //
 /** @jsx createElement */
-import { createElement } from 'create-element'
 import {
   createControlledModal,
   ControlledModalProps,

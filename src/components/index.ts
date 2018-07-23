@@ -35,7 +35,7 @@ import InputGroup, {
   InputGroupText,
   InputGroupIcon,
   InputGroupAddonProps
-}  from './input-group'
+} from './input-group'
 import IconLabelInputGroup, { IconLabelInputGroupProps } from './icon-label-input-group'
 import Input, { InputProps } from './input'
 import RecordField, { RecordFieldProps } from './record-field'

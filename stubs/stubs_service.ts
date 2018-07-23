@@ -13,7 +13,7 @@
  * Limitations under the License.
  */
 import { interval, NEVER, of as observable, Observable, throwError } from 'rxjs'
-import { concat, takeUntil, delay, finalize } from 'rxjs/operators'
+import { concat, takeUntil, delay } from 'rxjs/operators'
 
 const TOKEN_DELAY = 1000 // ms
 const AUTH_DELAY = 10000 // ms
@@ -21,16 +21,16 @@ const AUTH_DELAY = 10000 // ms
 /**
  * stub for authorize method of ZP service
  */
-export default function authorize(password: string): Observable<string> {
+export default function authorize (password: string): Observable<string> {
   const complete$ = interval(AUTH_DELAY)
-  const error$ = throwError(errorPassword({'name':'erroor','message':'errOOR','status':401})).pipe(delay(50))
+  const error$ = throwError(errorPassword({ 'name': 'erroor','message': 'errOOR','status': 401 })).pipe(delay(50))
 
   return observable('BCDE FGHI JKLN').pipe(
     delay(TOKEN_DELAY),
     concat(NEVER),
     takeUntil(complete$)
   )
- /*test erreur 401 
+ /*test erreur 401
   return error$.pipe(
     concat(observable('KKKK LLLL MMMM')),
     concat(NEVER),
@@ -42,6 +42,6 @@ interface StatusError extends Error {
   status: number
 }
 
-function errorPassword(status:StatusError) {
+function errorPassword (status: StatusError) {
   return status
 }

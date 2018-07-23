@@ -16,8 +16,7 @@
 import { createElement } from 'create-element'
 import {
   createControlledInput,
-  ControlledInputProps,
-  ComponentClass
+  ControlledInputProps
 } from 'hocs'
 import Input, { InputProps } from './input'
 
