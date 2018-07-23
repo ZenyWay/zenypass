@@ -16,12 +16,13 @@
 import { createElement } from 'create-element'
 import {
   createControlledInput,
-  ControlledInputProps
+  ControlledInputProps,
+  ComponentClass
 } from 'hocs'
 import Input, { InputProps } from './input'
 
 export default createControlledInput(
-  (props: InputProps) => <Input {...props} />
+  Input
 )
 
-export { ControlledInputProps }
+export { ControlledInputProps, ComponentClass }

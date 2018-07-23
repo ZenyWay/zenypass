@@ -66,7 +66,7 @@ export default function <P extends ModalProps>(
   const ControlledInput = componentFromEvents<
     ControlledModalProps & { [K in Exclude<keyof P, 'onInput'>]: P[K] },
     P
-(
+>(
     Modal,
     // () => tap(console.log.bind(console, 'controlled-modal:EVENT:')),
     redux(reducer, ...effects),

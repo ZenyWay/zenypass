@@ -34,4 +34,4 @@ export type Operator<I= {},O= I> = GenericOperator<I,O,Observable<I>,Observable<
 export type OperatorFactory<A= void,I= {},O= I> =
   GenericOperatorFactory<A,I,O,Observable<I>,Observable<O>>
 
-export default createComponentFromStreamFactory(Component, from)
+export default createComponentFromStreamFactory(Component, from) as ComponentFromStreamFactory<Component<any, any>, Children>

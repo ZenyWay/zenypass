@@ -14,10 +14,11 @@
 //
 import {
   createAutoformat,
-  AutoformatProps
+  AutoformatProps,
+  ComponentClass
 } from 'hocs'
 import RecordField from './record-field'
 
 export default createAutoformat(RecordField)
 
-export { AutoformatProps }
+export { AutoformatProps, ComponentClass }

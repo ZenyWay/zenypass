@@ -16,8 +16,9 @@
 import AuthorizationCard from './authorization-card'
 import {
   createControlledAuthorization,
-  ControlledAuthorizationProps
+  ControlledAuthorizationProps,
+  ComponentClass
 } from 'hocs'
 
-export { ControlledAuthorizationProps }
+export { ControlledAuthorizationProps, ComponentClass }
 export default createControlledAuthorization(AuthorizationCard)
