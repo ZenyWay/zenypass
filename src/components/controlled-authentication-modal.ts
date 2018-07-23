@@ -13,16 +13,18 @@
  */
 //
 /** @jsx createElement */
-import { createElement } from 'create-element'
 import {
-  createControlledInput,
-  ControlledInputProps,
+  createControlledModal,
+  ControlledModalProps,
   ComponentClass
 } from 'hocs'
-import Input, { InputProps } from './input'
+import AuthenticationModal, { AuthenticationModalProps } from './authentication-modal'
 
-export default createControlledInput(
-  Input
-)
+export default createControlledModal <AuthenticationModalProps>(
+  AuthenticationModal
+) as ComponentClass<ControlledAuthenticationModalProps>
 
-export { ControlledInputProps, ComponentClass }
+export type ControlledAuthenticationModalProps =
+ControlledModalProps & {
+  [K in Exclude<keyof AuthenticationModalProps, 'onInput'>]: AuthenticationModalProps[K]
+}

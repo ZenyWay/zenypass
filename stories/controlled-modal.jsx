@@ -1,6 +1,7 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
+ * @author Clement Bonet
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +15,20 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import 'symbol-observable' // polyfill
-import { createElement, render } from 'create-element'
-import { AutoformatRecordField } from 'components'
-import createL10n from 'basic-l10n'
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:app:')
-const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
+import { createElement } from 'create-element'
+import { storiesOf } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
+import { ControlledAuthenticationModal } from 'components'
 
-function App () {
-  return (
-    <div>
-      <h1>{l10n`Welcome to ZenyPass!`}</h1>
-      <AutoformatRecordField type='csv' icon='fa-list-ul' onChange={debug} />
-    </div>
-  )
+const attrs = {
+  onSubmit: action('SUBMIT')
 }
 
-render(<App />, document.getElementById('app'))
+storiesOf('ControlledAuthenticationModal', module)
+  // onChange prop becomes onInput: https://github.com/infernojs/inferno/issues/1263#issuecomment-361710508
+  // text inputs with both onChange and onInput handlers will malfunction in Storybook (inferno-compat)
+  .add('default', () => (
+    <ControlledAuthenticationModal
+      open {...attrs}
+    />
+  ))

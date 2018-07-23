@@ -14,7 +14,10 @@
 //
 import createAutoformat, { AutoformatProps } from './autoformat'
 import createControlledInput, { ControlledInputProps } from './controlled-input'
+import createControlledModal, { ControlledModalProps } from './controlled-modal'
 import createCopyButton, { CopyButtonProps } from './copy-button'
+import createControlledAuthorization, { ControlledAuthorizationProps } from './controlled-authorization'
+
 export {
   Component,
   ComponentClass,
@@ -24,5 +27,7 @@ export {
 export {
   createAutoformat, AutoformatProps,
   createControlledInput, ControlledInputProps,
-  createCopyButton, CopyButtonProps
+  createControlledModal, ControlledModalProps,
+  createCopyButton, CopyButtonProps,
+  createControlledAuthorization, ControlledAuthorizationProps
 }

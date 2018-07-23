@@ -1,6 +1,7 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
+ * @author Clement Bonet
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +15,31 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import 'symbol-observable' // polyfill
-import { createElement, render } from 'create-element'
-import { AutoformatRecordField } from 'components'
+import { createElement } from 'create-element'
+import { Card, CardBody, CardFooter, CardHeader } from 'reactstrap'
 import createL10n from 'basic-l10n'
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:app:')
+
+const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-browser:')
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
-function App () {
-  return (
-    <div>
-      <h1>{l10n`Welcome to ZenyPass!`}</h1>
-      <AutoformatRecordField type='csv' icon='fa-list-ul' onChange={debug} />
-    </div>
-  )
+export interface AuthorizedBrowserCardProps {
+  date: string,
+  browser: string,
+  locale: string
 }
 
-render(<App />, document.getElementById('app'))
+export default function ({ browser, date, locale }: Partial<AuthorizedBrowserCardProps>) {
+
+  l10n.locale = locale || l10n.locale
+
+  return (
+    <Card className='mb-2'>
+      <CardHeader className='border-0 bg-white'> <h5>{browser}</h5> </CardHeader>
+      <CardBody>
+        <p className='mb-2'>{l10n('Access authorized since:')}</p>
+        <p>{date}</p>
+      </CardBody>
+      <CardFooter className='border-0 bg-white' />
+    </Card>
+  )
+}

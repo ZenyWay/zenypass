@@ -1,6 +1,7 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
+ * @author Clement Bonet
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +15,30 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import 'symbol-observable' // polyfill
-import { createElement, render } from 'create-element'
-import { AutoformatRecordField } from 'components'
-import createL10n from 'basic-l10n'
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:app:')
-const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
+//
+import { createElement } from 'create-element'
+import { Modal, ModalHeader } from 'reactstrap'
 
-function App () {
-  return (
-    <div>
-      <h1>{l10n`Welcome to ZenyPass!`}</h1>
-      <AutoformatRecordField type='csv' icon='fa-list-ul' onChange={debug} />
-    </div>
-  )
+export interface ModalProps {
+  isOpen: boolean,
+  title: string,
+  onCancel: () => void
+  [prop: string]: any
 }
 
-render(<App />, document.getElementById('app'))
+export default function ({
+    children,
+    isOpen,
+    onCancel,
+    title
+  }: Partial<ModalProps>) {
+
+  return (
+      <Modal isOpen={isOpen} toggle={onCancel} autoFocus backdrop>
+        <ModalHeader toggle={onCancel} className='bg-info text-white' >
+          {title}
+        </ModalHeader>
+        {children}
+    </Modal>
+  )
+}

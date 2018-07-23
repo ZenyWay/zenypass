@@ -35,7 +35,7 @@ export interface CopyButtonProps {
     disabled: string
     enabled: string
   }
-  [attr:string]: any
+  [attr: string]: any
 }
 
 const DEFAULT_PROPS: Partial<CopyButtonProps> = {
@@ -49,10 +49,10 @@ const DEFAULT_PROPS: Partial<CopyButtonProps> = {
 
 interface CopyButtonState {
   props: CopyButtonProps
-  state: 'disabled'|'enabled'
+  state: 'disabled' | 'enabled'
 }
 
-function mapStateToProps({ props, state }: CopyButtonState) {
+function mapStateToProps ({ props, state }: CopyButtonState) {
   const disabled = state === 'disabled'
   const icon = props && props.icons && props.icons[state]
   return { ...props, disabled, icon }

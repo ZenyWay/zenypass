@@ -35,7 +35,7 @@ export {
 
 export interface AutoformatProps {
   type?: string // TODO union type
-  value?: string[]|string
+  value?: string[] | string
   format?: Formatter<string>
   onChange: (value: string) => void
   [attr: string]: any
@@ -48,7 +48,7 @@ const DEFAULT_PROPS: Partial<ControlledInputProps> = {
 
 interface AutoformatState {
   props: AutoformatProps
-  value: string[]|string
+  value: string[] | string
   error?: string
 }
 

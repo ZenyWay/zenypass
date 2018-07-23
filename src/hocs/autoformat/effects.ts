@@ -13,17 +13,15 @@
  * Limitations under the License.
  */
 //
-import { createActionFactories } from 'basic-fsa-factories'
 import {
   filter,
   ignoreElements,
   map,
   pluck,
-  tap,
   withLatestFrom
 } from 'rxjs/operators'
 
-function callChangeHandlerOnValidChange(event$, state$) {
+function callChangeHandlerOnValidChange (event$, state$) {
   return event$.pipe(
     filter(ofType('CHANGE')),
     withLatestFrom(state$),
@@ -35,7 +33,7 @@ function callChangeHandlerOnValidChange(event$, state$) {
 }
 
 function ofType (type: string) {
-  return function(event: { type: string }) {
+  return function (event: { type: string }) {
     return event.type === type
   }
 }

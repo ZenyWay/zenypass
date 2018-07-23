@@ -20,24 +20,19 @@ import {
   sample
 } from 'rxjs/operators'
 
-function callChangeHandlerOnBlurWhenIsChange (event$, state$) {
-  const blur$ = event$.pipe(filter(ofType('BLUR')))
+function callOnSubmit (event$, state$) {
+  const submit$ = event$.pipe(filter(ofType('SUBMIT')))
 
   return state$.pipe(
-    sample(blur$), // TODO check if sample triggers on blur$ complete
-    filter(hasOnChangeHandler),
-    filter(isChange),
-    map(callChangeHandler),
+    sample(submit$), // TODO check if sample triggers on blur$ complete
+    filter(hasSubmitHandler),
+    map(callSubmitHandler),
     ignoreElements()
   )
 }
 
-function hasOnChangeHandler ({ props }) {
-  return !!props.onChange
-}
-
-function isChange ({ props, value }) {
-  return props.value !== value
+function hasSubmitHandler ({ props }) {
+  return !!props.onSubmit
 }
 
 function ofType (type) {
@@ -46,8 +41,8 @@ function ofType (type) {
   }
 }
 
-function callChangeHandler ({ props, value }) {
-  props.onChange(value)
+function callSubmitHandler ({ props, value }) {
+  props.onSubmit(value)
 }
 
-export default [callChangeHandlerOnBlurWhenIsChange]
+export default [callOnSubmit]

@@ -1,0 +1,9 @@
+{
+    "fr":{
+        "Authorization": "Autorisation",
+        "Please enter your ZenyPass password:": "Entrez votre mot de passe ZenyPass :",
+        "Invalid password": "Mot de passe incorrect",
+        "ZenyPass password": "Mot de Passe ZenyPass",
+        "Authorize": "Autoriser"
+    }
+}

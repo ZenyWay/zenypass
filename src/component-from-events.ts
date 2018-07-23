@@ -19,7 +19,6 @@ import componentFromStream, {
   ComponentClass,
   ComponentFromStreamConstructor,
   Children,
-  Operator,
   OperatorFactory,
   SFC
 } from './component-from-props'
@@ -38,7 +37,7 @@ export {
   redux
 }
 
-export function connect <S={},P={}>(
+export function connect <S= {},P= {}> (
   mapStateToProps: (state: S) => Partial<P>,
   mapDispatchToProps: (dispatch: (...args: any[]) => void) => Partial<P>
 ): OperatorFactory<any,S,P> {

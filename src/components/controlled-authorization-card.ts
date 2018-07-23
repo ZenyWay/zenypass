@@ -13,16 +13,12 @@
  */
 //
 /** @jsx createElement */
-import { createElement } from 'create-element'
+import AuthorizationCard from './authorization-card'
 import {
-  createControlledInput,
-  ControlledInputProps,
+  createControlledAuthorization,
+  ControlledAuthorizationProps,
   ComponentClass
 } from 'hocs'
-import Input, { InputProps } from './input'
 
-export default createControlledInput(
-  Input
-)
-
-export { ControlledInputProps, ComponentClass }
+export { ControlledAuthorizationProps, ComponentClass }
+export default createControlledAuthorization(AuthorizationCard)

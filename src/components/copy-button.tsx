@@ -22,6 +22,6 @@ import {
 import Button, { ButtonProps } from './button'
 
 export default createCopyButton(
-  (props: ButtonProps) => (<Button {...props} />)
+  Button
 )
-export { CopyButtonProps }
+export { CopyButtonProps, ComponentClass }

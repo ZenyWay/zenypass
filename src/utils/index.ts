@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 // TODO split into dedicated files
-export function shallowEqual(a, b) {
+export function shallowEqual (a, b) {
   if (a === b) {
     return true
   }
@@ -35,29 +35,29 @@ export function shallowEqual(a, b) {
   return true
 }
 
-export function shallowDiffer(a, b) {
+export function shallowDiffer (a, b) {
   return !shallowEqual(a, b)
 }
 
 // basic
-export function isObject(v) {
+export function isObject (v) {
   return typeof v === 'object'
 }
 
-export function isFunction(v) {
+export function isFunction (v) {
   return typeof v === 'function'
 }
 
-export function isString(v) {
+export function isString (v) {
   return typeof (v && v.valueOf()) === 'string'
 }
 
-export function identity(v) {
+export function identity (v) {
   return v
 }
 
-export function pluck <T>(...keys) {
-  return function(obj: object): T {
+export function pluck <T> (...keys) {
+  return function (obj: object): T {
     let res: any = obj
     for (const key of keys) {
       if (!res) {
@@ -69,31 +69,31 @@ export function pluck <T>(...keys) {
   }
 }
 
-export function always <T>(value) {
-  return function(): T {
+export function always <T> (value) {
+  return function (): T {
     return value
   }
 }
 
 // reducers
-export function keepIfEqual(equal = shallowEqual) {
-  return function(reduce) {
-    return function(previous, action) {
+export function keepIfEqual (equal = shallowEqual) {
+  return function (reduce) {
+    return function (previous, action) {
       const update = reduce(previous, action)
       return equal(update, previous) ? previous : update
     }
   }
 }
 
-export function mapPayload <I,O>(project = identity as (val: I) => O) {
+export function mapPayload <I,O> (project = identity as (val: I) => O) {
   return function <A extends { payload: I }>(_, { payload }: A) {
     return project(payload)
   }
 }
 
-export function forType(type) {
-  return function(reduce) {
-    return function(state, action) {
+export function forType (type) {
+  return function (reduce) {
+    return function (state, action) {
       return action.type === type ? reduce(state, action) : state
     }
   }
@@ -102,6 +102,6 @@ export function forType(type) {
 export type Reducer<S, V> = (state: S, value: V) => S
 
 // jsx helper
-export function classes(...classes: string[]): string {
+export function classes (...classes: string[]): string {
   return classes.filter(Boolean).join(' ')
 }

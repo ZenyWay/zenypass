@@ -17,7 +17,6 @@ import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
 import {
   forType,
-  keepIfEqual,
   mapPayload,
   pluck
 } from 'utils'

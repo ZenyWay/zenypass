@@ -22,7 +22,7 @@ import componentFromEvents, {
   ComponentFromStreamConstructor,
   SFC,
   connect,
-  redux,
+  redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { distinctUntilChanged, tap } from 'rxjs/operators'
@@ -37,9 +37,9 @@ export {
 export interface ControlledInputProps {
   type?: string // TODO union type
   value?: string,
-  autocorrect?: 'off'|'on'
-  autocomplete?: 'off'|'on'
-  onChange: (value: string) => void
+  autocorrect?: 'off' | 'on'
+  autocomplete?: 'off' | 'on'
+  onChange?: (value: string) => void
   [prop: string]: any
 }
 
@@ -55,7 +55,7 @@ interface ControlledInputState {
   value: string
 }
 
-function mapStateToProps({ props, value }: ControlledInputState) {
+function mapStateToProps ({ props, value }: ControlledInputState) {
   const { onChange, ...attrs } = props
   return { ...attrs, value }
 }
@@ -68,8 +68,8 @@ const mapDispatchToProps = createActionDispatchers({
 export interface InputProps {
   type?: string // TODO union type
   value?: string
-  autocorrect?: 'off'|'on'
-  autocomplete?: 'off'|'on'
+  autocorrect?: 'off' | 'on'
+  autocomplete?: 'off' | 'on'
   onBlur?: (event: TextEvent) => void
   onInput?: (event: TextEvent) => void
   [attr: string]: any

@@ -1,4 +1,5 @@
-/*
+/**
+ * @license
  * Copyright 2018 Stephane M. Catala
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,17 +13,12 @@
  * Limitations under the License.
  */
 //
-/** @jsx createElement */
-import { createElement } from 'create-element'
-import {
-  createControlledInput,
-  ControlledInputProps,
-  ComponentClass
-} from 'hocs'
-import Input, { InputProps } from './input'
+import { decorateAction } from '@storybook/addon-actions'
 
-export default createControlledInput(
-  Input
-)
-
-export { ControlledInputProps, ComponentClass }
+export default decorateAction([
+  function (args) {
+    const [ event ] = args
+    event.preventDefault()
+    return args
+  }
+])
