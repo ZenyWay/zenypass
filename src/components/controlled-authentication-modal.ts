@@ -14,17 +14,17 @@
 //
 /** @jsx createElement */
 import {
-  createControlledModal,
-  ControlledModalProps,
+  createAuthenticationModal,
+  ControlledAuthenticationModalProps,
   ComponentClass
 } from 'hocs'
 import AuthenticationModal, { AuthenticationModalProps } from './authentication-modal'
 
-export default createControlledModal <AuthenticationModalProps>(
+export default createAuthenticationModal <AuthenticationModalProps>(
   AuthenticationModal
 ) as ComponentClass<ControlledAuthenticationModalProps>
 
 export type ControlledAuthenticationModalProps =
-ControlledModalProps & {
+AuthenticationModalProps & {
   [K in Exclude<keyof AuthenticationModalProps, 'onInput'>]: AuthenticationModalProps[K]
 }

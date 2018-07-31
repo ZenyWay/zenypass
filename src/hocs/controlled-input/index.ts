@@ -80,12 +80,12 @@ export default function <P extends InputProps>(
 ): ComponentClass<ControlledInputProps> {
   const ControlledInput = componentFromEvents<ControlledInputProps,P>(
     Input,
-    () => tap(console.log.bind(console, 'controlled-input:EVENT:')),
+    // () => tap(console.log.bind(console, 'controlled-input:EVENT:')),
     redux(reducer, ...effects),
-    () => tap(console.log.bind(console, 'controlled-input:STATE:')),
-    connect(mapStateToProps, mapDispatchToProps),
-    () => distinctUntilChanged(shallowEqual),
-    () => tap(console.log.bind(console, 'controlled-input:PROPS:'))
+    // () => tap(console.log.bind(console, 'controlled-input:STATE:')),
+    connect(mapStateToProps, mapDispatchToProps)
+    // () => distinctUntilChanged(shallowEqual),
+    // () => tap(console.log.bind(console, 'controlled-input:PROPS:'))
   )
 
   ControlledInput.defaultProps = DEFAULT_PROPS

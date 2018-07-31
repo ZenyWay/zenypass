@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright 2018 ZenyWay S.A.S
  * @author Stephane M. Catala
  * @license Apache 2.0
@@ -13,33 +13,46 @@
  * Limitations under the License.
  */
 import { interval, NEVER, of as observable, Observable, throwError } from 'rxjs'
-import { concat, takeUntil, delay } from 'rxjs/operators'
+import { concat, switchMap, takeUntil, delay, take } from 'rxjs/operators'
 
-const TOKEN_DELAY = 1000 // ms
-const AUTH_DELAY = 10000 // ms
+const AUTHENTICATION_DELAY = 1500 // ms
+const AUTHORIZATION_DELAY = 10000 // ms
+const TOKEN_DELAY = 500 // ms
+const PASSWORD = '!!!'
+const SESSION_ID = '42'
+const TOKEN = 'BCDE FGHI JKLN'
+const UNAUTHORIZED = newStatusError(401, 'UNAUTHORIZED')
+
+export function authenticate (password: string): Observable<string> {
+  return interval(AUTHENTICATION_DELAY).pipe(
+      take(1),
+      switchMap(() => password === PASSWORD
+        ? observable(SESSION_ID)
+        : throwError(UNAUTHORIZED))
+    )
+}
 
 /**
  * stub for authorize method of ZP service
  */
-export default function authorize (password: string): Observable<string> {
-  const complete$ = interval(AUTH_DELAY)
-  const error$ = throwError(errorPassword({ 'name': 'erroor','message': 'errOOR','status': 401 })).pipe(delay(50))
-
-  return observable('BCDE FGHI JKLN').pipe(
-    delay(TOKEN_DELAY),
-    concat(NEVER),
-    takeUntil(complete$)
-  )
- /*test erreur 401
-  return error$.pipe(
-    concat(observable('KKKK LLLL MMMM')),
-    concat(NEVER),
-    takeUntil(complete$)
-  )// */
+export function authorize (sessionId: string): Observable<string> {
+  return sessionId === SESSION_ID
+  ? observable(TOKEN).pipe(
+      delay(TOKEN_DELAY),
+      concat(NEVER),
+      takeUntil(interval(AUTHORIZATION_DELAY))
+    )
+  : throwError(UNAUTHORIZED)
 }
 
 interface StatusError extends Error {
   status: number
+}
+
+function newStatusError (status = 501, message = '') {
+  const err = new Error(message) as StatusError
+  err.status = status
+  return err
 }
 
 function errorPassword (status: StatusError) {

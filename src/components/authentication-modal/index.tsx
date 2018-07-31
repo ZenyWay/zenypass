@@ -19,7 +19,7 @@
 import { createElement } from 'create-element'
 import { ModalBody, ModalFooter } from 'reactstrap'
 import { Button } from '..'
-import { Input } from 'components'
+import { ControlledInput } from 'components'
 import Modal from '../modal'
 import createL10n from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
@@ -28,17 +28,21 @@ const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 export interface AuthenticationModalProps {
   open: boolean,
   title: string,
-  onInput: (event: TextEvent) => void,
+  value: string,
+  error: boolean,
+  pending: boolean,
+  onChange: (value: string) => void,
   onCancel: () => void,
   onSubmit: (event: Event) => void,
   [prop: string]: any
 }
 
 export default function ({
-  authRequest,
-  errorPassword,
+  value,
+  pending,
+  error,
   locale,
-  onInput,
+  onChange,
   onSubmit,
   onCancel,
   open
@@ -51,23 +55,24 @@ export default function ({
       <ModalBody>
         <form id='PasswordModalForm' onSubmit={onSubmit}>
           <label>{l10n('Please enter your ZenyPass password:')}</label>
-          <Input
+          <ControlledInput
             placeholder={l10n('ZenyPass password')}
             type='password'
-            className={`border-${errorPassword ? 'danger' : 'info'} rounded form-control`}
-            onInput={onInput}
+            className={`border-${error ? 'danger' : 'info'} rounded form-control`}
+            value={value}
+            onChange={onChange}
             autoFocus
           />
         </form>
-        {errorPassword ? <p className='text-danger'>{l10n('Invalid password')}</p> : null}
+        {error ? <p className='text-danger'>{l10n('Invalid password')}</p> : null}
       </ModalBody>
       <ModalFooter className='bg-light'>
         <Button
           type='submit'
           form='PasswordModalForm'
           color='info'
-          icon = {authRequest && 'fa-spinner fa-spin'}
-          disabled={authRequest}
+          icon = {pending && 'fa-spinner fa-spin'}
+          disabled={pending}
         >
           {l10n('Authorize')}
         </Button>

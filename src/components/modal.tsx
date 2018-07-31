@@ -34,11 +34,11 @@ export default function ({
   }: Partial<ModalProps>) {
 
   return (
-      <Modal isOpen={isOpen} toggle={onCancel} autoFocus backdrop>
-        <ModalHeader toggle={onCancel} className='bg-info text-white' >
-          {title}
-        </ModalHeader>
-        {children}
+    <Modal isOpen={isOpen} toggle={onCancel} autoFocus backdrop>
+      <ModalHeader toggle={onCancel} className='bg-info text-white' >
+        {title}
+      </ModalHeader>
+      {children}
     </Modal>
   )
 }

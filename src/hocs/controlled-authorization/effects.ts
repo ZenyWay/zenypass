@@ -21,14 +21,16 @@ import {
   catchError,
   concat,
   filter,
+  finalize,
+  last,
   map,
   pluck,
   switchMap,
   takeUntil,
+  tap,
   withLatestFrom
 } from 'rxjs/operators'
 import { Observable, of as observable } from 'rxjs'
-import authorize from '../../../stubs/stubs_service'
 
 export { StandardAction }
 
@@ -39,45 +41,37 @@ const authenticationError = createActionFactory('AUTH_ERROR')
 
 const log = (label: string) => console.log.bind(console, label)
 
-function getTokenOnClickFromInit (event$, state$: Observable<{}>) {
+export function getTokenOnClickFromInit ({ authorize }) {
 
-  const authenticating$ = event$.pipe(
-    filter(ofType('PASSWORD')),
-    pluck('payload')
-  )
+  return function (event$, state$: Observable<{}>) {
+    const unmount$ = state$.pipe(last())
 
-  return authenticating$.pipe(
-    switchMap(authorizeUntilCancel)
-  )
+    function authorizing (sessionId) {
+      const cancel$ = event$.pipe(filter(ofType('CLICK')))
 
-  function authorizeUntilCancel (password) {
-    const cancel$ = event$.pipe(
-      filter(ofType('CLICK')),
-      withLatestFrom(state$),
-      pluck('1', 'state'),
-      filter(isEqual('authorizing'))
-    )
+      return authorize(sessionId).pipe(
+        takeUntil(unmount$),
+        takeUntil(cancel$),
+        map(onServerToken),
+        concat(observable(onServerDone())),
+        catchError(dealWithError)
+      )
+    }
 
-    return authorize(password).pipe(
-      takeUntil(cancel$),
-      map(onServerToken),
-      concat(observable(onServerDone())),
-      catchError(dealWithError)
+    return event$.pipe(
+      filter(ofType('AUTHENTICATED')),
+      pluck('payload'),
+      takeUntil(unmount$),
+      switchMap(authorizing)
     )
   }
 }
 
 function dealWithError (err) {
-  const err$ = observable(err && err.message)
-  return err$.pipe(err.status === 401
-    ? map(authenticationError)
-    : map(onServerError))
-}
-
-function isEqual (ref) {
-  return function (val) {
-    return ref === val
-  }
+  const status = err && err.status || 501
+  return observable(err && err.message || `ERROR ${status}`).pipe(
+    map(status === 401 ? authenticationError : onServerError)
+  )
 }
 
 function ofType (type) {
@@ -85,5 +79,3 @@ function ofType (type) {
     return action.type === type
   }
 }
-
-export default [getTokenOnClickFromInit]
