@@ -17,31 +17,40 @@
 //
 import createAutomataReducer from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
+import { always, forType, mapPayload, pluck } from '../../utils'
 import compose from 'basic-compose'
-import { always, forType, mapPayload } from '../../utils'
 
 const inProps = propCursor('props')
-const intoToken = into('token')
+const intoValue = into('value')
 const intoError = into('error')
 const mapPayloadIntoError = intoError(mapPayload())
+const mapPayloadIntoValue = intoValue(mapPayload())
 
 const automata = {
-  init: {
-    CLICK: ['authenticating', intoError(always(''))]
+  pristine: {
+    PROPS: intoValue(mapPayload(pluck('value'))),
+    CHANGE: ['dirty', mapPayloadIntoValue],
+    SUBMIT: 'error'
+  },
+  dirty: {
+    CANCEL: 'pristine',
+    CHANGE: mapPayloadIntoValue,
+    SUBMIT: 'authenticating'
+  },
+  error: {
+    CANCEL: 'pristine',
+    CHANGE: mapPayloadIntoValue,
+    SUBMIT: 'authenticating'
   },
   authenticating: {
-    CANCEL: ['init',mapPayloadIntoError],
-    AUTHENTICATED: 'authorizing'
-  },
-  authorizing: {
-    SERVER_TOKEN: intoToken(mapPayload()),
-    SERVER_DONE: 'init',
-    SERVER_ERROR: ['init', mapPayloadIntoError],
-    UNAUTHORIZED: 'authenticating'
+    UNAUTHORIZED: 'error',
+    CANCEL: 'pristine',
+    AUTHENTICATION_DONE: 'pristine',
+    SERVER_ERROR: ['pristine', mapPayloadIntoError]
   }
 }
 
 export default compose.into(0)(
-  createAutomataReducer(automata, 'init'),
+  createAutomataReducer(automata, 'pristine'),
   forType('PROPS')(inProps(mapPayload()))
 )

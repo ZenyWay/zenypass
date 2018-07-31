@@ -14,7 +14,7 @@
 //
 import createAutoformat, { AutoformatProps } from './autoformat'
 import createControlledInput, { ControlledInputProps } from './controlled-input'
-import createControlledModal, { ControlledModalProps } from './controlled-modal'
+import createAuthenticationModal, { ControlledAuthenticationModalProps } from './controlled-authentication-modal'
 import createCopyButton, { CopyButtonProps } from './copy-button'
 import createControlledAuthorization, { ControlledAuthorizationProps } from './controlled-authorization'
 
@@ -27,7 +27,7 @@ export {
 export {
   createAutoformat, AutoformatProps,
   createControlledInput, ControlledInputProps,
-  createControlledModal, ControlledModalProps,
+  createAuthenticationModal, ControlledAuthenticationModalProps,
   createCopyButton, CopyButtonProps,
   createControlledAuthorization, ControlledAuthorizationProps
 }

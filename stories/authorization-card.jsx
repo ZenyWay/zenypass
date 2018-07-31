@@ -28,18 +28,23 @@ const attrs = {
 }
 
 storiesOf('AuthorizationCard', module)
-  .add('state:init', () => (
+  .add('default', () => (
     <Wrapper>
-      <AuthorizationCard {...attrs} init />
+      <AuthorizationCard {...attrs} />
     </Wrapper>
   ))
-  .add('state:authorizing', () => (
+  .add('authenticate', () => (
     <Wrapper>
-      <AuthorizationCard {...attrs} authorizing />
+      <AuthorizationCard authenticate />
     </Wrapper>
   ))
-  .add('state:auth_request', () => (
+  .add('authorizing', () => (
     <Wrapper>
-      <AuthorizationCard {...attrs} authRequest />
+      <AuthorizationCard {...attrs} pending />
+    </Wrapper>
+  ))
+  .add('error', () => (
+    <Wrapper>
+      <AuthorizationCard {...attrs} error='ERROR' />
     </Wrapper>
   ))

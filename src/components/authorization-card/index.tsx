@@ -25,44 +25,40 @@ const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenyp
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
 export interface AuthorizationCardProps {
-  authRequest: boolean,
   authenticate: boolean,
-  authorizing: boolean,
   error?: string,
-  errorPassword?: string,
-  init: boolean,
   locale?: string,
+  pending?: boolean,
   token?: string,
   onClick: (event: MouseEvent) => void
-  onPasswordSubmit: (event: Event) => void
   onCancel: () => void
+  onAuthenticated: (sessionID: string) => void
 }
 
 export default function ({
-  authRequest,
   authenticate,
-  authorizing,
   error,
-  errorPassword,
-  init,
   locale,
   onClick,
   onCancel,
-  onPasswordSubmit,
+  onAuthenticated,
+  pending,
   token
 }: Partial<AuthorizationCardProps>) {
 
   l10n.locale = locale || l10n.locale
 
-  const txt = authorizing ? l10n('Access authorization token:') : ''
-  const buttonTxt = init || authRequest || authenticate ? l10n('Authorize a new access') : l10n('Cancel')
+  const txt = pending && token ? l10n('Access authorization token:') : '...'
+  const buttonTxt = pending ? l10n('Cancel') : l10n('Authorize a new access')
+
+  console.log('authenticate', authenticate)
 
   return (
     <div>
     <Card className='mb-2'>
       <CardHeader className='border-0 bg-white' />
       <CardBody>
-        {authorizing ? (
+        {pending ? (
           <div>
             <p className='mb-2'>{txt}</p>
             <p className='mb-2'>{token}</p>
@@ -71,9 +67,9 @@ export default function ({
         <Button
           color='info'
           onClick={onClick}
-          className={authorizing && 'btn-outline-info'}
-          icon={authRequest && 'fa-spinner fa-spin'}
-          disabled={authRequest}
+          className={pending && 'btn-outline-info'}
+          icon={authenticate && 'fa-spinner fa-spin'}
+          disabled={authenticate}
         >
           {buttonTxt}
         </Button>
@@ -83,10 +79,8 @@ export default function ({
 
     <ControlledAuthenticationModal
       open={authenticate}
-      onSubmit={onPasswordSubmit}
       onCancel={onCancel}
-      authRequest={authRequest}
-      errorPassword={errorPassword}
+      onAuthenticated={onAuthenticated}
     />
     </div>
   )

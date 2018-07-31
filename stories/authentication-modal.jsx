@@ -33,7 +33,10 @@ storiesOf('AuthenticationModal', module)
     <AuthenticationModal open {...attrs} />
   ))
   .add('wrong-password', () => (
-    <AuthenticationModal open {...attrs} errorPassword />
+    <AuthenticationModal open {...attrs} error />
+  ))
+  .add('pending', () => (
+    <AuthenticationModal open {...attrs} pending />
   ))
   .add('modal example', () => (
     <ModalExample buttonLabel='open modal' />

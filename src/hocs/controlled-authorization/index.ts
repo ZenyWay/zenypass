@@ -16,9 +16,11 @@
  */
 //
 import reducer from './reducer'
-import effects from './effects'
+import { getTokenOnClickFromInit } from './effects'
+import { authorize, authenticate } from '../../../stubs/stubs_service'
 import componentFromEvents, { redux, connect, SFC, ComponentClass } from '../../component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
+import { tap } from 'rxjs/operators'
 
 export interface ControlledAuthorizationProps {
   [prop: string]: any
@@ -31,33 +33,32 @@ interface ControlledAuthorizationState {
   state: AuthorizationState
   token?: string,
   error?: string,
-  errorPassword?: string
 }
 
-function mapStateToProps ({ props, state, token, error, errorPassword }: ControlledAuthorizationState) {
-  const authorizing = state === 'authorizing'
-  const authRequest = state === 'auth_request'
-  const init = state === 'init'
-  const authenticate = state === 'authenticating' || state === 'auth_request'
-  return { ...props, authorizing, authRequest, error, errorPassword, init, token, authenticate }
+function mapStateToProps ({ props, state, token, error }: ControlledAuthorizationState) {
+  return {
+    ...props,
+    error,
+    pending: state === 'authorizing',
+    authenticate: state === 'authenticating',
+    token: state === 'authorizing' ? token : ''
+  }
 }
 
 const mapDispatchToProps = createActionDispatchers({
   onClick: 'CLICK',
   onCancel: 'CANCEL',
-  onPasswordSubmit: 'PASSWORD'
+  onAuthenticated: 'AUTHENTICATED'
 })
 
 export interface AuthorizationCardProps {
-  authenticate: boolean,
-  authorizing: boolean,
-  authRequest: boolean,
+  authenticate?: boolean,
+  pending?: boolean,
   error?: string,
-  init: boolean,
   token?: string,
-  onCancel: () => void,
+  onCancel: (err?: any) => void,
   onClick: () => void,
-  onPasswordSubmit: (event: Event) => void
+  onAuthenticated: (event: Event) => void
 }
 
 export default function<P extends AuthorizationCardProps>(
@@ -65,11 +66,11 @@ export default function<P extends AuthorizationCardProps>(
 ): ComponentClass<ControlledAuthorizationProps> {
   const Access = componentFromEvents<ControlledAuthorizationProps,P>(
     AccessAuthorization,
-    // () => tap(console.log.bind(console,'access:event:')),
-    redux(reducer, ...effects),
-    // () => tap(console.log.bind(console,'access:state:')),
+    // () => tap(console.log.bind(console,'controlled-authorization-card:event:')),
+    redux(reducer, getTokenOnClickFromInit({ authorize })),
+    // () => tap(console.log.bind(console,'controlled-authorization-card:state:')),
     connect(mapStateToProps, mapDispatchToProps)
-    // () => tap(console.log.bind(console,'access:state:'))
+    // () => tap(console.log.bind(console,'controlled-authorization-card:view-props:'))
   )
 
   return Access

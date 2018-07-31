@@ -21,7 +21,8 @@ import { action } from '@storybook/addon-actions'
 import { ControlledAuthenticationModal } from 'components'
 
 const attrs = {
-  onSubmit: action('SUBMIT')
+  onCancel: action('CANCELLED'),
+  onAuthenticated: action('AUTHENTICATED')
 }
 
 storiesOf('ControlledAuthenticationModal', module)
