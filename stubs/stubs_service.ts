@@ -57,7 +57,7 @@ export function authorize (sessionId: string): Observable<string> {
   : throwError(UNAUTHORIZED)
 }
 
-export function getAuthorizations$ (): Observable<KV<AuthorizationDoc>> {
+export function getAuthorizations$ (sessionId: string): Observable<KV<AuthorizationDoc>> {
   const authorizations = Object.keys(AUTHORIZATIONS).reduce(
     function (agents, _id) {
       agents[_id] = { ...AUTHORIZATIONS[_id] }
@@ -65,7 +65,9 @@ export function getAuthorizations$ (): Observable<KV<AuthorizationDoc>> {
     },
     {} as KV<AuthorizationDoc>
   )
-  return observable(authorizations).pipe(concat(NEVER))
+  return sessionId === SESSION_ID
+  ? observable(authorizations).pipe(concat(NEVER))
+  : throwError(UNAUTHORIZED)
 }
 
 export interface AuthorizationDoc {
