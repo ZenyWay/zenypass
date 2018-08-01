@@ -45,8 +45,8 @@ export interface RecordFormProps {
   onChange: (field: keyof Record, value: string[] | string) => void
   onCopyPassword: (event: MouseEvent) => void
   onToggleCleartext: (event: MouseEvent) => void
-  icons?: RecordFormIcons
-  placeholders?: RecordFormPlaceholders
+  icons?: Partial<RecordFormIcons>
+  placeholders?: Partial<RecordFormPlaceholders>
   locale: string
   [prop: string]: any
 }
