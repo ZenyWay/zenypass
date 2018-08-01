@@ -22,6 +22,18 @@ const PASSWORD = '!!!'
 const SESSION_ID = '42'
 const TOKEN = 'BCDE FGHI JKLN'
 const UNAUTHORIZED = newStatusError(401, 'UNAUTHORIZED')
+const MAX_CERTIFIED_MS = 90 * 24 * 60 * 60 * 1000 // 90 days in ms
+const AUTHORIZATIONS = [
+  'Ubuntu Opera', 'MacOS Safari', 'Windows Chrome'
+].reduce(
+  function (agents, identifier, index) {
+    const _id = String(index)
+    const certified = Date.now() - Math.floor(Math.random() * MAX_CERTIFIED_MS)
+    agents[_id] = { _id, _rev: '1-0', identifier, certified }
+    return agents
+  },
+  {} as KV<AuthorizationDoc>
+)
 
 export function authenticate (password: string): Observable<string> {
   return interval(AUTHENTICATION_DELAY).pipe(
@@ -43,6 +55,28 @@ export function authorize (sessionId: string): Observable<string> {
       takeUntil(interval(AUTHORIZATION_DELAY))
     )
   : throwError(UNAUTHORIZED)
+}
+
+export function getAuthorizations$ (): Observable<KV<AuthorizationDoc>> {
+  const authorizations = Object.keys(AUTHORIZATIONS).reduce(
+    function (agents, _id) {
+      agents[_id] = { ...AUTHORIZATIONS[_id] }
+      return agents
+    },
+    {} as KV<AuthorizationDoc>
+  )
+  return observable(authorizations).pipe(concat(NEVER))
+}
+
+export interface AuthorizationDoc {
+  _id: string
+  _rev: string
+  identifier: string
+  certified: number // EPOC
+}
+
+export interface KV<T> {
+  [key: string]: T
 }
 
 interface StatusError extends Error {
