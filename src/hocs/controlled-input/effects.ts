@@ -15,19 +15,20 @@
 //
 import {
   ignoreElements,
-  filter,
-  map,
-  sample
+  pluck,
+  tap,
+  withLatestFrom,
+  filter
 } from 'rxjs/operators'
 
-function callChangeHandlerOnBlurWhenIsChange (event$, state$) {
-  const blur$ = event$.pipe(filter(ofType('BLUR')))
-
-  return state$.pipe(
-    sample(blur$), // TODO check if sample triggers on blur$ complete
+export function callChangeHandlerOnBlurWhenIsChange (event$, state$) {
+  return event$.pipe(
+    filter(ofType('BLUR')),
+    withLatestFrom(state$),
+    pluck('1'),
     filter(hasOnChangeHandler),
     filter(isChange),
-    map(callChangeHandler),
+    tap(callChangeHandler),
     ignoreElements()
   )
 }
@@ -49,5 +50,3 @@ function ofType (type) {
 function callChangeHandler ({ props, value }) {
   props.onChange(value)
 }
-
-export default [callChangeHandlerOnBlurWhenIsChange]

@@ -14,7 +14,7 @@
  */
 //
 import reducer from './reducer'
-import effects from './effects'
+import { callChangeHandlerOnBlurWhenIsChange } from './effects'
 import componentFromEvents, {
   Children,
   Component,
@@ -25,8 +25,8 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { distinctUntilChanged, tap } from 'rxjs/operators'
-import { shallowEqual } from 'utils'
+import { /* distinctUntilChanged,*/ tap } from 'rxjs/operators'
+// import { shallowEqual } from 'utils'
 
 export {
   Children,
@@ -50,6 +50,15 @@ const DEFAULT_PROPS: Partial<ControlledInputProps> = {
   autocomplete: 'off'
 }
 
+export interface InputProps {
+  type?: string // TODO union type
+  value?: string
+  autocorrect?: 'off' | 'on'
+  autocomplete?: 'off' | 'on'
+  onBlur?: (event: TextEvent) => void
+  onInput?: (event: TextEvent) => void
+}
+
 interface ControlledInputState {
   props: Partial<ControlledInputProps>
   value: string
@@ -65,23 +74,13 @@ const mapDispatchToProps = createActionDispatchers({
   onInput: 'INPUT'
 })
 
-export interface InputProps {
-  type?: string // TODO union type
-  value?: string
-  autocorrect?: 'off' | 'on'
-  autocomplete?: 'off' | 'on'
-  onBlur?: (event: TextEvent) => void
-  onInput?: (event: TextEvent) => void
-  [attr: string]: any
-}
-
 export default function <P extends InputProps>(
   Input: SFC<P>
 ): ComponentClass<ControlledInputProps> {
   const ControlledInput = componentFromEvents<ControlledInputProps,P>(
     Input,
     // () => tap(console.log.bind(console, 'controlled-input:EVENT:')),
-    redux(reducer, ...effects),
+    redux(reducer, callChangeHandlerOnBlurWhenIsChange),
     // () => tap(console.log.bind(console, 'controlled-input:STATE:')),
     connect(mapStateToProps, mapDispatchToProps)
     // () => distinctUntilChanged(shallowEqual),

@@ -12,8 +12,7 @@
  * Limitations under the License.
  */
 //
-/** @jsx createElement */
-import { createElement } from 'create-element'
+
 import {
   createControlledInput,
   ControlledInputProps,
