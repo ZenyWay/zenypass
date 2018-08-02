@@ -13,23 +13,31 @@
  * Limitations under the License.
  */
 //
-import { propCursor, into } from 'basic-cursors'
+import { into } from 'basic-cursors'
 import compose from 'basic-compose'
+import createAutomataReducer from 'automata-reducer'
 import {
   forType,
   mapPayload,
   pluck
 } from 'utils'
 
-const inProps = propCursor('props')
+const intoProps = into('props')
 const intoValue = into('value')
+const putValueFromInputIntoValue = intoValue(mapPayload(pluck('target','value')))
+
+const automata = {
+  pristine: {
+    PROPS: intoValue(mapPayload(pluck('value'))),
+    INPUT: ['dirty', putValueFromInputIntoValue]
+  },
+  dirty: {
+    INPUT: putValueFromInputIntoValue,
+    BLUR: 'pristine'
+  }
+}
 
 export default compose.into(0)(
-  forType('INPUT')(intoValue(mapPayload(pluck('target', 'value')))),
-  forType('PROPS')(
-    compose.into(0)(
-      intoValue(mapPayload(pluck('value'))),
-      inProps(mapPayload())
-    )
-  )
+  createAutomataReducer(automata, 'pristine'),
+  forType('PROPS')(intoProps(mapPayload()))
 )
