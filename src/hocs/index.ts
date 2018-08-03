@@ -17,6 +17,7 @@ import createControlledInput, { ControlledInputProps } from './controlled-input'
 import createAuthenticationModal, { ControlledAuthenticationModalProps } from './controlled-authentication-modal'
 import createCopyButton, { CopyButtonProps } from './copy-button'
 import createControlledAuthorization, { ControlledAuthorizationProps } from './controlled-authorization'
+import createControlledAuthorizationPage, { ControlledAuthorizationPageProps } from './controlled-authorization-page'
 
 export {
   Component,
@@ -29,5 +30,6 @@ export {
   createControlledInput, ControlledInputProps,
   createAuthenticationModal, ControlledAuthenticationModalProps,
   createCopyButton, CopyButtonProps,
-  createControlledAuthorization, ControlledAuthorizationProps
+  createControlledAuthorization, ControlledAuthorizationProps,
+  createControlledAuthorizationPage, ControlledAuthorizationPageProps
 }

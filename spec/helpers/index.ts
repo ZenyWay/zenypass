@@ -1,6 +1,8 @@
+/* eslint-env jasmine */
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
+ * @author Clement Bonet
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,32 +15,13 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-/** @jsx createElement */
-import { createElement } from 'create-element'
-import { classes } from 'utils'
-
-export interface InputProps {
-  type: string
-  invalid: boolean
-  className: string
-  blurOnEnterKey: boolean
-  [prop: string]: any
+//
+export function event <P> (type: string) {
+  return function (payload: P) {
+    return { type, payload }
+  }
 }
 
-const onKeyPress = ({ target, key }) => (key === 'Enter') && target.blur()
-
-export default function ({
-  type,
-  invalid,
-  className,
-  blurOnEnterKey,
-  ...attrs
-}: Partial<InputProps>) {
-  const Tag = type === 'textarea' ? type : 'input'
-  return <Tag
-    type={type}
-    className={classes(invalid && 'is-invalid', className)}
-    onKeyPress={blurOnEnterKey && onKeyPress}
-    {...attrs}
-  />
+export function assertDeepEqual (actual, expected) {
+  expect(actual).toEqual(expected)
 }

@@ -51,11 +51,9 @@ export default function ({
   const txt = pending && token ? l10n('Access authorization token:') : '...'
   const buttonTxt = pending ? l10n('Cancel') : l10n('Authorize a new access')
 
-  console.log('authenticate', authenticate)
-
   return (
     <div>
-    <Card className='mb-2'>
+    <Card mb={2}>
       <CardHeader className='border-0 bg-white' />
       <CardBody>
         {pending ? (
