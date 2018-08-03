@@ -17,7 +17,7 @@
 //
 import reducer from './reducer'
 import { getTokenOnClickFromInit } from './effects'
-import { authorize, authenticate } from '../../../stubs/stubs_service'
+import { authorize } from '../../../stubs/stubs_service'
 import componentFromEvents, { redux, connect, SFC, ComponentClass } from '../../component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { tap } from 'rxjs/operators'

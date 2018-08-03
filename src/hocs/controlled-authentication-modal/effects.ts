@@ -16,16 +16,13 @@
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   catchError,
-  concat,
   ignoreElements,
   filter,
-  finalize,
   last,
   map,
   mapTo,
   merge,
   pluck,
-  sample,
   share,
   switchMap,
   takeUntil,

@@ -17,7 +17,7 @@
 /** @jsx createElement */
 //
 import { createElement } from 'create-element'
-import { ModalBody, ModalFooter } from 'reactstrap'
+import { Form, Label, ModalBody, ModalFooter } from 'reactstrap'
 import { Button } from '..'
 import { ControlledInput } from 'components'
 import Modal from '../modal'
@@ -27,7 +27,6 @@ const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
 export interface AuthenticationModalProps {
   open: boolean,
-  title: string,
   value: string,
   error: boolean,
   pending: boolean,
@@ -53,8 +52,8 @@ export default function ({
   return (
     <Modal isOpen={open} title={l10n('Authorization')} onCancel={onCancel} >
       <ModalBody>
-        <form id='PasswordModalForm' onSubmit={onSubmit}>
-          <label>{l10n('Please enter your ZenyPass password:')}</label>
+        <Form id='PasswordModalForm' onSubmit={onSubmit}>
+          <Label>{l10n('Please enter your ZenyPass password:')}</Label>
           <ControlledInput
             placeholder={l10n('ZenyPass password')}
             type='password'
@@ -63,7 +62,7 @@ export default function ({
             onChange={onChange}
             autoFocus
           />
-        </form>
+        </Form>
         {error ? <p className='text-danger'>{l10n('Invalid password')}</p> : null}
       </ModalBody>
       <ModalFooter className='bg-light'>

@@ -16,7 +16,7 @@
 //
 import AuthenticationModal, { AuthenticationModalProps } from './authentication-modal'
 import AuthorizationCard, { AuthorizationCardProps } from './authorization-card'
-import AuthorizedBrowserCard, { AuthorizedBrowserCardProps } from './authorized-browser-card'
+import AuthorizedAgentCard, { AuthorizedAgentProps } from './authorized-agent-card'
 import AutoformatRecordField, { AutoformatProps } from './autoformat-record-field'
 import Button, { ButtonProps } from './button'
 import CopyButton, { CopyButtonProps } from './copy-button'
@@ -27,6 +27,9 @@ import ControlledAuthenticationModal, {
 import ControlledAuthorizationCard, {
   ControlledAuthorizationProps
 } from './controlled-authorization-card'
+import ControlledAuthorizationPage, {
+  ControlledAuthorizationPageProps
+} from './controlled-authorization-page'
 import Icon, { IconProps } from './icon'
 import InputGroup, {
   InputGroupProps,
@@ -44,13 +47,14 @@ import RecordForm, { RecordFormProps, Record } from './record-form'
 export {
   AuthenticationModal, AuthenticationModalProps,
   AuthorizationCard, AuthorizationCardProps,
-  AuthorizedBrowserCard, AuthorizedBrowserCardProps,
+  AuthorizedAgentCard, AuthorizedAgentProps,
   AutoformatRecordField, AutoformatProps,
   Button, ButtonProps,
   CopyButton, CopyButtonProps,
   ControlledInput, ControlledInputProps,
   ControlledAuthenticationModal, ControlledAuthenticationModalProps,
   ControlledAuthorizationCard, ControlledAuthorizationProps,
+  ControlledAuthorizationPage, ControlledAuthorizationPageProps,
   Icon, IconProps,
   InputGroup, InputGroupProps,
   InputGroupAppend, InputGroupPrepend, InputGroupText, InputGroupIcon, InputGroupAddonProps,
