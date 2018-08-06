@@ -17,7 +17,7 @@
 //
 import createAutomataReducer from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
-import { always, forType, mapPayload, pluck } from '../../utils'
+import { forType, mapPayload, pluck } from '../../utils'
 import compose from 'basic-compose'
 
 const inProps = propCursor('props')

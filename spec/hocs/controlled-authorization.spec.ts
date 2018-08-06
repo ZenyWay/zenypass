@@ -20,16 +20,7 @@ import { Observable, of as observable, throwError } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
 import { concat, ignoreElements, take } from 'rxjs/operators'
 import { getTokenOnClickFromInit } from '../../src/hocs/controlled-authorization/effects'
-
-function event <P> (type: string) {
-  return function (payload: P) {
-    return { type, payload }
-  }
-}
-
-function assertDeepEqual (actual, expected) {
-  expect(actual).toEqual(expected)
-}
+import { event, assertDeepEqual } from '../helpers'
 
 let scheduler: TestScheduler
 beforeEach(() => {

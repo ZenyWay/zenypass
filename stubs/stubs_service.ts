@@ -44,9 +44,6 @@ export function authenticate (password: string): Observable<string> {
     )
 }
 
-/**
- * stub for authorize method of ZP service
- */
 export function authorize (sessionId: string): Observable<string> {
   return sessionId === SESSION_ID
   ? observable(TOKEN).pipe(
