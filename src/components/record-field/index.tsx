@@ -49,6 +49,7 @@ export interface RecordFieldProps {
   placeholder: string
   icon: string
   className: string
+  size: 'sm' | 'lg'
   autocomplete: 'off' | 'on'
   autocorrect: 'off' | 'on'
   onChange: (value: string) => void
@@ -65,6 +66,7 @@ export default function ({
   placeholder,
   icon,
   className,
+  size,
   autocomplete = 'off',
   autocorrect = 'off',
   onChange,
@@ -81,6 +83,7 @@ export default function ({
     <IconLabelInputGroup
       id={id}
       className={className}
+      size={size}
       icon={_icon}
       onIconClick={onIconClick}
     >

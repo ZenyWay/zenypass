@@ -19,7 +19,7 @@ import Icon, { IconProps } from './icon'
 import { classes } from 'utils'
 
 export interface InputGroupProps extends InputGroupAddonProps {
-  size: number
+  size: 'sm' | 'lg'
 }
 
 export interface InputGroupAddonProps {

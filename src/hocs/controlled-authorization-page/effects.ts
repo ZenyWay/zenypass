@@ -19,42 +19,25 @@
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   catchError,
-  concat,
   filter,
   last,
   map,
   pluck,
   switchMap,
-  takeUntil,
-  tap
+  takeUntil
 } from 'rxjs/operators'
 import { Observable, of as observable } from 'rxjs'
 
 export { StandardAction }
 
-const onServerToken = createActionFactory('SERVER_TOKEN')
+const onAgents = createActionFactory('AGENTS')
 const onServerError = createActionFactory('SERVER_ERROR')
-const onServerDone = createActionFactory('SERVER_DONE')
-const authenticationError = createActionFactory('AUTH_ERROR')
+const unauthorized = createActionFactory('UNAUTHORIZED')
 
-const log = (label: string) => console.log.bind(console, label)
-
-export function getTokenOnClickFromInit ({ authorize }) {
-
+export function getAgentsOnAuthenticated ({ getAuthorizations$ }) {
   return function (event$, state$: Observable<{}>) {
+
     const unmount$ = state$.pipe(last())
-
-    function authorizing (sessionId) {
-      const cancel$ = event$.pipe(filter(ofType('CLICK')))
-
-      return authorize(sessionId).pipe(
-        takeUntil(unmount$),
-        takeUntil(cancel$),
-        map(onServerToken),
-        concat(observable(onServerDone())),
-        catchError(dealWithError)
-      )
-    }
 
     return event$.pipe(
       filter(ofType('AUTHENTICATED')),
@@ -62,13 +45,22 @@ export function getTokenOnClickFromInit ({ authorize }) {
       takeUntil(unmount$),
       switchMap(authorizing)
     )
+
+    function authorizing (sessionId) {
+
+      return getAuthorizations$(sessionId).pipe(
+        takeUntil(unmount$),
+        map(onAgents),
+        catchError(dealWithError)
+      )
+    }
   }
 }
 
 function dealWithError (err) {
   const status = err && err.status || 501
   return observable(err && err.message || `ERROR ${status}`).pipe(
-    map(status === 401 ? authenticationError : onServerError)
+    map(status === 401 ? unauthorized : onServerError)
   )
 }
 
