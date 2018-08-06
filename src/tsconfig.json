@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": [
+      "es2015", "dom"
+    ],
+    "types": [
+      "inferno", "node"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "component-from-events": ["component-from-events"],
+      "components": ["components"],
+      "create-element": ["create-element"],
+      "hocs": ["hocs"],
+      "utils": ["utils"]
+    },
+    "jsx": "react",
+    "declaration": true,
+    "noEmitHelpers": false,
+    "importHelpers": false,
+    "emitDecoratorMetadata": false,
+    "experimentalDecorators": false,
+    "removeComments": true,
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "suppressImplicitAnyIndexErrors": true
+  }
+}
