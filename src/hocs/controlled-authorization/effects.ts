@@ -23,10 +23,12 @@ import {
   filter,
   last,
   map,
+  mapTo,
   pluck,
   switchMap,
   takeUntil,
-  tap
+  tap,
+  withLatestFrom
 } from 'rxjs/operators'
 import { Observable, of as observable } from 'rxjs'
 
@@ -36,13 +38,21 @@ const onServerToken = createActionFactory('SERVER_TOKEN')
 const onServerError = createActionFactory('SERVER_ERROR')
 const onServerDone = createActionFactory('SERVER_DONE')
 const authenticationError = createActionFactory('AUTH_ERROR')
+const authenticate = createActionFactory('AUTHENTICATE')
 
 const log = (label: string) => console.log.bind(console, label)
 
-export function getTokenOnClickFromInit ({ authorize }) {
+export function getTokenOnAuthenticated ({ authorize }) {
 
   return function (event$, state$: Observable<{}>) {
     const unmount$ = state$.pipe(last())
+
+    return event$.pipe(
+      filter(ofType('AUTHENTICATED')),
+      pluck('payload'),
+      takeUntil(unmount$),
+      switchMap(authorizing)
+    )
 
     function authorizing (sessionId) {
       const cancel$ = event$.pipe(filter(ofType('CLICK')))
@@ -55,13 +65,6 @@ export function getTokenOnClickFromInit ({ authorize }) {
         catchError(dealWithError)
       )
     }
-
-    return event$.pipe(
-      filter(ofType('AUTHENTICATED')),
-      pluck('payload'),
-      takeUntil(unmount$),
-      switchMap(authorizing)
-    )
   }
 }
 
@@ -70,6 +73,12 @@ function dealWithError (err) {
   return observable(err && err.message || `ERROR ${status}`).pipe(
     map(status === 401 ? authenticationError : onServerError)
   )
+}
+
+function isEqual (ref) {
+  return function (val) {
+    return val === ref
+  }
 }
 
 function ofType (type) {

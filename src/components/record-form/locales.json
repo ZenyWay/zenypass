@@ -3,6 +3,8 @@
     "Comments": "Commentaires",
     "Keywords": "Mots clés",
     "Password": "Mot de passe",
-    "Username": "Identifiant"
+    "Username": "Identifiant",
+    "Strict lock": "Verrouillage strict",
+    "Automatic login": "Connexion automatique"
   }
 }

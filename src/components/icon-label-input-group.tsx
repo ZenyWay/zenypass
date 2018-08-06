@@ -29,6 +29,7 @@ export interface IconLabelInputGroupProps {
   size: 'sm' | 'lg'
   onIconClick: (event: MouseEvent) => void
   disabled: boolean
+  titleIcon: string
   [prop: string]: any
 }
 
@@ -39,6 +40,7 @@ export default function ({
   onIconClick,
   disabled,
   children,
+  titleIcon,
   ...attrs
 }: Partial<IconLabelInputGroupProps>) {
   const _icon = invalid ? 'fa-times' : icon
@@ -59,6 +61,7 @@ export default function ({
               outline
               onClick={onIconClick}
               disabled={disabled}
+              title={titleIcon}
             />
           )}
         </InputGroupPrepend>

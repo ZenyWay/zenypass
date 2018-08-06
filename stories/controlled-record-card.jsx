@@ -1,6 +1,7 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
+ * @author Clement Bonet
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,17 +14,23 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
 /** @jsx createElement */
+//
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
-import { RecordForm } from 'components'
+import { RecordCard } from 'components'
+import controlledRecordCard from '../src/hocs/controlled-record-card'
+import Wrapper from './helpers/card-wrapper'
+
+const ControlledRecordCard = controlledRecordCard(RecordCard)
 
 const record = {
   id: '123456',
+  mail: 'john.doe@example.com',
+  name: 'Github',
   url: 'https://example.com',
-  username: 'john.doe@example.com',
+  username: 'JohnDoe',
   keywords: ['comma', 'separated', 'values'],
   comments: '42 is *'
 }
@@ -31,23 +38,12 @@ const record = {
 const attrs = {
   record,
   locale: 'fr',
-  onChange: action('CHANGE'),
-  onToggleCleartext: action('TOGGLE_CLEARTEXT'),
-  onCopyPassword: action('COPY_PASSWORD'),
-  onLogin: action('LOGIN'),
-  password: 'P@ssw0rd!'
+  onChange: action('CHANGE')
 }
 
-storiesOf('AutoformatRecordForm', module)
-  .add('disabled', () => (
-    <RecordForm {...attrs} disabled />
-  ))
-  .add('disabled-cleartext', () => (
-    <RecordForm {...attrs} disabled cleartext />
-  ))
-  .add('enabled', () => (
-    <RecordForm {...attrs} />
-  ))
-  .add('enabled-cleartext', () => (
-    <RecordForm {...attrs} cleartext />
+storiesOf('ControlledRecordCard', module)
+  .add('default', () => (
+    <Wrapper>
+      <ControlledRecordCard {...attrs} />
+    </Wrapper>
   ))

@@ -18,6 +18,7 @@ import {
   catchError,
   ignoreElements,
   filter,
+  first,
   last,
   map,
   mapTo,
@@ -25,6 +26,7 @@ import {
   pluck,
   share,
   switchMap,
+  startWith,
   takeUntil,
   tap,
   withLatestFrom
@@ -95,5 +97,53 @@ function hasHandler (prop) {
 function isOfType (type) {
   return function (event) {
     return event.type === type
+  }
+}
+
+export interface AuthorizationEffectSpec {
+  requested: string
+  rejected: string
+  resolved: string
+}
+
+const DEFAULT_SPECS: AuthorizationEffectSpec = {
+  requested: 'AUTHENTICATION_REQUESTED',
+  rejected: 'AUTHENTICATION_REJECTED',
+  resolved: 'AUTHENTICATION_RESOLVED'
+}
+
+export function abortOrAuthorize (
+  rejected,
+  request,
+  opts?: AuthorizationEffectSpec
+) {
+  return function (event$, state$) {
+    return function (err) {
+      return err && err.status !== 401
+        ? observable(rejected(err))
+        : authorize(request, opts)(event$, state$)
+    }
+  }
+}
+
+export function authorize (
+  request,
+  opts?: AuthorizationEffectSpec
+) {
+  const { requested, rejected, resolved } = { ...DEFAULT_SPECS, ...opts }
+  const authenticate = createActionFactory(requested)
+
+  return function (event$, state$) {
+    const cancel$ = event$.pipe(filter(isOfType(rejected)))
+
+    return event$.pipe(
+      filter(isOfType(resolved)),
+      first(),
+      takeUntil(cancel$),
+      withLatestFrom(state$),
+      pluck('1'),
+      switchMap(request),
+      startWith(authenticate())
+    )
   }
 }

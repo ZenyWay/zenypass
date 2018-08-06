@@ -15,56 +15,36 @@
  * Limitations under the License.
  */
 //
+import { createAuthenticationReducer } from '../controlled-authentication-modal/reducer'
 import createAutomataReducer from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
-import { forType, mapPayload, pluck } from '../../utils'
 import compose from 'basic-compose'
+import { always, forType, mapPayload } from 'utils'
 
 const inProps = propCursor('props')
-const intoValue = into('value')
 const intoError = into('error')
 const mapPayloadIntoError = intoError(mapPayload())
-const mapPayloadIntoValue = intoValue(mapPayload())
+const mapPayloadToPassword = into('password')(mapPayload())
+const CONCEALED_PASSWORD = '*****'
+const concealPassword = into('password')(always(CONCEALED_PASSWORD))
 
 const automata = {
-  pristine: {
-    PROPS: intoValue(mapPayload(pluck('value'))),
-    CHANGE: ['dirty', mapPayloadIntoValue],
-    SUBMIT: 'error'
+  default: {
+    LOGIN_REQUESTED: 'pending'
   },
-  dirty: {
-    CANCEL: 'pristine',
-    CHANGE: mapPayloadIntoValue,
-    SUBMIT: 'authenticating'
+  pending: {
+    AUTHENTICATION_REJECTED: 'default',
+    LOGIN_RESOLVED: ['login', mapPayloadToPassword],
+    LOGIN_REJECTED: ['default', mapPayloadIntoError]
   },
-  error: {
-    CANCEL: 'pristine',
-    CHANGE: mapPayloadIntoValue,
-    SUBMIT: 'authenticating'
-  },
-  authenticating: {
-    UNAUTHORIZED: 'error',
-    CANCEL: 'pristine',
-    AUTHENTICATION_DONE: 'pristine',
-    SERVER_ERROR: ['pristine', mapPayloadIntoError]
+  login: {
+    CANCEL: ['default',mapPayloadIntoError],
+    COPY_DONE: ['default', concealPassword]
   }
 }
 
 export default compose.into(0)(
-  createAutomataReducer(automata, 'pristine'),
+  createAutomataReducer(automata, 'default'),
+  createAuthenticationReducer(),
   forType('PROPS')(inProps(mapPayload()))
 )
-
-const authenticationAutomata = {
-  idle: {
-    AUTHENTICATION_REQUESTED: 'authenticating'
-  },
-  authenticating: {
-    AUTHENTICATION_REJECTED: ['idle', mapPayloadIntoError],
-    AUTHENTICATION_RESOLVED: ['idle', into('sessionId')(mapPayload())]
-  }
-}
-
-export function createAuthenticationReducer (key: string = 'auth') {
-  return createAutomataReducer(authenticationAutomata, 'idle', key)
-}

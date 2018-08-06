@@ -14,8 +14,6 @@
  */
 //
 import reducer from './reducer'
-import compose from 'basic-compose'
-import { into } from 'basic-cursors'
 import { authenticateOnSubmit, callOnCancel } from './effects'
 import componentFromEvents, {
   Children,
@@ -26,6 +24,7 @@ import componentFromEvents, {
   connect,
   redux
 } from '../../component-from-events'
+import { preventDefault } from 'utils'
 import { authenticate } from '../../../stubs/stubs_service'
 import { tap } from 'rxjs/operators'
 import { createActionDispatchers } from 'basic-fsa-factories'
@@ -67,11 +66,6 @@ const mapDispatchToProps = createActionDispatchers({
   onCancel: 'CANCEL',
   onSubmit: ['SUBMIT', preventDefault]
 })
-
-function preventDefault (event: Event) {
-  event.preventDefault()
-  return event
-}
 
 export interface AuthenticationModalProps {
   open?: boolean

@@ -30,6 +30,15 @@ import ControlledAuthorizationCard, {
 import ControlledAuthorizationPage, {
   ControlledAuthorizationPageProps
 } from './controlled-authorization-page'
+import ControlledRecordCollapsedCard, {
+  ControlledRecordCollapsedCardProps
+} from './controlled-record-collapsed-card'
+import ControlledRecordExpandedCard, {
+  ControlledRecordExpandedCardProps
+} from './controlled-record-expanded-card'
+import ControlledRecordModal, {
+  ControlledRecordModalProps
+} from './controlled-record-modal'
 import Icon, { IconProps } from './icon'
 import InputGroup, {
   InputGroupProps,
@@ -41,9 +50,12 @@ import InputGroup, {
 } from './input-group'
 import IconLabelInputGroup, { IconLabelInputGroupProps } from './icon-label-input-group'
 import Input, { InputProps } from './input'
+import RecordCard, { RecordCardProps } from './record-card'
+import RecordCollapsedCard, { RecordCollapsedCardProps } from './record-collapsed-card'
+import RecordExpandedCard, { RecordExpandedCardProps } from './record-expanded-card'
 import RecordField, { RecordFieldProps } from './record-field'
 import RecordForm, { RecordFormProps, Record } from './record-form'
-import WebsiteCard, { WebsiteCardProps } from './website-card'
+import RecordModal, { RecordModalProps } from './record-modal'
 
 export {
   AuthenticationModal, AuthenticationModalProps,
@@ -56,12 +68,18 @@ export {
   ControlledAuthenticationModal, ControlledAuthenticationModalProps,
   ControlledAuthorizationCard, ControlledAuthorizationProps,
   ControlledAuthorizationPage, ControlledAuthorizationPageProps,
+  ControlledRecordCollapsedCard, ControlledRecordCollapsedCardProps,
+  ControlledRecordExpandedCard, ControlledRecordExpandedCardProps,
+  ControlledRecordModal, ControlledRecordModalProps,
   Icon, IconProps,
   InputGroup, InputGroupProps,
   InputGroupAppend, InputGroupPrepend, InputGroupText, InputGroupIcon, InputGroupAddonProps,
   IconLabelInputGroup, IconLabelInputGroupProps,
   Input, InputProps,
+  RecordCard, RecordCardProps,
+  RecordCollapsedCard, RecordCollapsedCardProps,
+  RecordExpandedCard, RecordExpandedCardProps,
   RecordField, RecordFieldProps,
   RecordForm, RecordFormProps, Record,
-  WebsiteCard, WebsiteCardProps
+  RecordModal, RecordModalProps
 }

@@ -15,6 +15,7 @@
 //
 import reducer from './reducer'
 import effects from './effects'
+import { preventDefault } from 'utils'
 import componentFromEvents, {
   ComponentClass,
   SFC,
@@ -22,6 +23,7 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
+import { tap } from 'rxjs/operators'
 
 export {
   ComponentClass,
@@ -35,6 +37,7 @@ export interface CopyButtonProps {
     disabled: string
     enabled: string
   }
+  onCopy?: (success: boolean) => void
   [attr: string]: any
 }
 
@@ -55,8 +58,13 @@ interface CopyButtonState {
 function mapStateToProps ({ props, state }: CopyButtonState) {
   const disabled = state === 'disabled'
   const icon = props && props.icons && props.icons[state]
-  return { ...props, disabled, icon }
+  const { onCopy, ...attrs } = props
+  return { ...attrs, disabled, icon }
 }
+
+const mapDispatchToProps = createActionDispatchers({
+  onClick: ['CLICK', preventDefault]
+})
 
 export interface ButtonProps {
   icon?: string
@@ -70,8 +78,11 @@ export default function <P extends ButtonProps>(
 ): ComponentClass<CopyButtonProps> {
   const CopyButton = componentFromEvents<CopyButtonProps,P>(
     Button,
+    // () => tap(console.log.bind(console,'copy-button:event:')),
     redux(reducer, ...effects),
-    connect(mapStateToProps, createActionDispatchers({ onClick: 'CLICK' }))
+    // () => tap(console.log.bind(console,'copy-button:state:')),
+    connect(mapStateToProps, mapDispatchToProps)
+    // () => tap(console.log.bind(console,'copy-button:props:'))
   )
 
   CopyButton.defaultProps = DEFAULT_PROPS

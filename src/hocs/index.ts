@@ -18,6 +18,9 @@ import createAuthenticationModal, { ControlledAuthenticationModalProps } from '.
 import createCopyButton, { CopyButtonProps } from './copy-button'
 import createControlledAuthorization, { ControlledAuthorizationProps } from './controlled-authorization'
 import createControlledAuthorizationPage, { ControlledAuthorizationPageProps } from './controlled-authorization-page'
+import createControlledRecordCollapsedCard, { ControlledRecordCollapsedCardProps } from './controlled-record-collapsed-card'
+import createControlledRecordExpandedCard, { ControlledRecordExpandedCardProps } from './controlled-record-expanded-card'
+import createControlledRecordModal, { ControlledRecordModalProps } from './controlled-record-modal'
 
 export {
   Component,
@@ -31,5 +34,8 @@ export {
   createAuthenticationModal, ControlledAuthenticationModalProps,
   createCopyButton, CopyButtonProps,
   createControlledAuthorization, ControlledAuthorizationProps,
-  createControlledAuthorizationPage, ControlledAuthorizationPageProps
+  createControlledAuthorizationPage, ControlledAuthorizationPageProps,
+  createControlledRecordCollapsedCard, ControlledRecordCollapsedCardProps,
+  createControlledRecordExpandedCard, ControlledRecordExpandedCardProps,
+  createControlledRecordModal, ControlledRecordModalProps
 }

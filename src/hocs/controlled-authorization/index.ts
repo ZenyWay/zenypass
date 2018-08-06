@@ -16,7 +16,7 @@
  */
 //
 import reducer from './reducer'
-import { getTokenOnClickFromInit } from './effects'
+import { getTokenOnAuthenticated } from './effects'
 import { authorize } from '../../../stubs/stubs_service'
 import componentFromEvents, { redux, connect, SFC, ComponentClass } from '../../component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
@@ -67,7 +67,7 @@ export default function<P extends AuthorizationCardProps>(
   const Access = componentFromEvents<ControlledAuthorizationProps,P>(
     AccessAuthorization,
     // () => tap(console.log.bind(console,'controlled-authorization-card:event:')),
-    redux(reducer, getTokenOnClickFromInit({ authorize })),
+    redux(reducer, getTokenOnAuthenticated({ authorize })),
     // () => tap(console.log.bind(console,'controlled-authorization-card:state:')),
     connect(mapStateToProps, mapDispatchToProps)
     // () => tap(console.log.bind(console,'controlled-authorization-card:view-props:'))

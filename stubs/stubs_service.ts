@@ -18,6 +18,7 @@ import { concat, switchMap, takeUntil, delay, take } from 'rxjs/operators'
 const AUTHENTICATION_DELAY = 1500 // ms
 const AUTHORIZATION_DELAY = 10000 // ms
 const TOKEN_DELAY = 500 // ms
+const RECORD_SERVICE_DELAY = 500 // ms
 const PASSWORD = '!!!'
 const SESSION_ID = '42'
 const TOKEN = 'BCDE FGHI JKLN'
@@ -34,6 +35,7 @@ const AUTHORIZATIONS = [
   },
   {} as KV<AuthorizationDoc>
 )
+const RECORD_PASSWORD = 'p@ssW0rd!'
 
 export function authenticate (password: string): Observable<string> {
   return interval(AUTHENTICATION_DELAY).pipe(
@@ -67,6 +69,36 @@ export function getAuthorizations$ (sessionId: string): Observable<KV<Authorizat
   : throwError(UNAUTHORIZED)
 }
 
+export const getRecord = accessRecordService(ref => ({
+  ...ref,
+  password: RECORD_PASSWORD
+}))
+
+export const putRecord = accessRecordService(record => record)
+
+export const deleteRecord = accessRecordService(ref => ({
+  ...ref,
+  _deleted: true
+}))
+
+function accessRecordService (result: Function) {
+  return function (sessionId: string, arg: any) {
+    return new Promise(function (resolve, reject) {
+      setTimeout(
+        () => sessionId === SESSION_ID
+          ? resolve(result(arg))
+          : reject(UNAUTHORIZED),
+        RECORD_SERVICE_DELAY
+      )
+    })
+  }
+}
+
+export interface DocRef {
+  _id: string
+  _ref: string
+}
+
 export interface AuthorizationDoc {
   _id: string
   _rev: string
@@ -91,3 +123,24 @@ function newStatusError (status = 501, message = '') {
 function errorPassword (status: StatusError) {
   return status
 }
+/*
+function doSomethingAsync (arg0, arg1, callback) {
+  // ... do something async with arg0 and arg1
+  // when done
+  let error: any
+  let result: any
+  if (error) {
+    callback(error)
+  }
+  callback(null, result)
+}
+// -> callback hell !!!
+function doSomethingElseAsync (arg, callback) {
+  doSomethingAsync('foo', 'bar', function (err, res) {
+    if (err) {
+      callback(err)
+    }
+    // do something with res
+    callback()
+  })
+}*/

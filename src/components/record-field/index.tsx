@@ -16,12 +16,10 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import IconLabelInputGroup from '../icon-label-input-group'
-import InputGroup, { InputGroupAppend } from '../input-group'
-import Button from '../button'
 import PassiveInput from '../input'
 import ControlledInput from '../controlled-input'
 import createL10n, { L10nTag } from 'basic-l10n'
-import { classes } from 'utils'
+
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
@@ -47,6 +45,7 @@ export interface RecordFieldProps {
   value: string
   error: string
   placeholder: string
+  titleIcon: string
   icon: string
   className: string
   size: 'sm' | 'lg'
@@ -71,6 +70,7 @@ export default function ({
   autocorrect = 'off',
   onChange,
   onIconClick,
+  titleIcon,
   disabled,
   locale,
   children,
@@ -86,6 +86,7 @@ export default function ({
       size={size}
       icon={_icon}
       onIconClick={onIconClick}
+      titleIcon={titleIcon}
     >
       <Input
         type={type}

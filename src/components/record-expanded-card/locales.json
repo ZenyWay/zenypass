@@ -1,0 +1,21 @@
+{
+    "fr": {
+        "Edit": "Modifier",
+        "Save": "Sauvegarder",
+        "Comments": "Commentaires",
+        "Keywords": "Mots clés",
+        "Password": "Mot de passe",
+        "Username": "Identifiant",
+        "Strict lock": "Verrouillage strict",
+        "Automatic login": "Connexion automatique",
+        "Cancel the modifications": "Annuler les modifications",
+        "Edit this record": "Modifier cette fiche",
+        "Delete this record": "Supprimer cette fiche",
+        "Save this record": "Enregistrer cette fiche",
+        "Login": "Connexion",
+        "Show the password": "Afficher le mot de passe",
+        "Minimize this record": "Réduire cette fiche",
+        "Minimize and save this record": "Réduire et enregistrer cette fiche",
+        "Copy": "Copier"
+    }
+}

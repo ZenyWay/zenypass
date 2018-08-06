@@ -19,7 +19,7 @@
 import { Observable, of as observable, throwError } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
 import { concat, ignoreElements, take } from 'rxjs/operators'
-import { getTokenOnClickFromInit } from '../../src/hocs/controlled-authorization/effects'
+import { getTokenOnAuthenticated } from '../../src/hocs/controlled-authorization/effects'
 import { event, assertDeepEqual } from '../helpers'
 
 let scheduler: TestScheduler
@@ -37,7 +37,7 @@ describe('effect: getTokenOnClickFromInit:', () => {
   })
 
   beforeEach(() => {
-    fut = getTokenOnClickFromInit({ authorize })
+    fut = getTokenOnAuthenticated({ authorize })
   })
 
   it('exampe of marble test', () => {

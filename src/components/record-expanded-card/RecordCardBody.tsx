@@ -1,6 +1,7 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
+ * @author Clement Bonet
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +16,14 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
+import { CardBody } from 'reactstrap'
+import createL10n, { L10nTag } from 'basic-l10n'
+import { Button, CopyButton } from 'components'
 import AutoformatRecordField from '../autoformat-record-field'
 import ControlledRecordField from '../record-field'
 import { InputGroupAppend } from '../input-group'
-import CopyButton from '../copy-button'
-import Button from '../button'
-import createL10n, { L10nTag } from 'basic-l10n'
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
+
+const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-browser:')
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
 export const DEFAULT_ICONS: Partial<RecordFormIcons> = {
@@ -38,28 +40,12 @@ export const DEFAULT_PLACEHOLDERS: Partial<RecordFormPlaceholders> = {
   username: 'Username'
 }
 
-export interface RecordFormProps {
-  record: Record
-  cleartext?: boolean
-  disabled?: boolean
-  onChange: (field: keyof Record, value: string[] | string) => void
-  onLoginExpand: (event: MouseEvent) => void
-  onToggleCleartext: (event: MouseEvent) => void
-  icons?: Partial<RecordFormIcons>
-  placeholders?: Partial<RecordFormPlaceholders>
-  locale: string
-  [prop: string]: any
-  pendingPassword?: boolean
-  pendingLogin?: boolean
-  edit?: boolean
-  password?: string
-}
-
 export interface Record {
   id: string
   name: string
   url: string
   username: string
+  password?: string
   keywords: string[]
   comments: string
   login: boolean
@@ -72,28 +58,44 @@ export type RecordFormInputFields = Exclude<keyof Record,'id'>
 
 export type KVMap<K extends string,V> = {[k in K]: V}
 
+export interface RecordExpandedCardProps {
+  attrs: any,
+  cleartext?: boolean,
+  disabled?: boolean,
+  edit?: boolean,
+  icons?: Partial<RecordFormIcons>,
+  locale: string,
+  onChange: (field: Exclude<keyof Record, number>, value: string[] | string) => void
+  onLoginExpand: (event: MouseEvent) => void
+  onToggleCleartext: (event: MouseEvent) => void
+  pendingLogin?: boolean,
+  pendingPassword?: boolean,
+  placeholders?: Partial<RecordFormPlaceholders>,
+  record: Record
+}
+
 export default function ({
-  edit,
-  record,
   cleartext,
   disabled,
+  edit,
+  icons = DEFAULT_ICONS,
+  locale,
   onChange,
   onLoginExpand,
   onToggleCleartext,
-  icons = DEFAULT_ICONS,
-  password,
-  placeholders = DEFAULT_PLACEHOLDERS,
-  locale,
-  pendingPassword,
   pendingLogin,
+  pendingPassword,
+  placeholders = DEFAULT_PLACEHOLDERS,
+  record,
   ...attrs
-}: Partial<RecordFormProps>) {
-  const { id, url, username, keywords, comments, mail } = record
-  l10n.locale = locale || l10n.locale // impure !!! TODO fix this
+}: Partial<RecordExpandedCardProps>) {
+
+  const { id, url, username, keywords, comments, mail, password } = record
+  l10n.locale = locale || l10n.locale
   const RecordField = disabled ? ControlledRecordField : AutoformatRecordField
 
   return (
-    <form key={id} id={id} {...attrs}>
+    <CardBody className='mx-2'>
 
       <RecordField
         type='url'
@@ -113,12 +115,17 @@ export default function ({
         icon={getIcon(icons, 'username')}
         placeholder={getPlaceholder(l10n, placeholders, 'username')}
         value={username}
-        onChange={onChange.bind(void 0, 'username')}
+        onChange={edit && onChange.bind(void 0, 'username')}
         disabled={disabled}
         locale={locale}
       >
         <InputGroupAppend>
-          <CopyButton id={`${id}_copy-button`} value={username} outline />
+          <CopyButton
+            id={`${id}_copy-button`}
+            value={username}
+            outline
+            title={l10n('Copy')}
+          />
         </InputGroupAppend>
       </ControlledRecordField>
       <ControlledRecordField
@@ -128,12 +135,17 @@ export default function ({
         icon={getIcon(icons, 'mail')}
         placeholder={getPlaceholder(l10n, placeholders, 'mail')}
         value={mail}
-        onChange={onChange.bind(void 0, 'mail')}
+        onChange={edit && onChange.bind(void 0, 'mail')}
         disabled={disabled}
         locale={locale}
       >
         <InputGroupAppend>
-          <CopyButton id={`${id}_mail__copy-button`} value={mail} outline />
+          <CopyButton
+            id={`${id}_mail__copy-button`}
+            value={mail}
+            outline
+            title={l10n('Copy')}
+          />
         </InputGroupAppend>
       </ControlledRecordField>
       <ControlledRecordField
@@ -141,23 +153,30 @@ export default function ({
         id={`${id}_password`}
         className='mb-2'
         icon={pendingPassword ? 'fa-spin fa-spinner' : getIcon(icons, cleartext ? 'cleartext' : 'password')}
+        titleIcon={l10n('Show the password')}
         placeholder={cleartext && getPlaceholder(l10n, placeholders, 'password')}
         value={cleartext ? password : '*****'}
-        onChange={onChange.bind(void 0, 'password')}
+        onChange={edit && onChange.bind(void 0, 'password')}
         onIconClick={onToggleCleartext}
         disabled={disabled || !cleartext}
         locale={locale}
       >
         <InputGroupAppend>
-          {!cleartext ? (
+          {!edit && !cleartext ? (
             <Button
               id={`${id}_connexion-button`}
               icon={pendingLogin ? 'fa-spin fa-spinner' : 'fa-external-link fa-fw'}
               outline
               onClick={onLoginExpand}
+              title={l10n('Login')}
             />
           ) : (
-            <CopyButton id={`${id}_password__copy-button`} value={password} outline />
+            <CopyButton
+              id={`${id}_password__copy-button`}
+              value={password}
+              outline
+              title={l10n('Copy')}
+            />
           )}
         </InputGroupAppend>
       </ControlledRecordField>
@@ -168,7 +187,7 @@ export default function ({
         icon={getIcon(icons, 'keywords')}
         placeholder={getPlaceholder(l10n, placeholders, 'keywords')}
         value={keywords}
-        onChange={onChange.bind(void 0, 'keywords')}
+        onChange={edit && onChange.bind(void 0, 'keywords')}
         disabled={disabled}
         locale={locale}
       />
@@ -180,7 +199,7 @@ export default function ({
         placeholder={getPlaceholder(l10n, placeholders, 'comments')}
         value={comments}
         rows='3'
-        onChange={onChange.bind(void 0, 'comments')}
+        onChange={edit && onChange.bind(void 0, 'comments')}
         disabled={disabled}
         locale={locale}
       />
@@ -202,8 +221,7 @@ export default function ({
         </Button>
         <p className='form-control-static pl-3'>{l10n('Automatic login')}</p>
       </InputGroupAppend>
-
-    </form>
+    </CardBody>
   )
 }
 

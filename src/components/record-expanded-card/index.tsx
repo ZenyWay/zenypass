@@ -1,0 +1,153 @@
+/**
+ * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
+ * @author Stephane M. Catala
+ * @author Clement Bonet
+ * @license Apache Version 2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * Limitations under the License.
+ */
+/** @jsx createElement */
+import { createElement } from 'create-element'
+import { Card } from 'reactstrap'
+import createL10n from 'basic-l10n'
+import { ControlledAuthenticationModal, ControlledRecordModal } from 'components'
+import RecordCardHeader from './RecordCardHeader'
+import RecordCardBody from './RecordCardBody'
+import RecordCardFooter from './RecordCardFooter'
+
+const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-browser:')
+const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
+
+export interface Record {
+  id: string
+  name: string
+  url: string
+  username: string
+  password?: string
+  keywords: string[]
+  comments: string
+  login: boolean
+  mail: string
+}
+
+export interface RecordExpandedCardProps {
+  locale: string,
+  attrs: any,
+  onToggleExpand: () => void,
+  onEdit: () => void,
+  onSave: () => void,
+  onDelete: () => void,
+  onLoginExpand: () => void,
+  onAuthenticated: () => void,
+  onAuthenticationCancel: () => void,
+  authenticate: boolean,
+  record: Record,
+  edit: boolean,
+  disabled: boolean,
+  cleartext: boolean,
+  pendingEdit?: boolean,
+  pendingLogin?: boolean,
+  pendingPassword?: boolean,
+  pendingTrash?: boolean,
+  pendingSave?: boolean,
+  pendingToggle?: boolean,
+  error: string,
+  login: boolean,
+  onCancel: () => void,
+  onCancelEdit: () => void,
+  onChange: (field: Exclude<keyof Record, number>, value: string[] | string) => void,
+  onCopyDone: () => void,
+  onToggleRequest: () => void
+}
+
+export default function ({
+  authenticate,
+  cleartext,
+  disabled,
+  edit,
+  locale,
+  login,
+  onAuthenticated,
+  onAuthenticationCancel,
+  onCancel,
+  onCancelEdit,
+  onChange,
+  onCopyDone,
+  onToggleExpand,
+  onToggleRequest,
+  onLoginExpand,
+  onEdit,
+  onSave,
+  onDelete,
+  record,
+  pendingEdit,
+  pendingLogin,
+  pendingPassword,
+  pendingTrash,
+  pendingSave,
+  pendingToggle,
+  error,
+  ...attrs
+}: Partial<RecordExpandedCardProps>) {
+
+  l10n.locale = locale || l10n.locale
+
+  return (
+    <Card className='mb-2'>
+
+      <form key={record.id} id={record.id} {...attrs}>
+        <RecordCardHeader edit={edit} record={record} onChange={onChange}/>
+        <RecordCardBody
+          record={record}
+          disabled={disabled}
+          cleartext={cleartext}
+          pendingPassword={pendingPassword}
+          pendingLogin={pendingLogin}
+          edit={edit}
+          onChange={onChange}
+          onLoginExpand={onLoginExpand}
+          {...attrs}
+        />
+      </form>
+
+      <RecordCardFooter
+        edit={edit}
+        locale={locale}
+        onCancelEdit={onCancelEdit}
+        onDelete={onDelete}
+        onEdit={onEdit}
+        onSave={onSave}
+        onToggleRequest={onToggleRequest}
+        pendingEdit={pendingEdit}
+        pendingSave={pendingSave}
+        pendingToggle={pendingToggle}
+        pendingTrash={pendingTrash}
+        {...attrs}
+      />
+
+      <ControlledAuthenticationModal
+        open={authenticate}
+        onCancel={onAuthenticationCancel}
+        onAuthenticated={onAuthenticated}
+      />
+
+      <ControlledRecordModal
+        open={login}
+        onCancel={onCancel}
+        onCopy={onCopyDone}
+        record={record}
+        password={record.password}
+        {...attrs}
+      />
+
+    </Card>
+  )
+}

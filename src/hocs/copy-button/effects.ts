@@ -15,18 +15,14 @@
  */
 //
 import { createActionFactory } from 'basic-fsa-factories'
-import { empty, of as observable, never } from 'rxjs'
+import { of as observable } from 'rxjs'
 import {
-  catchError,
-  concat,
   concatMap,
   delay,
   distinctUntilChanged,
   filter,
-  mapTo,
   pluck,
-  sample,
-  tap
+  withLatestFrom
 } from 'rxjs/operators'
 const copyToClipboard = require('clipboard-copy')
 
@@ -34,43 +30,29 @@ const expired = createActionFactory('EXPIRED')
 const copied = createActionFactory('COPIED')
 
 function timeoutAfterDisabled (_, state$) {
-  const disabled$ = state$.pipe(
+
+  return state$.pipe(
     pluck('state'),
     distinctUntilChanged(),
     filter(equals('disabled')),
-    concat(never()) // never complete, otherwise samples on unmount !
-  )
-
-  return state$.pipe(
-    sample(disabled$),
-    pluck('props', 'timeout'),
+    withLatestFrom(state$),
+    pluck('1', 'props', 'timeout'),
     concatMap(timeout)
   )
-}
 
-function timeout (ms) {
-  return observable(expired()).pipe(delay(ms))
+  function timeout (ms) {
+    return observable(expired()).pipe(delay(ms))
+  }
 }
 
 function copyToClipboardOnClick (event$, state$) {
-  const click$ = event$.pipe(
+
+  return event$.pipe(
     filter(ofType('CLICK')),
-    pluck('payload'),
-    tap(preventDefault),
-    concat(never()) // never complete, otherwise samples on unmount !
+    withLatestFrom(state$),
+    pluck('1'),
+    concatMap(copy)
   )
-
-  return state$.pipe(
-    sample(click$),
-    pluck('props', 'value'),
-    concatMap(copyToClipboard), // resolves on success, rejects otherwise
-    mapTo(copied()),
-    catchError(empty) // do nothing if fail
-  )
-}
-
-function preventDefault (event) {
-  event.preventDefault()
 }
 
 function equals (v) {
@@ -82,6 +64,21 @@ function equals (v) {
 function ofType (t) {
   return function ({ type }) {
     return type === t
+  }
+}
+
+function copy ({ props }) {
+  const { onCopy } = props
+
+  return copyToClipboard(props.value)
+  .then(success(true))
+  .catch(success(false))
+
+  function success (val: boolean) {
+    return function () {
+      onCopy && onCopy(val)
+      return copied(val)
+    }
   }
 }
 

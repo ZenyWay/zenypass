@@ -105,3 +105,14 @@ export type Reducer<S, V> = (state: S, value: V) => S
 export function classes (...classes: string[]): string {
   return classes.filter(Boolean).join(' ')
 }
+
+export function not (fn = identity) {
+  return function (val) {
+    return !fn(val)
+  }
+}
+
+export function preventDefault (event: Event) {
+  event.preventDefault()
+  return event
+}
