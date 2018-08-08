@@ -27,6 +27,7 @@ import ControlledAuthenticationModal, {
 import ControlledAuthorizationCard, {
   ControlledAuthorizationProps
 } from './controlled-authorization-card'
+import ControlledMenu, { ControlledMenuProps } from './controlled-menu'
 import Icon, { IconProps } from './icon'
 import InputGroup, {
   InputGroupProps,
@@ -38,6 +39,7 @@ import InputGroup, {
 } from './input-group'
 import IconLabelInputGroup, { IconLabelInputGroupProps } from './icon-label-input-group'
 import Input, { InputProps } from './input'
+import Menu, { MenuProps } from './menu'
 import RecordField, { RecordFieldProps } from './record-field'
 import RecordForm, { RecordFormProps, Record } from './record-form'
 
@@ -51,11 +53,12 @@ export {
   ControlledInput, ControlledInputProps,
   ControlledAuthenticationModal, ControlledAuthenticationModalProps,
   ControlledAuthorizationCard, ControlledAuthorizationProps,
+  ControlledMenu, ControlledMenuProps,
   Icon, IconProps,
   InputGroup, InputGroupProps,
   InputGroupAppend, InputGroupPrepend, InputGroupText, InputGroupIcon, InputGroupAddonProps,
   IconLabelInputGroup, IconLabelInputGroupProps,
-  Input, InputProps,
+  Input, InputProps, Menu, MenuProps,
   RecordField, RecordFieldProps,
   RecordForm, RecordFormProps, Record
 }
