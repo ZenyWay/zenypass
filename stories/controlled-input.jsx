@@ -13,3 +13,6 @@ storiesOf('ControlledInput', module)
   .add('default', () => (
     <ControlledInput {...attrs} />
   ))
+  .add('blurOnEnterKey', () => (
+    <ControlledInput {...attrs} blurOnEnterKey />
+  ))

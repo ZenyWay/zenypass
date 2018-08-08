@@ -16,7 +16,7 @@
 //
 import AuthenticationModal, { AuthenticationModalProps } from './authentication-modal'
 import AuthorizationCard, { AuthorizationCardProps } from './authorization-card'
-import AuthorizedBrowserCard, { AuthorizedBrowserCardProps } from './authorized-browser-card'
+import AuthorizedAgentCard, { AuthorizedAgentProps } from './authorized-agent-card'
 import AutoformatRecordField, { AutoformatProps } from './autoformat-record-field'
 import Button, { ButtonProps } from './button'
 import CopyButton, { CopyButtonProps } from './copy-button'
@@ -28,6 +28,9 @@ import ControlledAuthorizationCard, {
   ControlledAuthorizationProps
 } from './controlled-authorization-card'
 import ControlledMenu, { ControlledMenuProps } from './controlled-menu'
+import ControlledAuthorizationPage, {
+  ControlledAuthorizationPageProps
+} from './controlled-authorization-page'
 import Icon, { IconProps } from './icon'
 import InputGroup, {
   InputGroupProps,
@@ -42,11 +45,12 @@ import Input, { InputProps } from './input'
 import Menu, { MenuProps } from './menu'
 import RecordField, { RecordFieldProps } from './record-field'
 import RecordForm, { RecordFormProps, Record } from './record-form'
+import WebsiteCard, { WebsiteCardProps } from './website-card'
 
 export {
   AuthenticationModal, AuthenticationModalProps,
   AuthorizationCard, AuthorizationCardProps,
-  AuthorizedBrowserCard, AuthorizedBrowserCardProps,
+  AuthorizedAgentCard, AuthorizedAgentProps,
   AutoformatRecordField, AutoformatProps,
   Button, ButtonProps,
   CopyButton, CopyButtonProps,
@@ -54,11 +58,13 @@ export {
   ControlledAuthenticationModal, ControlledAuthenticationModalProps,
   ControlledAuthorizationCard, ControlledAuthorizationProps,
   ControlledMenu, ControlledMenuProps,
+  ControlledAuthorizationPage, ControlledAuthorizationPageProps,
   Icon, IconProps,
   InputGroup, InputGroupProps,
   InputGroupAppend, InputGroupPrepend, InputGroupText, InputGroupIcon, InputGroupAddonProps,
   IconLabelInputGroup, IconLabelInputGroupProps,
   Input, InputProps, Menu, MenuProps,
   RecordField, RecordFieldProps,
-  RecordForm, RecordFormProps, Record
+  RecordForm, RecordFormProps, Record,
+  WebsiteCard, WebsiteCardProps
 }

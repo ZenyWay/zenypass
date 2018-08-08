@@ -18,30 +18,25 @@
 import createAutomataReducer from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload } from '../../utils'
+import { forType, mapPayload } from 'utils'
 
 const inProps = propCursor('props')
-const intoToken = into('token')
+const intoAuthorizations = into('authorizations')
 const intoError = into('error')
-const mapPayloadIntoError = intoError(mapPayload())
 
 const automata = {
-  init: {
-    CLICK: ['authenticating', intoError(always(''))]
-  },
   authenticating: {
-    CANCEL: ['init',mapPayloadIntoError],
-    AUTHENTICATED: 'authorizing'
+    CANCEL: ['default', intoError(mapPayload())],
+    AUTHENTICATED: 'default'
   },
-  authorizing: {
-    SERVER_TOKEN: intoToken(mapPayload()),
-    SERVER_DONE: ['init', intoToken(always(void 0))],
-    SERVER_ERROR: ['init', mapPayloadIntoError],
-    UNAUTHORIZED: 'authenticating'
+  default: {
+    AGENTS: intoAuthorizations(mapPayload()),
+    UNAUTHORIZED: 'authenticating',
+    SERVER_ERROR: intoError(mapPayload())
   }
 }
 
 export default compose.into(0)(
-  createAutomataReducer(automata, 'init'),
+  createAutomataReducer(automata, 'authenticating'),
   forType('PROPS')(inProps(mapPayload()))
 )

@@ -26,6 +26,7 @@ export interface IconLabelInputGroupProps {
   id: string
   icon: string
   className: string
+  size: 'sm' | 'lg'
   onIconClick: (event: MouseEvent) => void
   disabled: boolean
   [prop: string]: any
