@@ -45,7 +45,6 @@ import Input, { InputProps } from './input'
 import Menu, { MenuProps } from './menu'
 import RecordField, { RecordFieldProps } from './record-field'
 import RecordForm, { RecordFormProps, Record } from './record-form'
-import WebsiteCard, { WebsiteCardProps } from './website-card'
 
 export {
   AuthenticationModal, AuthenticationModalProps,
@@ -65,6 +64,5 @@ export {
   IconLabelInputGroup, IconLabelInputGroupProps,
   Input, InputProps, Menu, MenuProps,
   RecordField, RecordFieldProps,
-  RecordForm, RecordFormProps, Record,
-  WebsiteCard, WebsiteCardProps
+  RecordForm, RecordFormProps, Record
 }
