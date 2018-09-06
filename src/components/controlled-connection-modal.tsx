@@ -14,13 +14,13 @@
 //
 /** @jsx createElement */
 import {
-  createControlledRecordCollapsedCard,
-  ControlledRecordCollapsedCardProps,
+  createControlledConnectionModal,
+  ControlledConnectionModalProps,
   ComponentClass
 } from 'hocs'
-import RecordCollapsedCard, { RecordCollapsedCardProps } from './record-collapsed-card'
+import ConnectionModal, { ConnectionModalProps } from './connection-modal'
 
-export { ControlledRecordCollapsedCardProps, ComponentClass }
-export default createControlledRecordCollapsedCard <RecordCollapsedCardProps>(
-  RecordCollapsedCard
-) as ComponentClass<ControlledRecordCollapsedCardProps>
+export { ControlledConnectionModalProps, ComponentClass }
+export default createControlledConnectionModal <ConnectionModalProps>(
+  ConnectionModal
+) as ComponentClass<ControlledConnectionModalProps>

@@ -15,45 +15,26 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-//
+
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
+import { ControlledConnectionModal } from 'components'
 import { action } from '@storybook/addon-actions'
-import { RecordCard } from 'components'
-import Wrapper from './helpers/card-wrapper'
+import { RECORD } from './helpers/consts'
 
-const record = {
-  id: '123456',
-  name: 'Github',
-  url: 'https://example.com',
-  username: 'john.doe@example.com',
-  password: 'P@ssw0rd!',
-  keywords: ['comma', 'separated', 'values'],
-  comments: '42 is *'
-}
+const { name, username, password } = RECORD
 
 const attrs = {
-  onToggleExpand: action('EXPAND'),
-  onEdit: action('EDIT'),
-  onLogin: action('LOGIN'),
-  onCancel: action('CANCEL'),
-  onAuthenticated: action('AUTHENTICATED'),
-
-  record,
-  locale: 'fr',
-  onChange: action('CHANGE'),
-  onToggleCleartext: action('TOGGLE_CLEARTEXT'),
-  onCopyPassword: action('COPY_PASSWORD')
+  onCancel: action('CANCELLED')
 }
 
-storiesOf('RecordCard', module)
-  .add('collapsed', () => (
-    <Wrapper>
-      <RecordCard {...attrs} />
-    </Wrapper>
-  ))
-  .add('expanded', () => (
-    <Wrapper>
-      <RecordCard {...attrs} expanded />
-    </Wrapper>
+storiesOf('ControlledConnectionModal', module)
+  .add('default', () => (
+    <ControlledConnectionModal
+      display
+      name={name}
+      username={username}
+      password={password}
+      {...attrs}
+    />
   ))

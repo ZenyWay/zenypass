@@ -90,7 +90,7 @@ export default function ({
     >
       <Input
         type={type}
-        id={`${id}_input`}
+        id={`${id}_${type}_input`}
         className={'form-control'}
         invalid={!!error}
         value={value}
