@@ -53,7 +53,7 @@ export default function ({
     <Modal isOpen={open} title={l10n('Authorization')} onCancel={onCancel} >
       <ModalBody>
         <Form id='PasswordModalForm' onSubmit={onSubmit}>
-          <Label>{l10n('Please enter your ZenyPass password:')}</Label>
+          <Label>{l10n('Please identify yourself:')}</Label>
           <ControlledInput
             placeholder={l10n('ZenyPass password')}
             type='password'
