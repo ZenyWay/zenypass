@@ -22,15 +22,21 @@ export interface ButtonProps {
   active: boolean
   block: boolean
   className: string
-  color: string
+  color: ButtonColor | '' | false
   outline: boolean
-  size: number
+  size: 'lg' | 'sm' | '' | false
   icon: string
   href: string
-  onClick: (event: MouseEvent) => void
   disabled: boolean
+  onClick: (event: MouseEvent) => void
   children: any // TODO
-  [prop: string]: any
+}
+
+export type ButtonColor = 'primary' | 'secondary' | 'success' | 'danger'
+  | 'warning' | 'info' | 'light' | 'dark' | 'link'
+
+export interface UnknownProps {
+  [attr: string]: unknown
 }
 
 export default function ({
@@ -46,7 +52,7 @@ export default function ({
   disabled,
   children,
   ...attrs
-}: Partial<ButtonProps>) {
+}: Partial<ButtonProps> & UnknownProps) {
   const Tag = href ? 'a' : 'button'
 
   return (

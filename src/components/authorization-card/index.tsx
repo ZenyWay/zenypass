@@ -17,8 +17,8 @@
 /** @jsx createElement */
 //
 import { createElement } from 'create-element'
-import { Button } from '..'
-import { Card, CardBody, CardFooter, CardHeader } from 'reactstrap'
+import Button from '../button'
+import Card, { CardBody, CardFooter, CardHeader } from '../card'
 import ControlledAuthenticationModal from '../controlled-authentication-modal'
 import createL10n from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
@@ -35,6 +35,10 @@ export interface AuthorizationCardProps {
   onAuthenticated: (sessionID: string) => void
 }
 
+export interface UnknownProps {
+  [attr: string]: unknown
+}
+
 export default function ({
   authenticate,
   error,
@@ -43,8 +47,9 @@ export default function ({
   onCancel,
   onAuthenticated,
   pending,
-  token
-}: Partial<AuthorizationCardProps>) {
+  token,
+  ...attrs
+}: Partial<AuthorizationCardProps> & UnknownProps) {
 
   l10n.locale = locale || l10n.locale
 
@@ -52,9 +57,12 @@ export default function ({
   const buttonTxt = pending ? l10n('Cancel') : l10n('Authorize a new access')
 
   return (
-    <div>
-    <Card mb={2}>
-      <CardHeader className='border-0 bg-white' />
+    <Card
+      align='center'
+      border={error ? 'danger' : pending && 'info'}
+      {...attrs}
+    >
+      <CardHeader bg='transparent' className='border-0' />
       <CardBody>
         {pending ? (
           <div>
@@ -72,14 +80,14 @@ export default function ({
           {buttonTxt}
         </Button>
       </CardBody>
-      <CardFooter className='border-0 bg-white'>{error}</CardFooter>
+      <CardFooter bg='transparent' text={error && 'danger'} className='border-0' >
+        {error}
+      </CardFooter>
+      <ControlledAuthenticationModal
+        open={authenticate}
+        onCancel={onCancel}
+        onAuthenticated={onAuthenticated}
+      />
     </Card>
-
-    <ControlledAuthenticationModal
-      open={authenticate}
-      onCancel={onCancel}
-      onAuthenticated={onAuthenticated}
-    />
-    </div>
   )
 }
