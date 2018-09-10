@@ -17,18 +17,23 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { Card, CardBody, CardFooter, CardHeader } from 'bootstrap'
+import { UnknownProps } from 'bootstrap/types'
 import createL10n from 'basic-l10n'
 
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-browser:')
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
 export interface AuthorizedAgentProps {
-  date: Date,
-  agent: string,
+  date: Date
+  agent: string
   locale: string
 }
 
-export default function ({ agent, date, locale }: Partial<AuthorizedAgentProps>) {
+export default function ({
+  agent,
+  date,
+  locale
+}: Partial<AuthorizedAgentProps> & UnknownProps) {
 
   l10n.locale = locale || l10n.locale
 

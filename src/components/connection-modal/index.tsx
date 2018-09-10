@@ -19,6 +19,7 @@ import { createElement } from 'create-element'
 import CopyButton from '../copy-button'
 import Icon from '../icon'
 import { Input, InputGroupAppend } from 'bootstrap'
+import { UnknownProps } from 'bootstrap/types'
 import RecordField from '../record-field'
 import Modal from '../modal'
 import { ModalBody } from 'reactstrap'
@@ -61,14 +62,15 @@ export default function ({
   onCancel,
   onToggleManual,
   onToggleCleartext,
-  onCopy
-}: Partial<ConnectionModalProps>) {
+  onCopy,
+  ...attrs
+}: Partial<ConnectionModalProps> & UnknownProps) {
 
   l10n.locale = locale || l10n.locale
   const icons = !manual ? DEFAULT_COPY_BUTTON_ICONS : void 0
   const title = l10n(manual ? 'Copy' : 'Login')
   return (
-    <Modal isOpen={display} title={l10n(`Login`)} onCancel={onCancel} >
+    <Modal isOpen={display} title={l10n(`Login`)} onCancel={onCancel} {...attrs}>
       <ModalBody>
         {warning && (
           <p class='bg-warning'>WARNING: {warning} !</p>

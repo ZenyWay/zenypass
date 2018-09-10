@@ -21,33 +21,35 @@ import {
   InputGroupText,
   InputGroupPrepend
 } from 'bootstrap'
+import { UnknownProps } from 'bootstrap/types'
 import Icon from './icon'
 import { classes } from 'utils'
 
 export interface IconLabelInputGroupProps {
   id: string
   icon: string
-  className: string
+  invalid: boolean
   size: 'sm' | 'lg'
   onIconClick: (event: MouseEvent) => void
   disabled: boolean
   titleIcon: string
-  [prop: string]: any
+  children: any
 }
 
 export default function ({
   id,
   icon,
   invalid,
+  size,
   onIconClick,
   disabled,
   children,
   titleIcon,
   ...attrs
-}: Partial<IconLabelInputGroupProps>) {
+}: Partial<IconLabelInputGroupProps> & UnknownProps) {
   const _icon = invalid ? 'fa-times' : icon
   return (
-    <InputGroup id={id} {...attrs}>
+    <InputGroup id={id} size={size} {...attrs}>
       {!_icon ? null : (
         <InputGroupPrepend>
           {!onIconClick ? (

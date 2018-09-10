@@ -23,7 +23,6 @@ export interface IconProps {
   icon: string
   fw: boolean
   className: string
-  [prop: string]: any
 }
 
 export default function Icon ({

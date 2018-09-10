@@ -16,6 +16,7 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { InputGroupAppend } from 'bootstrap'
+import { UnknownProps } from 'bootstrap/types'
 import AutoformatRecordField from '../autoformat-record-field'
 import ControlledRecordField from '../record-field'
 import CopyButton from '../copy-button'
@@ -48,7 +49,6 @@ export interface RecordFormProps {
   icons?: Partial<RecordFormIcons>
   placeholders?: Partial<RecordFormPlaceholders>
   locale: string
-  [prop: string]: any
   pendingPassword?: boolean
   pendingLogin?: boolean
   edit?: boolean
@@ -87,7 +87,7 @@ export default function ({
   pendingPassword,
   pendingLogin,
   ...attrs
-}: Partial<RecordFormProps>) {
+}: Partial<RecordFormProps> & UnknownProps) {
   const { id, url, username, keywords, comments, mail } = record
   l10n.locale = locale || l10n.locale // impure !!! TODO fix this
   const RecordField = disabled ? ControlledRecordField : AutoformatRecordField

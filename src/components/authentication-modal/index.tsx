@@ -18,6 +18,7 @@
 //
 import { createElement } from 'create-element'
 import { Form, Label, ModalBody, ModalFooter } from 'reactstrap'
+import { UnknownProps } from 'bootstrap/types'
 import { IconButton } from '../icon'
 import ControlledInput from '../controlled-input'
 import Modal from '../modal'
@@ -26,14 +27,14 @@ const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenyp
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
 export interface AuthenticationModalProps {
-  open: boolean,
-  value: string,
-  error: boolean,
-  pending: boolean,
-  onChange: (value: string) => void,
-  onCancel: () => void,
-  onSubmit: (event: Event) => void,
-  [prop: string]: any
+  open: boolean
+  value: string
+  error: boolean
+  pending: boolean
+  locale: string
+  onChange: (value: string) => void
+  onCancel: () => void
+  onSubmit: (event: Event) => void
 }
 
 export default function ({
@@ -45,7 +46,7 @@ export default function ({
   onSubmit,
   onCancel,
   open
-}: Partial<AuthenticationModalProps>) {
+}: Partial<AuthenticationModalProps> & UnknownProps) {
 
   l10n.locale = locale || l10n.locale
 

@@ -18,6 +18,7 @@
 //
 import { createElement } from 'create-element'
 import { Card, CardBody, CardFooter, CardHeader } from 'bootstrap'
+import { UnknownProps } from 'bootstrap/types'
 import ControlledAuthenticationModal from '../controlled-authentication-modal'
 import { IconButton } from '../icon'
 import createL10n from 'basic-l10n'
@@ -25,18 +26,14 @@ const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenyp
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
 export interface AuthorizationCardProps {
-  authenticate: boolean,
-  error?: string,
-  locale?: string,
-  pending?: boolean,
-  token?: string,
+  authenticate: boolean
+  error?: string
+  locale?: string
+  pending?: boolean
+  token?: string
   onClick: (event: MouseEvent) => void
   onCancel: () => void
   onAuthenticated: (sessionID: string) => void
-}
-
-export interface UnknownProps {
-  [attr: string]: unknown
 }
 
 export default function ({

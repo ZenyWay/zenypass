@@ -18,23 +18,25 @@
 //
 import { createElement } from 'create-element'
 import { Modal, ModalHeader } from 'reactstrap'
+import { UnknownProps } from 'bootstrap/types'
 
 export interface ModalProps {
   isOpen: boolean,
   title: string,
   onCancel: () => void
-  [prop: string]: any
+  children: any
 }
 
 export default function ({
     children,
     isOpen,
     onCancel,
-    title
-  }: Partial<ModalProps>) {
+    title,
+    ...attrs
+  }: Partial<ModalProps> & UnknownProps) {
 
   return (
-    <Modal isOpen={isOpen} toggle={onCancel} autoFocus backdrop>
+    <Modal isOpen={isOpen} toggle={onCancel} autoFocus backdrop {...attrs}>
       <ModalHeader toggle={onCancel} className='bg-info text-white' >
         {title}
       </ModalHeader>

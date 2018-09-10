@@ -16,6 +16,7 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { Input as PassiveInput } from 'bootstrap'
+import { UnknownProps } from 'bootstrap/types'
 import IconLabelInputGroup from '../icon-label-input-group'
 import ControlledInput from '../controlled-input'
 import createL10n, { L10nTag } from 'basic-l10n'
@@ -54,7 +55,8 @@ export interface RecordFieldProps {
   onChange: (value: string) => void
   onIconClick: (event: MouseEvent) => void
   disabled: boolean
-  [prop: string]: any
+  locale: string
+  children: any
 }
 
 export default function ({
@@ -75,7 +77,7 @@ export default function ({
   locale,
   children,
   ...attrs
-}: Partial<RecordFieldProps>) {
+}: Partial<RecordFieldProps> & UnknownProps) {
   l10n.locale = locale || l10n.locale // impure !!! TODO fix this
   const _icon = error ? 'fa-times' : icon || DEFAULT_ICONS[type]
   const Input = disabled ? PassiveInput : ControlledInput

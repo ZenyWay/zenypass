@@ -18,19 +18,19 @@
 //
 import { createElement } from 'create-element'
 import { Col, Container, Row } from 'reactstrap' // TODO replace
+import { UnknownProps } from 'bootstrap/types'
 import AuthorizedAgentCard from './authorized-agent-card'
 import ControlledAuthenticationModal from './controlled-authentication-modal'
 import ControlledAuthorizationCard from './controlled-authorization-card'
 import { classes } from 'utils'
 
 export interface AuthorizationPageProps {
-  agents?: AuthorizedAgentInfo[]
-  authenticate?: boolean
-  error?: string
-  className?: string
-  onCancel?: (err?: any) => void
-  onAuthenticated?: (sessionId: string) => void
-  [prop: string]: any
+  agents: AuthorizedAgentInfo[]
+  authenticate: boolean
+  error: string
+  className: string
+  onCancel: (err?: any) => void
+  onAuthenticated: (sessionId: string) => void
 }
 
 export interface AuthorizedAgentInfo {
@@ -47,7 +47,7 @@ export default function ({
     onCancel,
     className,
     ...attrs
-}: AuthorizationPageProps) {
+}: Partial<AuthorizationPageProps> & UnknownProps) {
   return (
     <Container>
       { error &&
