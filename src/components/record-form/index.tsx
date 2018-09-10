@@ -15,11 +15,11 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
+import { InputGroupAppend } from 'bootstrap'
 import AutoformatRecordField from '../autoformat-record-field'
 import ControlledRecordField from '../record-field'
-import { InputGroupAppend } from '../input-group'
 import CopyButton from '../copy-button'
-import Button from '../button'
+import { IconButton } from '../icon'
 import createL10n, { L10nTag } from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
@@ -94,7 +94,6 @@ export default function ({
 
   return (
     <form key={id} id={id} {...attrs}>
-
       <RecordField
         type='url'
         id={`${id}_url`}
@@ -133,14 +132,18 @@ export default function ({
         locale={locale}
       >
         <InputGroupAppend>
-          <CopyButton id={`${id}_mail__copy-button`} value={mail} outline />
+          <CopyButton id={`${id}_mail_copy-button`} value={mail} outline />
         </InputGroupAppend>
       </ControlledRecordField>
       <ControlledRecordField
         type={cleartext ? 'text' : 'password'}
         id={`${id}_password`}
         className='mb-2'
-        icon={pendingPassword ? 'fa-spin fa-spinner' : getIcon(icons, cleartext ? 'cleartext' : 'password')}
+        icon={
+          pendingPassword
+          ? 'fa-spin fa-spinner'
+          : getIcon(icons, cleartext ? 'cleartext' : 'password')
+        }
         placeholder={cleartext && getPlaceholder(l10n, placeholders, 'password')}
         value={cleartext ? password : '*****'}
         onChange={onChange.bind(void 0, 'password')}
@@ -150,14 +153,20 @@ export default function ({
       >
         <InputGroupAppend>
           {!cleartext ? (
-            <Button
+            <IconButton
               id={`${id}_connexion-button`}
-              icon={pendingLogin ? 'fa-spin fa-spinner' : 'fa-external-link fa-fw'}
+              icon={
+                pendingLogin ? 'fa-spin fa-spinner' : 'fa-external-link fa-fw'
+              }
               outline
               onClick={onLoginExpand}
             />
           ) : (
-            <CopyButton id={`${id}_password__copy-button`} value={password} outline />
+            <CopyButton
+              id={`${id}_password_copy-button`}
+              value={password}
+              outline
+            />
           )}
         </InputGroupAppend>
       </ControlledRecordField>
@@ -185,24 +194,23 @@ export default function ({
         locale={locale}
       />
       <InputGroupAppend>
-        <Button
+        <IconButton
           color='light'
           className='border-secondary mb-2'
           icon = {'fa-lock fa-fw'}
-          disabled>
-        </Button>
+          disabled
+        />
         <p className='form-control-static pl-3'>{l10n('Strict lock')}</p>
       </InputGroupAppend>
       <InputGroupAppend>
-       <Button
+        <IconButton
           color='light'
           icon = {'fa-sign-in fa-fw'}
           className='border-secondary mb-2'
-          disabled>
-        </Button>
+          disabled
+        />
         <p className='form-control-static pl-3'>{l10n('Automatic login')}</p>
       </InputGroupAppend>
-
     </form>
   )
 }

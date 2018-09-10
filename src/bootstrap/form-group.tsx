@@ -16,29 +16,20 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { classes } from 'utils'
+import { UnknownProps } from './types'
 
-export interface InputProps {
-  type: string
-  invalid: boolean
+export interface FormGroupProps {
+  size: 'sm' | 'lg' | '' | false
   className: string
-  blurOnEnterKey: boolean
-  [prop: string]: any
 }
 
-const onKeyPress = ({ target, key }) => (key === 'Enter') && target.blur()
-
-export default function ({
-  type,
-  invalid,
+export function FormGroup ({
+  size,
   className,
-  blurOnEnterKey,
   ...attrs
-}: Partial<InputProps>) {
-  const Tag = type === 'textarea' ? type : 'input'
-  return <Tag
-    type={type}
-    className={classes(invalid && 'is-invalid', className)}
-    onKeyPress={blurOnEnterKey && onKeyPress}
+}: Partial<FormGroupProps> & UnknownProps) {
+  return <div
+    className={classes('form-group', size && `form-group-${size}`, className)}
     {...attrs}
   />
 }

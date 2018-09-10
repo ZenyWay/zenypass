@@ -17,8 +17,10 @@
 /** @jsx createElement */
 //
 import { createElement } from 'create-element'
-import { ControlledAuthorizationCard, ControlledAuthenticationModal, AuthorizedAgentCard } from 'components'
-import { Col, Container, Row } from 'reactstrap'
+import { Col, Container, Row } from 'reactstrap' // TODO replace
+import AuthorizedAgentCard from './authorized-agent-card'
+import ControlledAuthenticationModal from './controlled-authentication-modal'
+import ControlledAuthorizationCard from './controlled-authorization-card'
 import { classes } from 'utils'
 
 export interface AuthorizationPageProps {
@@ -75,7 +77,7 @@ export default function ({
 }
 
 const Colonne = ({ children }) => (
-  <Col xl='4' md='6' sm='12' className='text-center rounded'>
+  <Col xl='4' md='6' className='text-center rounded'>
     {children}
   </Col>
 )

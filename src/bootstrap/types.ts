@@ -1,5 +1,7 @@
-/*
- * Copyright 2018 Stephane M. Catala
+/**
+ * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
+ * @author Stephane M. Catala
+ * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,16 +14,9 @@
  * Limitations under the License.
  */
 //
+export type BasicColor = 'primary' | 'secondary' | 'success' | 'danger'
+  | 'warning' | 'info' | 'light' | 'dark'
 
-import {
-  createControlledInput,
-  ControlledInputProps,
-  ComponentClass
-} from 'hocs'
-import Input, { InputProps } from './input'
-
-export default createControlledInput(
-  Input
-)
-
-export { ControlledInputProps, ComponentClass }
+export interface UnknownProps {
+  [attr: string]: unknown
+}

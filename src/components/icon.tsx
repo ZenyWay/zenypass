@@ -15,6 +15,8 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
+import { Button, ButtonProps } from 'bootstrap'
+import { UnknownProps } from 'bootstrap/types'
 import { classes } from 'utils'
 
 export interface IconProps {
@@ -24,8 +26,30 @@ export interface IconProps {
   [prop: string]: any
 }
 
-export default function ({ icon, fw, className, ...attrs }: Partial<IconProps>) {
+export default function Icon ({
+  icon,
+  fw,
+  className,
+  ...attrs
+}: Partial<IconProps> & UnknownProps) {
   return (
     <i className={classes('fa', fw && `fa-fw`, icon, className)} {...attrs} />
+  )
+}
+
+export interface IconButtonProps extends ButtonProps {
+  icon: string
+}
+
+export function IconButton ({
+  icon,
+  children,
+  ...attrs
+}: Partial<IconButtonProps> & UnknownProps) {
+  return (
+    <Button {...attrs}>
+      <Icon icon={icon} fw/>
+      {children}
+    </Button>
   )
 }

@@ -17,42 +17,36 @@
 //
 import { createElement } from 'create-element'
 import { classes } from 'utils'
-
-export type BasicColor = 'primary' | 'secondary' | 'success' | 'danger'
-  | 'warning' | 'info' | 'light' | 'dark' | 'white'
+import { BasicColor, UnknownProps } from './types'
 
 export interface CardProps {
   rounded: boolean
-  border: BasicColor | '' | false
-  bg: BasicColor | 'transparent' | '' | false
+  border: BasicColor | 'white' | '' | false
+  bg: BasicColor | 'white' | 'transparent' | '' | false
   align: 'left' | 'center' | 'right' | '' | false
-  text: BasicColor | 'muted' | '' | false
+  text: BasicColor | 'white' | 'muted' | '' | false
   className: string
 }
 
-export interface UnknownProps {
-  [attr: string]: unknown
-}
-
-export default function (props: Partial<CardProps> & UnknownProps) {
-  return Card(props)
+export function Card (props: Partial<CardProps> & UnknownProps) {
+  return CardFragment(props)
 }
 
 export function CardHeader (props: Partial<CardProps> & UnknownProps) {
-  return Card({ ...props, type: 'header' })
+  return CardFragment({ ...props, type: 'header' })
 }
 
 export function CardBody (props: Partial<CardProps> & UnknownProps) {
-  return Card({ ...props, type: 'body' })
+  return CardFragment({ ...props, type: 'body' })
 }
 
 export function CardFooter (props: Partial<CardProps> & UnknownProps) {
-  return Card({ ...props, type: 'footer' })
+  return CardFragment({ ...props, type: 'footer' })
 }
 
-type CardType = 'header' | 'body' | 'footer'
+type CardFragmentType = 'header' | 'body' | 'footer'
 
-function Card ({
+function CardFragment ({
   type,
   border,
   bg,
@@ -61,7 +55,7 @@ function Card ({
   align,
   className,
   ...attrs
-}: Partial<CardProps & { type: CardType }> & UnknownProps) {
+}: Partial<CardProps & { type: CardFragmentType }> & UnknownProps) {
   const classNames = classes(
     type ? `card-${type}` : 'card',
     border && `border-${border}`,

@@ -7,6 +7,7 @@
   "browser": {
     "component-from-events": "./src/component-from-events",
     "components": "./src/components",
+    "bootstrap": "./src/bootstrap",
     "create-element": "./src/create-element",
     "hocs": "./src/hocs",
     "utils": "./src/utils"

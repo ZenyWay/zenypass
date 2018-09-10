@@ -1,5 +1,7 @@
-/*
- * Copyright 2018 Stephane M. Catala
+/**
+ * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
+ * @author Stephane M. Catala
+ * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
-/** @jsx createElement */
-import {
-  createControlledConnectionModal,
-  ControlledConnectionModalProps,
-  ComponentClass
-} from 'hocs'
-import ConnectionModal, { ConnectionModalProps } from './connection-modal'
-
-export { ControlledConnectionModalProps, ComponentClass }
-export default createControlledConnectionModal <ConnectionModalProps>(
-  ConnectionModal
-) as ComponentClass<ControlledConnectionModalProps>
+export { Button, ButtonProps } from './button'
+export { Card, CardHeader, CardBody, CardFooter, CardProps } from './card'
+export { FormGroup, FormGroupProps } from './form-group'
+export { Input, InputProps } from './input'
+export {
+  InputGroup,
+  InputGroupAppend,
+  InputGroupPrepend,
+  InputGroupText,
+  InputGroupProps,
+  InputGroupAddonProps
+} from './input-group'

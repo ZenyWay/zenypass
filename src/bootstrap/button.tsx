@@ -15,38 +15,29 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Icon } from 'components'
 import { classes } from 'utils'
+import { BasicColor, UnknownProps } from './types'
 
 export interface ButtonProps {
   active: boolean
   block: boolean
   className: string
-  color: ButtonColor | '' | false
+  color: BasicColor | 'link' | '' | false
   outline: boolean
   size: 'lg' | 'sm' | '' | false
-  icon: string
   href: string
   disabled: boolean
   onClick: (event: MouseEvent) => void
   children: any // TODO
 }
 
-export type ButtonColor = 'primary' | 'secondary' | 'success' | 'danger'
-  | 'warning' | 'info' | 'light' | 'dark' | 'link'
-
-export interface UnknownProps {
-  [attr: string]: unknown
-}
-
-export default function ({
+export function Button ({
   active,
   block,
   className,
   color = 'secondary', // primary | secondary | success | info | warning | danger | link
   outline,
   size,
-  icon,
   href,
   onClick,
   disabled,
@@ -72,7 +63,6 @@ export default function ({
       disabled={disabled}
       {...attrs}
     >
-      {icon ? <Icon icon={icon} fw /> : null}
       {children}
     </Tag>
   )

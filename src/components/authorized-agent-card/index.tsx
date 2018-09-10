@@ -16,7 +16,7 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Card, CardBody, CardFooter, CardHeader } from 'reactstrap'
+import { Card, CardBody, CardFooter, CardHeader } from 'bootstrap'
 import createL10n from 'basic-l10n'
 
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-browser:')

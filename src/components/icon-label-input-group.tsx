@@ -15,11 +15,13 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import InputGroup, {
-  InputGroupPrepend,
-  InputGroupIcon
-} from './input-group'
-import Button from './button'
+import {
+  Button,
+  InputGroup,
+  InputGroupText,
+  InputGroupPrepend
+} from 'bootstrap'
+import Icon from './icon'
 import { classes } from 'utils'
 
 export interface IconLabelInputGroupProps {
@@ -49,20 +51,21 @@ export default function ({
       {!_icon ? null : (
         <InputGroupPrepend>
           {!onIconClick ? (
-            <InputGroupIcon
+            <InputGroupText
               className={classes(invalid && 'border-danger text-danger')}
-              icon={_icon}
-              fw
-            />
+            >
+              <Icon icon={_icon} fw />
+            </InputGroupText>
           ) : (
             <Button
               id={`${id}_toggle-button`}
-              icon={_icon}
               outline
               onClick={onIconClick}
               disabled={disabled}
               title={titleIcon}
-            />
+            >
+              <Icon icon={_icon} fw />
+            </Button>
           )}
         </InputGroupPrepend>
       )}

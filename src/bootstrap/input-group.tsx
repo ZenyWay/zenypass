@@ -15,8 +15,8 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import Icon, { IconProps } from './icon'
 import { classes } from 'utils'
+import { UnknownProps } from './types'
 
 export interface InputGroupProps extends InputGroupAddonProps {
   size: 'sm' | 'lg'
@@ -24,14 +24,13 @@ export interface InputGroupProps extends InputGroupAddonProps {
 
 export interface InputGroupAddonProps {
   className: string
-  [prop: string]: any
 }
 
-export default function ({
+export function InputGroup ({
   size,
   className,
   ...attrs
-}: Partial<InputGroupProps>) {
+}: Partial<InputGroupProps> & UnknownProps) {
   return <div
     className={classes('input-group', size && `input-group-${size}`, className)}
     {...attrs}
@@ -41,27 +40,20 @@ export default function ({
 export function InputGroupPrepend ({
   className,
   ...attrs
-}: Partial<InputGroupAddonProps>) {
+}: Partial<InputGroupAddonProps> & UnknownProps) {
   return <div className={classes('input-group-prepend', className)} {...attrs} />
 }
 
 export function InputGroupAppend ({
   className,
   ...attrs
-}: Partial<InputGroupAddonProps>) {
+}: Partial<InputGroupAddonProps> & UnknownProps) {
   return <div className={classes('input-group-append', className)} {...attrs} />
 }
 
 export function InputGroupText ({
   className,
   ...attrs
-}: Partial<InputGroupAddonProps>) {
+}: Partial<InputGroupAddonProps> & UnknownProps) {
   return <div className={classes('input-group-text', className)} {...attrs} />
-}
-
-export function InputGroupIcon ({
-  className,
-  ...attrs
-}: Partial<IconProps>) {
-  return <InputGroupText className={className}><Icon {...attrs} /></InputGroupText>
 }

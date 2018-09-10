@@ -27,10 +27,12 @@ import { tap } from 'rxjs/operators'
 const log = (label: string) => console.log.bind(console, label)
 
 export interface ControlledConnectionModalProps {
+  display: boolean
   name: string
   url: string
   username: string
   password: string
+  onCancel: () => void
 }
 
 interface ControlledConnectionModalState {

@@ -18,8 +18,8 @@
 //
 import { createElement } from 'create-element'
 import { Form, Label, ModalBody, ModalFooter } from 'reactstrap'
-import { Button } from '..'
-import { ControlledInput } from 'components'
+import { IconButton } from '../icon'
+import ControlledInput from '../controlled-input'
 import Modal from '../modal'
 import createL10n from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
@@ -67,15 +67,15 @@ export default function ({
         {error ? <p className='text-danger'>{l10n('Invalid password')}</p> : null}
       </ModalBody>
       <ModalFooter className='bg-light'>
-        <Button
+        <IconButton
           type='submit'
+          icon={pending && 'fa-spinner fa-spin'}
           form='PasswordModalForm'
           color='info'
-          icon = {pending && 'fa-spinner fa-spin'}
           disabled={pending}
         >
           {l10n('Authorize')}
-        </Button>
+        </IconButton>
       </ModalFooter>
     </Modal>
   )

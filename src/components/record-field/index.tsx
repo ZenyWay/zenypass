@@ -15,8 +15,8 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
+import { Input as PassiveInput } from 'bootstrap'
 import IconLabelInputGroup from '../icon-label-input-group'
-import PassiveInput from '../input'
 import ControlledInput from '../controlled-input'
 import createL10n, { L10nTag } from 'basic-l10n'
 

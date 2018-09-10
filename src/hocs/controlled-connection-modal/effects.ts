@@ -50,6 +50,7 @@ export function clearClipboardOnDecontaminating (_: any, state$: Observable<any>
   )
 }
 
+// TODO call onCancel on CANCEL from 'clean'
 export function callOnCancelOnTransitionToClean (_: any, state$: Observable<any>) {
   return state$.pipe(
     sampleOnTransitionToState('clean'),

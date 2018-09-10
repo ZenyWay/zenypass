@@ -17,9 +17,9 @@
 /** @jsx createElement */
 //
 import { createElement } from 'create-element'
-import Button from '../button'
-import Card, { CardBody, CardFooter, CardHeader } from '../card'
+import { Card, CardBody, CardFooter, CardHeader } from 'bootstrap'
 import ControlledAuthenticationModal from '../controlled-authentication-modal'
+import { IconButton } from '../icon'
 import createL10n from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
@@ -70,15 +70,15 @@ export default function ({
             <p className='mb-2'>{token}</p>
           </div>
         ) : null}
-        <Button
+        <IconButton
           color='info'
+          icon={authenticate && 'fa-spinner fa-spin'}
           onClick={onClick}
           className={pending && 'btn-outline-info'}
-          icon={authenticate && 'fa-spinner fa-spin'}
           disabled={authenticate}
         >
           {buttonTxt}
-        </Button>
+        </IconButton>
       </CardBody>
       <CardFooter bg='transparent' text={error && 'danger'} className='border-0' >
         {error}

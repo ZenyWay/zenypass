@@ -11,15 +11,16 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
+//
 import {
-  createCopyButton,
-  CopyButtonProps,
+  createControlledInput,
+  ControlledInputProps,
   ComponentClass
 } from 'hocs'
-import { IconButton } from './icon'
+import { Input } from 'bootstrap'
 
-export default createCopyButton(
-  IconButton
-) as ComponentClass<CopyButtonProps>
+export default createControlledInput(
+  Input
+) as ComponentClass<ControlledInputProps>
 
-export { CopyButtonProps, ComponentClass }
+export { ControlledInputProps, ComponentClass }
