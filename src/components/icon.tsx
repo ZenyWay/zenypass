@@ -47,7 +47,7 @@ export function IconButton ({
 }: Partial<IconButtonProps> & UnknownProps) {
   return (
     <Button {...attrs}>
-      <Icon icon={icon} fw/>
+      {icon ? <Icon icon={icon} fw/> : null}
       {children}
     </Button>
   )
