@@ -17,7 +17,7 @@
 export const RECORD = {
   id: '123456',
   name: 'Example',
-  url: 'https://example.com',
+  url: 'https://randomuser.me/',
   username: 'john.doe@example.com',
   password: 'P@ssw0rd!',
   keywords: ['comma', 'separated', 'values'],

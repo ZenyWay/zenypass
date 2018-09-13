@@ -15,10 +15,10 @@
  * Limitations under the License.
  */
 //
-import reducer from './reducer'
+import reducer, { AutomataState } from './reducer'
 import {
-  callOnCancelOnTransitionToClean,
-  clearClipboardOnDecontaminating,
+  callOnCancelOnCancelling,
+  clearClipboardOnClearingClipboard,
   openWindowOnCopiedWhenEnabled
 } from './effects'
 import componentFromEvents, { redux, connect, SFC, ComponentClass } from '../../component-from-events'
@@ -40,13 +40,14 @@ interface ControlledConnectionModalState {
   manual: boolean
   cleartext: boolean
   error: boolean
-  state: 'clean' | 'danger' | 'contaminated'
+  state: AutomataState
   windowref: any
 }
 
-const WARNINGS = {
-  dirty: 'password-first',
-  contaminated: 'clipboard-contaminated'
+const STATE_TO_COPY_PROP = {
+  'copy-any': 'all',
+  'copy-password': 'password',
+  'copy-username': 'username'
 }
 
 function mapStateToProps ({
@@ -56,8 +57,8 @@ function mapStateToProps ({
   error,
   state
 }: Partial<ControlledConnectionModalState>) {
-  const warning = WARNINGS[state]
-  return { ...props, manual, cleartext, error, warning }
+  const copy = STATE_TO_COPY_PROP[state]
+  return { ...props, manual, cleartext, error, copy }
 }
 
 const copied = createActionFactories({
@@ -83,7 +84,6 @@ export interface ConnectionModalProps {
   password: string
   manual: boolean
   cleartext: boolean
-  warning: boolean
   error: boolean
 }
 
@@ -95,8 +95,8 @@ export default function <P extends ConnectionModalProps> (
     () => tap(log('controlled-connection-modal:event:')),
     redux(
       reducer,
-      callOnCancelOnTransitionToClean,
-      clearClipboardOnDecontaminating,
+      callOnCancelOnCancelling,
+      clearClipboardOnClearingClipboard,
       openWindowOnCopiedWhenEnabled
     ),
     () => tap(log('controlled-connection-modal:state:')),

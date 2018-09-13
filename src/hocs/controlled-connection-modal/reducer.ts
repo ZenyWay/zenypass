@@ -18,46 +18,66 @@
 import createAutomataReducer from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload, not, pluck } from 'utils'
+import { always, mapPayload, not, pluck } from 'utils'
+import { Reducer } from '../../component-from-events'
 
+const mapPayloadIntoWindowref = into('windowref')(mapPayload())
 const clearWindowRef = into('windowref')(always(void 0))
 const mapPayloadIntoError = into('error')(mapPayload(not(pluck('success'))))
 const clearError = into('error')(always(void 0))
 
+export type AutomataState =
+'copy-any' | 'copy-password' | 'copy-username' | 'clear-clipboard'
+| 'clearing-clipboard' | 'cancelling'
+
 const automata = {
-  clean: {
-    USERNAME_COPIED: 'dirty',
-    PASSWORD_COPIED: 'contaminated'
+  'copy-any': {
+    CANCEL: 'cancelling',
+    USERNAME_COPIED: 'copy-password',
+    PASSWORD_COPIED: 'copy-username'
   },
-  dirty: {
-    CANCEL: 'clean',
-    PASSWORD_COPIED: 'contaminated'
+  'copy-password': {
+    WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
+    CANCEL: 'cancelling',
+    PASSWORD_COPIED: 'clear-clipboard'
   },
-  contaminated: {
-    CANCEL: 'decontaminating',
-    USERNAME_COPIED: 'clean'
+  'copy-username': {
+    WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
+    CANCEL: 'clearing-clipboard',
+    USERNAME_COPIED: 'cancelling'
   },
-  decontaminating: {
-    CANCEL: 'clean',
-    CLIPBOARD_CLEARED: 'clean'
+  'clear-clipboard': {
+    CANCEL: 'clearing-clipboard'
+  },
+  'clearing-clipboard': {
+    CANCEL: 'cancelling',
+    CLIPBOARD_CLEARED: 'cancelling'
+  },
+  'cancelling': {
+    CANCELLED: 'copy-any'
   }
 }
 
 const common = {
-  'WINDOW_OPENED': into('windowref')(mapPayload()),
+  'WINDOW_OPEN_REJECTED': into('manual')(always(true)),
   'USERNAME_COPIED': clearError,
   'PASSWORD_COPIED': clearError,
   'COPY_ERROR': mapPayloadIntoError,
   'TOGGLE_MANUAL': propCursor('manual')(not()),
   'TOGGLE_CLEARTEXT': propCursor('cleartext')(not()),
-  'CANCEL': compose.into(0)(clearWindowRef, clearError),
+  'CANCEL': clearError,
+  'CANCELLED': compose.into(0)(clearWindowRef, into('manual')(always(false))),
   'PROPS': into('props')(mapPayload())
 }
 
 export default compose.into(0)(
-  createAutomataReducer(automata, 'clean'),
-  function (state, event) {
-    const reducer = common[event.type]
+  createAutomataReducer(automata, 'copy-any'),
+  createReducers(common)
+)
+
+function createReducers <S> (reducers: { [event: string]: Reducer<S,any> }) {
+  return function (state: S, event) {
+    const reducer = reducers[event.type]
     return reducer ? reducer(state, event) : state
   }
-)
+}

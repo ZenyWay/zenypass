@@ -1,13 +1,11 @@
 {
     "fr": {
-        "Login: Step 1/2": "Connexion : Etape 1/2",
-        "Login: Step 2/2": "Connexion : Etape 2/2",
-        "Copy password": "Copier le mot de passe",
-        "Copy and Open website": "Copier et Ouvrir le site",
-        "Copy username": "Copier le nom d'utilisateur",
         "Close": "Fermer",
+        "Copy": "Copier",
+        "Login": "Connexion",
         "Missing url!": "Aucune adresse web renseignée !",
         "Missing username!": "Aucun nom d'utilisateur renseigné !",
-        "or": "ou"
+        "Open Website on Copy": "Ouvrir le site automatiquement",
+        "Close this dialog box to flush your password from the clipboard": "Fermez cette fenêtre de dialogue pour purger votre mot de passe du presse-papier"
     }
 }

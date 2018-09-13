@@ -13,7 +13,7 @@
  * Limitations under the License.
  */
 //
-import redux, { connect as _connect } from 'component-from-stream-redux'
+import redux, { connect as _connect, Reducer } from 'component-from-stream-redux'
 import componentFromStream, {
   Component,
   ComponentClass,
@@ -34,7 +34,8 @@ export {
   componentFromStream,
   OperatorFactory,
   SFC,
-  redux
+  redux,
+  Reducer
 }
 
 export function connect <S= {},P= {}> (

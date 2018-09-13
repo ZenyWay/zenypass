@@ -25,6 +25,9 @@ import { RECORD } from './helpers/consts'
 const { name, username, password } = RECORD
 
 const attrs = {
+  name,
+  username,
+  password,
   onCancel: action('CANCELLED'),
   onToggleManual: action('TOGGLE_MANUAL'),
   onToggleCleartext: action('TOGGLE_CLEARTEXT'),
@@ -32,32 +35,26 @@ const attrs = {
 }
 
 storiesOf('ConnectionModal', module)
-  .add('default', () => (
+  .add('copy-all', () => (
     <ConnectionModal
       display
-      name={name}
-      username={username}
-      password={password}
+      copy='all'
       {...attrs}
     />
   ))
-  .add('warning', () => (
+  .add('copy-username', () => (
     <ConnectionModal
       display
       warning='password-first'
-      name={name}
-      username={username}
-      password={password}
+      copy='username'
       {...attrs}
     />
   ))
-  .add('error', () => (
+  .add('copy-password', () => (
     <ConnectionModal
       display
-      error='clear-clipboard'
-      name={name}
-      username={username}
-      password={password}
+      warning='clipboard-contaminated'
+      copy='password'
       {...attrs}
     />
   ))
@@ -65,9 +62,7 @@ storiesOf('ConnectionModal', module)
     <ConnectionModal
       display
       cleartext
-      name={name}
-      username={username}
-      password={password}
+      copy='all'
       {...attrs}
     />
   ))
@@ -75,9 +70,20 @@ storiesOf('ConnectionModal', module)
     <ConnectionModal
       display
       manual
-      name={name}
-      username={username}
-      password={password}
+      copy='all'
+      {...attrs}
+    />
+  ))
+  .add('clear-clipboard', () => (
+    <ConnectionModal
+      display
+      {...attrs}
+    />
+  ))
+  .add('clear-clipboard-error', () => (
+    <ConnectionModal
+      display
+      error='clear-clipboard'
       {...attrs}
     />
   ))

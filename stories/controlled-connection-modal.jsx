@@ -22,9 +22,13 @@ import { ControlledConnectionModal } from 'components'
 import { action } from '@storybook/addon-actions'
 import { RECORD } from './helpers/consts'
 
-const { name, username, password } = RECORD
+const { name, url, username, password } = RECORD
 
 const attrs = {
+  name,
+  url,
+  username,
+  password,
   onCancel: action('CANCELLED')
 }
 
@@ -32,9 +36,6 @@ storiesOf('ControlledConnectionModal', module)
   .add('default', () => (
     <ControlledConnectionModal
       display
-      name={name}
-      username={username}
-      password={password}
       {...attrs}
     />
   ))

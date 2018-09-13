@@ -20,43 +20,46 @@ import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   catchError,
   concatMap,
+  distinctUntilKeyChanged,
   filter,
-  ignoreElements,
   map,
   partition,
   pluck,
+  share,
   skip,
   tap,
-  withLatestFrom,
-  distinctUntilKeyChanged
+  withLatestFrom
 } from 'rxjs/operators'
 import { Observable, of as observable, merge } from 'rxjs'
 const copyToClipboard = require('clipboard-copy')
 
 const CLIPBOARD_CLEARED = 'Clipboard cleared by ZenyPass'
 
-const windowOpened = createActionFactory('WINDOW_OPENED')
+const windowOpenResolved = createActionFactory('WINDOW_OPEN_RESOLVED')
+const windowOpenRejected = createActionFactory('WINDOW_OPEN_REJECTED')
 const copyError = createActionFactory('COPY_ERROR')
 const clipboardCleared = createActionFactory('CLIPBOARD_CLEARED')
+const cancelled = createActionFactory('CANCELLED')
 
 const log = (label: string) => console.log.bind(console, label)
 
-export function clearClipboardOnDecontaminating (_: any, state$: Observable<any>) {
+export function clearClipboardOnClearingClipboard (
+  _: any,
+  state$: Observable<any>
+) {
   return state$.pipe(
-    sampleOnTransitionToState('decontaminating'),
+    sampleOnTransitionToState('clearing-clipboard'),
     concatMap(() => copyToClipboard(CLIPBOARD_CLEARED)),
     map(clipboardCleared),
-    catchError(() => observable(copyError(true)))
+    catchError(() => observable(copyError('clear-clipboard')))
   )
 }
 
-// TODO call onCancel on CANCEL from 'clean'
-export function callOnCancelOnTransitionToClean (_: any, state$: Observable<any>) {
+export function callOnCancelOnCancelling (_: any, state$: Observable<any>) {
   return state$.pipe(
-    sampleOnTransitionToState('clean'),
-    filter(hasHandler('onCancel')),
-    tap(({ props }) => props.onCancel()),
-    ignoreElements()
+    sampleOnTransitionToState('cancelling'),
+    tap(({ props }) => props.onCancel && props.onCancel()),
+    map(() => cancelled())
   )
 }
 
@@ -70,17 +73,22 @@ export function openWindowOnCopiedWhenEnabled (
     ),
     withLatestFrom(state$),
     pluck('1'),
-    filter<any>(({ manual }) => !manual)
+    filter<any>(({ manual }) => !manual),
+    share()
   )
 
-  const [focus$, open$] = partition<any>(({ ref }) => ref && !ref.closed)(auto$)
+  const [focus$, open$] = partition<any>(
+    ({ windowref }) => windowref && !windowref.closed
+  )(auto$)
 
   const ref$ = merge(
     open$.pipe(map(({ props }) => window.open(props.url, props.name))),
-    focus$.pipe(tap(({ ref }) => ref.focus()))
+    focus$.pipe(tap(({ windowref }) => windowref.focus()))
   )
 
-  return ref$.pipe(map(windowOpened))
+  return ref$.pipe(
+    map(ref => ref ? windowOpenResolved(ref) : windowOpenRejected())
+  )
 }
 
 function sampleOnTransitionToState (target) {
@@ -90,11 +98,5 @@ function sampleOnTransitionToState (target) {
       skip(1), // initial state
       filter(({ state }) => state === target)
     )
-  }
-}
-
-function hasHandler (prop) {
-  return function ({ props }) {
-    return !!props[prop]
   }
 }

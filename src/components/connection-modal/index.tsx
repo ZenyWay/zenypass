@@ -18,11 +18,11 @@
 import { createElement } from 'create-element'
 import CopyButton from '../copy-button'
 import Icon from '../icon'
-import { Input, InputGroupAppend } from 'bootstrap'
+import { Button, Input, InputGroupAppend } from 'bootstrap'
 import { UnknownProps } from 'bootstrap/types'
 import RecordField from '../record-field'
 import Modal from '../modal'
-import { ModalBody } from 'reactstrap'
+import { ModalBody, ModalFooter } from 'reactstrap'
 import createL10n from 'basic-l10n'
 import { classes } from 'utils'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
@@ -34,8 +34,8 @@ export interface ConnectionModalProps {
   name: string
   username: string
   password: string
+  copy: 'all' | 'username' | 'password' | '' | false
   error: boolean
-  warning: boolean
   cleartext: boolean
   locale: string
   onCancel: () => void
@@ -55,8 +55,8 @@ export default function ({
   name,
   username,
   password,
+  copy,
   error,
-  warning,
   cleartext,
   locale,
   onCancel,
@@ -68,64 +68,86 @@ export default function ({
 
   l10n.locale = locale || l10n.locale
   const icons = !manual ? DEFAULT_COPY_BUTTON_ICONS : void 0
-  const title = l10n(manual ? 'Copy' : 'Login')
+  const copyButtonLabel = l10n('Copy')
+  const copyUsername = copy === 'username'
   return (
     <Modal isOpen={display} title={l10n(`Login`)} onCancel={onCancel} {...attrs}>
       <ModalBody>
-        {warning && (
-          <p class='bg-warning'>WARNING: {warning} !</p>
-        )}
-        {error && (
-          <p class='bg-danger text-white'>ERROR: {error} !</p>
-        )}
         <IconLabelInputFormGroup value={name} size='lg' plaintext />
-        <RecordField
-          type='email'
-          className='mb-2'
-          icon='fa-user'
-          value={username}
-          disabled
-        >
-          <InputGroupAppend>
-            <CopyButton
-              icons={icons}
-              value={username}
-              outline
-              title={title}
-              onCopy={onCopy.bind(void 0, 'username')}
+        {!copy || (copy === 'password')
+        ? (
+          <IconLabelInputFormGroup value={username} icon='fa-user' plaintext />
+        )
+        : (
+          <RecordField
+            type='email'
+            className='mb-2'
+            icon='fa-user'
+            value={username}
+            disabled
+          >
+            <InputGroupAppend>
+              <CopyButton
+                icons={icons}
+                value={username}
+                color={copyUsername ? 'info' : 'secondary' }
+                outline={!copyUsername}
+                onCopy={onCopy.bind(void 0, 'username')}
+              >
+                {copyButtonLabel}
+              </CopyButton>
+            </InputGroupAppend>
+          </RecordField>
+        )}
+        {!copy || (copy === 'username') ? null : (
+          <RecordField
+            type={cleartext ? 'text' : 'password'}
+            className='mb-2'
+            icon={cleartext ? 'fa-eye-slash' : 'fa-eye'}
+            titleIcon={l10n('Show the password')}
+            value={cleartext ? password : '*****'}
+            onIconClick={onToggleCleartext}
+            disabled
+          >
+            <InputGroupAppend>
+              <CopyButton
+                icons={icons}
+                value={password}
+                color='info'
+                onCopy={onCopy.bind(void 0, 'password')}
+              >
+                {copyButtonLabel}
+              </CopyButton>
+            </InputGroupAppend>
+          </RecordField>
+        )}
+        {!copy ? null : (
+          <FormGroup check onClick={copy === 'all' ? onToggleManual : void 0}>
+            <Input
+              type='checkbox'
+              id='manual-checkbox'
+              className='form-check-input'
+              value='automatic'
+              checked={!manual}
+              disabled={copy !== 'all'}
             />
-          </InputGroupAppend>
-        </RecordField>
-        <RecordField
-          type={cleartext ? 'text' : 'password'}
-          className='mb-2'
-          icon={cleartext ? 'fa-eye-slash' : 'fa-eye'}
-          titleIcon={l10n('Show the password')}
-          value={cleartext ? password : '*****'}
-          onIconClick={onToggleCleartext}
-          disabled
-        >
-          <InputGroupAppend>
-            <CopyButton
-              icons={icons}
-              value={password}
-              outline
-              title={title}
-              onCopy={onCopy.bind(void 0, 'password')}
-            />
-          </InputGroupAppend>
-        </RecordField>
-        <FormGroup check>
-          <Input
-            type='checkbox'
-            className='form-check-input'
-            value='automatic'
-            onClick={onToggleManual}
-            checked={!manual}
-          />
-          <Label check>{l10n('Open Website on copy')}</Label>
-        </FormGroup>
+            <Label check for='manual-checkbox'>
+              {l10n('Open Website on Copy')}
+            </Label>
+          </FormGroup>
+        )}
+        {!error ? null : (
+          <p class='bg-danger text-white text-center'>ERROR: {error} !</p>
+        )}
       </ModalBody>
+      {copy ? null : (
+        <ModalFooter>
+          <small class='text-center'>
+            {l10n('Close this dialog box to flush your password from the clipboard')}
+          </small>
+          <Button color='info' onClick={onCancel}>{l10n('Close')}</Button>
+        </ModalFooter>
+      )}
     </Modal>
   )
 }
@@ -147,7 +169,7 @@ function IconLabelInputFormGroup ({
   readonly,
   className,
   ...attrs
-}: Partial<IconLabelInputFormGroupProps>) {
+}: Partial<IconLabelInputFormGroupProps> & UnknownProps) {
   const classNames = classes(
     'w-auto', // override w-100 from 'form-control' for xs & sm
     'form-control',
@@ -156,7 +178,7 @@ function IconLabelInputFormGroup ({
     className
   )
   return (
-    <FormGroup inline>
+    <FormGroup inline {...attrs}>
       {icon && <Label size={size}><Icon icon={icon} fw /></Label>}
       {
         plaintext
@@ -184,7 +206,7 @@ function FormGroup ({
   className,
   children,
   ...attrs
-}: Partial<FormGroupProps>) {
+}: Partial<FormGroupProps> & UnknownProps) {
   const classNames = classes(
     row && 'row',
     check ? 'form-check' : 'form-group',
@@ -212,7 +234,7 @@ function Label ({
   children,
   className,
   ...attrs
-}: Partial<LabelProps>) {
+}: Partial<LabelProps> & UnknownProps) {
   const classNames = classes(
     check ? 'form-check-label' : 'col-form-label',
     size && `col-form-label-${size}`,
