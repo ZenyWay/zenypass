@@ -16,15 +16,14 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import CopyButton from '../copy-button'
-import Icon from '../icon'
 import { Button, FormGroup, Input, InputGroupAppend, Label } from 'bootstrap'
 import { UnknownProps } from 'bootstrap/types'
+import CopyButton from '../copy-button'
+import IconLabelInputFormGroup from '../icon-label-form-group'
 import RecordField from '../record-field'
 import Modal from '../modal'
 import { ModalBody, ModalFooter } from 'reactstrap'
 import createL10n from 'basic-l10n'
-import { classes } from 'utils'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
 
@@ -148,42 +147,5 @@ export default function ({
         </ModalFooter>
       )}
     </Modal>
-  )
-}
-
-export interface IconLabelInputFormGroupProps {
-  value: string
-  icon: string
-  size: 'sm' | 'lg'
-  plaintext: boolean
-  readonly: boolean
-  className: string
-}
-
-function IconLabelInputFormGroup ({
-  icon,
-  value,
-  size,
-  plaintext,
-  readonly,
-  className,
-  ...attrs
-}: Partial<IconLabelInputFormGroupProps> & UnknownProps) {
-  const classNames = classes(
-    'w-auto', // override w-100 from 'form-control' for xs & sm
-    'form-control',
-    size && `form-control-${size}`,
-    plaintext && 'form-control-plaintext',
-    className
-  )
-  return (
-    <FormGroup inline {...attrs}>
-      {icon && <Label size={size}><Icon icon={icon} fw /></Label>}
-      {
-        plaintext
-        ? <span className={classNames}>{value}</span>
-        : <Input className={classNames} readonly={readonly} value={value} />
-      }
-    </FormGroup>
   )
 }
