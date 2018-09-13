@@ -20,16 +20,30 @@ import { UnknownProps } from './types'
 
 export interface FormGroupProps {
   size: 'sm' | 'lg' | '' | false
+  check: boolean
+  row: boolean,
+  inline: boolean
   className: string
+  children: any
 }
 
 export function FormGroup ({
   size,
+  check,
+  row,
+  inline,
   className,
+  children,
   ...attrs
 }: Partial<FormGroupProps> & UnknownProps) {
-  return <div
-    className={classes('form-group', size && `form-group-${size}`, className)}
-    {...attrs}
-  />
+  const classNames = classes(
+    size && `form-group-${size}`,
+    check ? 'form-check' : 'form-group',
+    row && 'row',
+    inline && (check ? 'form-check-inline' : 'form-inline'),
+    className
+  )
+  return (
+    <div className={classNames} {...attrs}>{children}</div>
+  )
 }

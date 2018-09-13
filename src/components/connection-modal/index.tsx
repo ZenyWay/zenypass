@@ -18,7 +18,7 @@
 import { createElement } from 'create-element'
 import CopyButton from '../copy-button'
 import Icon from '../icon'
-import { Button, Input, InputGroupAppend } from 'bootstrap'
+import { Button, FormGroup, Input, InputGroupAppend } from 'bootstrap'
 import { UnknownProps } from 'bootstrap/types'
 import RecordField from '../record-field'
 import Modal from '../modal'
@@ -122,16 +122,15 @@ export default function ({
           </RecordField>
         )}
         {!copy ? null : (
-          <FormGroup check onClick={copy === 'all' ? onToggleManual : void 0}>
-            <Input
-              type='checkbox'
-              id='manual-checkbox'
-              className='form-check-input'
-              value='automatic'
-              checked={!manual}
-              disabled={copy !== 'all'}
-            />
-            <Label check for='manual-checkbox'>
+          <FormGroup check onInput={copy === 'all' ? onToggleManual : void 0}>
+            <Label check>
+              <Input
+                type='checkbox'
+                className='form-check-input'
+                value='automatic'
+                checked={!manual}
+                disabled={copy !== 'all'}
+              />
               {l10n('Open Website on Copy')}
             </Label>
           </FormGroup>
@@ -186,36 +185,6 @@ function IconLabelInputFormGroup ({
         : <Input className={classNames} readonly={readonly} value={value} />
       }
     </FormGroup>
-  )
-}
-
-export interface FormGroupProps {
-  check: boolean
-  row: boolean,
-  inline: boolean
-  disabled: boolean
-  className: string
-  children: any
-}
-
-function FormGroup ({
-  check,
-  row,
-  inline,
-  disabled,
-  className,
-  children,
-  ...attrs
-}: Partial<FormGroupProps> & UnknownProps) {
-  const classNames = classes(
-    row && 'row',
-    check ? 'form-check' : 'form-group',
-    inline && (check ? 'form-check-inline' : 'form-inline'),
-    disabled && 'disabled',
-    className
-  )
-  return (
-    <div className={classNames} {...attrs}>{children}</div>
   )
 }
 
