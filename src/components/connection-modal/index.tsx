@@ -18,7 +18,7 @@
 import { createElement } from 'create-element'
 import CopyButton from '../copy-button'
 import Icon from '../icon'
-import { Button, FormGroup, Input, InputGroupAppend } from 'bootstrap'
+import { Button, FormGroup, Input, InputGroupAppend, Label } from 'bootstrap'
 import { UnknownProps } from 'bootstrap/types'
 import RecordField from '../record-field'
 import Modal from '../modal'
@@ -185,31 +185,5 @@ function IconLabelInputFormGroup ({
         : <Input className={classNames} readonly={readonly} value={value} />
       }
     </FormGroup>
-  )
-}
-
-export interface LabelProps {
-  for: string
-  size: 'sm' | 'lg'
-  check: boolean
-  className: string
-  children: any
-}
-
-function Label ({
-  for: htmlFor,
-  size,
-  check,
-  children,
-  className,
-  ...attrs
-}: Partial<LabelProps> & UnknownProps) {
-  const classNames = classes(
-    check ? 'form-check-label' : 'col-form-label',
-    size && `col-form-label-${size}`,
-    className
-  )
-  return (
-    <label htmlFor={htmlFor} className={classNames} {...attrs}>{children}</label>
   )
 }

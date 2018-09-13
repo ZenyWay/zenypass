@@ -13,16 +13,33 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-export { Button, ButtonProps } from './button'
-export { Card, CardHeader, CardBody, CardFooter, CardProps } from './card'
-export { FormGroup, FormGroupProps } from './form-group'
-export { Input, InputProps } from './input'
-export {
-  InputGroup,
-  InputGroupAppend,
-  InputGroupPrepend,
-  InputGroupText,
-  InputGroupProps,
-  InputGroupAddonProps
-} from './input-group'
-export { Label, LabelProps } from './label'
+/** @jsx createElement */
+import { createElement } from 'create-element'
+import { classes } from 'utils'
+import { UnknownProps } from './types'
+
+export interface LabelProps {
+  for: string
+  size: 'sm' | 'lg' | '' | false
+  check: boolean
+  className: string
+  children: any
+}
+
+export function Label ({
+  for: htmlFor,
+  size,
+  check,
+  children,
+  className,
+  ...attrs
+}: Partial<LabelProps> & UnknownProps) {
+  const classNames = classes(
+    check ? 'form-check-label' : 'col-form-label',
+    size && `col-form-label-${size}`,
+    className
+  )
+  return (
+    <label htmlFor={htmlFor} className={classNames} {...attrs}>{children}</label>
+  )
+}
