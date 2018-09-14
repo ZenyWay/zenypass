@@ -5,11 +5,12 @@
   "description": "zero-knowledge open source password manager web-app that syncs and runs everywhere",
   "main": "dist/index.js",
   "browser": {
+    "bootstrap": "./src/bootstrap",
     "component-from-events": "./src/component-from-events",
     "components": "./src/components",
-    "bootstrap": "./src/bootstrap",
     "create-element": "./src/create-element",
     "hocs": "./src/hocs",
+    "reactstrap": "inferno-bootstrap",
     "utils": "./src/utils"
   },
   "scripts": {
@@ -67,8 +68,8 @@
     "component-from-stream-redux": "^0.5.7",
     "debug": "^3.1.0",
     "inferno": "^5.5.0",
+    "inferno-bootstrap": "^5.1.4",
     "inferno-create-element": "^5.5.0",
-    "reactstrap": "^6.4.0",
     "rxjs": "^6.3.2",
     "typestyle": "^2.0.1"
   },

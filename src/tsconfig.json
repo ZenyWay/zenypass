@@ -11,10 +11,12 @@
     ],
     "baseUrl": ".",
     "paths": {
+      "bootstrap": ["bootstrap"],
       "component-from-events": ["component-from-events"],
       "components": ["components"],
       "create-element": ["create-element"],
       "hocs": ["hocs"],
+      "reactstrap": ["../node_modules/inferno-bootstrap"],
       "utils": ["utils"]
     },
     "jsx": "react",
