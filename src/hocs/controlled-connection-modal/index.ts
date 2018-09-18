@@ -19,11 +19,12 @@ import reducer, { AutomataState } from './reducer'
 import {
   callOnCancelOnCancelling,
   clearClipboardOnClearingClipboard,
-  openWindowOnCopiedWhenEnabled
+  openWindowOnClickCopy
 } from './effects'
-import componentFromEvents, { redux, connect, SFC, ComponentClass } from '../../component-from-events'
+import componentFromEvents, { redux, connect, SFC, ComponentClass } from 'component-from-events'
 import { createActionDispatchers, createActionFactory, createActionFactories } from 'basic-fsa-factories'
-import { tap } from 'rxjs/operators'
+import { preventDefault, shallowEqual } from 'utils'
+import { distinctUntilChanged, tap } from 'rxjs/operators'
 const log = (label: string) => console.log.bind(console, label)
 
 export interface ControlledConnectionModalProps {
@@ -46,8 +47,11 @@ interface ControlledConnectionModalState {
 
 const STATE_TO_COPY_PROP = {
   'copy-any': 'all',
+  'copying-any': 'all',
   'copy-password': 'password',
-  'copy-username': 'username'
+  'copying-password': 'password',
+  'copy-username': 'username',
+  'copying-username': 'username'
 }
 
 function mapStateToProps ({
@@ -65,18 +69,23 @@ const copied = createActionFactories({
   'username': 'USERNAME_COPIED',
   'password': 'PASSWORD_COPIED'
 })
+
 const copyError = createActionFactory('COPY_ERROR')
 
 const mapDispatchToProps = createActionDispatchers({
   onCancel: 'CANCEL',
   onToggleManual: 'TOGGLE_MANUAL',
   onToggleCleartext: 'TOGGLE_CLEARTEXT',
-  onCopy (field: string, success: boolean) {
-    return success
-    ? (copied[field] || createActionFactory(`${field.toUpperCase()}_COPIED`))()
-    : copyError(field)
-  }
+  onClickCopy: ['CLICK_COPY', preventDefault],
+  onUsernameCopied: onFieldCopied('username'),
+  onPasswordCopied: onFieldCopied('password')
 })
+
+function onFieldCopied (field: 'username' | 'password') {
+  return function (success: boolean) {
+    return success ? copied[field]() : copyError(field)
+  }
+}
 
 export interface ConnectionModalProps {
   name: string
@@ -85,6 +94,13 @@ export interface ConnectionModalProps {
   manual: boolean
   cleartext: boolean
   error: boolean
+  copy: 'all' | 'password' | 'username' | '' | false
+  onCancel: () => void
+  onToggleManual: (event: MouseEvent) => void
+  onToggleCleartext: (event: MouseEvent) => void
+  onClickCopy: (event: MouseEvent) => void
+  onUsernameCopied: (success: boolean) => void
+  onPasswordCopied: (success: boolean) => void
 }
 
 export default function <P extends ConnectionModalProps> (
@@ -97,10 +113,11 @@ export default function <P extends ConnectionModalProps> (
       reducer,
       callOnCancelOnCancelling,
       clearClipboardOnClearingClipboard,
-      openWindowOnCopiedWhenEnabled
+      openWindowOnClickCopy
     ),
     () => tap(log('controlled-connection-modal:state:')),
     connect(mapStateToProps, mapDispatchToProps),
+    () => distinctUntilChanged(shallowEqual),
     () => tap(log('controlled-connection-modal:view-props:'))
   )
 

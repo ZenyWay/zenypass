@@ -12,6 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "bootstrap": ["bootstrap"],
+      "clipboard-copy": ["clipboard-copy"],
       "component-from-events": ["component-from-events"],
       "components": ["components"],
       "create-element": ["create-element"],

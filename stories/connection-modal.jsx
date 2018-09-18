@@ -21,6 +21,7 @@ import { storiesOf } from '@storybook/react'
 import { ConnectionModal } from 'components'
 import { action } from '@storybook/addon-actions'
 import { RECORD } from './helpers/consts'
+import preventDefaultAction from './helpers/prevent-default'
 
 const { name, username, password } = RECORD
 
@@ -31,7 +32,9 @@ const attrs = {
   onCancel: action('CANCELLED'),
   onToggleManual: action('TOGGLE_MANUAL'),
   onToggleCleartext: action('TOGGLE_CLEARTEXT'),
-  onCopy: action('COPY')
+  onClickCopy: preventDefaultAction('CLICK_COPY'),
+  onUsernameCopied: action('USERNAME_COPIED'),
+  onPasswordCopied: action('USERNAME_COPIED')
 }
 
 storiesOf('ConnectionModal', module)

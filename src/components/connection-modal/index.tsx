@@ -31,6 +31,7 @@ export interface ConnectionModalProps {
   display: boolean
   manual: boolean
   name: string
+  url: string
   username: string
   password: string
   copy: 'all' | 'username' | 'password' | '' | false
@@ -40,7 +41,9 @@ export interface ConnectionModalProps {
   onCancel: () => void
   onToggleManual: (event: MouseEvent) => void
   onToggleCleartext: (event: MouseEvent) => void
-  onCopy: (field: string, success: boolean) => void
+  onClickCopy: (event: MouseEvent) => void
+  onUsernameCopied: (success: boolean) => void
+  onPasswordCopied: (success: boolean) => void
 }
 
 const DEFAULT_COPY_BUTTON_ICONS = {
@@ -52,6 +55,7 @@ export default function ({
   display,
   manual,
   name,
+  url,
   username,
   password,
   copy,
@@ -61,7 +65,9 @@ export default function ({
   onCancel,
   onToggleManual,
   onToggleCleartext,
-  onCopy,
+  onClickCopy,
+  onUsernameCopied,
+  onPasswordCopied,
   ...attrs
 }: Partial<ConnectionModalProps> & UnknownProps) {
 
@@ -69,6 +75,7 @@ export default function ({
   const icons = !manual ? DEFAULT_COPY_BUTTON_ICONS : void 0
   const copyButtonLabel = l10n('Copy')
   const copyUsername = copy === 'username'
+  const href = copy === 'all' ? url : void 0
   return (
     <Modal isOpen={display} title={l10n(`Login`)} onCancel={onCancel} {...attrs}>
       <ModalBody>
@@ -87,11 +94,15 @@ export default function ({
           >
             <InputGroupAppend>
               <CopyButton
+                href={href}
+                target='_blank'
+                rel='noopener'
                 icons={icons}
                 value={username}
                 color={copyUsername ? 'info' : 'secondary' }
                 outline={!copyUsername}
-                onCopy={onCopy.bind(void 0, 'username')}
+                onClick={onClickCopy}
+                onCopied={onUsernameCopied}
               >
                 {copyButtonLabel}
               </CopyButton>
@@ -110,10 +121,14 @@ export default function ({
           >
             <InputGroupAppend>
               <CopyButton
+                href={href}
+                target='_blank'
+                rel='noopener'
                 icons={icons}
                 value={password}
                 color='info'
-                onCopy={onCopy.bind(void 0, 'password')}
+                onClick={onClickCopy}
+                onCopied={onPasswordCopied}
               >
                 {copyButtonLabel}
               </CopyButton>

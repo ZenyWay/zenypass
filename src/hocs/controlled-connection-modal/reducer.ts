@@ -33,17 +33,30 @@ export type AutomataState =
 const automata = {
   'copy-any': {
     CANCEL: 'cancelling',
+    CLICK_COPY: 'copying-any'
+  },
+  'copying-any': {
+    WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
     USERNAME_COPIED: 'copy-password',
-    PASSWORD_COPIED: 'copy-username'
+    PASSWORD_COPIED: 'copy-username',
+    COPY_ERROR: clearWindowRef
   },
   'copy-password': {
-    WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
     CANCEL: 'cancelling',
+    WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
+    CLICK_COPY: 'copying-password'
+  },
+  'copying-password': {
+    USERNAME_COPIED: 'copy-password',
     PASSWORD_COPIED: 'clear-clipboard'
   },
   'copy-username': {
-    WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
     CANCEL: 'clearing-clipboard',
+    WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
+    CLICK_COPY: 'copying-username'
+  },
+  'copying-username': {
+    PASSWORD_COPIED: 'copy-username',
     USERNAME_COPIED: 'cancelling'
   },
   'clear-clipboard': {

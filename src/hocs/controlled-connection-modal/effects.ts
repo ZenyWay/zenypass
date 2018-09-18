@@ -30,8 +30,8 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators'
-import { Observable, of as observable, merge } from 'rxjs'
-const copyToClipboard = require('clipboard-copy')
+import { Observable, of as observable, merge, pipe, zip } from 'rxjs'
+import copyToClipboard from 'clipboard-copy'
 
 const CLIPBOARD_CLEARED = 'Clipboard cleared by ZenyPass'
 
@@ -63,32 +63,28 @@ export function callOnCancelOnCancelling (_: any, state$: Observable<any>) {
   )
 }
 
-export function openWindowOnCopiedWhenEnabled (
+export function openWindowOnClickCopy (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  const auto$ = event$.pipe(
-    filter(
-      ({ type }) => (type === 'USERNAME_COPIED') || (type === 'PASSWORD_COPIED')
-    ),
+  return event$.pipe(
+    filter(({ type }) => type === 'CLICK_COPY'),
+    pluck('payload'),
     withLatestFrom(state$),
-    pluck('1'),
-    filter<any>(({ manual }) => !manual),
-    share()
-  )
-
-  const [focus$, open$] = partition<any>(
-    ({ windowref }) => windowref && !windowref.closed
-  )(auto$)
-
-  const ref$ = merge(
-    open$.pipe(map(({ props }) => window.open(props.url, props.name))),
-    focus$.pipe(tap(({ windowref }) => windowref.focus()))
-  )
-
-  return ref$.pipe(
+    map(([ event, { windowref } ]) => openWindow(event, windowref)),
     map(ref => ref ? windowOpenResolved(ref) : windowOpenRejected())
   )
+}
+
+function openWindow (event, windowref) {
+  if (!windowref) { // || windowref.closed) {
+    const { target } = event
+    if (!target.href) return
+    const ref = window.open(target.href, target.target)
+    return ref
+  }
+  windowref.focus()
+  return windowref
 }
 
 function sampleOnTransitionToState (target) {

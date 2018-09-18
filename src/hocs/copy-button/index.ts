@@ -15,7 +15,6 @@
 //
 import reducer from './reducer'
 import effects from './effects'
-import { preventDefault } from 'utils'
 import componentFromEvents, {
   ComponentClass,
   SFC,
@@ -23,6 +22,7 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
+import { UnknownProps } from 'bootstrap/types'
 import { tap } from 'rxjs/operators'
 
 export {
@@ -31,14 +31,14 @@ export {
 }
 
 export interface CopyButtonProps {
-  value?: string
-  timeout?: number
-  icons?: {
+  value: string
+  timeout: number
+  icons: {
     disabled: string
     enabled: string
   }
-  onCopy?: (success: boolean) => void
-  [attr: string]: any
+  onClick: (event: MouseEvent) => void
+  onCopied: (success: boolean) => void
 }
 
 const DEFAULT_PROPS: Partial<CopyButtonProps> = {
@@ -58,25 +58,24 @@ interface CopyButtonState {
 function mapStateToProps ({ props, state }: CopyButtonState) {
   const disabled = state === 'disabled'
   const icon = props && props.icons && props.icons[state]
-  const { onCopy, ...attrs } = props
+  const { onCopied, onClick, ...attrs } = props
   return { ...attrs, disabled, icon }
 }
 
 const mapDispatchToProps = createActionDispatchers({
-  onClick: ['CLICK', preventDefault]
+  onClick: 'CLICK'
 })
 
 export interface ButtonProps {
   icon?: string
   disabled?: boolean
   onClick: (event: MouseEvent) => void
-  [prop: string]: any
 }
 
 export default function <P extends ButtonProps>(
   Button: SFC<P>
-): ComponentClass<CopyButtonProps> {
-  const CopyButton = componentFromEvents<CopyButtonProps,P>(
+): ComponentClass<Partial<CopyButtonProps> & UnknownProps> {
+  const CopyButton = componentFromEvents<Partial<CopyButtonProps> & UnknownProps,P>(
     Button,
     // () => tap(console.log.bind(console,'copy-button:event:')),
     redux(reducer, ...effects),

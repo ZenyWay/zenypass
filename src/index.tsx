@@ -16,16 +16,36 @@
 /** @jsx createElement */
 import 'symbol-observable' // polyfill
 import { createElement, render } from 'create-element'
-import { AutoformatRecordField } from 'components'
+import { ControlledConnectionModal } from 'components'
 import createL10n from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:app:')
 const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
+
+const RECORD = {
+  id: '123456',
+  name: 'Example',
+  url: 'https://news.ycombinator.com/',
+  username: 'john.doe@example.com',
+  password: 'P@ssw0rd!',
+  keywords: ['comma', 'separated', 'values'],
+  comments: '42 is *'
+}
+
+const { name, url, username, password } = RECORD
+
+const attrs = {
+  name,
+  url,
+  username,
+  password,
+  onCancel: console.log.bind(console, 'CANCEL:')
+}
 
 function App () {
   return (
     <div>
       <h1>{l10n`Welcome to ZenyPass!`}</h1>
-      <AutoformatRecordField type='csv' icon='fa-list-ul' onChange={debug} />
+      <ControlledConnectionModal display {...attrs} />
     </div>
   )
 }

@@ -15,16 +15,19 @@
  */
 //
 import { createActionFactory } from 'basic-fsa-factories'
-import { of as observable } from 'rxjs'
+import { of as observable, merge } from 'rxjs'
 import {
   concatMap,
   delay,
   distinctUntilChanged,
   filter,
+  ignoreElements,
   pluck,
+  share,
+  tap,
   withLatestFrom
 } from 'rxjs/operators'
-const copyToClipboard = require('clipboard-copy')
+import copyToClipboard from 'clipboard-copy'
 
 const expired = createActionFactory('EXPIRED')
 const copied = createActionFactory('COPIED')
@@ -45,14 +48,18 @@ function timeoutAfterDisabled (_, state$) {
   }
 }
 
-function copyToClipboardOnClick (event$, state$) {
-
-  return event$.pipe(
+function copyToClipboardAndCallOnClickOnClick (event$, state$) {
+  const click$ = event$.pipe(
     filter(ofType('CLICK')),
     withLatestFrom(state$),
-    pluck('1'),
-    concatMap(copy)
+    share()
   )
+
+  const copy$ = click$.pipe(pluck('1', 'props'), concatMap(copy))
+
+  const onClick$ = click$.pipe(tap(callOnClick), ignoreElements())
+
+  return merge(copy$, onClick$)
 }
 
 function equals (v) {
@@ -67,19 +74,23 @@ function ofType (t) {
   }
 }
 
-function copy ({ props }) {
-  const { onCopy } = props
+function callOnClick ([ event, { props } ]) {
+  const { onClick } = props
+  if (!onClick) return
+  onClick(event.payload)
+}
 
-  return copyToClipboard(props.value)
+function copy ({ onCopied, value }) {
+  return copyToClipboard(value)
   .then(success(true))
   .catch(success(false))
 
   function success (val: boolean) {
     return function () {
-      onCopy && onCopy(val)
+      onCopied && onCopied(val)
       return copied(val)
     }
   }
 }
 
-export default [timeoutAfterDisabled, copyToClipboardOnClick]
+export default [timeoutAfterDisabled, copyToClipboardAndCallOnClickOnClick]

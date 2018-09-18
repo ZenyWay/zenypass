@@ -18,7 +18,7 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
-import { Button } from 'components'
+import { Button } from 'bootstrap'
 
 const common = {
   className: 'm-1',

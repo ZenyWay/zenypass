@@ -16,10 +16,11 @@ import {
   CopyButtonProps,
   ComponentClass
 } from 'hocs'
+import { UnknownProps } from 'bootstrap/types'
 import { IconButton } from './icon'
 
 export default createCopyButton(
   IconButton
-) as ComponentClass<CopyButtonProps>
+) as ComponentClass<Partial<CopyButtonProps> & UnknownProps>
 
 export { CopyButtonProps, ComponentClass }
