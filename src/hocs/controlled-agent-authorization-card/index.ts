@@ -22,20 +22,20 @@ import componentFromEvents, { redux, connect, SFC, ComponentClass } from '../../
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { tap } from 'rxjs/operators'
 
-export interface ControlledAuthorizationProps {
+export interface ControlledAgentAuthorizationCardProps {
   [prop: string]: any
 }
 
-type AuthorizationState = 'init' | 'authenticating' | 'auth_request' | 'authorizing'
+type AgentAuthorizationCardState = 'init' | 'authenticating' | 'auth_request' | 'authorizing'
 
-interface ControlledAuthorizationState {
-  props: ControlledAuthorizationProps,
-  state: AuthorizationState
+interface ControlledAgentAuthorizationCardState {
+  props: ControlledAgentAuthorizationCardProps,
+  state: AgentAuthorizationCardState
   token?: string,
   error?: string,
 }
 
-function mapStateToProps ({ props, state, token, error }: ControlledAuthorizationState) {
+function mapStateToProps ({ props, state, token, error }: ControlledAgentAuthorizationCardState) {
   return {
     ...props,
     error,
@@ -51,7 +51,7 @@ const mapDispatchToProps = createActionDispatchers({
   onAuthenticated: 'AUTHENTICATED'
 })
 
-export interface AuthorizationCardProps {
+export interface AgentAuthorizationCardProps {
   authenticate?: boolean,
   pending?: boolean,
   error?: string,
@@ -61,10 +61,10 @@ export interface AuthorizationCardProps {
   onAuthenticated: (event: Event) => void
 }
 
-export default function<P extends AuthorizationCardProps>(
+export default function<P extends AgentAuthorizationCardProps>(
   AccessAuthorization: SFC<P>
-): ComponentClass<ControlledAuthorizationProps> {
-  const Access = componentFromEvents<ControlledAuthorizationProps,P>(
+): ComponentClass<ControlledAgentAuthorizationCardProps> {
+  const Access = componentFromEvents<ControlledAgentAuthorizationCardProps,P>(
     AccessAuthorization,
     // () => tap(console.log.bind(console,'controlled-authorization-card:event:')),
     redux(reducer, getTokenOnAuthenticated({ authorize })),

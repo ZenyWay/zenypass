@@ -21,10 +21,10 @@ import { Col, Container, Row } from 'reactstrap' // TODO replace
 import { UnknownProps } from 'bootstrap/types'
 import AuthorizedAgentCard from './authorized-agent-card'
 import ControlledAuthenticationModal from './controlled-authentication-modal'
-import ControlledAuthorizationCard from './controlled-authorization-card'
+import ControlledAuthorizationCard from './controlled-agent-authorization-card'
 import { classes } from 'utils'
 
-export interface AuthorizationPageProps {
+export interface AgentAuthorizationsPageProps {
   agents: AuthorizedAgentInfo[]
   authenticate: boolean
   error: string
@@ -49,7 +49,7 @@ export default function ({
     className,
     locale,
     ...attrs
-}: Partial<AuthorizationPageProps> & UnknownProps) {
+}: Partial<AgentAuthorizationsPageProps> & UnknownProps) {
   return (
     <Container>
       { error &&

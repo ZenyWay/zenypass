@@ -19,32 +19,24 @@
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   catchError,
-  concat,
   filter,
   last,
   map,
-  mapTo,
   pluck,
   switchMap,
-  takeUntil,
-  tap,
-  withLatestFrom
+  takeUntil
 } from 'rxjs/operators'
 import { Observable, of as observable } from 'rxjs'
 
 export { StandardAction }
 
-const onServerToken = createActionFactory('SERVER_TOKEN')
+const onAgents = createActionFactory('AGENTS')
 const onServerError = createActionFactory('SERVER_ERROR')
-const onServerDone = createActionFactory('SERVER_DONE')
-const authenticationError = createActionFactory('AUTH_ERROR')
-const authenticate = createActionFactory('AUTHENTICATE')
+const unauthorized = createActionFactory('UNAUTHORIZED')
 
-const log = (label: string) => console.log.bind(console, label)
-
-export function getTokenOnAuthenticated ({ authorize }) {
-
+export function getAgentsOnAuthenticated ({ getAuthorizations$ }) {
   return function (event$, state$: Observable<{}>) {
+
     const unmount$ = state$.pipe(last())
 
     return event$.pipe(
@@ -55,30 +47,21 @@ export function getTokenOnAuthenticated ({ authorize }) {
     )
 
     function authorizing (sessionId) {
-      const cancel$ = event$.pipe(filter(ofType('CLICK')))
 
-      return authorize(sessionId).pipe(
+      return getAuthorizations$(sessionId).pipe(
         takeUntil(unmount$),
-        takeUntil(cancel$),
-        map(onServerToken),
-        concat(observable(onServerDone())),
-        catchError(dealWithError)
+        map(onAgents),
+        catchError(unauthorizedOrServerError)
       )
     }
   }
 }
 
-function dealWithError (err) {
+function unauthorizedOrServerError (err) {
   const status = err && err.status || 501
   return observable(err && err.message || `ERROR ${status}`).pipe(
-    map(status === 401 ? authenticationError : onServerError)
+    map(status === 401 ? unauthorized : onServerError)
   )
-}
-
-function isEqual (ref) {
-  return function (val) {
-    return val === ref
-  }
 }
 
 function ofType (type) {

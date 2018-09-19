@@ -16,9 +16,8 @@
  * Limitations under the License.
  */
 //
-import { Observable, of as observable, throwError } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
-import { concat, ignoreElements, take } from 'rxjs/operators'
+import { ignoreElements } from 'rxjs/operators'
 import { authenticateOnSubmit } from '../../src/hocs/controlled-authentication-modal/effects'
 import { event, assertDeepEqual } from '../helpers'
 

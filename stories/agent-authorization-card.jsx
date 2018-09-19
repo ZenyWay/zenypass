@@ -18,69 +18,34 @@
 //
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import AuthorizationPage from '../src/components/authorization-page'
-
-const agents = [{
-  browser: 'Firefox',
-  date: '2018-07-27',
-  key: 0
-},
-{
-  browser: 'Opera',
-  date: '2018-07-27',
-  key: 1
-},
-{
-  browser: 'Chrome',
-  date: '2018-07-27',
-  key: 2
-},
-{
-  browser: 'Chromium',
-  date: '2018-07-27',
-  key: 3
-},
-{
-  browser: 'Safari',
-  date: '2018-07-27',
-  key: 4
-},
-{
-  browser: 'Edge',
-  date: '2018-07-27',
-  key: 5
-},
-{
-  browser: 'Explorer',
-  date: '2018-07-27',
-  key: 6
-},
-{
-  browser: 'Opera Neon',
-  date: '2018-07-27',
-  key: 7
-},
-{
-  browser: 'Opera Linux',
-  date: '2018-07-27',
-  key: 8
-}
-].map((agent) => (
-  { ...agent, date: new Date(agent.date) }
-))
+import { action } from '@storybook/addon-actions'
+import { AgentAuthorizationCard } from 'components'
+import Wrapper from './helpers/card-wrapper'
 
 const attrs = {
   locale: 'fr',
-  agents
+  onClick: action('CLICK'),
+  token: 'JJJJ JJJJ JJJJ'
 }
 
-storiesOf('AuthorizationPage', module)
+storiesOf('AgentAuthorizationCard', module)
   .add('default', () => (
-    <AuthorizationPage {...attrs} />
-  ))
-  .add('error', () => (
-    <AuthorizationPage {...attrs} error='ERROR' />
+    <Wrapper>
+      <AgentAuthorizationCard {...attrs} />
+    </Wrapper>
   ))
   .add('authenticate', () => (
-    <AuthorizationPage {...attrs} authenticate />
+    <Wrapper>
+      <AgentAuthorizationCard {...attrs} authenticate />
+    </Wrapper>
+  ))
+  .add('authorizing', () => (
+    <Wrapper>
+      <AgentAuthorizationCard {...attrs} pending />
+    </Wrapper>
+  ))
+  .add('error', () => (
+    <Wrapper>
+      <AgentAuthorizationCard {...attrs} error='ERROR' />
+    </Wrapper>
   ))

@@ -15,37 +15,18 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-//
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { action } from '@storybook/addon-actions'
-import { AuthorizationCard } from 'components'
+import { AuthorizedAgentCard } from 'components'
 import Wrapper from './helpers/card-wrapper'
 
-const attrs = {
-  locale: 'fr',
-  onClick: action('CLICK'),
-  token: 'JJJJ JJJJ JJJJ'
-}
-
-storiesOf('AuthorizationCard', module)
+storiesOf('AuthorizedAgentCard', module)
   .add('default', () => (
     <Wrapper>
-      <AuthorizationCard {...attrs} />
-    </Wrapper>
-  ))
-  .add('authenticate', () => (
-    <Wrapper>
-      <AuthorizationCard {...attrs} authenticate />
-    </Wrapper>
-  ))
-  .add('authorizing', () => (
-    <Wrapper>
-      <AuthorizationCard {...attrs} pending />
-    </Wrapper>
-  ))
-  .add('error', () => (
-    <Wrapper>
-      <AuthorizationCard {...attrs} error='ERROR' />
+      <AuthorizedAgentCard
+        browser='OPERA'
+        date='Mardi 10 Juillet 2018'
+        locale='fr'
+      />
     </Wrapper>
   ))

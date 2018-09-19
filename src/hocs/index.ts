@@ -16,8 +16,8 @@ import createAutoformat, { AutoformatProps } from './autoformat'
 import createControlledInput, { ControlledInputProps } from './controlled-input'
 import createAuthenticationModal, { ControlledAuthenticationModalProps } from './controlled-authentication-modal'
 import createCopyButton, { CopyButtonProps } from './copy-button'
-import createControlledAuthorization, { ControlledAuthorizationProps } from './controlled-authorization'
-import createControlledAuthorizationPage, { ControlledAuthorizationPageProps } from './controlled-authorization-page'
+import createControlledAgentAuthorizationCard, { ControlledAgentAuthorizationCardProps } from './controlled-agent-authorization-card'
+import createControlledAgentAuthorizationsPage, { ControlledAgentAuthorizationsPageProps } from './controlled-agent-authorizations-page'
 import createControlledConnectionModal, { ControlledConnectionModalProps } from './controlled-connection-modal'
 
 export {
@@ -31,7 +31,7 @@ export {
   createControlledInput, ControlledInputProps,
   createAuthenticationModal, ControlledAuthenticationModalProps,
   createCopyButton, CopyButtonProps,
-  createControlledAuthorization, ControlledAuthorizationProps,
-  createControlledAuthorizationPage, ControlledAuthorizationPageProps,
+  createControlledAgentAuthorizationCard, ControlledAgentAuthorizationCardProps,
+  createControlledAgentAuthorizationsPage, ControlledAgentAuthorizationsPageProps,
   createControlledConnectionModal, ControlledConnectionModalProps
 }

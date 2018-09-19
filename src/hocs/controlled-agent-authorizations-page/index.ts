@@ -22,11 +22,11 @@ import { createActionDispatchers } from 'basic-fsa-factories'
 import { tap } from 'rxjs/operators'
 import { getAgentsOnAuthenticated } from './effects'
 
-export interface ControlledAuthorizationPageProps {
+export interface ControlledAgentAuthorizationsPageProps {
   [prop: string]: any
 }
 
-export interface AuthorizationPageProps {
+export interface AgentAuthorizationsPageProps {
   agents?: AuthorizedAgentInfo[]
   error?: string
   authenticate?: boolean
@@ -40,8 +40,8 @@ export interface AuthorizedAgentInfo {
   date: Date
 }
 
-interface AuthorizationPageState {
-  props: Partial<ControlledAuthorizationPageProps>
+interface ControlledAuthorizationsPageState {
+  props: Partial<ControlledAgentAuthorizationsPageProps>
   state: 'default' | 'authenticating'
   authorizations?: AuthorizationDoc[]
   error?: string
@@ -49,7 +49,7 @@ interface AuthorizationPageState {
 
 const values = obj => Object.keys(obj || {}).map(key => obj[key])
 
-function mapStateToProps ({ props, authorizations, state, error }: AuthorizationPageState) {
+function mapStateToProps ({ props, authorizations, state, error }: ControlledAuthorizationsPageState) {
   const agents = values(authorizations).map(authorization => ({
     'agent': authorization.identifier,
     'date': new Date(authorization.certified),
@@ -69,9 +69,9 @@ const mapDispatchToProps = createActionDispatchers({
   onAuthenticated: 'AUTHENTICATED'
 })
 
-export default function <P extends AuthorizationPageProps>(
+export default function <P extends AgentAuthorizationsPageProps>(
   AuthorizationPage: SFC<P>
-): any {
+): ComponentClass<ControlledAgentAuthorizationsPageProps> {
   const ControlledAuthorizationPage = componentFromEvents(
     AuthorizationPage,
     // () => tap(console.log.bind(console,'controlled-authorization-page-event:')),

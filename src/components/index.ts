@@ -14,41 +14,61 @@
  * Limitations under the License.
  */
 //
-import AuthenticationModal, { AuthenticationModalProps } from './authentication-modal'
-import AuthorizationCard, { AuthorizationCardProps } from './authorization-card'
-import AuthorizedAgentCard, { AuthorizedAgentProps } from './authorized-agent-card'
-import AutoformatRecordField, { AutoformatProps } from './autoformat-record-field'
-import CopyButton, { CopyButtonProps } from './copy-button'
-import ConnectionModal, { ConnectionModalProps } from './connection-modal'
-import ControlledInput, { ControlledInputProps } from './controlled-input'
+import AuthenticationModal, {
+  AuthenticationModalProps
+} from './authentication-modal'
+import AgentAuthorizationCard, {
+  AuthorizationCardProps
+} from './agent-authorization-card'
+import AgentAuthorizationsPage, {
+  AgentAuthorizationsPageProps
+} from './agent-authorizations-page'
+import AuthorizedAgentCard, {
+  AuthorizedAgentProps
+} from './authorized-agent-card'
+import AutoformatRecordField, {
+  AutoformatProps
+} from './autoformat-record-field'
+import CopyButton, {
+  CopyButtonProps
+} from './copy-button'
+import ConnectionModal, {
+  ConnectionModalProps
+} from './connection-modal'
+import ControlledInput, {
+  ControlledInputProps
+} from './controlled-input'
 import ControlledAuthenticationModal, {
   ControlledAuthenticationModalProps
 } from './controlled-authentication-modal'
-import ControlledAuthorizationCard, {
-  ControlledAuthorizationProps
-} from './controlled-authorization-card'
-import ControlledAuthorizationPage, {
-  ControlledAuthorizationPageProps
-} from './controlled-authorization-page'
+import ControlledAgentAuthorizationCard, {
+  ControlledAgentAuthorizationCardProps
+} from './controlled-agent-authorization-card'
+import ControlledAgentAuthorizationsPage, {
+  ControlledAgentAuthorizationsPageProps
+} from './controlled-agent-authorizations-page'
 import ControlledConnectionModal, {
   ControlledConnectionModalProps
 } from './controlled-connection-modal'
 import Icon, { IconProps } from './icon'
-import IconLabelInputGroup, { IconLabelInputGroupProps } from './icon-label-input-group'
+import IconLabelInputGroup, {
+  IconLabelInputGroupProps
+} from './icon-label-input-group'
 import RecordField, { RecordFieldProps } from './record-field'
 import RecordForm, { RecordFormProps, Record } from './record-form'
 
 export {
   AuthenticationModal, AuthenticationModalProps,
-  AuthorizationCard, AuthorizationCardProps,
+  AgentAuthorizationCard, AuthorizationCardProps,
+  AgentAuthorizationsPage, AgentAuthorizationsPageProps,
   AuthorizedAgentCard, AuthorizedAgentProps,
   AutoformatRecordField, AutoformatProps,
   CopyButton, CopyButtonProps,
   ConnectionModal, ConnectionModalProps,
   ControlledInput, ControlledInputProps,
   ControlledAuthenticationModal, ControlledAuthenticationModalProps,
-  ControlledAuthorizationCard, ControlledAuthorizationProps,
-  ControlledAuthorizationPage, ControlledAuthorizationPageProps,
+  ControlledAgentAuthorizationCard, ControlledAgentAuthorizationCardProps,
+  ControlledAgentAuthorizationsPage, ControlledAgentAuthorizationsPageProps,
   ControlledConnectionModal, ControlledConnectionModalProps,
   Icon, IconProps,
   IconLabelInputGroup, IconLabelInputGroupProps,

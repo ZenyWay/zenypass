@@ -14,13 +14,13 @@
 //
 /** @jsx createElement */
 import {
-    createControlledAuthorizationPage,
-    ControlledAuthorizationPageProps,
+    createControlledAgentAuthorizationsPage,
+    ControlledAgentAuthorizationsPageProps,
     ComponentClass
   } from 'hocs'
-import AuthorizationPage, { AuthorizationPageProps } from './authorization-page'
+import AgentAuthorizationsPage, { AgentAuthorizationsPageProps } from './agent-authorizations-page'
 
-export { ControlledAuthorizationPageProps, ComponentClass }
-export default createControlledAuthorizationPage <AuthorizationPageProps>(
-  AuthorizationPage
-) as ComponentClass<ControlledAuthorizationPageProps>
+export { ControlledAgentAuthorizationsPageProps, ComponentClass }
+export default createControlledAgentAuthorizationsPage <AgentAuthorizationsPageProps>(
+  AgentAuthorizationsPage
+) as ComponentClass<ControlledAgentAuthorizationsPageProps>

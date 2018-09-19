@@ -17,16 +17,18 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { AuthorizedAgentCard } from 'components'
+import { ControlledAgentAuthorizationCard } from 'components'
 import Wrapper from './helpers/card-wrapper'
+import preventDefaultAction from './helpers/prevent-default'
 
-storiesOf('AuthorizedBrowserCard', module)
-  .add('fiche', () => (
+const attrs = {
+  locale: 'fr',
+  onSubmit: preventDefaultAction('CLICKED')
+}
+
+storiesOf('ControlledAuthorizationCard', module)
+  .add('default', () => (
     <Wrapper>
-      <AuthorizedAgentCard
-        browser='OPERA'
-        date='Mardi 10 Juillet 2018'
-        locale='fr'
-      />
+      <ControlledAgentAuthorizationCard {...attrs} />
     </Wrapper>
   ))

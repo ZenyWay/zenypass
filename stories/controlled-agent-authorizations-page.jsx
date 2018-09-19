@@ -1,5 +1,8 @@
-/*
- * Copyright 2018 Stephane M. Catala
+/**
+ * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
+ * @author Stephane M. Catala
+ * @author Clement Bonet
+ * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,14 +14,13 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
 /** @jsx createElement */
-import AuthorizationCard from './authorization-card'
-import {
-  createControlledAuthorization,
-  ControlledAuthorizationProps,
-  ComponentClass
-} from 'hocs'
+//
+import { createElement } from 'create-element'
+import { storiesOf } from '@storybook/react'
+import { ControlledAgentAuthorizationsPage } from 'components'
 
-export { ControlledAuthorizationProps, ComponentClass }
-export default createControlledAuthorization(AuthorizationCard)
+storiesOf('ControlledAuthorizationPage', module)
+  .add('default', () => (
+    <ControlledAgentAuthorizationsPage locale='fr' />
+  ))

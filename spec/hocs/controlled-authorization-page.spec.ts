@@ -16,10 +16,9 @@
  * Limitations under the License.
  */
 //
-import { Observable, of as observable, throwError } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
-import { concat, ignoreElements, take } from 'rxjs/operators'
-import { getAgentsOnAuthenticated } from '../../src/hocs/controlled-authorization-page/effects'
+import { ignoreElements, take } from 'rxjs/operators'
+import { getAgentsOnAuthenticated } from '../../src/hocs/controlled-agent-authorizations-page/effects'
 import { event, assertDeepEqual } from '../helpers'
 
 let scheduler: TestScheduler
