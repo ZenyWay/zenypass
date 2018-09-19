@@ -19,7 +19,7 @@ import reducer, { AutomataState } from './reducer'
 import {
   callOnCancelOnCancelling,
   clearClipboardOnClearingClipboard,
-  openWindowOnClickCopy
+  openWindowOnClickCopyWhenNotManual
 } from './effects'
 import componentFromEvents, { redux, connect, SFC, ComponentClass } from 'component-from-events'
 import { createActionDispatchers, createActionFactory, createActionFactories } from 'basic-fsa-factories'
@@ -113,7 +113,7 @@ export default function <P extends ConnectionModalProps> (
       reducer,
       callOnCancelOnCancelling,
       clearClipboardOnClearingClipboard,
-      openWindowOnClickCopy
+      openWindowOnClickCopyWhenNotManual
     ),
     () => tap(log('controlled-connection-modal:state:')),
     connect(mapStateToProps, mapDispatchToProps),

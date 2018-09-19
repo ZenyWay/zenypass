@@ -63,7 +63,7 @@ export function callOnCancelOnCancelling (_: any, state$: Observable<any>) {
   )
 }
 
-export function openWindowOnClickCopy (
+export function openWindowOnClickCopyWhenNotManual (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -71,6 +71,7 @@ export function openWindowOnClickCopy (
     filter(({ type }) => type === 'CLICK_COPY'),
     pluck('payload'),
     withLatestFrom(state$),
+    filter(([ _, { manual } ]) => !manual),
     map(([ event, { windowref } ]) => openWindow(event, windowref)),
     map(ref => ref ? windowOpenResolved(ref) : windowOpenRejected())
   )
