@@ -22,5 +22,5 @@ import { ControlledAuthorizationPage } from 'components'
 
 storiesOf('ControlledAuthorizationPage', module)
   .add('default', () => (
-    <ControlledAuthorizationPage />
+    <ControlledAuthorizationPage locale='fr' />
   ))

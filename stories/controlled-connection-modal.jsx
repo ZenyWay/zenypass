@@ -29,6 +29,7 @@ const attrs = {
   url,
   username,
   password,
+  locale: 'fr',
   onCancel: action('CANCELLED')
 }
 

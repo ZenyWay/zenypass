@@ -21,9 +21,9 @@ import AutoformatRecordField from '../autoformat-record-field'
 import ControlledRecordField from '../record-field'
 import CopyButton from '../copy-button'
 import { IconButton } from '../icon'
-import createL10n, { L10nTag } from 'basic-l10n'
+import createL10ns, { L10nTag } from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
-const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
+const l10ns = createL10ns(require('./locales.json'), { debug })
 
 export const DEFAULT_ICONS: Partial<RecordFormIcons> = {
   cleartext: 'fa-eye-slash',
@@ -89,7 +89,7 @@ export default function ({
   ...attrs
 }: Partial<RecordFormProps> & UnknownProps) {
   const { id, url, username, keywords, comments, mail } = record
-  l10n.locale = locale || l10n.locale // impure !!! TODO fix this
+  const t = l10ns[locale]
   const RecordField = disabled ? ControlledRecordField : AutoformatRecordField
 
   return (
@@ -99,7 +99,7 @@ export default function ({
         id={`${id}_url`}
         className='mb-2'
         icon={getIcon(icons, 'url')}
-        placeholder={getPlaceholder(l10n, placeholders, 'url')}
+        placeholder={getPlaceholder(t, placeholders, 'url')}
         value={url}
         onChange={edit && onChange.bind(void 0, 'url')}
         disabled={disabled}
@@ -110,7 +110,7 @@ export default function ({
         id={`${id}_username`}
         className='mb-2'
         icon={getIcon(icons, 'username')}
-        placeholder={getPlaceholder(l10n, placeholders, 'username')}
+        placeholder={getPlaceholder(t, placeholders, 'username')}
         value={username}
         onChange={onChange.bind(void 0, 'username')}
         disabled={disabled}
@@ -125,7 +125,7 @@ export default function ({
         id={`${id}_mail`}
         className='mb-2'
         icon={getIcon(icons, 'mail')}
-        placeholder={getPlaceholder(l10n, placeholders, 'mail')}
+        placeholder={getPlaceholder(t, placeholders, 'mail')}
         value={mail}
         onChange={onChange.bind(void 0, 'mail')}
         disabled={disabled}
@@ -144,7 +144,7 @@ export default function ({
           ? 'fa-spin fa-spinner'
           : getIcon(icons, cleartext ? 'cleartext' : 'password')
         }
-        placeholder={cleartext && getPlaceholder(l10n, placeholders, 'password')}
+        placeholder={cleartext && getPlaceholder(t, placeholders, 'password')}
         value={cleartext ? password : '*****'}
         onChange={onChange.bind(void 0, 'password')}
         onIconClick={onToggleCleartext}
@@ -175,7 +175,7 @@ export default function ({
         id={`${id}_keywords`}
         className='mb-2'
         icon={getIcon(icons, 'keywords')}
-        placeholder={getPlaceholder(l10n, placeholders, 'keywords')}
+        placeholder={getPlaceholder(t, placeholders, 'keywords')}
         value={keywords}
         onChange={onChange.bind(void 0, 'keywords')}
         disabled={disabled}
@@ -186,7 +186,7 @@ export default function ({
         id={`${id}_comments`}
         className='mb-2'
         icon={getIcon(icons, 'comments')}
-        placeholder={getPlaceholder(l10n, placeholders, 'comments')}
+        placeholder={getPlaceholder(t, placeholders, 'comments')}
         value={comments}
         rows='3'
         onChange={onChange.bind(void 0, 'comments')}
@@ -200,7 +200,7 @@ export default function ({
           icon = {'fa-lock fa-fw'}
           disabled
         />
-        <p className='form-control-static pl-3'>{l10n('Strict lock')}</p>
+        <p className='form-control-static pl-3'>{t('Strict lock')}</p>
       </InputGroupAppend>
       <InputGroupAppend>
         <IconButton
@@ -209,7 +209,7 @@ export default function ({
           className='border-secondary mb-2'
           disabled
         />
-        <p className='form-control-static pl-3'>{l10n('Automatic login')}</p>
+        <p className='form-control-static pl-3'>{t('Automatic login')}</p>
       </InputGroupAppend>
     </form>
   )

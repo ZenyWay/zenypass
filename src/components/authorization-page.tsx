@@ -29,6 +29,7 @@ export interface AuthorizationPageProps {
   authenticate: boolean
   error: string
   className: string
+  locale: string
   onCancel: (err?: any) => void
   onAuthenticated: (sessionId: string) => void
 }
@@ -46,6 +47,7 @@ export default function ({
     onAuthenticated,
     onCancel,
     className,
+    locale,
     ...attrs
 }: Partial<AuthorizationPageProps> & UnknownProps) {
   return (
@@ -58,17 +60,18 @@ export default function ({
       </Row> }
       <Row className={classes('align-items-center', className)} mb={2} {...attrs}>
         <Colonne>
-          <ControlledAuthorizationCard />
+          <ControlledAuthorizationCard locale={locale} />
         </Colonne>
         { agents.map(({ agent, date, key }) => (
             <Colonne key={key}>
-              <AuthorizedAgentCard agent={agent} date={date} />
+              <AuthorizedAgentCard agent={agent} date={date} locale={locale} />
             </Colonne>
           ))
         }
       </Row>
       <ControlledAuthenticationModal
         open={authenticate}
+        locale={locale}
         onCancel={onCancel}
         onAuthenticated={onAuthenticated}
       />

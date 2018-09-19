@@ -23,9 +23,9 @@ import IconLabelInputFormGroup from '../icon-label-form-group'
 import RecordField from '../record-field'
 import Modal from '../modal'
 import { ModalBody, ModalFooter } from 'reactstrap'
-import createL10n from 'basic-l10n'
+import createL10ns from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
-const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
+const l10ns = createL10ns(require('./locales.json'), { debug })
 
 export interface ConnectionModalProps {
   display: boolean
@@ -71,13 +71,13 @@ export default function ({
   ...attrs
 }: Partial<ConnectionModalProps> & UnknownProps) {
 
-  l10n.locale = locale || l10n.locale
+  const t = l10ns[locale]
   const icons = !manual ? DEFAULT_COPY_BUTTON_ICONS : void 0
-  const copyButtonLabel = l10n('Copy')
+  const copyButtonLabel = t('Copy')
   const copyUsername = copy === 'username'
   const href = copy === 'all' ? url : void 0
   return (
-    <Modal isOpen={display} title={l10n(`Login`)} onCancel={onCancel} {...attrs}>
+    <Modal isOpen={display} title={t('Login')} onCancel={onCancel} {...attrs}>
       <ModalBody>
         <IconLabelInputFormGroup value={name} size='lg' plaintext />
         {!copy || (copy === 'password')
@@ -90,6 +90,7 @@ export default function ({
             className='mb-2'
             icon='fa-user'
             value={username}
+            locale={locale}
             disabled
           >
             <InputGroupAppend>
@@ -114,9 +115,10 @@ export default function ({
             type={cleartext ? 'text' : 'password'}
             className='mb-2'
             icon={cleartext ? 'fa-eye-slash' : 'fa-eye'}
-            titleIcon={l10n('Show the password')}
+            titleIcon={t('Show the password')}
             value={cleartext ? password : '*****'}
             onIconClick={onToggleCleartext}
+            locale={locale}
             disabled
           >
             <InputGroupAppend>
@@ -145,7 +147,7 @@ export default function ({
                 checked={!manual}
                 disabled={copy !== 'all'}
               />
-              {l10n('Open Website on Copy')}
+              {t('Open Website on Copy')}
             </Label>
           </FormGroup>
         )}
@@ -156,9 +158,9 @@ export default function ({
       {copy ? null : (
         <ModalFooter>
           <small class='text-center'>
-            {l10n('Close this dialog box to flush your password from the clipboard')}
+            {t('Close this dialog box to flush your password from the clipboard')}
           </small>
-          <Button color='info' onClick={onCancel}>{l10n('Close')}</Button>
+          <Button color='info' onClick={onCancel}>{t('Close')}</Button>
         </ModalFooter>
       )}
     </Modal>

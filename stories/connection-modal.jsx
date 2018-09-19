@@ -29,6 +29,7 @@ const attrs = {
   name,
   username,
   password,
+  locale: 'fr',
   onCancel: action('CANCELLED'),
   onToggleManual: action('TOGGLE_MANUAL'),
   onToggleCleartext: action('TOGGLE_CLEARTEXT'),

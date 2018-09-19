@@ -19,10 +19,10 @@ import { Input as PassiveInput } from 'bootstrap'
 import { UnknownProps } from 'bootstrap/types'
 import IconLabelInputGroup from '../icon-label-input-group'
 import ControlledInput from '../controlled-input'
-import createL10n, { L10nTag } from 'basic-l10n'
+import createL10ns, { L10nTag } from 'basic-l10n'
 
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
-const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
+const l10ns = createL10ns(require('./locales.json'), { debug })
 
 export const DEFAULT_ICONS = {
   email: 'fa-envelope',
@@ -78,7 +78,7 @@ export default function ({
   children,
   ...attrs
 }: Partial<RecordFieldProps> & UnknownProps) {
-  l10n.locale = locale || l10n.locale // impure !!! TODO fix this
+  const t = l10ns[locale]
   const _icon = error ? 'fa-times' : icon || DEFAULT_ICONS[type]
   const Input = disabled ? PassiveInput : ControlledInput
   return (
@@ -97,7 +97,7 @@ export default function ({
         invalid={!!error}
         value={value}
         placeholder={
-          placeholder || formatPlaceholder(l10n, DEFAULT_PLACEHOLDERS[type])
+          placeholder || formatPlaceholder(t, DEFAULT_PLACEHOLDERS[type])
         }
         autocomplete={autocomplete}
         autocorrect={autocorrect}

@@ -66,10 +66,11 @@ const agents = [{
   key: 8
 }
 ].map((agent) => (
-  {...agent, date: new Date(agent.date)}
+  { ...agent, date: new Date(agent.date) }
 ))
 
 const attrs = {
+  locale: 'fr',
   agents
 }
 

@@ -21,9 +21,9 @@ import { Card, CardBody, CardFooter, CardHeader } from 'bootstrap'
 import { UnknownProps } from 'bootstrap/types'
 import ControlledAuthenticationModal from '../controlled-authentication-modal'
 import { IconButton } from '../icon'
-import createL10n from 'basic-l10n'
+import createL10ns from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
-const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
+const l10ns = createL10ns(require('./locales.json'), { debug })
 
 export interface AuthorizationCardProps {
   authenticate: boolean
@@ -48,10 +48,10 @@ export default function ({
   ...attrs
 }: Partial<AuthorizationCardProps> & UnknownProps) {
 
-  l10n.locale = locale || l10n.locale
+  const t = l10ns[locale]
 
-  const txt = pending && token ? l10n('Access authorization token:') : '...'
-  const buttonTxt = pending ? l10n('Cancel') : l10n('Authorize a new access')
+  const txt = pending && token ? t('Access authorization token:') : '...'
+  const buttonTxt = pending ? t('Cancel') : t('Authorize a new access')
 
   return (
     <Card
@@ -82,6 +82,7 @@ export default function ({
       </CardFooter>
       <ControlledAuthenticationModal
         open={authenticate}
+        locale={locale}
         onCancel={onCancel}
         onAuthenticated={onAuthenticated}
       />

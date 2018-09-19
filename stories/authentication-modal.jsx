@@ -24,6 +24,7 @@ import preventDefaultAction from './helpers/prevent-default'
 import { Button, Modal, ModalBody, ModalHeader, ModalFooter } from 'reactstrap'
 
 const attrs = {
+  locale: 'fr',
   onSubmit: preventDefaultAction('CLICKED'),
   onCancel: action('CANCELLED')
 }

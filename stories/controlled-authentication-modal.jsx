@@ -21,6 +21,7 @@ import { action } from '@storybook/addon-actions'
 import { ControlledAuthenticationModal } from 'components'
 
 const attrs = {
+  locale: 'fr',
   onCancel: action('CANCELLED'),
   onAuthenticated: action('AUTHENTICATED')
 }

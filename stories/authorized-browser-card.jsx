@@ -23,6 +23,10 @@ import Wrapper from './helpers/card-wrapper'
 storiesOf('AuthorizedBrowserCard', module)
   .add('fiche', () => (
     <Wrapper>
-      <AuthorizedAgentCard browser='OPERA' date='Mardi 10 Juillet 2018' />
+      <AuthorizedAgentCard
+        browser='OPERA'
+        date='Mardi 10 Juillet 2018'
+        locale='fr'
+      />
     </Wrapper>
   ))

@@ -22,6 +22,7 @@ import Wrapper from './helpers/card-wrapper'
 import preventDefaultAction from './helpers/prevent-default'
 
 const attrs = {
+  locale: 'fr',
   onSubmit: preventDefaultAction('CLICKED')
 }
 

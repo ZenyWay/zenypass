@@ -23,6 +23,7 @@ import { AuthorizationCard } from 'components'
 import Wrapper from './helpers/card-wrapper'
 
 const attrs = {
+  locale: 'fr',
   onClick: action('CLICK'),
   token: 'JJJJ JJJJ JJJJ'
 }
@@ -35,7 +36,7 @@ storiesOf('AuthorizationCard', module)
   ))
   .add('authenticate', () => (
     <Wrapper>
-      <AuthorizationCard authenticate />
+      <AuthorizationCard {...attrs} authenticate />
     </Wrapper>
   ))
   .add('authorizing', () => (

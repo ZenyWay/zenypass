@@ -22,9 +22,9 @@ import { UnknownProps } from 'bootstrap/types'
 import { IconButton } from '../icon'
 import ControlledInput from '../controlled-input'
 import Modal from '../modal'
-import createL10n from 'basic-l10n'
+import createL10ns from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
-const l10n = createL10n(require('./locales.json'), { debug, locale: 'fr' })
+const l10ns = createL10ns(require('./locales.json'), { debug })
 
 export interface AuthenticationModalProps {
   open: boolean
@@ -48,15 +48,15 @@ export default function ({
   open
 }: Partial<AuthenticationModalProps> & UnknownProps) {
 
-  l10n.locale = locale || l10n.locale
+  const t = l10ns[locale]
 
   return (
-    <Modal isOpen={open} title={l10n('Authorization')} onCancel={onCancel} >
+    <Modal isOpen={open} title={t('Authorization')} onCancel={onCancel} >
       <ModalBody>
         <Form id='PasswordModalForm' onSubmit={onSubmit}>
-          <Label>{l10n('Please enter your ZenyPass password')}</Label>
+          <Label>{t('Please enter your ZenyPass password')}</Label>
           <ControlledInput
-            placeholder={l10n('ZenyPass password')}
+            placeholder={t('ZenyPass password')}
             type='password'
             className={`border-${error ? 'danger' : 'info'} rounded form-control`}
             value={value}
@@ -65,7 +65,7 @@ export default function ({
             autoFocus
           />
         </Form>
-        {error ? <p className='text-danger'>{l10n('Invalid password')}</p> : null}
+        {error ? <p className='text-danger'>{t('Invalid password')}</p> : null}
       </ModalBody>
       <ModalFooter className='bg-light'>
         <IconButton
@@ -75,7 +75,7 @@ export default function ({
           color='info'
           disabled={pending}
         >
-          {l10n('Authorize')}
+          {t('Authorize')}
         </IconButton>
       </ModalFooter>
     </Modal>
