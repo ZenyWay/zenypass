@@ -12,26 +12,28 @@
  * Limitations under the License.
  */
 //
-import createAutoformat, { AutoformatProps } from './autoformat'
-import createControlledInput, { ControlledInputProps } from './controlled-input'
-import createAuthenticationModal, { ControlledAuthenticationModalProps } from './controlled-authentication-modal'
-import createCopyButton, { CopyButtonProps } from './copy-button'
-import createControlledAgentAuthorizationCard, { ControlledAgentAuthorizationCardProps } from './controlled-agent-authorization-card'
-import createControlledAgentAuthorizationsPage, { ControlledAgentAuthorizationsPageProps } from './controlled-agent-authorizations-page'
-import createControlledConnectionModal, { ControlledConnectionModalProps } from './controlled-connection-modal'
-
 export {
   Component,
   ComponentClass,
   SFC
 } from 'component-from-events'
-
+export { autoformatInput, AutoformatInputProps } from './autoformat-input'
+export { controlledInput, ControlledInputProps } from './controlled-input'
+export { copyButton, CopyButtonProps } from './copy-button'
 export {
-  createAutoformat, AutoformatProps,
-  createControlledInput, ControlledInputProps,
-  createAuthenticationModal, ControlledAuthenticationModalProps,
-  createCopyButton, CopyButtonProps,
-  createControlledAgentAuthorizationCard, ControlledAgentAuthorizationCardProps,
-  createControlledAgentAuthorizationsPage, ControlledAgentAuthorizationsPageProps,
-  createControlledConnectionModal, ControlledConnectionModalProps
-}
+  agentAuthorizationCard,
+  AgentAuthorizationCardProps
+} from './agent-authorization-card'
+export {
+  agentAuthorizationsPage,
+  AgentAuthorizationsPageProps
+} from './agent-authorizations-page'
+export {
+  authenticationModal,
+  AuthenticationModalProps
+} from './authentication-modal'
+export {
+  collapsedRecordCard,
+  CollapsedRecordCardProps
+} from './collapsed-record-card'
+export { connectionModal, ConnectionModalProps } from './connection-modal'

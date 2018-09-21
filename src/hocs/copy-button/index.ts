@@ -13,35 +13,42 @@
  * Limitations under the License.
  */
 //
-import reducer from './reducer'
-import effects from './effects'
+import reducer, { AutomataState } from './reducer'
+import { timeoutAfterDisabled, copyToClipboardAndCallOnClickOnClick } from './effects'
 import componentFromEvents, {
   ComponentClass,
+  Rest,
   SFC,
   connect,
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { UnknownProps } from 'bootstrap/types'
 import { tap } from 'rxjs/operators'
 
-export {
-  ComponentClass,
-  SFC
-}
+export type CopyButtonProps<P extends ButtonProps> =
+  CopyButtonControllerProps & Rest<P,ButtonProps>
 
-export interface CopyButtonProps {
-  value: string
-  timeout: number
-  icons: {
+export interface CopyButtonControllerProps {
+  value?: string
+  timeout?: number
+  icons?: {
     disabled: string
     enabled: string
   }
-  onClick: (event: MouseEvent) => void
-  onCopied: (success: boolean) => void
+  onClick?: (event: MouseEvent) => void
+  onCopied?: (success: boolean) => void
 }
 
-const DEFAULT_PROPS: Partial<CopyButtonProps> = {
+export interface ButtonProps extends ButtonHandlerProps {
+  icon?: string
+  disabled?: boolean
+}
+
+export interface ButtonHandlerProps {
+  onClick?: (event: MouseEvent) => void
+}
+
+const DEFAULT_PROPS: Partial<CopyButtonProps<ButtonProps>> = {
   value: '',
   timeout: 500, // ms
   icons: {
@@ -51,40 +58,41 @@ const DEFAULT_PROPS: Partial<CopyButtonProps> = {
 }
 
 interface CopyButtonState {
-  props: CopyButtonProps
-  state: 'disabled' | 'enabled'
+  props: CopyButtonProps<ButtonProps>
+  state: AutomataState
 }
 
-function mapStateToProps ({ props, state }: CopyButtonState) {
+function mapStateToProps (
+  { props, state }: CopyButtonState
+): Rest<ButtonProps, ButtonHandlerProps> {
   const disabled = state === 'disabled'
   const icon = props && props.icons && props.icons[state]
-  const { onCopied, onClick, ...attrs } = props
+  const { value, timeout, icons, onCopied, onClick, ...attrs } = props
   return { ...attrs, disabled, icon }
 }
 
-const mapDispatchToProps = createActionDispatchers({
+const mapDispatchToProps:
+(dispatch: (event: any) => void) => ButtonHandlerProps =
+createActionDispatchers({
   onClick: 'CLICK'
 })
 
-export interface ButtonProps {
-  icon?: string
-  disabled?: boolean
-  onClick: (event: MouseEvent) => void
-}
-
-export default function <P extends ButtonProps>(
+export function copyButton <P extends ButtonProps> (
   Button: SFC<P>
-): ComponentClass<Partial<CopyButtonProps> & UnknownProps> {
-  const CopyButton = componentFromEvents<Partial<CopyButtonProps> & UnknownProps,P>(
+): ComponentClass<CopyButtonProps<P>> {
+  const CopyButton = componentFromEvents<CopyButtonProps<P>,P>(
     Button,
     // () => tap(console.log.bind(console,'copy-button:event:')),
-    redux(reducer, ...effects),
+    redux(reducer, timeoutAfterDisabled, copyToClipboardAndCallOnClickOnClick),
     // () => tap(console.log.bind(console,'copy-button:state:')),
-    connect(mapStateToProps, mapDispatchToProps)
+    connect<CopyButtonState,ButtonProps>(
+      mapStateToProps,
+      mapDispatchToProps
+    )
     // () => tap(console.log.bind(console,'copy-button:props:'))
   )
 
-  CopyButton.defaultProps = DEFAULT_PROPS
+  CopyButton.defaultProps = DEFAULT_PROPS as CopyButtonProps<P>
 
   return CopyButton
 }

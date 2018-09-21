@@ -20,12 +20,12 @@ import { classes } from 'utils'
 import { BasicColor, UnknownProps } from './types'
 
 export interface CardProps {
-  rounded: boolean
-  border: BasicColor | 'white' | '' | false
-  bg: BasicColor | 'white' | 'transparent' | '' | false
-  align: 'left' | 'center' | 'right' | '' | false
-  text: BasicColor | 'white' | 'muted' | '' | false
-  className: string
+  rounded?: boolean
+  border?: BasicColor | 'white' | '' | false
+  bg?: BasicColor | 'white' | 'transparent' | '' | false
+  align?: 'left' | 'center' | 'right' | '' | false
+  text?: BasicColor | 'white' | 'muted' | '' | false
+  className?: string
 }
 
 export function Card (props: Partial<CardProps> & UnknownProps) {

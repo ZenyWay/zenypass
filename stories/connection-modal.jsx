@@ -21,73 +21,22 @@ import { storiesOf } from '@storybook/react'
 import { ConnectionModal } from 'components'
 import { action } from '@storybook/addon-actions'
 import { RECORD } from './helpers/consts'
-import preventDefaultAction from './helpers/prevent-default'
 
-const { name, username, password } = RECORD
+const { name, url, username, password } = RECORD
 
 const attrs = {
   name,
+  url,
   username,
   password,
   locale: 'fr',
-  onCancel: action('CANCELLED'),
-  onToggleManual: action('TOGGLE_MANUAL'),
-  onToggleCleartext: action('TOGGLE_CLEARTEXT'),
-  onClickCopy: preventDefaultAction('CLICK_COPY'),
-  onUsernameCopied: action('USERNAME_COPIED'),
-  onPasswordCopied: action('USERNAME_COPIED')
+  onCancel: action('CANCELLED')
 }
 
 storiesOf('ConnectionModal', module)
-  .add('copy-all', () => (
+  .add('default', () => (
     <ConnectionModal
       display
-      copy='all'
-      {...attrs}
-    />
-  ))
-  .add('copy-username', () => (
-    <ConnectionModal
-      display
-      warning='password-first'
-      copy='username'
-      {...attrs}
-    />
-  ))
-  .add('copy-password', () => (
-    <ConnectionModal
-      display
-      warning='clipboard-contaminated'
-      copy='password'
-      {...attrs}
-    />
-  ))
-  .add('cleartext', () => (
-    <ConnectionModal
-      display
-      cleartext
-      copy='all'
-      {...attrs}
-    />
-  ))
-  .add('manual', () => (
-    <ConnectionModal
-      display
-      manual
-      copy='all'
-      {...attrs}
-    />
-  ))
-  .add('clear-clipboard', () => (
-    <ConnectionModal
-      display
-      {...attrs}
-    />
-  ))
-  .add('clear-clipboard-error', () => (
-    <ConnectionModal
-      display
-      error='clear-clipboard'
       {...attrs}
     />
   ))

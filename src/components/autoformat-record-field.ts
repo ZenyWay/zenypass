@@ -1,5 +1,7 @@
-/*
- * Copyright 2018 Stephane M. Catala
+/**
+ * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
+ * @author Stephane M. Catala
+ * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +15,15 @@
  */
 //
 import {
-  createAutoformat,
-  AutoformatProps,
-  ComponentClass
+  autoformatInput,
+  AutoformatInputProps as AutoformatRecordFieldProps
 } from 'hocs'
-import RecordField from './record-field'
+import {
+  RecordField as RecordFieldSFC,
+  RecordFieldProps as RecordFieldSFCProps
+} from './sfcs/record-field'
 
-export default createAutoformat(RecordField)
+export const AutoformatRecordField =
+  autoformatInput<RecordFieldSFCProps>(RecordFieldSFC)
 
-export { AutoformatProps, ComponentClass }
+export { AutoformatRecordFieldProps }

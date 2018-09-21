@@ -56,6 +56,10 @@ export function identity (v) {
   return v
 }
 
+export function values <T extends {} = {}> (obj: T): (T[keyof T])[] {
+  return (Object.keys(obj || {}) as (keyof T)[]).map(key => obj[key])
+}
+
 export function pluck <T> (...keys) {
   return function (obj: object): T {
     let res: any = obj
@@ -72,6 +76,12 @@ export function pluck <T> (...keys) {
 export function always <T> (value) {
   return function (): T {
     return value
+  }
+}
+
+export function not (fn = identity) {
+  return function (val) {
+    return !fn(val)
   }
 }
 
@@ -104,12 +114,6 @@ export type Reducer<S, V> = (state: S, value: V) => S
 // jsx helper
 export function classes (...classes: string[]): string {
   return classes.filter(Boolean).join(' ')
-}
-
-export function not (fn = identity) {
-  return function (val) {
-    return !fn(val)
-  }
 }
 
 export function preventDefault (event: Event) {

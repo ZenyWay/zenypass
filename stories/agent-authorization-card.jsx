@@ -15,37 +15,20 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-//
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { action } from '@storybook/addon-actions'
 import { AgentAuthorizationCard } from 'components'
 import Wrapper from './helpers/card-wrapper'
+import preventDefaultAction from './helpers/prevent-default'
 
 const attrs = {
   locale: 'fr',
-  onClick: action('CLICK'),
-  token: 'JJJJ JJJJ JJJJ'
+  onSubmit: preventDefaultAction('CLICKED')
 }
 
 storiesOf('AgentAuthorizationCard', module)
   .add('default', () => (
     <Wrapper>
       <AgentAuthorizationCard {...attrs} />
-    </Wrapper>
-  ))
-  .add('authenticate', () => (
-    <Wrapper>
-      <AgentAuthorizationCard {...attrs} authenticate />
-    </Wrapper>
-  ))
-  .add('authorizing', () => (
-    <Wrapper>
-      <AgentAuthorizationCard {...attrs} pending />
-    </Wrapper>
-  ))
-  .add('error', () => (
-    <Wrapper>
-      <AgentAuthorizationCard {...attrs} error='ERROR' />
     </Wrapper>
   ))

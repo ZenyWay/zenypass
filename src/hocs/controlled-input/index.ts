@@ -13,81 +13,86 @@
  * Limitations under the License.
  */
 //
-import reducer from './reducer'
+import reducer, { AutomataState } from './reducer'
 import { callChangeHandlerOnBlurWhenIsChange } from './effects'
 import componentFromEvents, {
-  Children,
-  Component,
   ComponentClass,
-  ComponentFromStreamConstructor,
+  Rest,
   SFC,
   connect,
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { /* distinctUntilChanged,*/ tap } from 'rxjs/operators'
+// import { /* distinctUntilChanged,*/ tap } from 'rxjs/operators'
 // import { shallowEqual } from 'utils'
 
-export {
-  Children,
-  Component,
-  ComponentFromStreamConstructor
-}
+export type ControlledInputProps<P extends InputProps> =
+ControlledInputControllerProps & Rest<P, InputProps>
 
-export interface ControlledInputProps {
-  type?: string // TODO union type
+export interface ControlledInputControllerProps {
   value?: string,
-  autocorrect?: 'off' | 'on'
-  autocomplete?: 'off' | 'on'
+  autocorrect?: 'off' | 'on' | '' | false
+  autocomplete?: 'off' | 'on' | '' | false
   onChange?: (value: string) => void
-  [prop: string]: any
 }
 
-const DEFAULT_PROPS: Partial<ControlledInputProps> = {
-  type: 'text',
-  value: '',
-  autocorrect: 'off',
-  autocomplete: 'off'
-}
-
-export interface InputProps {
-  type?: string // TODO union type
+export interface InputProps extends InputHandlerProps {
   value?: string
-  autocorrect?: 'off' | 'on'
-  autocomplete?: 'off' | 'on'
+  autocorrect?: 'off' | 'on' | '' | false
+  autocomplete?: 'off' | 'on' | '' | false
+}
+
+export interface InputHandlerProps {
   onBlur?: (event: TextEvent) => void
   onInput?: (event: TextEvent) => void
 }
 
-interface ControlledInputState {
-  props: Partial<ControlledInputProps>
-  value: string
+const DEFAULT_PROPS: ControlledInputProps<InputProps> = {
+  value: '',
+  autocomplete: 'off', // autocomplete should be 'off' for proper operation
+  autocorrect: 'off' // ibid
 }
 
-function mapStateToProps ({ props, value }: ControlledInputState) {
+interface ControlledInputState {
+  props: Partial<ControlledInputProps<InputProps>>
+  state: AutomataState
+  value?: string
+}
+
+function mapStateToProps (
+  {
+    props,
+    value
+  }: ControlledInputState
+): Rest<InputProps, InputHandlerProps> {
   const { onChange, ...attrs } = props
   return { ...attrs, value }
 }
 
-const mapDispatchToProps = createActionDispatchers({
+const mapDispatchToProps:
+(dispatch: (event: any) => void) => InputHandlerProps =
+createActionDispatchers({
   onBlur: 'BLUR', // https://github.com/infernojs/inferno/issues/1361
   onInput: 'INPUT'
 })
 
-export default function <P extends InputProps>(
+export function controlledInput <P extends InputProps> (
   Input: SFC<P>
-): ComponentClass<ControlledInputProps> {
-  const ControlledInput = componentFromEvents<ControlledInputProps,P>(
+): ComponentClass<ControlledInputProps<P>> {
+  const ControlledInput = componentFromEvents<ControlledInputProps<P>,P>(
     Input,
     // () => tap(console.log.bind(console, 'controlled-input:EVENT:')),
     redux(reducer, callChangeHandlerOnBlurWhenIsChange),
     // () => tap(console.log.bind(console, 'controlled-input:STATE:')),
-    connect(mapStateToProps, mapDispatchToProps)
+    connect<ControlledInputState,InputProps>(
+      mapStateToProps,
+      mapDispatchToProps
+    )
     // () => distinctUntilChanged(shallowEqual),
     // () => tap(console.log.bind(console, 'controlled-input:PROPS:'))
   )
 
-  ControlledInput.defaultProps = DEFAULT_PROPS
+  ControlledInput.defaultProps = DEFAULT_PROPS as ControlledInputProps<P>
 
   return ControlledInput
 }

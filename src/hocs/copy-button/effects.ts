@@ -32,7 +32,7 @@ import copyToClipboard from 'clipboard-copy'
 const expired = createActionFactory('EXPIRED')
 const copied = createActionFactory('COPIED')
 
-function timeoutAfterDisabled (_, state$) {
+export function timeoutAfterDisabled (_, state$) {
 
   return state$.pipe(
     pluck('state'),
@@ -48,7 +48,7 @@ function timeoutAfterDisabled (_, state$) {
   }
 }
 
-function copyToClipboardAndCallOnClickOnClick (event$, state$) {
+export function copyToClipboardAndCallOnClickOnClick (event$, state$) {
   const click$ = event$.pipe(
     filter(ofType('CLICK')),
     withLatestFrom(state$),
@@ -92,5 +92,3 @@ function copy ({ onCopied, value }) {
     }
   }
 }
-
-export default [timeoutAfterDisabled, copyToClipboardAndCallOnClickOnClick]

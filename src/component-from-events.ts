@@ -38,6 +38,8 @@ export {
   Reducer
 }
 
+export type Rest<T extends U,U extends {} = {}> = Pick<T,Exclude<keyof T, keyof U>>
+
 export function connect <S= {},P= {}> (
   mapStateToProps: (state: S) => Partial<P>,
   mapDispatchToProps: (dispatch: (...args: any[]) => void) => Partial<P>

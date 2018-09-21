@@ -17,7 +17,7 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { AuthorizedAgentCard } from 'components'
+import { AuthorizedAgentCard } from '../src/components/sfcs/authorized-agent-card'
 import Wrapper from './helpers/card-wrapper'
 
 storiesOf('AuthorizedAgentCard', module)

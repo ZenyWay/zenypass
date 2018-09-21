@@ -26,7 +26,7 @@ import {
   withLatestFrom
 } from 'rxjs/operators'
 import { always } from 'utils'
-import { abortOrAuthorize, authorize } from '../hocs/controlled-authentication-modal/effects'
+import { abortOrAuthorize, authorize } from '../hocs/authentication-modal/effects'
 
 const log = (label: string) => console.log.bind(console, label)
 

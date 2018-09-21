@@ -16,21 +16,21 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { classes } from 'utils'
-import { UnknownProps } from './types'
 
 export interface InputGroupProps extends InputGroupAddonProps {
-  size: 'sm' | 'lg'
+  size?: 'sm' | 'lg' | '' | false
 }
 
 export interface InputGroupAddonProps {
-  className: string
+  className?: string
+  [prop: string]: unknown
 }
 
 export function InputGroup ({
   size,
   className,
   ...attrs
-}: Partial<InputGroupProps> & UnknownProps) {
+}: InputGroupProps) {
   return <div
     className={classes('input-group', size && `input-group-${size}`, className)}
     {...attrs}
@@ -40,20 +40,20 @@ export function InputGroup ({
 export function InputGroupPrepend ({
   className,
   ...attrs
-}: Partial<InputGroupAddonProps> & UnknownProps) {
+}: InputGroupAddonProps) {
   return <div className={classes('input-group-prepend', className)} {...attrs} />
 }
 
 export function InputGroupAppend ({
   className,
   ...attrs
-}: Partial<InputGroupAddonProps> & UnknownProps) {
+}: InputGroupAddonProps) {
   return <div className={classes('input-group-append', className)} {...attrs} />
 }
 
 export function InputGroupText ({
   className,
   ...attrs
-}: Partial<InputGroupAddonProps> & UnknownProps) {
+}: InputGroupAddonProps) {
   return <div className={classes('input-group-text', className)} {...attrs} />
 }

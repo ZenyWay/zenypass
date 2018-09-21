@@ -16,14 +16,14 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { classes } from 'utils'
-import { UnknownProps } from './types'
 
 export interface LabelProps {
-  for: string
-  size: 'sm' | 'lg' | '' | false
-  check: boolean
-  className: string
-  children: any
+  for?: string
+  size?: 'sm' | 'lg' | '' | false
+  check?: boolean
+  className?: string
+  children?: any
+  [prop: string]: unknown
 }
 
 export function Label ({
@@ -33,7 +33,7 @@ export function Label ({
   children,
   className,
   ...attrs
-}: Partial<LabelProps> & UnknownProps) {
+}: LabelProps) {
   const classNames = classes(
     check ? 'form-check-label' : 'col-form-label',
     size && `col-form-label-${size}`,

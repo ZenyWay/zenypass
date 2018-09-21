@@ -16,15 +16,15 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { classes } from 'utils'
-import { UnknownProps } from './types'
 
 export interface FormGroupProps {
-  size: 'sm' | 'lg' | '' | false
-  check: boolean
-  row: boolean,
-  inline: boolean
-  className: string
-  children: any
+  size?: 'sm' | 'lg' | '' | false
+  check?: boolean
+  row?: boolean,
+  inline?: boolean
+  className?: string
+  children?: any
+  [prop: string]: unknown
 }
 
 export function FormGroup ({
@@ -35,7 +35,7 @@ export function FormGroup ({
   className,
   children,
   ...attrs
-}: Partial<FormGroupProps> & UnknownProps) {
+}: FormGroupProps) {
   const classNames = classes(
     size && `form-group-${size}`,
     check ? 'form-check' : 'form-group',

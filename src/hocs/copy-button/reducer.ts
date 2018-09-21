@@ -14,12 +14,14 @@
  * Limitations under the License.
  */
 //
-import createAutomataReducer from 'automata-reducer'
+import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { propCursor } from 'basic-cursors'
 import compose from 'basic-compose'
 import { forType, keepIfEqual, mapPayload } from 'utils'
 
-const automata = {
+export type AutomataState = 'enabled' | 'disabled'
+
+const automata: AutomataSpec<AutomataState> = {
   enabled: {
     COPIED: 'disabled'
   },

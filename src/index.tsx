@@ -16,7 +16,7 @@
 /** @jsx createElement */
 import 'symbol-observable' // polyfill
 import { createElement, render } from 'create-element'
-import { ControlledConnectionModal } from 'components'
+import { ConnectionModal } from 'components'
 import createL10ns from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:app:')
 const l10ns = createL10ns(require('./locales.json'), { debug })
@@ -38,6 +38,7 @@ const attrs = {
   url,
   username,
   password,
+  locale: 'fr',
   onCancel: console.log.bind(console, 'CANCEL:')
 }
 
@@ -45,7 +46,7 @@ function App () {
   return (
     <div>
       <h1>{l10ns.fr`Welcome to ZenyPass!`}</h1>
-      <ControlledConnectionModal display {...attrs} />
+      <ConnectionModal display {...attrs} />
     </div>
   )
 }

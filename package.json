@@ -12,6 +12,7 @@
     "create-element": "./src/create-element",
     "hocs": "./src/hocs",
     "reactstrap": "inferno-bootstrap",
+    "services": "./stubs",
     "utils": "./src/utils"
   },
   "scripts": {
@@ -59,7 +60,7 @@
   },
   "homepage": "https://github.com/zenyway/zenypass#readme",
   "dependencies": {
-    "automata-reducer": "^2.0.3",
+    "automata-reducer": "^2.1.0",
     "basic-compose": "^4.0.1",
     "basic-cursors": "^2.2.0",
     "basic-fsa-factories": "^1.0.0",

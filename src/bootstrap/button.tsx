@@ -16,19 +16,20 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { classes } from 'utils'
-import { BasicColor, UnknownProps } from './types'
+import { BasicColor } from './types'
 
 export interface ButtonProps {
-  active: boolean
-  block: boolean
-  className: string
-  color: BasicColor | 'link' | '' | false
-  outline: boolean
-  size: 'lg' | 'sm' | '' | false
-  href: string
-  disabled: boolean
-  onClick: (event: MouseEvent) => void
-  children: any // TODO
+  active?: boolean
+  block?: boolean
+  className?: string
+  color?: BasicColor | 'link' | '' | false
+  outline?: boolean
+  size?: 'lg' | 'sm' | '' | false
+  href?: string
+  disabled?: boolean
+  children?: any // TODO
+  onClick?: (event: MouseEvent) => void
+  [prop: string]: unknown
 }
 
 export function Button ({
@@ -39,11 +40,11 @@ export function Button ({
   outline,
   size,
   href,
-  onClick,
   disabled,
   children,
+  onClick,
   ...attrs
-}: Partial<ButtonProps> & UnknownProps) {
+}: ButtonProps) {
   const Tag = href ? 'a' : 'button'
 
   return (

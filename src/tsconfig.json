@@ -18,6 +18,7 @@
       "create-element": ["create-element"],
       "hocs": ["hocs"],
       "reactstrap": ["../node_modules/inferno-bootstrap"],
+      "services": ["../stubs"],
       "utils": ["utils"]
     },
     "jsx": "react",

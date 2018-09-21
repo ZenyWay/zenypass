@@ -16,13 +16,16 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { classes } from 'utils'
-import { UnknownProps } from './types'
 
 export interface InputProps {
-  type: string
-  invalid: boolean
-  className: string
-  blurOnEnterKey: boolean
+  type?: string
+  value?: string
+  autocomplete?: 'off' | 'on' | '' | false
+  autocorrect?: 'off' | 'on' | '' | false
+  invalid?: boolean
+  className?: string
+  blurOnEnterKey?: boolean
+  [prop: string]: unknown
 }
 
 const onKeyPress = ({ target, key }) => (key === 'Enter') && target.blur()
@@ -33,7 +36,7 @@ export function Input ({
   className,
   blurOnEnterKey,
   ...attrs
-}: Partial<InputProps> & UnknownProps) {
+}: InputProps) {
   const Tag = type === 'textarea' ? type : 'input'
   return <Tag
     type={type}
