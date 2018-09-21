@@ -19,7 +19,7 @@ import {
   autoformatInput,
   AutoformatInputProps as GenericAutoformatInputProps
 } from 'hocs'
-import { ControlledInput, ControlledInputProps } from 'components'
+import { ControlledInput, ControlledInputProps } from './controlled-input'
 
 export const AutoformatInput = autoformatInput<ControlledInputProps>(
   (props: ControlledInputProps) => (<ControlledInput {...props} />)

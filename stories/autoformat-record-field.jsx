@@ -100,7 +100,7 @@ storiesOf('AutoformatRecordField', module)
   ))
   /*
   .add('url-copy-disabled', () => (
-    <RecordField
+    <AutoformatRecordField
       {...attrs}
       id='url-copy-disabled'
       type='url'

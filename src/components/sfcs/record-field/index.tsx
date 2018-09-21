@@ -17,7 +17,7 @@
 import { createElement } from 'create-element'
 import { Input as PassiveInput, InputProps } from 'bootstrap'
 import { IconLabelInputGroup } from '../icon-label-input-group'
-import { AutoformatInput } from '../../autoformat-input'
+import { ControlledInput } from '../../controlled-input'
 import createL10ns, { L10nTag } from 'basic-l10n'
 
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
@@ -79,7 +79,7 @@ export function RecordField ({
 }: RecordFieldProps) {
   const t = l10ns[locale]
   const _icon = error ? 'fa-times' : icon || DEFAULT_ICONS[type]
-  const Input = disabled ? PassiveInput : AutoformatInput
+  const Input = disabled ? PassiveInput : ControlledInput
   return (
     <IconLabelInputGroup
       id={id}

@@ -25,8 +25,8 @@ import componentFromEvents, {
 import { createActionDispatchers } from 'basic-fsa-factories'
 // import { tap } from 'rxjs/operators'
 
-export type AutoformatInputProps<P extends InputProps> =
-  AutoformatInputControllerProps & Rest<P,InputProps>
+export type AutoformatInputProps<P extends ControlledInputProps> =
+  AutoformatInputControllerProps & Rest<P,ControlledInputProps>
 
 export interface AutoformatInputControllerProps {
   type?: string // TODO union type
@@ -35,7 +35,7 @@ export interface AutoformatInputControllerProps {
   onChange?: (value: string) => void
 }
 
-export interface InputProps extends InputHandlerProps {
+export interface ControlledInputProps extends InputHandlerProps {
   type?: string // TODO union type
   value?: string
   error?: string
@@ -45,20 +45,20 @@ export interface InputHandlerProps {
   onChange?: (value: string) => void
 }
 
-const DEFAULT_PROPS: Partial<AutoformatInputProps<InputProps>> = {
+const DEFAULT_PROPS: Partial<AutoformatInputProps<ControlledInputProps>> = {
   type: 'text',
   value: ''
 }
 
 interface AutoformatInputState {
-  props: AutoformatInputProps<InputProps>
+  props: AutoformatInputProps<ControlledInputProps>
   value: string[] | string
   error?: string
 }
 
 function mapStateToProps (
   { props, value, error }: AutoformatInputState
-): Rest<InputProps,InputHandlerProps> {
+): Rest<ControlledInputProps,InputHandlerProps> {
   const { type, format, onChange, ...attrs } = props
   const csv = type === 'csv'
   const _value = csv && Array.isArray(value) ? value.join(',') : value as string
@@ -71,16 +71,16 @@ createActionDispatchers({
   onChange: 'CHANGE'
 })
 
-export function autoformatInput <P extends InputProps> (
-  Input: SFC<P>
+export function autoformatInput <P extends ControlledInputProps> (
+  ControlledInput: SFC<P>
 ): ComponentClass<AutoformatInputProps<P>> {
   const AutoformatInput =
   componentFromEvents<AutoformatInputProps<P>,P>(
-    Input,
+    ControlledInput,
     // () => tap(console.log.bind(console, 'autoformat:EVENT:')),
     redux(reducer, callChangeHandlerOnValidChange),
     // () => tap(console.log.bind(console, 'autoformat:STATE:')),
-    connect<AutoformatInputState,InputProps>(
+    connect<AutoformatInputState,ControlledInputProps>(
       mapStateToProps,
       mapDispatchToProps
     )
