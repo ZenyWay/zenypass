@@ -90,6 +90,7 @@ export function RecordField ({
       buttonTitle={buttonTitle}
     >
       <Input
+        type={type}
         id={`${id}${type ? `_${type}` : ''}_input`}
         className={'form-control'}
         invalid={!!error}
