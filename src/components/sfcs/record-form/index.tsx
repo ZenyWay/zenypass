@@ -90,7 +90,7 @@ export function RecordForm ({
 }: RecordFormProps) {
   const { id, url, username, keywords, comments, mail } = record
   const t = l10ns[locale]
-  const RecordField = disabled ? AutoformatRecordField : PassiveRecordField
+  const RecordField = disabled ? PassiveRecordField : AutoformatRecordField
 
   return (
     <form key={id} id={id} {...attrs}>
@@ -105,7 +105,7 @@ export function RecordForm ({
         disabled={disabled}
         locale={locale}
       />
-      <RecordField
+      <PassiveRecordField
         type='email'
         id={`${id}_username`}
         className='mb-2'
@@ -119,22 +119,7 @@ export function RecordForm ({
         <InputGroupAppend>
           <CopyButton id={`${id}_copy-button`} value={username} outline />
         </InputGroupAppend>
-      </RecordField>
-      <RecordField
-        type='email'
-        id={`${id}_mail`}
-        className='mb-2'
-        icon={getIcon(icons, 'mail')}
-        placeholder={getPlaceholder(t, placeholders, 'mail')}
-        value={mail}
-        onChange={onChange.bind(void 0, 'mail')}
-        disabled={disabled}
-        locale={locale}
-      >
-        <InputGroupAppend>
-          <CopyButton id={`${id}_mail_copy-button`} value={mail} outline />
-        </InputGroupAppend>
-      </RecordField>
+      </PassiveRecordField>
       <RecordField
         type={cleartext ? 'text' : 'password'}
         id={`${id}_password`}

@@ -38,7 +38,7 @@ const attrs = {
   password: 'P@ssw0rd!'
 }
 
-storiesOf('AutoformatRecordForm', module)
+storiesOf('RecordForm', module)
   .add('disabled', () => (
     <RecordForm {...attrs} disabled />
   ))
