@@ -75,7 +75,7 @@ export function ConnectionModal ({
   const href = copy === 'all' ? url : void 0
 
   return (
-    <Modal isOpen={display} onCancel={onCancel} {...attrs}>
+    <Modal isOpen={display} toggle={onCancel} {...attrs}>
       <ModalHeader toggle={onCancel} className='bg-info text-white' >
         {t('Login')}
       </ModalHeader>
