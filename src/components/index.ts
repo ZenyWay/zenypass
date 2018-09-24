@@ -47,13 +47,17 @@ export {
   AutoformatRecordField,
   AutoformatRecordFieldProps
 } from './autoformat-record-field'
-export { CopyButton, CopyButtonProps } from './copy-button'
+export {
+  CollapsedRecordCard as CollapsedRecordCardSFC,
+  CollapsedRecordCardProps as CollapsedRecordCardSFCProps
+} from './sfcs/collapsed-record-card'
 export { ConnectionModal, ConnectionModalProps } from './connection-modal'
 export {
   ConnectionModal as ConnectionModalSFC,
   ConnectionModalProps as ConnectionModalSFCProps
 } from './sfcs/connection-modal'
 export { ControlledInput, ControlledInputProps } from './controlled-input'
+export { CopyButton, CopyButtonProps } from './copy-button'
 export { Icon, IconProps, IconButton, IconButtonProps } from './sfcs/icon'
 export {
   IconLabelInputGroup,

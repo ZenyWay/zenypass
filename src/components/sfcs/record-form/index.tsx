@@ -88,7 +88,7 @@ export function RecordForm ({
   pendingLogin,
   ...attrs
 }: RecordFormProps) {
-  const { id, url, username, keywords, comments, mail } = record
+  const { id, url, username, keywords, comments } = record
   const t = l10ns[locale]
   const RecordField = disabled ? PassiveRecordField : AutoformatRecordField
 

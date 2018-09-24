@@ -16,12 +16,12 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Col, Row } from 'reactstrap' // TODO remove
 import { Button, Card, CardHeader } from 'bootstrap'
-import { UnknownProps } from 'bootstrap/types'
 import { AuthenticationModal } from '../authentication-modal'
 import { ConnectionModal } from '../connection-modal'
-import { Icon } from './icon'
+import { IconButton } from './icon'
+import { IconLabelInputFormGroup } from './icon-label-form-group'
+import { classes } from 'utils'
 
 export interface Record {
   id: string
@@ -39,80 +39,83 @@ export interface CollapsedRecordCardProps {
   record: Record,
   pending?: boolean,
   authenticate?: boolean,
-  login?: boolean
-  onToggleExpand?: () => void,
-  onCopyDone?: () => void,
-  onEdit?: () => void,
-  onLogin?: () => void
-  onCancel?: () => void
-  onAuthenticationCancel?: () => void
+  connect?: boolean
+  className?: string
   onAuthenticated?: (sessionID: string) => void
+  onCancel?: () => void
+  onConnect?: (event: MouseEvent) => void
+  onToggleExpand?: (event: MouseEvent) => void,
 }
 
 export function CollapsedRecordCard ({
-  authenticate,
   locale,
-  login,
-  onAuthenticated,
-  onAuthenticationCancel,
-  onCancel,
-  onCopyDone,
-  onToggleExpand,
-  onLogin,
-  onEdit,
   record,
   pending,
+  authenticate,
+  connect,
+  className,
+  onAuthenticated,
+  onConnect,
+  onCancel,
+  onToggleExpand,
   ...attrs
 }: CollapsedRecordCardProps) {
-
+  const { id, name, url, username } = record
   return (
-    <Card className='mb-2'>
+    <Card className={classes('col-12 col-md-6 col-xl-4 mb-2', className)} {...attrs}>
       <CardHeader className='border-0 bg-white'>
         {
-          record.url ?
-            <a href={record.url} target='_blank'><h4>{record.name}</h4></a>
-          :
-            <h4>{record.name}</h4>
+          url
+          ? (
+            <Button
+              id={`collapsed-record-card-${id}-name-field`}
+              href={url}
+              target='_blank'
+              size='lg'
+              color='light'
+              className='mb-2'
+            >
+              {name}
+            </Button>
+          )
+          : (
+            <IconLabelInputFormGroup
+              id={`${id}_name`}
+              value={name}
+              disabled
+              locale={locale}
+            />
+          )
         }
-          <div>
-            <div className='d-flex justify-content-left'>
-              <span className='p-2'>
-                <i className='fa fa-fw fa-user'></i>
-              </span>
-              {record.username}
-            </div>
-            <Row>
-              <Col sm='8'className='d-flex justify-content-left'>
-                <span className='p-2'><i className='fa fa-fw fa-lock'></i></span>
-                <Button
-                  color='light'
-                  className='border-secondary'
-                  onClick={onLogin}
-                >
-                  <Icon
-                    icon={
-                      pending ? 'fa-spinner fa-spin' : 'fa-external-link fa-fw'
-                    }
-                  />
-                </Button>
-              </Col>
-              <Col sm='4'>
-                <Button className='close' onClick={onToggleExpand}>
-                  <Icon icon='fa-caret-down' />
-                </Button>
-              </Col>
-            </Row>
-          </div>
+        <IconLabelInputFormGroup
+          id={`collapsed-record-card-${id}-username-field`}
+          value={username}
+          icon='fa-user'
+          plaintext
+        />
+        <span className='py-2 pr-2'><i className='fa fa-fw fa-lock'></i></span>
+        <IconButton
+          icon={
+            pending ? 'fa-spinner fa-spin' : 'fa-external-link fa-fw'
+          }
+          color='light'
+          className='border-secondary'
+          onClick={onConnect}
+        />
+        <IconButton
+          icon='fa-caret-down'
+          className='close'
+          onClick={onToggleExpand}
+        />
       </CardHeader>
-
       <AuthenticationModal
         open={authenticate}
         locale={locale}
-        onCancel={onAuthenticationCancel}
+        onCancel={onCancel}
         onAuthenticated={onAuthenticated}
       />
       <ConnectionModal
-        display={login}
+        display={connect}
         name={record.name}
         url={record.url}
         username={record.username}
