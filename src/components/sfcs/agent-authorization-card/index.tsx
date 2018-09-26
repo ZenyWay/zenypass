@@ -79,7 +79,7 @@ export function AgentAuthorizationCard ({
         {error}
       </CardFooter>
       <AuthenticationModal
-        open={authenticate}
+        show={authenticate}
         locale={locale}
         onCancel={onCancel}
         onAuthenticated={onAuthenticated}

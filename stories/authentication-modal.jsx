@@ -21,8 +21,9 @@ import { action } from '@storybook/addon-actions'
 import { AuthenticationModal } from 'components'
 
 const attrs = {
+  show: true,
   locale: 'fr',
-  onCancel: action('CANCELLED'),
+  onCancel: action('CANCEL'),
   onAuthenticated: action('AUTHENTICATED')
 }
 
@@ -30,7 +31,5 @@ storiesOf('AuthenticationModal', module)
   // onChange prop becomes onInput: https://github.com/infernojs/inferno/issues/1263#issuecomment-361710508
   // text inputs with both onChange and onInput handlers will malfunction in Storybook (inferno-compat)
   .add('default', () => (
-    <AuthenticationModal
-      open {...attrs}
-    />
+    <AuthenticationModal {...attrs} />
   ))

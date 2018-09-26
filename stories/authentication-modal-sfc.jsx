@@ -24,20 +24,21 @@ import preventDefaultAction from './helpers/prevent-default'
 import { Button, Modal, ModalBody, ModalHeader, ModalFooter } from 'reactstrap'
 
 const attrs = {
+  show: true,
   locale: 'fr',
-  onSubmit: preventDefaultAction('CLICKED'),
-  onCancel: action('CANCELLED')
+  onSubmit: preventDefaultAction('SUBMIT'),
+  onCancel: action('CANCEL')
 }
 
 storiesOf('AuthenticationModal (SFC)', module)
   .add('modal-password', () => (
-    <AuthenticationModal open {...attrs} />
+    <AuthenticationModal {...attrs} />
   ))
   .add('wrong-password', () => (
-    <AuthenticationModal open {...attrs} error />
+    <AuthenticationModal {...attrs} error />
   ))
   .add('pending', () => (
-    <AuthenticationModal open {...attrs} pending />
+    <AuthenticationModal {...attrs} pending />
   ))
   .add('modal example', () => (
     <ModalExample buttonLabel='open modal' />

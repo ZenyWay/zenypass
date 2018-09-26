@@ -24,7 +24,7 @@ const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenyp
 const l10ns = createL10ns(require('./locales.json'), { debug })
 
 export interface AuthenticationModalProps {
-  open?: boolean
+  show?: boolean
   value?: string
   error?: boolean
   pending?: boolean
@@ -35,7 +35,7 @@ export interface AuthenticationModalProps {
 }
 
 export function AuthenticationModal ({
-  open,
+  show,
   value,
   pending,
   error,
@@ -48,7 +48,7 @@ export function AuthenticationModal ({
   const t = l10ns[locale]
 
   return (
-    <Modal isOpen={open} toggle={onCancel} >
+    <Modal isOpen={show} toggle={onCancel} >
       <ModalHeader toggle={onCancel} className='bg-info text-white' >
         {t('Authorization')}
       </ModalHeader>
