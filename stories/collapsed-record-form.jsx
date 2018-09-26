@@ -13,37 +13,28 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
+//
 /** @jsx createElement */
-import 'symbol-observable' // polyfill
-import { createElement, render } from 'create-element'
+import { createElement } from 'create-element'
+import { storiesOf } from '@storybook/react'
+// import { action } from '@storybook/addon-actions'
 import { CollapsedRecordCard } from 'components'
-import createL10ns from 'basic-l10n'
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:app:')
-const l10ns = createL10ns(require('./locales.json'), { debug })
 
-const RECORD = {
+const record = {
   id: '123456',
   name: 'Example',
-  url: 'https://news.ycombinator.com/',
+  url: 'https://example.com',
   username: 'john.doe@example.com',
-  password: 'P@ssw0rd!',
   keywords: ['comma', 'separated', 'values'],
   comments: '42 is *'
 }
 
 const attrs = {
-  record: { ...RECORD, password: void 0 },
-  locale: 'fr',
-  onCancel: console.log.bind(console, 'CANCEL:')
+  record,
+  locale: 'fr'
 }
 
-function App () {
-  return (
-    <div>
-      <h1>{l10ns.fr`Welcome to ZenyPass!`}</h1>
-      <CollapsedRecordCard {...attrs} />
-    </div>
-  )
-}
-
-render(<App />, document.getElementById('app'))
+storiesOf('CollapsedRecordCard', module)
+  .add('default', () => (
+    <CollapsedRecordCard {...attrs} />
+  ))

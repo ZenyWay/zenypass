@@ -55,7 +55,9 @@ export default compose.into(0)(
   forType('PROPS')(propCursor('props')(mapPayload()))
 )
 
-const authenticationAutomata = {
+export type AuthenticationAutomataState = 'idle' | 'authenticating'
+
+const authenticationAutomata: AutomataSpec<AuthenticationAutomataState> = {
   idle: {
     AUTHENTICATION_REQUESTED: 'authenticating'
   },

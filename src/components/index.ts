@@ -48,6 +48,10 @@ export {
   AutoformatRecordFieldProps
 } from './autoformat-record-field'
 export {
+  CollapsedRecordCard,
+  CollapsedRecordCardProps
+} from './collapsed-record-card'
+export {
   CollapsedRecordCard as CollapsedRecordCardSFC,
   CollapsedRecordCardProps as CollapsedRecordCardSFCProps
 } from './sfcs/collapsed-record-card'

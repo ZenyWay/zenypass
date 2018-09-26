@@ -42,7 +42,7 @@ export interface CollapsedRecordCardProps {
   connect?: boolean
   className?: string
   onAuthenticated?: (sessionID: string) => void
-  onCancel?: () => void
+  onCancel?: (err?: any) => void
   onConnect?: (event: MouseEvent) => void
   onToggleExpand?: (event: MouseEvent) => void,
 }
