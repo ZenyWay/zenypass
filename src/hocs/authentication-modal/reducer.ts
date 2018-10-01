@@ -17,36 +17,25 @@
 //
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
-import { forType, mapPayload, pluck } from 'utils'
+import { always, forType, mapPayload } from 'utils'
 import compose from 'basic-compose'
 
-export type AutomataState = 'pristine' | 'dirty' | 'error' | 'authenticating'
+export type AutomataState = 'pristine' | 'dirty' | 'pending'
 
-const intoValue = into('value')
-const mapPayloadIntoError = into('error')(mapPayload())
-const mapPayloadIntoValue = intoValue(mapPayload())
+const mapPayloadIntoValue = into('value')(mapPayload())
+const clearValue = into('value')(always(void 0))
 
 const automata: AutomataSpec<AutomataState> = {
   pristine: {
-    PROPS: intoValue(mapPayload(pluck('value'))),
-    CHANGE: ['dirty', mapPayloadIntoValue],
-    SUBMIT: 'error'
+    CHANGE: ['dirty', mapPayloadIntoValue]
   },
   dirty: {
-    CANCEL: 'pristine',
+    CANCEL: ['pristine', clearValue],
     CHANGE: mapPayloadIntoValue,
-    SUBMIT: 'authenticating'
+    SUBMIT: 'pending'
   },
-  error: {
-    CANCEL: 'pristine',
-    CHANGE: mapPayloadIntoValue,
-    SUBMIT: 'authenticating'
-  },
-  authenticating: {
-    UNAUTHORIZED: 'error',
-    CANCEL: 'pristine',
-    AUTHENTICATION_DONE: 'pristine',
-    SERVER_ERROR: ['pristine', mapPayloadIntoError]
+  pending: {
+    PROPS: ['pristine', clearValue]
   }
 }
 
@@ -55,6 +44,7 @@ export default compose.into(0)(
   forType('PROPS')(propCursor('props')(mapPayload()))
 )
 
+// TODO remove
 export type AuthenticationAutomataState = 'idle' | 'authenticating'
 
 const authenticationAutomata: AutomataSpec<AuthenticationAutomataState> = {
@@ -62,7 +52,7 @@ const authenticationAutomata: AutomataSpec<AuthenticationAutomataState> = {
     AUTHENTICATION_REQUESTED: 'authenticating'
   },
   authenticating: {
-    AUTHENTICATION_REJECTED: ['idle', mapPayloadIntoError],
+    AUTHENTICATION_REJECTED: ['idle', into('error')(mapPayload())],
     AUTHENTICATION_RESOLVED: ['idle', into('sessionId')(mapPayload())]
   }
 }

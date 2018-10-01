@@ -17,7 +17,6 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { Card, CardProps, CardBody, CardFooter, CardHeader } from 'bootstrap'
-import { AuthenticationModal } from '../../authentication-modal'
 import { IconButton } from '../icon'
 import createL10ns from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
@@ -35,12 +34,10 @@ export interface AgentAuthorizationCardProps extends CardProps {
 }
 
 export function AgentAuthorizationCard ({
-  authenticate,
   error,
   locale,
   onClick,
   onCancel,
-  onAuthenticated,
   pending,
   token,
   ...attrs
@@ -67,10 +64,10 @@ export function AgentAuthorizationCard ({
         ) : null}
         <IconButton
           color='info'
-          icon={authenticate && 'fa-spinner fa-spin'}
+          icon={pending && !token && 'fa-spinner fa-spin'}
           onClick={onClick}
           className={pending && 'btn-outline-info'}
-          disabled={authenticate}
+          disabled={pending && !token}
         >
           {buttonTxt}
         </IconButton>
@@ -78,12 +75,6 @@ export function AgentAuthorizationCard ({
       <CardFooter bg='transparent' text={error && 'danger'} className='border-0' >
         {error}
       </CardFooter>
-      <AuthenticationModal
-        show={authenticate}
-        locale={locale}
-        onCancel={onCancel}
-        onAuthenticated={onAuthenticated}
-      />
     </Card>
   )
 }

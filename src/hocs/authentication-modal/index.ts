@@ -16,7 +16,7 @@
  */
 //
 import reducer, { AutomataState } from './reducer'
-import { authenticateOnSubmit, callOnCancel } from './effects'
+import { callOnCancel, callOnSubmit } from './effects'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -24,23 +24,23 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { authenticate } from 'services'
 import { preventDefault } from 'utils'
 import { createActionDispatchers } from 'basic-fsa-factories'
 // import { tap } from 'rxjs/operators'
 
 export type AuthenticationModalProps<P extends AuthenticationModalSFCProps> =
-  AuthenticationModalControllerProps & Rest<P, AuthenticationModalSFCProps>
+  AuthenticationModalHocProps & Rest<P, AuthenticationModalSFCProps>
 
-export interface AuthenticationModalControllerProps {
+export interface AuthenticationModalHocProps {
   value?: string
+  error?: boolean
   onCancel?: (err?: any) => void
-  onAuthenticated?: (sessionId: string) => void
+  onSubmit?: (value: string) => void
 }
 
 export interface AuthenticationModalSFCProps extends AuthenticationModalSFCHandlerProps {
   value?: string
-  error?: boolean,
+  error?: boolean
   pending?: boolean,
 }
 
@@ -51,7 +51,7 @@ export interface AuthenticationModalSFCHandlerProps {
 }
 
 interface AuthenticationModalState {
-  props: AuthenticationModalControllerProps & { [prop: string]: unknown }
+  props: AuthenticationModalHocProps & { [prop: string]: unknown }
   state: AutomataState
   value: string
 }
@@ -59,12 +59,12 @@ interface AuthenticationModalState {
 function mapStateToProps (
   { props, value, state }: AuthenticationModalState
 ): Rest<AuthenticationModalSFCProps, AuthenticationModalSFCHandlerProps> {
-  const { onCancel, onAuthenticated, ...attrs } = props
+  const { onCancel, onSubmit, ...attrs } = props
   return {
     ...attrs,
     value: state === 'pristine' ? props.value : value,
-    pending: state === 'authenticating',
-    error: state === 'error'
+    error: state === 'pristine' && props.error,
+    pending: state === 'pending'
   }
 }
 
@@ -82,7 +82,7 @@ export function authenticationModal <P extends AuthenticationModalSFCProps> (
   return componentFromEvents<AuthenticationModalProps<P>, P>(
     Modal,
     // () => tap(console.log.bind(console, 'controlled-authentication-modal:event:')),
-    redux(reducer, authenticateOnSubmit({ authenticate }), callOnCancel),
+    redux(reducer, callOnCancel, callOnSubmit),
     // () => tap(console.log.bind(console, 'controlled-authentication-modal:state:')),
     connect<AuthenticationModalState, AuthenticationModalSFCProps>(
       mapStateToProps,

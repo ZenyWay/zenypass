@@ -20,18 +20,14 @@ import { createElement } from 'create-element'
 import { Col, Container, Row } from 'reactstrap' // TODO replace
 import { UnknownProps } from 'bootstrap/types'
 import { AuthorizedAgentCard } from './authorized-agent-card'
-import { AuthenticationModal } from '../authentication-modal'
 import { AgentAuthorizationCard } from '../agent-authorization-card'
 import { classes } from 'utils'
 
 export interface AgentAuthorizationsPageProps {
   agents: AuthorizedAgentInfo[]
-  authenticate: boolean
   error: string
   className: string
   locale: string
-  onCancel: (err?: any) => void
-  onAuthenticated: (sessionId: string) => void
 }
 
 export interface AuthorizedAgentInfo {
@@ -41,11 +37,8 @@ export interface AuthorizedAgentInfo {
 }
 
 export function AgentAuthorizationsPage ({
-    authenticate,
     error,
     agents = [],
-    onAuthenticated,
-    onCancel,
     className,
     locale,
     ...attrs
@@ -69,12 +62,6 @@ export function AgentAuthorizationsPage ({
           ))
         }
       </Row>
-      <AuthenticationModal
-        show={authenticate}
-        locale={locale}
-        onCancel={onCancel}
-        onAuthenticated={onAuthenticated}
-      />
     </Container>
   )
 }

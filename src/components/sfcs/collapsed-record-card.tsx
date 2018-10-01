@@ -17,7 +17,6 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { Button, Card, CardHeader } from 'bootstrap'
-import { AuthenticationModal } from '../authentication-modal'
 import { ConnectionModal } from '../connection-modal'
 import { IconButton } from './icon'
 import { IconLabelInputFormGroup } from './icon-label-form-group'
@@ -38,10 +37,8 @@ export interface CollapsedRecordCardProps {
   locale: string,
   record: Record,
   pending?: boolean,
-  authenticate?: boolean,
   connect?: boolean
   className?: string
-  onAuthenticated?: (sessionID: string) => void
   onCancel?: (err?: any) => void
   onConnect?: (event: MouseEvent) => void
   onToggleExpand?: (event: MouseEvent) => void,
@@ -51,10 +48,8 @@ export function CollapsedRecordCard ({
   locale,
   record,
   pending,
-  authenticate,
   connect,
   className,
-  onAuthenticated,
   onConnect,
   onCancel,
   onToggleExpand,
@@ -108,12 +103,6 @@ export function CollapsedRecordCard ({
           onClick={onToggleExpand}
         />
       </CardHeader>
-      <AuthenticationModal
-        show={authenticate}
-        locale={locale}
-        onCancel={onCancel}
-        onAuthenticated={onAuthenticated}
-      />
       <ConnectionModal
         display={connect}
         name={record.name}

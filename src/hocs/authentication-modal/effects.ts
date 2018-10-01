@@ -24,7 +24,6 @@ import {
   last,
   map,
   mapTo,
-  merge,
   pluck,
   share,
   switchMap,
@@ -42,21 +41,49 @@ const onServerError = createActionFactory('SERVER_ERROR')
 const unauthorized = createActionFactory('UNAUTHORIZED')
 const authenticationDone = createActionFactory('AUTHENTICATION_DONE')
 
-export function callOnCancel (
-  event$: Observable<StandardAction<any>>,
-  state$: Observable<any>
+export const callOnCancel = callHandlerOnEvent('onCancel', 'CANCEL')
+export const callOnSubmit = callHandlerOnEvent(
+  'onSubmit',
+  'SUBMIT',
+  ({ value }: { value: string }) => value
+)
+
+export type KV<V> = { [k: string]: V }
+export type Handler<V> = (value?: V) => void
+
+export function callHandlerOnEvent <
+  H extends string,
+  S extends { props: P } & T,
+  P extends { [prop in H]?: Handler<V> } = { [prop in H]?: Handler<V> },
+  T extends {} = {},
+  V = void,
+  L = void
+> (
+  handler: H,
+  type: string,
+  project?: (state: T, event: StandardAction<L>) => V
 ) {
-  return event$.pipe(
-    ofType('CANCEL'),
-    merge(event$.pipe(ofType('SERVER_ERROR'))),
-    withLatestFrom(state$),
-    pluck('1'),
-    filter<any>(hasHandler('onCancel')),
-    tap(({ props, error }) => props.onCancel(error)),
-    ignoreElements()
-  )
+  return function (
+    event$: Observable<StandardAction<any>>,
+    state$: Observable<S>
+  ) {
+    return event$.pipe(
+      ofType(type),
+      withLatestFrom(state$),
+      tap(
+        ([event, state]: [StandardAction<L>, S]) =>
+          callHandler(state.props[handler], project && project(state, event))
+      ),
+      ignoreElements()
+    )
+  }
 }
 
+function callHandler <V> (handler?: Handler<V>, value?: V) {
+  handler && handler(value)
+}
+
+// TODO remove
 export function authenticateOnSubmit ({ authenticate }) {
   return function (event$, state$) {
     const unmount$ = state$.pipe(last(), share())
