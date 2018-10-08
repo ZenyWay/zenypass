@@ -29,6 +29,6 @@ const attr = {
 storiesOf('NavbarMenu', module)
   .add('default', () => (
     <NavbarMenu {...attr}>
-      <span className='text-success'>***</span>
+      <span className='text-light'>***</span>
     </NavbarMenu>
   ))

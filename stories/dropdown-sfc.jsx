@@ -18,8 +18,9 @@ import { createElement } from 'create-element'
 import { DropdownSFC } from 'components'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import preventDefaultAction from './helpers/prevent-default'
 
-export const [label, ...menu] = [
+export const [props, ...items] = [
   {
     'data-id': 'lang',
     label: 'lang',
@@ -38,14 +39,15 @@ export const [label, ...menu] = [
 ]
 
 const attrs = {
-  onToggleExpand: action('TOGGLE_EXPAND'),
-  onSelect: action('SELECT')
+  onClickItem: preventDefaultAction('CLICK_ITEM'),
+  onClickToggle: preventDefaultAction('CLICK_TOGGLE'),
+  innerRef: action('INNER_REF')
 }
 
 storiesOf('Dropdown (SFC)', module)
   .add('default', () => (
-    <DropdownSFC {...label} menu={menu} {...attrs} />
+    <DropdownSFC {...props} items={items} {...attrs} />
   ))
   .add('expanded', () => (
-    <DropdownSFC {...label} menu={menu} {...attrs} expanded />
+    <DropdownSFC {...props} items={items} {...attrs} expanded />
   ))
