@@ -29,6 +29,7 @@ export interface DropdownProps {
   className?: string
   children?: Children
   tag?: string
+  innerRef?: (element?: HTMLElement | null) => void
   [prop: string]: unknown
 }
 
@@ -40,6 +41,7 @@ export function Dropdown ({
   disabled,
   className,
   tag,
+  innerRef,
   ...attrs
 }: DropdownProps) {
   const Tag = tag || (navItem ? 'li' : 'div')
@@ -52,7 +54,7 @@ export function Dropdown ({
     className
   )
   return (
-    <Tag className={classNames} {...attrs} />
+    <Tag className={classNames} ref={innerRef} {...attrs} />
   )
 }
 

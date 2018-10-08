@@ -25,7 +25,7 @@ import {
   NavLink,
   NavbarToggler
 } from 'bootstrap'
-import { Dropdown, MenuItemSpec } from './dropdown'
+import { Dropdown, DropdownItemsProps } from './dropdown'
 import { Icon } from './icon'
 import { ZENYPASS_LOGO_SVG } from 'static'
 
@@ -39,7 +39,7 @@ export interface NavbarMenuProps {
   onFocus?: (event: MouseEvent) => void
 }
 
-export interface MenuSpecs extends Array<MenuItemSpec[] | MenuItemSpec> {}
+export interface MenuSpecs extends Array<DropdownItemsProps[] | DropdownItemsProps> {}
 
 export function NavbarMenu ({
   menu = [],
@@ -86,7 +86,7 @@ function navMenuItems ({ menu = [], onSelect }: NavMenuItemsProps) {
 }
 
 interface NavMenuItemProps {
-  item?: MenuItemSpec[] | MenuItemSpec
+  item?: DropdownItemsProps[] | DropdownItemsProps
   onSelect?: (event: MouseEvent) => void
 }
 
@@ -113,7 +113,7 @@ function NavMenuItem ({ item = {}, onSelect }: NavMenuItemProps) {
 
 interface NavMenuLinkProps {
   className?: string
-  item?: MenuItemSpec
+  item?: DropdownItemsProps
   onSelect?: (event: MouseEvent) => void
 }
 

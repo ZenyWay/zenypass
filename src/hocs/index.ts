@@ -1,5 +1,7 @@
-/*
- * Copyright 2018 Stephane M. Catala
+/**
+ * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
+ * @author Stephane M. Catala
+ * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,3 +39,4 @@ export {
   CollapsedRecordCardProps
 } from './collapsed-record-card'
 export { connectionModal, ConnectionModalProps } from './connection-modal'
+export { dropdown, DropdownProps } from './dropdown'

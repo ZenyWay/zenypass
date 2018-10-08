@@ -17,7 +17,8 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { NavbarMenuSFC } from 'components'
-import { storiesOf, action } from '@storybook/react'
+import { storiesOf } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
 
 export const menu = [
   {

@@ -23,16 +23,18 @@ import {
 } from 'bootstrap'
 import { Icon } from './icon'
 
-export interface DropdownProps extends MenuItemSpec {
+export interface DropdownProps extends DropdownItemsProps {
   navItem?: boolean
   active?: boolean
-  disabled?: boolean
   expanded?: boolean
-  onSelect?: (event: MouseEvent) => void
+  items?: DropdownItemsProps[]
+  onClickItem?: (event: MouseEvent) => void
+  onClickToggle?: (event: MouseEvent) => void
+  innerRef?: (element?: HTMLElement | null) => void
   [prop: string]: unknown
 }
 
-export interface MenuItemSpec {
+export interface DropdownItemsProps {
   label?: string
   icon?: string[] | string
   href?: string
@@ -46,8 +48,10 @@ export function Dropdown ({
   expanded,
   label,
   icon,
-  menu,
-  onSelect,
+  items,
+  onClickItem,
+  onClickToggle,
+  innerRef,
   ...attrs
 }: DropdownProps) {
   return (
@@ -56,8 +60,9 @@ export function Dropdown ({
       active={active}
       disabled={disabled}
       expanded={expanded}
+      innerRef={innerRef}
     >
-      <DropdownToggle nav={navItem} {...attrs}>
+      <DropdownToggle onClick={onClickToggle} nav={navItem} {...attrs}>
         <Icon
           icon={
             Array.isArray(icon) ? icon[0] /* TODO handle icon list */ : icon
@@ -69,31 +74,31 @@ export function Dropdown ({
         expanded={expanded}
         className={navItem && 'bg-info border-info'}
       >
-        {dropdownMenuItems({ menu, onSelect, className: navItem && 'text-light' })}
+        {dropdownMenuItems({ items, onClickItem, className: navItem && 'text-light' })}
       </DropdownMenu>
     </BSDropdown>
   )
 }
 
 export interface DropdownMenuItemsProps {
-  menu?: MenuItemSpec[]
+  items?: DropdownItemsProps[]
   className?: string
-  onSelect?: (event: MouseEvent) => void
+  onClickItem?: (event: MouseEvent) => void
 }
 
 // TODO convert this to a Fragment component with Inferno@6
 function dropdownMenuItems ({
-  menu,
+  items,
   className,
-  onSelect
-}) {
-  if (!menu || !menu.length) return null
-  let key = menu.length
+  onClickItem
+}: DropdownMenuItemsProps) {
+  if (!items || !items.length) return null
+  let key = items.length
   const entries = new Array<JSX.Element>(key)
   while (key--) {
-    const { label, icon, ...attrs } = menu[key]
+    const { label, icon, ...attrs } = items[key]
     entries[key] = (
-      <DropdownItem className={className} onClick={onSelect} {...attrs}>
+      <DropdownItem className={className} onClick={onClickItem} {...attrs}>
         {label}
       </DropdownItem>
     )

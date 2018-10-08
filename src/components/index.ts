@@ -66,6 +66,7 @@ export {
   Dropdown as DropdownSFC,
   DropdownProps as DropdownSFCProps
 } from './sfcs/dropdown'
+export { Dropdown, DropdownProps } from './dropdown'
 export { Icon, IconProps, IconButton, IconButtonProps } from './sfcs/icon'
 export {
   IconLabelInputGroup,

@@ -15,11 +15,11 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { DropdownSFC } from 'components'
+import { Dropdown } from 'components'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 
-export const [label, ...menu] = [
+export const [props, ...items] = [
   {
     'data-id': 'lang',
     label: 'lang',
@@ -38,14 +38,10 @@ export const [label, ...menu] = [
 ]
 
 const attrs = {
-  onToggleExpand: action('TOGGLE_EXPAND'),
   onSelect: action('SELECT')
 }
 
-storiesOf('Dropdown (SFC)', module)
+storiesOf('Dropdown', module)
   .add('default', () => (
-    <DropdownSFC {...label} menu={menu} {...attrs} />
-  ))
-  .add('expanded', () => (
-    <DropdownSFC {...label} menu={menu} {...attrs} expanded />
+    <Dropdown {...props} items={items} {...attrs} />
   ))
