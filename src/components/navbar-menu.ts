@@ -14,14 +14,14 @@
  * Limitations under the License.
  */
 //
-import { dropdown, DropdownProps as GenericDropdownProps } from 'hocs'
+import { dropdown, DropdownProps } from 'hocs'
 import {
-  Dropdown as DropdownSFC,
-  DropdownProps as DropdownSFCProps
-} from './sfcs/dropdown'
+  NavbarMenu as NavbarMenuSFC,
+  NavbarMenuProps as NavbarMenuSFCProps
+} from './sfcs/navbar-menu'
 
-export const Dropdown = dropdown<DropdownSFCProps>(
-  DropdownSFC
+export const NavbarMenu = dropdown<NavbarMenuSFCProps>(
+  NavbarMenuSFC
 )
 
-export type DropdownProps = GenericDropdownProps<DropdownSFCProps>
+export type NavBarMenuProps = DropdownProps<NavbarMenuSFCProps>

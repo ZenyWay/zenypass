@@ -1,6 +1,7 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
+ * @author Hadrien Boulanger
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,15 +14,21 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
-import { dropdown, DropdownProps as GenericDropdownProps } from 'hocs'
-import {
-  Dropdown as DropdownSFC,
-  DropdownProps as DropdownSFCProps
-} from './sfcs/dropdown'
+/** @jsx createElement */
+import { createElement } from 'create-element'
+import { NavbarMenu } from 'components'
+import { storiesOf } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
+import { menu } from './navbar-menu-sfc'
 
-export const Dropdown = dropdown<DropdownSFCProps>(
-  DropdownSFC
-)
+const attr = {
+  menu,
+  onSelect: action('SELECT')
+}
 
-export type DropdownProps = GenericDropdownProps<DropdownSFCProps>
+storiesOf('NavbarMenu', module)
+  .add('default', () => (
+    <NavbarMenu {...attr}>
+      <span className='text-success'>***</span>
+    </NavbarMenu>
+  ))

@@ -25,7 +25,8 @@ import {
   NavLink,
   NavbarToggler
 } from 'bootstrap'
-import { Dropdown, DropdownItemsProps } from './dropdown'
+import { DropdownItemsProps } from './dropdown'
+import { Dropdown } from '../dropdown'
 import { Icon } from './icon'
 import { ZENYPASS_LOGO_SVG } from 'static'
 
@@ -33,10 +34,9 @@ export interface NavbarMenuProps {
   menu?: MenuSpecs
   expanded?: boolean
   children?: Children
-  onToggleExpand?: (event: MouseEvent) => void
-  onSelect?: (event: MouseEvent) => void
-  onBlur?: (event: MouseEvent) => void
-  onFocus?: (event: MouseEvent) => void
+  onClickItem?: (event: MouseEvent) => void
+  onClickToggle?: (event: MouseEvent) => void
+  innerRef?: (element?: HTMLElement | null) => void
 }
 
 export interface MenuSpecs extends Array<DropdownItemsProps[] | DropdownItemsProps> {}
@@ -44,25 +44,27 @@ export interface MenuSpecs extends Array<DropdownItemsProps[] | DropdownItemsPro
 export function NavbarMenu ({
   menu = [],
   expanded,
-  onToggleExpand,
-  onSelect,
-  children
+  children,
+  onClickItem,
+  onClickToggle,
+  innerRef
 }: NavbarMenuProps) {
   return (
     <Navbar
       color='info'
-      dark expand='md'
-      onFocusOut={onToggleExpand}
+      dark
+      expand='md'
+      innerRef={innerRef}
     >
       <NavbarBrand>
         <img height='32' src={ZENYPASS_LOGO_SVG}/>
         <small>&nbsp;ZenyPass</small>
       </NavbarBrand>
       <span>{ children /* TODO replace wrapping span with Fragment */}</span>
-      <NavbarToggler onClick={onToggleExpand} />
+      <NavbarToggler onClick={onClickToggle} />
       <Collapse navbar isOpen={expanded} >
-        <Nav className='ml-auto' navbar onFocusIn={onToggleExpand}>
-          {navMenuItems({ menu, onSelect })}
+        <Nav className='ml-auto' navbar>
+          {navMenuItems({ menu, onClickItem })}
         </Nav>
       </Collapse>
     </Navbar>
@@ -71,33 +73,34 @@ export function NavbarMenu ({
 
 interface NavMenuItemsProps {
   menu?: MenuSpecs
-  onSelect?: (event: MouseEvent) => void
+  onClickItem?: (event: MouseEvent) => void
 }
 
 // TODO convert this to a Fragment component with Inferno@6
-function navMenuItems ({ menu = [], onSelect }: NavMenuItemsProps) {
+function navMenuItems ({ menu = [], onClickItem }: NavMenuItemsProps) {
   let key = menu.length
   const entries = new Array<JSX.Element>(key)
   while (key--) {
     const item = menu[key]
-    entries[key] = <NavMenuItem item={item} onSelect={onSelect} />
+    entries[key] = <NavMenuItem item={item} onClickItem={onClickItem} />
   }
   return entries
 }
 
 interface NavMenuItemProps {
   item?: DropdownItemsProps[] | DropdownItemsProps
-  onSelect?: (event: MouseEvent) => void
+  onClickItem?: (event: MouseEvent) => void
 }
 
-function NavMenuItem ({ item = {}, onSelect }: NavMenuItemProps) {
+function NavMenuItem ({ item = {}, onClickItem }: NavMenuItemProps) {
   return Array.isArray(item)
   ? (
     <Dropdown
       className='text-light'
-      navItem {...item[0]}
-      menu={item.slice(1)}
-      onSelect={onSelect}
+      navItem
+      {...item[0]}
+      items={item.slice(1)}
+      onSelect={onClickItem}
     />
   )
   : (
@@ -105,7 +108,7 @@ function NavMenuItem ({ item = {}, onSelect }: NavMenuItemProps) {
       <NavMenuLink
         className='text-light'
         item={item}
-        onSelect={onSelect}
+        onClickItem={onClickItem}
       />
     </NavItem>
   )
@@ -114,13 +117,13 @@ function NavMenuItem ({ item = {}, onSelect }: NavMenuItemProps) {
 interface NavMenuLinkProps {
   className?: string
   item?: DropdownItemsProps
-  onSelect?: (event: MouseEvent) => void
+  onClickItem?: (event: MouseEvent) => void
 }
 
-function NavMenuLink ({ className, item, onSelect }: NavMenuLinkProps) {
+function NavMenuLink ({ className, item, onClickItem }: NavMenuLinkProps) {
   const { label, icon, ...attrs } = item
   return (
-    <NavLink className={className} onClick={onSelect} {...attrs}>
+    <NavLink className={className} onClick={onClickItem} {...attrs}>
       {!icon ? null : <Icon
         icon={
           Array.isArray(icon) ? icon[0] /* TODO handle icon list */ : icon

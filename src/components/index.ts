@@ -76,5 +76,6 @@ export {
   NavbarMenu as NavbarMenuSFC,
   NavbarMenuProps as NavbarMenuSFCProps
 } from './sfcs/navbar-menu'
+export { NavbarMenu, NavBarMenuProps } from './navbar-menu'
 export { RecordField, RecordFieldProps } from './sfcs/record-field'
 export { RecordForm, RecordFormProps, Record } from './sfcs/record-form'

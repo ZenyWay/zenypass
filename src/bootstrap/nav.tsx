@@ -76,6 +76,7 @@ export interface NavbarProps {
   className?: string
   children?: Children
   tag?: string
+  innerRef?: (element?: HTMLElement | null) => void
   [prop: string]: unknown
 }
 
@@ -89,6 +90,7 @@ export function Navbar ({
   color,
   tag,
   className,
+  innerRef,
   ...attrs
 }: NavbarProps) {
   const Tag = tag || 'nav'
@@ -104,7 +106,7 @@ export function Navbar ({
   )
 
   return (
-    <Tag className={classNames} {...attrs} />
+    <Tag className={classNames} ref={innerRef} {...attrs} />
   )
 }
 
