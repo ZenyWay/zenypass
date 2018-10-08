@@ -18,12 +18,12 @@
 import { createElement } from 'create-element'
 import { NavbarMenu } from 'components'
 import { storiesOf } from '@storybook/react'
-import { action } from '@storybook/addon-actions'
+import preventDefaultAction from './helpers/prevent-default'
 import { menu } from './navbar-menu-sfc'
 
 const attr = {
   menu,
-  onSelect: action('SELECT')
+  onClickItem: preventDefaultAction('CLICK_ITEM')
 }
 
 storiesOf('NavbarMenu', module)

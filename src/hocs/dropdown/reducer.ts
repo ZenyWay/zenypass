@@ -35,5 +35,5 @@ const automata: AutomataSpec<AutomataState> = {
 export default compose.into(0)(
   createAutomataReducer(automata, 'collapsed'),
   forType('PROPS')(into('props')(mapPayload())),
-  forType('REF')(into('dropdown')(mapPayload()))
+  forType('INNER_REF')(into('dropdown')(mapPayload()))
 )

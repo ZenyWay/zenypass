@@ -31,7 +31,7 @@ export type DropdownProps<P extends DropdownSFCProps> =
 DropdownHocProps & Rest<P, DropdownSFCProps>
 
 export interface DropdownHocProps {
-  onSelect? (event: MouseEvent): void
+  onClickItem? (event: MouseEvent): void
 }
 
 export interface DropdownSFCProps extends DropdownSFCHandlerProps {
@@ -57,7 +57,7 @@ function mapStateToProps (
     state
   }: DropdownState
 ): Rest<DropdownSFCProps, DropdownSFCHandlerProps> {
-  const { onSelect, ...attrs } = props
+  const { onClickItem, ...attrs } = props
   const expanded = state === 'expanded'
   return { ...attrs, expanded }
 }
@@ -65,9 +65,9 @@ function mapStateToProps (
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => DropdownSFCHandlerProps =
 createActionDispatchers({
-  onClickItem: ['CLICK_ITEM', preventDefault],
+  onClickItem: 'CLICK_ITEM',
   onClickToggle: ['CLICK_TOGGLE', preventDefault],
-  innerRef: 'REF'
+  innerRef: 'INNER_REF'
 })
 
 export function dropdown <P extends DropdownSFCProps> (
@@ -79,7 +79,7 @@ export function dropdown <P extends DropdownSFCProps> (
     redux(
       reducer,
       toggleBackdropHandlers,
-      callHandlerOnEvent('onSelect', 'CLICK_ITEM')
+      callHandlerOnEvent('onClickItem', 'CLICK_ITEM')
     ),
     () => tap(console.log.bind(console,'dropdown:state:')),
     connect<DropdownState, DropdownSFCProps>(

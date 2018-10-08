@@ -17,7 +17,7 @@
 import { createElement } from 'create-element'
 import { Dropdown } from 'components'
 import { storiesOf } from '@storybook/react'
-import { action } from '@storybook/addon-actions'
+import preventDefaultAction from './helpers/prevent-default'
 
 export const [props, ...items] = [
   {
@@ -38,7 +38,7 @@ export const [props, ...items] = [
 ]
 
 const attrs = {
-  onSelect: action('SELECT')
+  onClickItem: preventDefaultAction('CLICK_ITEM')
 }
 
 storiesOf('Dropdown', module)
