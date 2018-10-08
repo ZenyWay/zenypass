@@ -62,10 +62,18 @@ export {
 } from './sfcs/connection-modal'
 export { ControlledInput, ControlledInputProps } from './controlled-input'
 export { CopyButton, CopyButtonProps } from './copy-button'
+export {
+  Dropdown as DropdownSFC,
+  DropdownProps as DropdownSFCProps
+} from './sfcs/dropdown'
 export { Icon, IconProps, IconButton, IconButtonProps } from './sfcs/icon'
 export {
   IconLabelInputGroup,
   IconLabelInputGroupProps
 } from './sfcs/icon-label-input-group'
+export {
+  NavbarMenu as NavbarMenuSFC,
+  NavbarMenuProps as NavbarMenuSFCProps
+} from './sfcs/navbar-menu'
 export { RecordField, RecordFieldProps } from './sfcs/record-field'
 export { RecordForm, RecordFormProps, Record } from './sfcs/record-form'
