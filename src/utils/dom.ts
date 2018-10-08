@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-export * from './basic'
-export * from './dom'
-export * from './effects'
-export * from './functional'
-export * from './reducers'
+//
+export function classes (...classes: string[]): string {
+  return classes.filter(Boolean).join(' ')
+}
+
+export function preventDefault (event: Event) {
+  event.preventDefault()
+  return event
+}

@@ -13,8 +13,29 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-export * from './basic'
-export * from './dom'
-export * from './effects'
-export * from './functional'
-export * from './reducers'
+import { identity } from './basic'
+
+export function pluck <T> (...keys) {
+  return function (obj: object): T {
+    let res: any = obj
+    for (const key of keys) {
+      if (!res) {
+        return
+      }
+      res = res[key]
+    }
+    return res
+  }
+}
+
+export function always <T> (value) {
+  return function (): T {
+    return value
+  }
+}
+
+export function not (fn = identity) {
+  return function (val) {
+    return !fn(val)
+  }
+}
