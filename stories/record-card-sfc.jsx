@@ -18,36 +18,43 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
-import { RecordForm } from 'components'
+import { RecordCardSFC as RecordCard } from 'components'
 
-const record = {
-  id: '123456',
+const publicRecord = {
+  _id: '123456',
+  name: 'Example',
   url: 'https://example.com',
   username: 'john.doe@example.com',
   keywords: ['comma', 'separated', 'values'],
   comments: '42 is *'
 }
 
-const attrs = {
-  record,
-  locale: 'fr',
-  onChange: action('CHANGE'),
-  onToggleCleartext: action('TOGGLE_CLEARTEXT'),
-  onCopyPassword: action('COPY_PASSWORD'),
-  onLogin: action('LOGIN'),
+const privateRecord = {
+  ...publicRecord,
   password: 'P@ssw0rd!'
 }
 
-storiesOf('RecordForm', module)
+const attrs = {
+  locale: 'fr',
+  onConnectRequest: action('CONNECT_REQUEST'),
+  onToggleExpand: action('TOGGLE_EXPAND'),
+  onToggleCleartext: action('TOGGLE_CLEARTEXT'),
+  onChange: action('CHANGE'),
+  onCancelEditRecord: action('CANCEL_EDIT_RECORD'),
+  onUpdateRecordRequest: action('UPDATE_RECORD_REQUEST'),
+  onDeleteRecordRequest: action('DELETE_RECORD_REQUEST')
+}
+
+storiesOf('RecordCard (SFC)', module)
   .add('disabled', () => (
-    <RecordForm {...attrs} disabled />
+    <RecordCard record={publicRecord} {...attrs} disabled />
   ))
-  .add('disabled-cleartext', () => (
-    <RecordForm {...attrs} disabled cleartext />
+  .add('expanded-disabled-cleartext', () => (
+    <RecordCard record={privateRecord} {...attrs} expanded disabled cleartext />
   ))
-  .add('enabled', () => (
-    <RecordForm {...attrs} />
+  .add('expanded', () => (
+    <RecordCard record={privateRecord} {...attrs} expanded />
   ))
-  .add('enabled-cleartext', () => (
-    <RecordForm {...attrs} cleartext />
+  .add('expanded-cleartext', () => (
+    <RecordCard record={privateRecord} {...attrs} expanded cleartext />
   ))

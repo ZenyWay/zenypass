@@ -63,6 +63,16 @@ export function values <T extends {} = {}> (obj: T): (T[keyof T])[] {
   return (Object.keys(obj || {}) as (keyof T)[]).map(key => obj[key])
 }
 
+export function setListEntry <V = any> (
+  arr: V[],
+  key: string | number,
+  val: V
+): V[] {
+  const result = arr.slice()
+  result[key] = val
+  return result
+}
+
 // strings
 const UPPERCASE_REGEX = /[A-Z\d]+/g
 export function constantFromCamelCase (camel: string, separator: string = '_') {

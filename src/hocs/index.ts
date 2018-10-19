@@ -34,9 +34,7 @@ export {
   authenticationModal,
   AuthenticationModalProps
 } from './authentication-modal'
-export {
-  collapsedRecordCard,
-  CollapsedRecordCardProps
-} from './collapsed-record-card'
 export { connectionModal, ConnectionModalProps } from './connection-modal'
 export { dropdown, DropdownProps } from './dropdown'
+export { pure } from './pure'
+export { records, RecordsProps } from './records'

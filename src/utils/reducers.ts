@@ -16,7 +16,12 @@
 //
 import { identity, shallowEqual } from './basic'
 
-export type Reducer<S, V> = (state: S, value: V) => S
+export type Reducer<A = any, V = any> = (acc: A, value: V) => A
+
+export interface StandardAction<P = any> {
+  type: string
+  payload?: P
+}
 
 export function keepIfEqual (equal = shallowEqual) {
   return function (reduce) {

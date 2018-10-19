@@ -15,7 +15,7 @@
  * Limitations under the License.
  */
 //
-import createAutomataReducer, { Reducer } from 'automata-reducer'
+import createAutomataReducer, { Reducer, AutomataSpec } from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
 import { always, mapPayload, not, pluck } from 'utils'
@@ -26,10 +26,13 @@ const mapPayloadIntoError = into('error')(mapPayload(not(pluck('success'))))
 const clearError = into('error')(always(void 0))
 
 export type AutomataState =
-'copy-any' | 'copy-password' | 'copy-username' | 'clear-clipboard'
-| 'clearing-clipboard' | 'cancelling'
+'copy-any' | 'copying-any'
+| 'copy-password' | 'copying-password'
+| 'copy-username' | 'copying-username'
+| 'clear-clipboard' | 'clearing-clipboard'
+| 'cancelling'
 
-const automata = {
+const automata: AutomataSpec<AutomataState> = {
   'copy-any': {
     CANCEL: 'cancelling',
     CLICK_COPY: 'copying-any'

@@ -44,7 +44,6 @@ export default compose.into(0)(
   forType('PROPS')(propCursor('props')(mapPayload()))
 )
 
-// TODO remove
 export type AuthenticationAutomataState = 'idle' | 'authenticating'
 
 const authenticationAutomata: AutomataSpec<AuthenticationAutomataState> = {

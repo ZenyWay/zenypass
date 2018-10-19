@@ -26,7 +26,6 @@ const l10ns = createL10ns(require('./locales.json'), { debug })
 export const DEFAULT_ICONS = {
   email: 'fa-envelope',
   password: 'fa-key fa-flip-vertical',
-  text: 'fa-question',
   textarea: 'fa-sticky-note',
   url: 'fa-bookmark'
 }
@@ -34,7 +33,6 @@ export const DEFAULT_ICONS = {
 export const DEFAULT_PLACEHOLDERS = {
   email: 'Email',
   password: 'Password',
-  text: 'Content',
   textarea: 'Text',
   url: 'Url'
 }

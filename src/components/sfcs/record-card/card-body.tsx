@@ -21,117 +21,133 @@ import { AutoformatRecordField } from '../../autoformat-record-field'
 import { CopyButton } from '../../copy-button'
 import { IconButton } from '../icon'
 import createL10ns, { L10nTag } from 'basic-l10n'
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
-const l10ns = createL10ns(require('./locales.json'), { debug })
+const l10ns = createL10ns(require('./locales.json'))
 
-export const DEFAULT_ICONS: Partial<RecordFormIcons> = {
+export const DEFAULT_ICONS: Partial<RecordCardBodyIcons> = {
   cleartext: 'fa-eye-slash',
   keywords: 'fa-tags',
   password: 'fa-eye',
   username: 'fa-user'
 }
 
-export const DEFAULT_PLACEHOLDERS: Partial<RecordFormPlaceholders> = {
+export const DEFAULT_PLACEHOLDERS: Partial<RecordCardBodyPlaceholders> = {
   comments: 'Comments',
   keywords: 'Keywords',
   password: 'Password',
   username: 'Username'
 }
 
-export interface RecordFormProps {
+export interface RecordCardBodyProps {
   record: Record
   locale: string
-  cleartext?: boolean
   disabled?: boolean
-  icons?: Partial<RecordFormIcons>
-  placeholders?: Partial<RecordFormPlaceholders>
-  pendingPassword?: boolean
-  pendingLogin?: boolean
-  edit?: boolean
-  password?: string
-  onChange?: (field: keyof Record, value: string[] | string) => void
-  onLoginExpand?: (event: MouseEvent) => void
+  cleartext?: boolean
+  pending?: 'cleartext' | 'edit' | 'save' | 'delete' | 'connect'
+  icons?: Partial<RecordCardBodyIcons>
+  placeholders?: Partial<RecordCardBodyPlaceholders>
+  onChange?: (id: string, field: keyof Record, value: string[] | string) => void
+  onConnectRequest?: (event: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
   [prop: string]: unknown
 }
 
 export interface Record {
-  id: string
-  name: string
-  url: string
-  username: string
-  keywords: string[]
-  comments: string
-  login: boolean
-  mail: string
+  _id: string
+  name?: string
+  url?: string
+  username?: string
+  password?: string
+  keywords?: string[]
+  comments?: string
+  unrestricted?: boolean
 }
 
-export type RecordFormIcons = KVMap<RecordFormInputFields | 'password' | 'cleartext',string>
-export type RecordFormPlaceholders = KVMap<RecordFormInputFields | 'password',string>
-export type RecordFormInputFields = Exclude<keyof Record,'id'>
+export type RecordCardBodyIcons = KV<RecordCardBodyInputFields | 'cleartext',string>
+export type RecordCardBodyPlaceholders = KV<RecordCardBodyInputFields,string>
+export type RecordCardBodyInputFields = Exclude<keyof Record,'_id'>
 
-export type KVMap<K extends string,V> = {[k in K]: V}
+export type KV<K extends string,V> = {[k in K]: V}
 
-export function RecordForm ({
-  edit,
+export function RecordCardBody ({
   record,
-  cleartext,
-  disabled,
-  onChange,
-  onLoginExpand,
-  onToggleCleartext,
-  icons = DEFAULT_ICONS,
-  password,
-  placeholders = DEFAULT_PLACEHOLDERS,
   locale,
-  pendingPassword,
-  pendingLogin,
+  disabled,
+  cleartext,
+  pending,
+  icons = DEFAULT_ICONS,
+  placeholders = DEFAULT_PLACEHOLDERS,
+  onChange,
+  onConnectRequest,
+  onToggleCleartext,
   ...attrs
-}: RecordFormProps) {
-  const { id, url, username, keywords, comments } = record
+}: RecordCardBodyProps) {
+  const {
+    _id,
+    name,
+    url,
+    username,
+    password,
+    keywords,
+    comments,
+    unrestricted
+  } = record
   const t = l10ns[locale]
   const RecordField = disabled ? PassiveRecordField : AutoformatRecordField
 
   return (
-    <form key={id} id={id} {...attrs}>
+    <form key={_id} id={_id} {...attrs}>
+      {
+        disabled ? null : (
+          <PassiveRecordField
+            type='text'
+            id={`${_id}_name`}
+            className='mb-2'
+            size='lg'
+            placeholder={getPlaceholder(t, placeholders, 'name')}
+            value={name}
+            onChange={!disabled && onChange.bind(void 0, 'name')}
+            locale={locale}
+          />
+        )
+      }
       <RecordField
         type='url'
-        id={`${id}_url`}
+        id={`${_id}_url`}
         className='mb-2'
         icon={getIcon(icons, 'url')}
         placeholder={getPlaceholder(t, placeholders, 'url')}
         value={url}
-        onChange={edit && onChange.bind(void 0, 'url')}
+        onChange={!disabled && onChange.bind(void 0, 'url')}
         disabled={disabled}
         locale={locale}
       />
       <PassiveRecordField
         type='email'
-        id={`${id}_username`}
+        id={`${_id}_username`}
         className='mb-2'
         icon={getIcon(icons, 'username')}
         placeholder={getPlaceholder(t, placeholders, 'username')}
         value={username}
-        onChange={onChange.bind(void 0, 'username')}
+        onChange={!disabled && onChange.bind(void 0, 'username')}
         disabled={disabled}
         locale={locale}
       >
         <InputGroupAppend>
-          <CopyButton id={`${id}_copy-button`} value={username} outline />
+          <CopyButton id={`${_id}_copy-button`} value={username} outline />
         </InputGroupAppend>
       </PassiveRecordField>
-      <RecordField
+      <PassiveRecordField
         type={cleartext ? 'text' : 'password'}
-        id={`${id}_password`}
+        id={`${_id}_password`}
         className='mb-2'
         icon={
-          pendingPassword
+          pending === 'cleartext'
           ? 'fa-spin fa-spinner'
           : getIcon(icons, cleartext ? 'cleartext' : 'password')
         }
         placeholder={cleartext && getPlaceholder(t, placeholders, 'password')}
         value={cleartext ? password : '*****'}
-        onChange={onChange.bind(void 0, 'password')}
+        onChange={!disabled && onChange.bind(void 0, 'password')}
         onIconClick={onToggleCleartext}
         disabled={disabled || !cleartext}
         locale={locale}
@@ -139,42 +155,44 @@ export function RecordForm ({
         <InputGroupAppend>
           {!cleartext ? (
             <IconButton
-              id={`${id}_connexion-button`}
+              id={`${_id}_connexion-button`}
               icon={
-                pendingLogin ? 'fa-spin fa-spinner' : 'fa-external-link fa-fw'
+                pending === 'connect'
+                ? 'fa-spin fa-spinner'
+                : 'fa-external-link fa-fw'
               }
               outline
-              onClick={onLoginExpand}
+              onClick={onConnectRequest}
             />
           ) : (
             <CopyButton
-              id={`${id}_password_copy-button`}
+              id={`${_id}_password_copy-button`}
               value={password}
               outline
             />
           )}
         </InputGroupAppend>
-      </RecordField>
+      </PassiveRecordField>
       <RecordField
         type='csv'
-        id={`${id}_keywords`}
+        id={`${_id}_keywords`}
         className='mb-2'
         icon={getIcon(icons, 'keywords')}
         placeholder={getPlaceholder(t, placeholders, 'keywords')}
         value={keywords}
-        onChange={onChange.bind(void 0, 'keywords')}
+        onChange={!disabled && onChange.bind(void 0, 'keywords')}
         disabled={disabled}
         locale={locale}
       />
-      <RecordField
+      <PassiveRecordField
         type='textarea'
-        id={`${id}_comments`}
+        id={`${_id}_comments`}
         className='mb-2'
         icon={getIcon(icons, 'comments')}
         placeholder={getPlaceholder(t, placeholders, 'comments')}
         value={comments}
         rows='3'
-        onChange={onChange.bind(void 0, 'comments')}
+        onChange={!disabled && onChange.bind(void 0, 'comments')}
         disabled={disabled}
         locale={locale}
       />
@@ -183,30 +201,24 @@ export function RecordForm ({
           color='light'
           className='border-secondary mb-2'
           icon = {'fa-lock fa-fw'}
-          disabled
+          onChange={!disabled && onChange.bind(void 0, 'lock')}
+          disabled={disabled}
         />
-        <p className='form-control-static pl-3'>{t('Strict lock')}</p>
-      </InputGroupAppend>
-      <InputGroupAppend>
-        <IconButton
-          color='light'
-          icon = {'fa-sign-in fa-fw'}
-          className='border-secondary mb-2'
-          disabled
-        />
-        <p className='form-control-static pl-3'>{t('Automatic login')}</p>
+        <p className='form-control-static pl-3'>{t(
+          unrestricted ? 'Lock on timeout' : 'Strict lock'
+        )}</p>
       </InputGroupAppend>
     </form>
   )
 }
 
-function getIcon (icons: Partial<RecordFormIcons>, key: string): string {
+function getIcon (icons: Partial<RecordCardBodyIcons>, key: string): string {
   return icons[key] || DEFAULT_ICONS[key]
 }
 
 function getPlaceholder (
   l10n: L10nTag,
-  placeholders: Partial<RecordFormPlaceholders>,
+  placeholders: Partial<RecordCardBodyPlaceholders>,
   key: string
 ): string {
   return formatPlaceholder(l10n, placeholders[key])

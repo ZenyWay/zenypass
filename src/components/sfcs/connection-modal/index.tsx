@@ -42,6 +42,7 @@ export interface ConnectionModalProps {
   onClickCopy?: (event: MouseEvent) => void
   onUsernameCopied?: (success: boolean) => void
   onPasswordCopied?: (success: boolean) => void
+  [prop: string]: unknown
 }
 
 const DEFAULT_COPY_BUTTON_ICONS = {

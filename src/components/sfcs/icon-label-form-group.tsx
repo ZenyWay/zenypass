@@ -34,15 +34,13 @@ export function IconLabelInputFormGroup ({
   size,
   plaintext,
   readonly,
-  className,
   ...attrs
 }: IconLabelInputFormGroupProps) {
   const classNames = classes(
     'w-auto', // override w-100 from 'form-control' for xs & sm
     'form-control',
     size && `form-control-${size}`,
-    plaintext && 'form-control-plaintext',
-    className
+    plaintext && 'form-control-plaintext'
   )
   return (
     <FormGroup inline {...attrs}>

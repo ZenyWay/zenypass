@@ -16,13 +16,13 @@
 /** @jsx createElement */
 import 'symbol-observable' // polyfill
 import { createElement, render } from 'create-element'
-import { CollapsedRecordCard } from 'components'
+import { RecordCardSFC as RecordCard } from 'components'
 import createL10ns from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:app:')
 const l10ns = createL10ns(require('./locales.json'), { debug })
 
 const RECORD = {
-  id: '123456',
+  _id: '123456',
   name: 'Example',
   url: 'https://news.ycombinator.com/',
   username: 'john.doe@example.com',
@@ -41,7 +41,7 @@ function App () {
   return (
     <div>
       <h1>{l10ns.fr`Welcome to ZenyPass!`}</h1>
-      <CollapsedRecordCard {...attrs} />
+      <RecordCard {...attrs} />
     </div>
   )
 }

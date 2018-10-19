@@ -48,13 +48,9 @@ export {
   AutoformatRecordFieldProps
 } from './autoformat-record-field'
 export {
-  CollapsedRecordCard,
-  CollapsedRecordCardProps
-} from './collapsed-record-card'
-export {
-  CollapsedRecordCard as CollapsedRecordCardSFC,
-  CollapsedRecordCardProps as CollapsedRecordCardSFCProps
-} from './sfcs/collapsed-record-card'
+  ConfirmationModal as ConfirmationModalSFC,
+  ConfirmationModalProps as ConfirmationModalSFCProps
+} from './sfcs/confirmation-modal'
 export { ConnectionModal, ConnectionModalProps } from './connection-modal'
 export {
   ConnectionModal as ConnectionModalSFC,
@@ -78,4 +74,7 @@ export {
 } from './sfcs/navbar-menu'
 export { NavbarMenu, NavBarMenuProps } from './navbar-menu'
 export { RecordField, RecordFieldProps } from './sfcs/record-field'
-export { RecordForm, RecordFormProps, Record } from './sfcs/record-form'
+export {
+  RecordCard as RecordCardSFC,
+  RecordCardProps as RecordCardSFCProps
+} from './sfcs/record-card'
