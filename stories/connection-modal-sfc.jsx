@@ -26,6 +26,7 @@ import preventDefaultAction from './helpers/prevent-default'
 const { name, username, password } = RECORD
 
 const attrs = {
+  open: true,
   name,
   username,
   password,
@@ -41,14 +42,12 @@ const attrs = {
 storiesOf('ConnectionModal (SFC)', module)
   .add('copy-all', () => (
     <ConnectionModal
-      display
       copy='all'
       {...attrs}
     />
   ))
   .add('copy-username', () => (
     <ConnectionModal
-      display
       warning='password-first'
       copy='username'
       {...attrs}
@@ -56,7 +55,6 @@ storiesOf('ConnectionModal (SFC)', module)
   ))
   .add('copy-password', () => (
     <ConnectionModal
-      display
       warning='clipboard-contaminated'
       copy='password'
       {...attrs}
@@ -64,7 +62,6 @@ storiesOf('ConnectionModal (SFC)', module)
   ))
   .add('cleartext', () => (
     <ConnectionModal
-      display
       cleartext
       copy='all'
       {...attrs}
@@ -72,7 +69,6 @@ storiesOf('ConnectionModal (SFC)', module)
   ))
   .add('manual', () => (
     <ConnectionModal
-      display
       manual
       copy='all'
       {...attrs}
@@ -80,13 +76,11 @@ storiesOf('ConnectionModal (SFC)', module)
   ))
   .add('clear-clipboard', () => (
     <ConnectionModal
-      display
       {...attrs}
     />
   ))
   .add('clear-clipboard-error', () => (
     <ConnectionModal
-      display
       error='clear-clipboard'
       {...attrs}
     />

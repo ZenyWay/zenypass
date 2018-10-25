@@ -39,3 +39,9 @@ export function not (fn = identity) {
     return !fn(val)
   }
 }
+
+export function hasEntry <K extends string, V> (key: K, val: V) {
+  return function <T extends { [k in K]?: V } = { [k in K]?: V }>(obj?: T) {
+    return obj && obj[key] === val
+  }
+}

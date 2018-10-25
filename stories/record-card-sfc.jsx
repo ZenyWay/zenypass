@@ -37,10 +37,10 @@ const privateRecord = {
 const attrs = {
   locale: 'fr',
   onConnectRequest: action('CONNECT_REQUEST'),
-  onToggleExpand: action('TOGGLE_EXPAND'),
+  onToggleExpanded: action('TOGGLE_EXPANDED'),
   onToggleCleartext: action('TOGGLE_CLEARTEXT'),
+  onEditRecordRequest: action('EDIT_RECORD_REQUEST'),
   onChange: action('CHANGE'),
-  onCancelEditRecord: action('CANCEL_EDIT_RECORD'),
   onUpdateRecordRequest: action('UPDATE_RECORD_REQUEST'),
   onDeleteRecordRequest: action('DELETE_RECORD_REQUEST')
 }
@@ -49,12 +49,30 @@ storiesOf('RecordCard (SFC)', module)
   .add('disabled', () => (
     <RecordCard record={publicRecord} {...attrs} disabled />
   ))
+  .add('expanded-disabled', () => (
+    <RecordCard record={publicRecord} {...attrs} expanded disabled />
+  ))
+  .add('expanded-disabled-pending-cleartext', () => (
+    <RecordCard record={privateRecord} {...attrs} expanded disabled pending='cleartext' />
+  ))
   .add('expanded-disabled-cleartext', () => (
     <RecordCard record={privateRecord} {...attrs} expanded disabled cleartext />
+  ))
+  .add('expanded-disabled-pending-edit', () => (
+    <RecordCard record={privateRecord} {...attrs} expanded disabled pending='edit' />
   ))
   .add('expanded', () => (
     <RecordCard record={privateRecord} {...attrs} expanded />
   ))
   .add('expanded-cleartext', () => (
     <RecordCard record={privateRecord} {...attrs} expanded cleartext />
+  ))
+  .add('expanded-pending-save', () => (
+    <RecordCard record={privateRecord} {...attrs} expanded pending='save' />
+  ))
+  .add('expanded-pending-delete', () => (
+    <RecordCard record={privateRecord} {...attrs} expanded pending='delete' />
+  ))
+  .add('expanded-pending-cancel', () => (
+    <RecordCard record={privateRecord} {...attrs} expanded pending='cancel' />
   ))

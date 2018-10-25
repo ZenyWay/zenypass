@@ -78,3 +78,7 @@ export {
   RecordCard as RecordCardSFC,
   RecordCardProps as RecordCardSFCProps
 } from './sfcs/record-card'
+export {
+  RecordCard, RecordCardProps
+} from './record-card'
+export { withAuthenticationModal } from './sfcs/with-authentication'

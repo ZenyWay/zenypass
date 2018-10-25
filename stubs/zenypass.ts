@@ -14,7 +14,7 @@
  */
 import { interval, NEVER, of as observable, Observable, throwError } from 'rxjs'
 import { concat, switchMap, takeUntil, delay, take } from 'rxjs/operators'
-import { AuthorizationDoc, KVMap } from '../src/services/zenypass'
+import { AuthorizationDoc, KVMap, ZenypassRecord, PouchDoc } from '../src/services/zenypass'
 export * from '../src/services/zenypass'
 
 const AUTHENTICATION_DELAY = 1500 // ms
@@ -71,20 +71,19 @@ export function getAuthorizations$ (sessionId: string): Observable<KVMap<Authori
   : throwError(UNAUTHORIZED)
 }
 
-export const getRecord = accessRecordService(ref => ({
-  ...ref,
-  password: RECORD_PASSWORD
-}))
+export const getRecord = accessRecordService<ZenypassRecord>(
+  ref => ({ ...ref, password: RECORD_PASSWORD })
+)
 
-export const putRecord = accessRecordService(record => record)
+export const putRecord = accessRecordService<ZenypassRecord>(record => record)
 
-export const deleteRecord = accessRecordService(ref => ({
+export const deleteRecord = accessRecordService<PouchDoc>(ref => ({
   ...ref,
   _deleted: true
 }))
 
-function accessRecordService (result: Function) {
-  return function (sessionId: string, arg: any) {
+function accessRecordService <T> (result: Function) {
+  return function (sessionId: string, arg: any): Promise<T> {
     return new Promise(function (resolve, reject) {
       setTimeout(
         () => sessionId === SESSION_ID
@@ -109,24 +108,3 @@ function newStatusError (status = 501, message = '') {
 function errorPassword (status: StatusError) {
   return status
 }
-/*
-function doSomethingAsync (arg0, arg1, callback) {
-  // ... do something async with arg0 and arg1
-  // when done
-  let error: any
-  let result: any
-  if (error) {
-    callback(error)
-  }
-  callback(null, result)
-}
-// -> callback hell !!!
-function doSomethingElseAsync (arg, callback) {
-  doSomethingAsync('foo', 'bar', function (err, res) {
-    if (err) {
-      callback(err)
-    }
-    // do something with res
-    callback()
-  })
-}*/

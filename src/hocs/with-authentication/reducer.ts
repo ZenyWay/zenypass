@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-export * from './basic'
-export * from './dom'
-export * from './effects'
-export * from './errors'
-export * from './functional'
-export * from './indexed-payload'
-export * from './reducers'
+//
+import { propCursor, into } from 'basic-cursors'
+import { always, forType, mapPayload } from 'utils'
+import compose from 'basic-compose'
+
+export default compose.into(0)(
+  forType('AUTHENTICATION_REQUESTED')(into('authenticate')(always(true))),
+  forType('AUTHENTICATION_REJECTED')(into('authenticate')(always(false))),
+  forType('AUTHENTICATION_RESOLVED')(into('authenticate')(always(false))),
+  forType('PROPS')(propCursor('props')(mapPayload()))
+)

@@ -1,6 +1,7 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
+ * @author Hadrien Boulanger
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,10 +14,21 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-export * from './basic'
-export * from './dom'
-export * from './effects'
-export * from './errors'
-export * from './functional'
-export * from './indexed-payload'
-export * from './reducers'
+/** @jsx createElement */
+import { createElement } from 'create-element'
+import { ConfirmationModalSFC as ConfirmationModal } from 'components'
+import { storiesOf } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
+
+const attr = {
+  locale: 'fr',
+  onCancel: action('CANCEL'),
+  onConfirm: action('CONFIRM')
+}
+
+storiesOf('ConfirmationModal (SFC)', module)
+  .add('default', () => (
+    <ConfirmationModal expanded {...attr}>
+      <p>Voulez-vous annuler vos modifications ?</p>
+    </ConfirmationModal>
+  ))

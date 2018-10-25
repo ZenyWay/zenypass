@@ -29,10 +29,13 @@ export interface RecordCardProps extends RecordCardHandlerProps {
   record: Record
   expanded?: boolean
   disabled?: boolean,
-  pending?: 'cleartext' | 'edit' | 'save' | 'delete'
+  pending?: PendingState
   cleartext?: boolean
   error?: string
 }
+
+export type PendingState =
+  'cleartext' | 'cancel' | 'edit' | 'save' | 'delete' | 'connect'
 
 export interface RecordCardHandlerProps {
   onConnectRequest?: (event: MouseEvent) => void
@@ -71,14 +74,18 @@ export function RecordCards ({
   let i = records.length
   const cards = new Array(i)
   while (i--) {
+    const record = records[i]
+    /*
     cards[i] = (
-      <RecordCardItem
+      <RecordCard
+        key={record._id}
         index={i}
         locale={locale}
         record={records[i]}
         {...handlers}
       />
     )
+    */
   }
   return <ul {...attrs}>{cards}</ul>
 }
@@ -105,8 +112,8 @@ const RecordCardItem = pure(function ({ // pure: only update when props change
       <RecordCard
         key={attrs.record._id}
         {...attrs}
-        onConnectRequest={onConnectRequest.bind(void 0, index)}
-        onToggleExpand={onToggleExpand.bind(void 0, index)}
+        onToggleConnect={onConnectRequest.bind(void 0, index)}
+        onToggleExpanded={onToggleExpand.bind(void 0, index)}
         onToggleCleartext={onToggleCleartext.bind(void 0, index)}
         onEditRecordRequest={onEditRecordRequest.bind(void 0, index)}
         onChange={onChange.bind(void 0, index)}

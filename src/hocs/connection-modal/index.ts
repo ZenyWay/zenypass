@@ -17,7 +17,7 @@
 //
 import reducer, { AutomataState } from './reducer'
 import {
-  callOnCancelOnCancelling,
+  callOnDoneOnCancelling,
   clearClipboardOnClearingClipboard,
   openWindowOnClickCopyWhenNotManual
 } from './effects'
@@ -37,7 +37,24 @@ export type ConnectionModalProps<P extends ConnectionModalSFCProps> =
 ConnectionModalControllerProps & Rest<P,ConnectionModalSFCProps>
 
 export interface ConnectionModalControllerProps {
-  onCancel?: () => void
+  onDone?: () => void
+}
+
+export interface ConnectionModalSFCProps
+extends ConnectionModalSFCHandlerProps {
+  manual?: boolean
+  cleartext?: boolean
+  error?: boolean
+  copy?: 'all' | 'password' | 'username' | '' | false
+}
+
+export interface ConnectionModalSFCHandlerProps {
+  onCancel?: (err?: any) => void
+  onToggleManual?: (event: MouseEvent) => void
+  onToggleCleartext?: (event: MouseEvent) => void
+  onClickCopy?: (event: MouseEvent) => void
+  onUsernameCopied?: (success: boolean) => void
+  onPasswordCopied?: (success: boolean) => void
 }
 
 interface ConnectionModalState {
@@ -68,7 +85,7 @@ function mapStateToProps (
   }: ConnectionModalState
 ): Rest<ConnectionModalSFCProps,ConnectionModalSFCHandlerProps> {
   const copy = STATE_TO_COPY_PROP[state]
-  const { onCancel, ...attrs } = props
+  const { onDone, ...attrs } = props
   return { ...attrs, manual, cleartext, error, copy }
 }
 
@@ -96,23 +113,6 @@ function onFieldCopied (field: 'username' | 'password') {
   }
 }
 
-export interface ConnectionModalSFCProps
-extends ConnectionModalSFCHandlerProps {
-  manual?: boolean
-  cleartext?: boolean
-  error?: boolean
-  copy?: 'all' | 'password' | 'username' | '' | false
-}
-
-export interface ConnectionModalSFCHandlerProps {
-  onCancel?: (err?: any) => void
-  onToggleManual?: (event: MouseEvent) => void
-  onToggleCleartext?: (event: MouseEvent) => void
-  onClickCopy?: (event: MouseEvent) => void
-  onUsernameCopied?: (success: boolean) => void
-  onPasswordCopied?: (success: boolean) => void
-}
-
 export function connectionModal <P extends ConnectionModalSFCProps> (
   ConnectionModal: SFC<P>
 ): ComponentClass<ConnectionModalProps<P>> {
@@ -121,7 +121,7 @@ export function connectionModal <P extends ConnectionModalSFCProps> (
     // () => tap(log('controlled-connection-modal:event:')),
     redux(
       reducer,
-      callOnCancelOnCancelling,
+      callOnDoneOnCancelling,
       clearClipboardOnClearingClipboard,
       openWindowOnClickCopyWhenNotManual
     ),

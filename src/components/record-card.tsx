@@ -13,10 +13,27 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-export * from './basic'
-export * from './dom'
-export * from './effects'
-export * from './errors'
-export * from './functional'
-export * from './indexed-payload'
-export * from './reducers'
+//
+import {
+  recordCard,
+  RecordCardProps as PrivilegedRecordCardProps,
+  withAuthentication,
+  AuthenticationProviderProps
+} from 'hocs'
+import {
+  withAuthenticationModal,
+  AuthenticationProviderProps as AuthenticationProviderSFCProps
+} from './sfcs/with-authentication'
+import {
+  RecordCard as RecordCardSFC,
+  RecordCardProps as RecordCardSFCProps
+} from './sfcs/record-card'
+
+export const RecordCard = withAuthentication(
+  withAuthenticationModal(recordCard<RecordCardSFCProps>(RecordCardSFC))
+)
+
+export type RecordCardProps =
+AuthenticationProviderProps<
+  AuthenticationProviderSFCProps & PrivilegedRecordCardProps<RecordCardSFCProps>
+>

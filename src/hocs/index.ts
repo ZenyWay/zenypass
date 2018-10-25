@@ -37,4 +37,8 @@ export {
 export { connectionModal, ConnectionModalProps } from './connection-modal'
 export { dropdown, DropdownProps } from './dropdown'
 export { pure } from './pure'
-export { records, RecordsProps } from './records'
+export { recordCard, RecordCardProps } from './record-card'
+export {
+  withAuthentication,
+  AuthenticationProviderProps
+} from './with-authentication'

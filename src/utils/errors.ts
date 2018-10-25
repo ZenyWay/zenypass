@@ -1,8 +1,7 @@
 /**
- * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
+ * Copyright 2018 ZenyWay S.A.S
  * @author Stephane M. Catala
- * @license Apache Version 2.0
- *
+ * @license Apache 2.0
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,10 +12,26 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-export * from './basic'
-export * from './dom'
-export * from './effects'
-export * from './errors'
-export * from './functional'
-export * from './indexed-payload'
-export * from './reducers'
+//
+export interface StatusError extends Error {
+  status: ERROR_STATUS
+}
+
+export enum ERROR_STATUS {
+  BAD_REQUEST = 400,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  NOT_FOUND = 404,
+  REQUEST_TIMEOUT = 408,
+  CLIENT_CLOSED_REQUEST = 499,
+  INTERNAL_SERVER_ERROR = 500
+}
+
+export function newStatusError (
+  status = ERROR_STATUS.INTERNAL_SERVER_ERROR,
+  message = ''
+) {
+  const err = new Error(message) as StatusError
+  err.status = status
+  return err
+}

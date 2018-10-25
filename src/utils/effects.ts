@@ -14,43 +14,48 @@
  * Limitations under the License.
  */
 //
-import { createActionFactory, StandardAction } from 'basic-fsa-factories'
+import { StandardAction } from 'basic-fsa-factories'
 import { Observable } from 'rxjs'
-import { filter, ignoreElements, map, tap, withLatestFrom } from 'rxjs/operators'
-import { constantFromCamelCase, isFunction, isBoolean } from './basic'
-
-export interface HandlerOnEventCallerOpts<S> {
-  predicate?: ((state: S, event?: StandardAction<any>) => boolean)
-  action?: StandardActionSpec | boolean
-}
+import { filter, ignoreElements, tap, withLatestFrom } from 'rxjs/operators'
+import { isFunction } from './basic'
 
 export type StandardActionSpec =
   (string | ((...args: any[]) => any))[] | string | ((...args: any[]) => any)
 
-export interface ComponentState<P> {
-  props?: P
-}
-
-export type HandlerProps<H extends string> = {
-  [prop in H]?: (val?: any) => void
-}
+export type Handler<V> = (val?: V) => void
 
 export function callHandlerOnEvent <
   H extends string,
-  P extends HandlerProps<H> = HandlerProps<H>,
-  S extends ComponentState<P> = ComponentState<P>
+  V = any,
+  S extends T & { props: P } = T & { props: P },
+  T extends void | {} = void,
+  P extends { [prop in H]?: Handler<V> } = { [prop in H]?: Handler<V> }
 > (
   handler: H,
   type: string,
-  opts: HandlerOnEventCallerOpts<S> = {}
+  payload?: (state: T, event: StandardAction<any>) => V
+)
+export function callHandlerOnEvent <
+  V = any,
+  S extends T = T,
+  T extends void | {} = void
+> (
+  handler: (state: S) => Handler<V>,
+  type: string,
+  payload?: (state: T, event: StandardAction<any>) => V
+)
+export function callHandlerOnEvent <V = any, S = any> (
+  handler: string | ((state: S) => Handler<V>),
+  type: string,
+  payload?: (state: S, event: StandardAction<any>) => V
 ) {
-  const { predicate } = opts
-  const action = createActionFactoryFromSpec(
-    isBoolean(opts.action)
-    ? `${constantFromCamelCase(handler)}_CALLED`
-    : opts.action
-  )
-
+  if (!isFunction(handler)) {
+    return callHandlerOnEvent(
+      function (state: any) { return state.props[handler] },
+      type,
+      payload
+    )
+  }
   return function (
     event$: Observable<StandardAction<any>>,
     state$: Observable<S>
@@ -59,29 +64,14 @@ export function callHandlerOnEvent <
       filter(event => event.type === type),
       withLatestFrom(state$),
       tap(
-        ([event, state]) => (!predicate || predicate(state, event))
-          && callHandler(state.props[handler], event.payload)
+        ([event, state]) => callHandler(
+          handler(state),
+          payload ? payload(state, event) : event.payload
+        )
       ),
-      action
-      ? map(([event, state]) => action(state, event))
-      : ignoreElements()
+      ignoreElements()
     )
   }
-}
-
-function createActionFactoryFromSpec (
-  spec: StandardActionSpec
-) {
-  return spec && (
-    isFunction(spec)
-    ? spec
-    : Array.isArray(spec)
-      ? createActionFactory(
-          spec[0] as string,
-          spec[1] as ((...args: any[]) => any)
-        )
-      : createActionFactory(spec)
-  )
 }
 
 function callHandler <V> (handler?: (val: V) => void, val?: V) {

@@ -20,22 +20,24 @@ import { propCursor, into } from 'basic-cursors'
 import { always, forType, mapPayload } from 'utils'
 import compose from 'basic-compose'
 
-export type AutomataState = 'pristine' | 'dirty' | 'pending'
+export type AutomataState = 'pristine' | 'dirty' | 'authenticating'
 
 const mapPayloadIntoValue = into('value')(mapPayload())
 const clearValue = into('value')(always(void 0))
+const clearError = into('error')(always(void 0))
 
 const automata: AutomataSpec<AutomataState> = {
   pristine: {
     CHANGE: ['dirty', mapPayloadIntoValue]
   },
   dirty: {
-    CANCEL: ['pristine', clearValue],
-    CHANGE: mapPayloadIntoValue,
-    SUBMIT: 'pending'
+    CANCEL: ['pristine', clearValue, clearError],
+    CHANGE: [clearError, mapPayloadIntoValue],
+    AUTHENTICATION_REQUESTED: 'authenticating'
   },
-  pending: {
-    PROPS: ['pristine', clearValue]
+  authenticating: {
+    AUTHENTICATION_REJECTED: ['dirty', into('error')(mapPayload())],
+    AUTHENTICATION_RESOLVED: ['pristine', clearValue, clearError]
   }
 }
 
@@ -43,19 +45,3 @@ export default compose.into(0)(
   createAutomataReducer(automata, 'pristine'),
   forType('PROPS')(propCursor('props')(mapPayload()))
 )
-
-export type AuthenticationAutomataState = 'idle' | 'authenticating'
-
-const authenticationAutomata: AutomataSpec<AuthenticationAutomataState> = {
-  idle: {
-    AUTHENTICATION_REQUESTED: 'authenticating'
-  },
-  authenticating: {
-    AUTHENTICATION_REJECTED: ['idle', into('error')(mapPayload())],
-    AUTHENTICATION_RESOLVED: ['idle', into('sessionId')(mapPayload())]
-  }
-}
-
-export function createAuthenticationReducer (key: string = 'auth') {
-  return createAutomataReducer(authenticationAutomata, 'idle', key)
-}

@@ -19,8 +19,10 @@ import { createElement } from 'create-element'
 import { Button, Card, CardHeader, CardBody, CardFooter } from 'bootstrap'
 import { IconButton } from '../icon'
 import { IconLabelInputFormGroup } from '../icon-label-form-group'
-import { classes } from 'utils'
+import { ConfirmationModal } from '../confirmation-modal'
+import { ConnectionModal } from '../../connection-modal'
 import { Record, RecordCardBody } from './card-body'
+import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
@@ -31,13 +33,14 @@ export interface RecordCardProps {
   record: Record
   expanded?: boolean
   disabled?: boolean
-  pending?: 'cleartext' | 'edit' | 'save' | 'delete'
+  connect?: boolean
+  pending?: PendingState
   cleartext?: boolean
   error?: string
   className?: string
-  onConnectRequest?: (event: MouseEvent) => void
-  onToggleExpand?: (event: MouseEvent) => void
+  onToggleConnect?: (event?: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
+  onToggleExpanded?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
   onChange?: (field: keyof Record, value: string[] | string) => void
   onUpdateRecordRequest?: (event: MouseEvent) => void
@@ -45,24 +48,29 @@ export interface RecordCardProps {
   [prop: string]: unknown
 }
 
+export type PendingState =
+  'cleartext' | 'cancel' | 'edit' | 'save' | 'delete' | 'connect'
+
 export function RecordCard ({
   locale,
   record,
   expanded,
   disabled,
+  connect,
   pending,
   cleartext,
   error,
   className,
-  onConnectRequest,
-  onToggleExpand,
+  onToggleConnect,
   onToggleCleartext,
+  onToggleExpanded,
   onEditRecordRequest,
   onChange,
   onUpdateRecordRequest,
   onDeleteRecordRequest,
   ...attrs
 }: RecordCardProps) {
+  const t = l10ns[locale]
   const { _id, name, url, username } = record
   return (
     <Card
@@ -96,7 +104,7 @@ export function RecordCard ({
               cleartext={cleartext}
               pending={pending}
               onChange={onChange}
-              onConnectRequest={onConnectRequest}
+              onConnectRequest={onToggleConnect}
               onToggleCleartext={onToggleCleartext}
             />
           )
@@ -117,8 +125,8 @@ export function RecordCard ({
           ? (
             CollapsedCardFooter({ // TODO replace with JSX when inferno@6
               _id,
-              pending: false, // TODO
-              onConnectRequest
+              pending: pending === 'connect',
+              onConnectRequest: onToggleConnect
             }) as any
           )
           : (
@@ -137,9 +145,26 @@ export function RecordCard ({
           id={`collapsed-record-card:${_id}:toggle-expand`}
           icon={!expanded ? 'fa-caret-down' : disabled ? 'fa-caret-up' : 'fa-close'}
           className='close'
-          onClick={onToggleExpand}
+          onClick={onToggleExpanded}
         />
       </CardFooter>
+      <ConfirmationModal
+        expanded={pending === 'cancel'}
+        onConfirm={onToggleExpanded}
+        onCancel={onEditRecordRequest}
+        locale={locale}
+      >
+        <p>{t('Do you want to cancel your changes')} ?</p>
+      </ConfirmationModal>
+      <ConnectionModal
+        open={connect}
+        onDone={onToggleConnect}
+        name={record.name}
+        url={record.url}
+        username={record.username}
+        password={record.password}
+        locale={locale}
+      />
     </Card>
   )
 }
@@ -147,7 +172,7 @@ export function RecordCard ({
 interface CollapsedCardFooterProps {
   _id: string
   pending?: boolean
-  onConnectRequest?: (event: MouseEvent) => void
+  onConnectRequest?: (event?: MouseEvent) => void
 }
 
 function CollapsedCardFooter ({
@@ -159,7 +184,7 @@ function CollapsedCardFooter ({
     <span className='py-2 pr-2'><i className='fa fa-fw fa-lock'></i></span>,
     <IconButton
       id={`collapsed-record-card:${_id}:connect`}
-      icon={pending ? 'fa-spinner fa-spin' : 'fa-external-link fa-fw'}
+      icon={pending ? 'fa-spinner fa-spin' : 'fa-external-link'}
       outline
       onClick={onConnectRequest}
     />
@@ -172,7 +197,6 @@ interface ExpandedCardFooterProps {
   disabled: boolean
   pending?: 'edit' | 'save' | 'delete' | unknown
   onEditRecordRequest?: (event: MouseEvent) => void
-  onCancelEditRecord?: (event: MouseEvent) => void
   onUpdateRecordRequest?: (event: MouseEvent) => void
   onDeleteRecordRequest?: (event: MouseEvent) => void
 }
@@ -192,7 +216,7 @@ function ExpandedCardFooter ({
   ? [
     <IconButton
       id={`expanded-record-card:${_id}:edit`}
-      icon={'fa-edit'}
+      icon={pending === 'edit' ? 'fa-spinner fa-spin' : 'fa-edit'}
       outline
       className='border-secondary'
       onClick={onEditRecordRequest}
@@ -203,7 +227,7 @@ function ExpandedCardFooter ({
   : [
     <IconButton
       id={`expanded-record-card:${_id}:save`}
-      icon={'fa-download'}
+      icon={pending === 'save' ? 'fa-spinner fa-spin' : 'fa-download'}
       outline
       className='border-secondary mr-2'
       onClick={onUpdateRecordRequest}
@@ -212,7 +236,7 @@ function ExpandedCardFooter ({
     </IconButton>,
     <IconButton
       id={`expanded-record-card:${_id}:delete`}
-      icon={'fa-trash'}
+      icon={pending === 'delete' ? 'fa-spinner fa-spin' : 'fa-trash'}
       outline
       color='danger'
       className='border-secondary'

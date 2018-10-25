@@ -42,7 +42,7 @@ export interface RecordCardBodyProps {
   locale: string
   disabled?: boolean
   cleartext?: boolean
-  pending?: 'cleartext' | 'edit' | 'save' | 'delete' | 'connect'
+  pending?: string
   icons?: Partial<RecordCardBodyIcons>
   placeholders?: Partial<RecordCardBodyPlaceholders>
   onChange?: (id: string, field: keyof Record, value: string[] | string) => void
@@ -60,6 +60,9 @@ export interface Record {
   keywords?: string[]
   comments?: string
   unrestricted?: boolean
+  login?: boolean
+  favicon?: string
+  timestamp?: number
 }
 
 export type RecordCardBodyIcons = KV<RecordCardBodyInputFields | 'cleartext',string>

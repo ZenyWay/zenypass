@@ -21,10 +21,10 @@ import { action } from '@storybook/addon-actions'
 import { AuthenticationModal } from 'components'
 
 const attrs = {
-  show: true,
+  authenticate: true,
   locale: 'fr',
-  onCancel: action('CANCEL'),
-  onSubmit: action('SUBMIT')
+  onCancelled: action('CANCEL'),
+  onAuthenticated: action('SUBMIT')
 }
 
 storiesOf('AuthenticationModal', module)
@@ -32,7 +32,4 @@ storiesOf('AuthenticationModal', module)
   // text inputs with both onChange and onInput handlers will malfunction in Storybook (inferno-compat)
   .add('default', () => (
     <AuthenticationModal {...attrs} />
-  ))
-  .add('error', () => (
-    <AuthenticationModal error {...attrs} />
   ))

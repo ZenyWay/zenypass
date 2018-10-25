@@ -25,18 +25,16 @@ import { RECORD } from './helpers/consts'
 const { name, url, username, password } = RECORD
 
 const attrs = {
+  open: true,
   name,
   url,
   username,
   password,
   locale: 'fr',
-  onCancel: action('CANCELLED')
+  onDone: action('DONE')
 }
 
 storiesOf('ConnectionModal', module)
   .add('default', () => (
-    <ConnectionModal
-      display
-      {...attrs}
-    />
+    <ConnectionModal {...attrs} />
   ))

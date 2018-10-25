@@ -13,10 +13,22 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-export * from './basic'
-export * from './dom'
-export * from './effects'
-export * from './errors'
-export * from './functional'
-export * from './indexed-payload'
-export * from './reducers'
+//
+/** @jsx createElement */
+import { createElement } from 'create-element'
+import { storiesOf } from '@storybook/react'
+import { RecordCard } from 'components'
+
+const publicRecord = {
+  _id: '123456',
+  name: 'Example',
+  url: 'https://example.com',
+  username: 'john.doe@example.com',
+  keywords: ['comma', 'separated', 'values'],
+  comments: '42 is *'
+}
+
+storiesOf('RecordCard', module)
+  .add('default', () => (
+    <RecordCard record={publicRecord} locale='fr' />
+  ))

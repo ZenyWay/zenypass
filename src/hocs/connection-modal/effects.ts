@@ -28,6 +28,7 @@ import {
   withLatestFrom
 } from 'rxjs/operators'
 import { Observable, of as observable } from 'rxjs'
+import { hasEntry } from 'utils'
 import copyToClipboard from 'clipboard-copy'
 
 const CLIPBOARD_CLEARED = 'Clipboard cleared by ZenyPass'
@@ -45,17 +46,19 @@ export function clearClipboardOnClearingClipboard (
   state$: Observable<any>
 ) {
   return state$.pipe(
-    sampleOnTransitionToState('clearing-clipboard'),
+    distinctUntilKeyChanged('state'),
+    filter(hasEntry('state', 'clearing-clipboard')),
     concatMap(() => copyToClipboard(CLIPBOARD_CLEARED)),
     map(clipboardCleared),
     catchError(() => observable(copyError('clear-clipboard')))
   )
 }
 
-export function callOnCancelOnCancelling (_: any, state$: Observable<any>) {
+export function callOnDoneOnCancelling (_: any, state$: Observable<any>) {
   return state$.pipe(
-    sampleOnTransitionToState('cancelling'),
-    tap(({ props }) => props.onCancel && props.onCancel()),
+    distinctUntilKeyChanged('state'),
+    filter(hasEntry('state', 'cancelling')),
+    tap(({ props }) => props.onDone && props.onDone()),
     map(() => cancelled())
   )
 }
@@ -83,14 +86,4 @@ function openWindow (event, windowref) {
   }
   windowref.focus()
   return windowref
-}
-
-function sampleOnTransitionToState (target) {
-  return function (state$) {
-    return state$.pipe(
-      distinctUntilKeyChanged('state'),
-      skip(1), // initial state
-      filter(({ state }) => state === target)
-    )
-  }
 }

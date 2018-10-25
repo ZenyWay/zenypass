@@ -31,7 +31,7 @@ export interface ConnectionModalProps {
   username: string
   password: string
   locale: string
-  display?: boolean
+  open?: boolean
   manual?: boolean
   copy?: 'all' | 'username' | 'password' | '' | false
   error?: boolean
@@ -51,7 +51,7 @@ const DEFAULT_COPY_BUTTON_ICONS = {
 }
 
 export function ConnectionModal ({
-  display,
+  open,
   manual,
   name,
   url,
@@ -76,7 +76,7 @@ export function ConnectionModal ({
   const href = copy === 'all' ? url : void 0
 
   return (
-    <Modal isOpen={display} toggle={onCancel} {...attrs}>
+    <Modal isOpen={open} toggle={onCancel} {...attrs}>
       <ModalHeader toggle={onCancel} className='bg-info text-white' >
         {t('Login')}
       </ModalHeader>
