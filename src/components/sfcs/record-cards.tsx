@@ -18,6 +18,7 @@ import { createElement } from 'create-element'
 import { RecordCard } from '../record-card'
 import { Record } from './record-card'
 import { Observer } from 'rxjs'
+import { classes } from 'utils'
 
 export { Record }
 export interface RecordCardsProps {
@@ -33,11 +34,16 @@ export function RecordCards ({
   locale,
   session,
   records,
+  className,
   onAuthenticationRequest,
   ...attrs
 }: RecordCardsProps) {
   let i = records.length
   const cards = new Array(i)
+  const classNames = classes(
+    'pl-0',
+    className
+  )
   while (i--) {
     const record = records[i]
     cards[i] = (
@@ -50,5 +56,5 @@ export function RecordCards ({
       />
     )
   }
-  return <ul {...attrs}>{cards}</ul>
+  return <ul {...attrs} className={classNames} >{cards}</ul>
 }
