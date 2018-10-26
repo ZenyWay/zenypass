@@ -14,16 +14,22 @@
  * Limitations under the License.
  */
 //
-import { dropdown, DropdownProps } from 'hocs'
+/*
+import { accessControl, AccessControlProps } from 'hocs'
 import {
-  NavbarMenu as NavbarMenuSFC,
-  NavbarMenuProps as NavbarMenuSFCProps,
-  MenuSpecs
-} from './sfcs/navbar-menu'
+  AccessControl as AccessControlSFC,
+  AccessControlProps as AccessControlSFCProps,
+  RestrictedAccessProps
+} from './sfcs/access-control'
+import { SFC, ComponentClass } from 'create-element'
 
-export const NavbarMenu = dropdown<NavbarMenuSFCProps>(
-  NavbarMenuSFC
-)
+export function withAccessControl <R extends RestrictedAccessProps> (
+  RestrictedAccessComponent: SFC<R> | ComponentClass<R, any>
+) {
+  return accessControl <AccessControlSFCProps>(
+    AccessControlSFC(RestrictedAccessComponent)
+  )
+}
 
-export type NavBarMenuProps = DropdownProps<NavbarMenuSFCProps>
-export { MenuSpecs }
+export { AccessControlProps, RestrictedAccessProps }
+*/

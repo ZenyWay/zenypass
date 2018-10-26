@@ -16,20 +16,27 @@
 //
 import {
   recordCard,
-  RecordCardProps as PrivilegedRecordCardProps,
-  withAuthentication,
-  AuthenticationProviderProps
+  RecordCardProps as GenericRecordCardProps
+//  withAuthentication,
+//  AuthenticationProviderProps
 } from 'hocs'
+/*
 import {
   withAuthenticationModal,
   AuthenticationProviderProps as AuthenticationProviderSFCProps
 } from './sfcs/with-authentication'
+*/
 import {
   RecordCard as RecordCardSFC,
   RecordCardProps as RecordCardSFCProps
 } from './sfcs/record-card'
 
-export const RecordCard = withAuthentication(
+export const RecordCard = recordCard<RecordCardSFCProps>(RecordCardSFC)
+
+export type RecordCardProps = GenericRecordCardProps<RecordCardSFCProps>
+
+/*
+withAuthentication(
   withAuthenticationModal(recordCard<RecordCardSFCProps>(RecordCardSFC))
 )
 
@@ -37,3 +44,4 @@ export type RecordCardProps =
 AuthenticationProviderProps<
   AuthenticationProviderSFCProps & PrivilegedRecordCardProps<RecordCardSFCProps>
 >
+*/

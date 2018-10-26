@@ -63,6 +63,10 @@ export {
   DropdownProps as DropdownSFCProps
 } from './sfcs/dropdown'
 export { Dropdown, DropdownProps } from './dropdown'
+export {
+  HomePage as HomePageSFC,
+  HomePageProps as HomePageSFCProps
+} from './sfcs/home-page'
 export { Icon, IconProps, IconButton, IconButtonProps } from './sfcs/icon'
 export {
   IconLabelInputGroup,

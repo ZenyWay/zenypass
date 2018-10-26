@@ -74,7 +74,7 @@ export function RecordCard ({
   const { _id, name, url, username } = record
   return (
     <Card
-      className={classes('col-12 col-md-6 col-xl-4 mb-2 px-0', className)}
+      className={classes('col-12 col-md-6 col-xl-4 mt-2 px-0', className)}
       {...attrs}
     >
       <CardHeader className='border-0 bg-white pb-0'>

@@ -36,7 +36,7 @@ RecordCardHocProps & Rest<P, RecordCardSFCProps>
 export interface RecordCardHocProps {
   record: Partial<ZenypassRecord>
   session: string
-  onAuthenticationRequest: (res$: Observer<string>) => void
+  onAuthenticationRequest?: (res$: Observer<string>) => void
 }
 
 export interface RecordCardSFCProps

@@ -15,40 +15,41 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { RecordCard } from '../record-card'
-import { Record } from './record-card'
+import { NavbarMenu, MenuSpecs } from '../navbar-menu'
+import { RecordCards, Record } from './record-cards'
 import { Observer } from 'rxjs'
 
-export { Record }
-export interface RecordCardsProps {
+export interface HomePageProps {
   locale: string
-  session: string
-  records?: Record[]
-  className?: string
+  menu: MenuSpecs
+  records: Record[]
+  session?: string
+  children?: JSX.Element[] | JSX.Element
   onAuthenticationRequest?: (res$: Observer<string>) => void
-  [prop: string]: unknown
+  onSelectMenuItem?: (event: MouseEvent) => void
 }
 
-export function RecordCards ({
+export function HomePage ({
   locale,
-  session,
+  menu,
   records,
+  session,
   onAuthenticationRequest,
+  onSelectMenuItem,
   ...attrs
-}: RecordCardsProps) {
-  let i = records.length
-  const cards = new Array(i)
-  while (i--) {
-    const record = records[i]
-    cards[i] = (
-      <RecordCard
-        key={record._id}
+}: HomePageProps) {
+  return (
+    <section {...attrs}>
+      <NavbarMenu
+        menu={menu}
+        onClickItem={onSelectMenuItem}
+      />
+      <RecordCards
         locale={locale}
+        records={records}
         session={session}
-        record={records[i]}
         onAuthenticationRequest={onAuthenticationRequest}
       />
-    )
-  }
-  return <ul {...attrs}>{cards}</ul>
+    </section>
+  )
 }

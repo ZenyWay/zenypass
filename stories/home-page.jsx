@@ -17,25 +17,48 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
+import preventDefaultAction from './helpers/prevent-default'
 import {
-  RecordCard as PrivilegedRecordCard,
+  HomePageSFC,
   withAuthenticationModal
 } from 'components'
 import { withAuthentication } from 'hocs'
+import { menu } from './navbar-menu-sfc'
 
-const publicRecord = {
-  _id: '123456',
-  name: 'Example',
-  url: 'https://example.com',
-  username: 'john.doe@example.com',
-  keywords: ['comma', 'separated', 'values'],
-  comments: '42 is *'
+const records = [
+  {
+    _id: '1',
+    name: 'Example',
+    url: 'https://example.com',
+    username: 'john.doe@example.com',
+    keywords: ['comma', 'separated', 'values'],
+    comments: '42 is *'
+  },
+  {
+    _id: '2',
+    name: 'ZenyWay',
+    url: 'https://zenyway.com',
+    username: 'me@zenyway.com',
+    keywords: [],
+    comments: ''
+  }
+]
+
+const attrs = {
+  locale: 'fr',
+  menu,
+  onSelectMenuItem: preventDefaultAction('MENU_ITEM_SELECTED'),
+  onAuthenticationRequest: action('AUTHENTICATION_REQUESTED')
 }
 
-const RecordCard =
-  withAuthentication(withAuthenticationModal(PrivilegedRecordCard))
+const HomePage =
+  withAuthentication(withAuthenticationModal(HomePageSFC))
 
-storiesOf('RecordCard', module)
+storiesOf('HomePage (SFC)', module)
   .add('default', () => (
-    <RecordCard record={publicRecord} locale='fr' />
+    <HomePage
+      records={records}
+      {...attrs}
+    />
   ))
