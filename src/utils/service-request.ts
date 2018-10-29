@@ -14,13 +14,12 @@
  */
 //
 import { StandardAction } from 'basic-fsa-factories'
-import { Observable, Observer, of as observable, throwError } from 'rxjs'
+import { Observable, of as observable, throwError } from 'rxjs'
 import {
   catchError,
   map,
   switchMap
 } from 'rxjs/operators'
-import { toProjection } from './effects'
 // const log = (label: string) => console.log.bind(console, label)
 
 export function createPrivilegedRequest <T> (
@@ -29,32 +28,31 @@ export function createPrivilegedRequest <T> (
   reject: (err: any) => StandardAction<any>
 ) {
   return function (
-    onAuthenticationRequest: (res$: Observer<string>) => void,
+    authenticate: () => Observable<string>,
     session: string,
     ...args: any[]
   ) {
-    return doPrivilegedRequest(onAuthenticationRequest, session, ...args)
+    return doPrivilegedRequest(authenticate, request, session, ...args)
     .pipe(
       map(resolve),
       catchError((error: any) => observable(reject(error)))
     )
   }
+}
 
-  function doPrivilegedRequest (
-    onAuthenticationRequest: (res$: Observer<string>) => void,
-    session?: string,
-    ...args: any[]
-  ) {
-    const authenticate = toProjection(onAuthenticationRequest)
-
-    return (!session ? authenticate() : observable(session))
-    .pipe(
-      switchMap(session => request(session, ...args)),
-      catchError(
-        error => error && error.status !== 401 // unauthorized
-          ? throwError(error)
-          : doPrivilegedRequest(onAuthenticationRequest, void 0, ...args)
-      )
+function doPrivilegedRequest <T> (
+  authenticate: () => Observable<string>,
+  request: (session: string, ...args: any[]) => Observable<T> | Promise<T>,
+  session?: string,
+  ...args: any[]
+) {
+  return (!session ? authenticate() : observable(session))
+  .pipe(
+    switchMap(session => request(session, ...args)),
+    catchError(
+      error => error && error.status !== 401 // unauthorized
+        ? throwError(error)
+        : doPrivilegedRequest(authenticate, request, void 0, ...args)
     )
-  }
+  )
 }

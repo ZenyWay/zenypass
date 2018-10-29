@@ -22,7 +22,12 @@ import {
   filter,
   switchMap
 } from 'rxjs/operators'
-import { hasEntry, hasHandlerProp, createPrivilegedRequest } from 'utils'
+import {
+  createPrivilegedRequest,
+  hasEntry,
+  hasHandlerProp,
+  toProjection
+} from 'utils'
 // const log = (label: string) => console.log.bind(console, label)
 
 const cleartextResolved = createActionFactory('CLEARTEXT_RESOLVED')
@@ -57,7 +62,7 @@ export function cleartextOnPendingCleartextOrConnect (
     filter<any>(hasHandlerProp('onAuthenticationRequest')),
     switchMap(
       ({ props: { onAuthenticationRequest, session, record } }) => cleartext(
-        onAuthenticationRequest,
+        toProjection(onAuthenticationRequest),
         record.unrestricted && session,
         record._id
       )
