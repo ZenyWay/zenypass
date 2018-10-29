@@ -36,7 +36,7 @@ export {
 } from './authentication-modal'
 export { connectionModal, ConnectionModalProps } from './connection-modal'
 export { dropdown, DropdownProps } from './dropdown'
-export { pure } from './pure'
+// export { pure } from './pure'
 export { recordCard, RecordCardProps } from './record-card'
 export {
   withAuthentication,
