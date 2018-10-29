@@ -13,65 +13,48 @@
  * Limitations under the License.
  */
 //
-import { createActionFactories, StandardAction } from 'basic-fsa-factories'
+import { StandardAction } from 'basic-fsa-factories'
+import { Observable, Observer, of as observable, throwError } from 'rxjs'
 import {
   catchError,
-  filter,
-  last,
   map,
-  pluck,
-  switchMap,
-  takeUntil,
-  tap,
-  withLatestFrom
+  switchMap
 } from 'rxjs/operators'
-import { always } from 'utils'
-// import { abortOrAuthorize, authorize } from '../hocs/authentication-modal/effects'
+import { toProjection } from './effects'
+// const log = (label: string) => console.log.bind(console, label)
 
-const log = (label: string) => console.log.bind(console, label)
-
-export function serviceRequestOnEventFromState (specs) {
-  const { event, request, restricted = always(false) } = specs
-  const events = typeof event !== 'string'
-    ? event
-    : {
-      requested: `${event}_REQUESTED`,
-      resolved: `${event}_RESOLVED`,
-      rejected: `${event}_REJECTED`
-    }
-  const { resolved, rejected } = createActionFactories(events)
-
-  return function (service) {
-    const requestService = request(service)
-
-    return function (event$, state$) {
-      return event$.pipe(
-        filter(isOfType(events.requested)),
-        withLatestFrom(state$),
-        pluck('1'),
-        filter(({ state }) => state === specs.state),
-        /*
-        switchMap(
-          state => restricted(state)
-            ? authorize(doRequestService)(event$, state$)
-            : doRequestService(state)
-        )
-        */
-      )
-
-      function doRequestService (state) {
-        return requestService(state).pipe(
-            takeUntil(state$.pipe(last())),
-            map(resolved),
-            // catchError(abortOrAuthorize(rejected, doRequestService)(event$, state$))
-          )
-      }
-    }
+export function createPrivilegedRequest <T> (
+  request: (session: string, ...args: any[]) => Observable<T> | Promise<T>,
+  resolve: (val: T) => StandardAction<any>,
+  reject: (err: any) => StandardAction<any>
+) {
+  return function (
+    onAuthenticationRequest: (res$: Observer<string>) => void,
+    session: string,
+    ...args: any[]
+  ) {
+    return doPrivilegedRequest(onAuthenticationRequest, session, ...args)
+    .pipe(
+      map(resolve),
+      catchError((error: any) => observable(reject(error)))
+    )
   }
-}
 
-function isOfType (type) {
-  return function (event) {
-    return event.type === type
+  function doPrivilegedRequest (
+    onAuthenticationRequest: (res$: Observer<string>) => void,
+    session?: string,
+    ...args: any[]
+  ) {
+    const authenticate = toProjection(onAuthenticationRequest)
+
+    return (!session ? authenticate() : observable(session))
+    .pipe(
+      switchMap(session => request(session, ...args)),
+      catchError(
+        error => error && error.status !== 401 // unauthorized
+          ? throwError(error)
+          : doPrivilegedRequest(onAuthenticationRequest, void 0, ...args)
+      )
+    )
   }
 }

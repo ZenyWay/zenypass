@@ -15,7 +15,7 @@
  */
 //
 import { StandardAction } from 'basic-fsa-factories'
-import { Observable } from 'rxjs'
+import { Observable, Observer, Subject } from 'rxjs'
 import { filter, ignoreElements, tap, withLatestFrom } from 'rxjs/operators'
 import { isFunction } from './basic'
 
@@ -51,7 +51,7 @@ export function callHandlerOnEvent <V = any, S = any> (
 ) {
   if (!isFunction(handler)) {
     return callHandlerOnEvent(
-      function (state: any) { return state.props[handler] },
+      pluckHandlerProp(handler),
       type,
       payload
     )
@@ -71,6 +71,34 @@ export function callHandlerOnEvent <V = any, S = any> (
       ),
       ignoreElements()
     )
+  }
+}
+
+export function toProjection <I,O> (
+  handler: (res$: Observer<O>, req?: I) => void
+) {
+  return function (req?: I): Observable<O> {
+    const res$ = new Subject<O>()
+    Promise.resolve().then(() => handler(res$, req)) // asap
+    return res$
+  }
+}
+
+export function pluckHandlerProp <
+  K extends string,
+  P extends { [prop in K]?: Function } = { [prop in K]?: Function }
+> (handler: K) {
+  return function (state: any) {
+    return hasHandlerProp(handler) && state.props[handler]
+  }
+}
+
+export function hasHandlerProp <
+  K extends string,
+  P extends { [prop in K]?: Function } = { [prop in K]?: Function }
+> (prop: K) {
+  return function ({ props }: { props: P }) {
+    return isFunction(props[prop])
   }
 }
 
