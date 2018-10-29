@@ -21,6 +21,11 @@ import compose from 'basic-compose'
 export default compose.into(0)(
   forType('AUTHENTICATION_REQUESTED')(into('authenticate')(always(true))),
   forType('AUTHENTICATION_REJECTED')(into('authenticate')(always(false))),
-  forType('AUTHENTICATION_RESOLVED')(into('authenticate')(always(false))),
+  forType('AUTHENTICATION_RESOLVED')(
+    compose.into(0)(
+      into('authenticate')(always(false)),
+      into('session')(mapPayload())
+    )
+  ),
   forType('PROPS')(propCursor('props')(mapPayload()))
 )

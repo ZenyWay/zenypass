@@ -21,13 +21,14 @@ import { Observer } from 'rxjs'
 export interface AuthenticationProviderProps {
   locale: string
   authenticate?: boolean
-  onAuthenticationRequest?: (result$: Observer<string>) => void
+  session?: string
+  onAuthenticationRequest?: (res$: Observer<string>) => void
   onAuthenticationResolved?: () => void
   onAuthenticationRejected?: () => void
 }
 
 export function withAuthenticationModal <
-  P extends { [prop: string]: unknown }
+  P extends { session?: string, locale?: string, [prop: string]: unknown }
 > (
   PrivilegedComponent: ComponentClass<P> | SFC<P>
 ): SFC<AuthenticationProviderProps & P> {

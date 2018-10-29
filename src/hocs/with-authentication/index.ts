@@ -33,6 +33,7 @@ export type AuthenticationProviderProps<P extends AuthenticationProviderSFCProps
 
 export interface AuthenticationProviderSFCProps extends AuthenticationProviderSFCHandlerProps {
   authenticate?: boolean
+  session?: string
 }
 
 export interface AuthenticationProviderSFCHandlerProps {
@@ -43,13 +44,14 @@ export interface AuthenticationProviderSFCHandlerProps {
 
 interface AuthenticationProviderState {
   props: { [prop: string]: unknown }
-  authenticate
+  authenticate: boolean
+  session: string
 }
 
 function mapStateToProps (
-  { props, authenticate }: AuthenticationProviderState
+  { props, authenticate, session }: AuthenticationProviderState
 ): Rest<AuthenticationProviderSFCProps, AuthenticationProviderSFCHandlerProps> {
-  return { ...props, authenticate }
+  return { ...props, authenticate, session }
 }
 
 const mapDispatchToProps:
@@ -65,7 +67,7 @@ export function withAuthentication <P extends AuthenticationProviderSFCProps> (
 ): ComponentClass<AuthenticationProviderProps<P>> {
   return componentFromEvents<AuthenticationProviderProps<P>, P>(
     AuthenticationProviderSFC,
-    () => tap(console.log.bind(console, 'authentication-provider:event:')),
+    // () => tap(console.log.bind(console, 'authentication-provider:event:')),
     redux(
       reducer,
       plugResponse
