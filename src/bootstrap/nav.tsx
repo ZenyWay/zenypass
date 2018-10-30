@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement, Children } from 'create-element'
+import { createElement } from 'create-element'
 import { classes } from 'utils'
 import { orDefaultHref } from './utils'
 
@@ -28,7 +28,6 @@ export interface NavProps {
   navbar?: boolean
   card?: boolean
   className?: string
-  children?: Children
   tag?: string
   [prop: string]: unknown
 }
@@ -74,7 +73,6 @@ export interface NavbarProps {
   sticky?: boolean
   color?: string
   className?: string
-  children?: Children
   tag?: string
   innerRef?: (element?: HTMLElement | null) => void
   [prop: string]: unknown
@@ -113,7 +111,6 @@ export function Navbar ({
 export interface NavbarBrandProps {
   href?: string
   className?: string
-  children?: Children
   tag?: string
   [prop: string]: unknown
 }
@@ -134,7 +131,6 @@ export function NavbarBrand ({
 
 export interface NavbarTogglerProps {
   className?: string
-  children?: Children
   tag?: string
   [prop: string]: unknown
 }
@@ -159,7 +155,6 @@ export interface NavItemProps {
   active?: boolean
   disabled?: boolean
   className?: string
-  children?: Children
   tag?: string
   [prop: string]: unknown
 }
@@ -189,7 +184,6 @@ export interface NavLinkProps {
   disabled?: boolean
   active?: boolean
   className?: string
-  children?: Children
   onClick? (event: MouseEvent): void
   tag?: string
   [prop: string]: unknown

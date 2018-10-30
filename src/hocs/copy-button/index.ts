@@ -16,7 +16,7 @@
 import reducer, { AutomataState } from './reducer'
 import { timeoutAfterDisabled, copyToClipboardAndCallOnClickOnClick } from './effects'
 import componentFromEvents, {
-  ComponentClass,
+  ComponentConstructor,
   Rest,
   SFC,
   connect,
@@ -79,7 +79,7 @@ createActionDispatchers({
 
 export function copyButton <P extends ButtonProps> (
   Button: SFC<P>
-): ComponentClass<CopyButtonProps<P>> {
+): ComponentConstructor<CopyButtonProps<P>> {
   const CopyButton = componentFromEvents<CopyButtonProps<P>,P>(
     Button,
     // () => tap(console.log.bind(console,'copy-button:event:')),
@@ -92,7 +92,8 @@ export function copyButton <P extends ButtonProps> (
     // () => tap(console.log.bind(console,'copy-button:props:'))
   )
 
-  CopyButton.defaultProps = DEFAULT_PROPS as CopyButtonProps<P>
+  ;(CopyButton as any).defaultProps =
+    DEFAULT_PROPS as CopyButtonProps<P>
 
   return CopyButton
 }

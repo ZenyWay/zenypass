@@ -15,7 +15,7 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement, Children } from 'create-element'
+import { createElement } from 'create-element'
 import {
   Collapse,
   Nav,
@@ -33,10 +33,10 @@ import { ZENYPASS_LOGO_SVG } from 'static'
 export interface NavbarMenuProps {
   menu?: MenuSpecs
   expanded?: boolean
-  children?: Children
   onClickItem?: (event: MouseEvent) => void
   onClickToggle?: (event: MouseEvent) => void
   innerRef?: (element?: HTMLElement | null) => void
+  [prop: string]: unknown
 }
 
 export interface MenuSpecs extends Array<DropdownItemsProps[] | DropdownItemsProps> {}
@@ -44,10 +44,10 @@ export interface MenuSpecs extends Array<DropdownItemsProps[] | DropdownItemsPro
 export function NavbarMenu ({
   menu = [],
   expanded,
-  children,
   onClickItem,
   onClickToggle,
-  innerRef
+  innerRef,
+  ...attrs
 }: NavbarMenuProps) {
   return (
     <Navbar
@@ -60,7 +60,7 @@ export function NavbarMenu ({
         <img height='32' src={ZENYPASS_LOGO_SVG}/>
         <small>&nbsp;ZenyPass</small>
       </NavbarBrand>
-      <span>{ children /* TODO replace wrapping span with Fragment */}</span>
+      <span {...attrs} />
       <NavbarToggler onClick={onClickToggle} />
       <Collapse navbar isOpen={expanded} >
         <Nav className='ml-auto' navbar>

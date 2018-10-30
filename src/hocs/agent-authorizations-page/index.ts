@@ -19,7 +19,7 @@ import reducer, { AutomataState } from './reducer'
 import { getAgentsOnAuthenticated } from './effects'
 import { getAuthorizations$, AuthorizationDoc } from 'services'
 import componentFromEvents, {
-  ComponentClass,
+  ComponentConstructor,
   Rest,
   SFC,
   connect,
@@ -88,7 +88,7 @@ createActionDispatchers({
 
 export function agentAuthorizationsPage <P extends AgentAuthorizationsPageSFCProps> (
   AgentAuthorizationsPage: SFC<P>
-): ComponentClass<AgentAuthorizationsPageProps<P>> {
+): ComponentConstructor<AgentAuthorizationsPageProps<P>> {
   return componentFromEvents<AgentAuthorizationsPageProps<P>,P>(
     AgentAuthorizationsPage,
     // () => tap(console.log.bind(console,'controlled-authorization-page-event:')),

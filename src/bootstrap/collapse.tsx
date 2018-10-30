@@ -14,13 +14,12 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement, Children } from 'create-element'
+import { createElement } from 'create-element'
 import { classes } from 'utils'
 
 export interface CollapseProps {
   isOpen?: boolean
   navbar?: boolean
-  children?: Children
   tag?: string
   [prop: string]: unknown
 }

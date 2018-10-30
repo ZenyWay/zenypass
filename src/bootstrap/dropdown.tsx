@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement, Children } from 'create-element'
+import { createElement } from 'create-element'
 import { classes } from 'utils'
 import { orDefaultHref } from './utils'
 import { Button } from './button'
@@ -27,7 +27,6 @@ export interface DropdownProps {
   active?: boolean
   disabled?: boolean
   className?: string
-  children?: Children
   tag?: string
   innerRef?: (element?: HTMLElement | null) => void
   [prop: string]: unknown
@@ -60,7 +59,6 @@ export function Dropdown ({
 
 export interface DropdownDividerProps {
   className?: string
-  children?: Children
   tag?: string
   [prop: string]: unknown
 }
@@ -82,7 +80,6 @@ export function DropdownDivider ({
 
 export interface DropdownHeaderProps {
   className?: string
-  children?: Children
   tag?: string
   [prop: string]: unknown
 }
@@ -106,7 +103,6 @@ export interface DropdownItemProps {
   active?: boolean
   href?: string
   className?: string
-  children?: Children
   tag?: string
   [prop: string]: unknown
 }
@@ -138,7 +134,6 @@ export interface DropdownMenuProps {
   expanded?: boolean
   right?: boolean
   className?: string
-  children?: Children
   tag?: string
   [prop: string]: unknown
 }
@@ -169,7 +164,6 @@ export interface DropdownToggleProps {
   nav?: boolean
   href?: string
   className?: string
-  children?: Children
   tag?: string
   [prop: string]: unknown
 }

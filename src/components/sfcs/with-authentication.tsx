@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement, ComponentClass, SFC } from 'create-element'
+import { createElement, ComponentType, Fragment, SFC } from 'create-element'
 import { AuthenticationModal } from '../authentication-modal'
 import { Observer } from 'rxjs'
 
@@ -27,10 +27,17 @@ export interface AuthenticationProviderProps {
   onAuthenticationRejected?: () => void
 }
 
+export interface AuthenticationConsumerProps {
+  locale: string
+  session?: string
+  onAuthenticationRequest?: (res$: Observer<string>) => void
+  [prop: string]: unknown
+}
+
 export function withAuthenticationModal <
-  P extends { session?: string, locale?: string, [prop: string]: unknown }
+  P extends {} = {}
 > (
-  PrivilegedComponent: ComponentClass<P> | SFC<P>
+  PrivilegedComponent: ComponentType<P & AuthenticationConsumerProps>
 ): SFC<AuthenticationProviderProps & P> {
   return function ({
       locale,
@@ -39,9 +46,8 @@ export function withAuthenticationModal <
       onAuthenticationRejected,
       ...attrs
     }: AuthenticationProviderProps) {
-    // TODO replace <div> with <Fragment>
     return (
-      <div>
+      <Fragment>
         <AuthenticationModal
           locale={locale}
           authenticate={authenticate}
@@ -49,7 +55,7 @@ export function withAuthenticationModal <
           onAuthenticated={onAuthenticationResolved}
         />
         <PrivilegedComponent locale={locale} {...attrs} />
-      </div>
+      </Fragment>
     )
   }
 }

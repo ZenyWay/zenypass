@@ -18,7 +18,7 @@ import reducer, { AutomataState } from './reducer'
 import { toggleBackdropHandlers } from './effects'
 import { callHandlerOnEvent, preventDefault } from 'utils'
 import componentFromEvents, {
-  ComponentClass,
+  ComponentConstructor,
   Rest,
   SFC,
   connect,
@@ -71,8 +71,8 @@ createActionDispatchers({
 })
 
 export function dropdown <P extends DropdownSFCProps> (
-  DropdownSFC
-): ComponentClass<DropdownProps<P>> {
+  DropdownSFC: SFC<P>
+): ComponentConstructor<DropdownProps<P>> {
   return componentFromEvents<DropdownProps<P>,P>(
     DropdownSFC,
     // () => tap(console.log.bind(console,'dropdown:event:')),

@@ -19,7 +19,7 @@ import reducer, { AutomataState } from './reducer'
 import { getTokenOnAuthenticated } from './effects'
 import { authorize } from 'services'
 import componentFromEvents, {
-  ComponentClass,
+  ComponentConstructor,
   Rest,
   SFC,
   connect,
@@ -79,7 +79,7 @@ createActionDispatchers({
 
 export function agentAuthorizationCard <P extends AgentAuthorizationCardSFCProps> (
   AgentAuthorizationCard: SFC<P>
-): ComponentClass<AgentAuthorizationCardProps<P>> {
+): ComponentConstructor<AgentAuthorizationCardProps<P>> {
   return componentFromEvents<AgentAuthorizationCardProps<P>,P>(
     AgentAuthorizationCard,
     // () => tap(console.log.bind(console,'controlled-authorization-card:event:')),

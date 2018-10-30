@@ -15,7 +15,7 @@
  */
 //
 import componentFromStream, {
-  ComponentClass,
+  ComponentConstructor,
   SFC
 } from 'component-from-props'
 import compose from 'basic-compose'
@@ -36,7 +36,7 @@ const log = (label: string) => console.log.bind(console, label)
 export function pure <P extends {} = {}> (
   SFC: SFC<P>,
   equals = shallowEqual
-): ComponentClass<P> {
+): ComponentConstructor<P> {
   return componentFromStream(
     SFC,
     () => compose.into(0)(

@@ -18,7 +18,7 @@
 import reducer, { AutomataState } from './reducer'
 import { authenticateOnTransitionToAuthenticating } from './effects'
 import componentFromEvents, {
-  ComponentClass,
+  ComponentConstructor,
   Rest,
   SFC,
   connect,
@@ -80,7 +80,7 @@ createActionDispatchers({
 
 export function authenticationModal <P extends AuthenticationModalSFCProps> (
   Modal: SFC<P>
-): ComponentClass<AuthenticationModalProps<P>> {
+): ComponentConstructor<AuthenticationModalProps<P>> {
   return componentFromEvents<AuthenticationModalProps<P>, P>(
     Modal,
     // () => tap(console.log.bind(console, 'authentication-modal:event:')),

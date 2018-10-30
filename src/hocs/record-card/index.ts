@@ -18,7 +18,7 @@ import { ZenypassRecord } from 'services'
 import reducer, { ConnectAutomataState, RecordAutomataState } from './reducer'
 import { cleartextOnPendingCleartextOrConnect } from './effects'
 import componentFromEvents, {
-  ComponentClass,
+  ComponentConstructor,
   Rest,
   SFC,
   connect,
@@ -131,7 +131,7 @@ createActionDispatchers({
 
 export function recordCard <P extends RecordCardSFCProps> (
   RecordCardSFC: SFC<P>
-): ComponentClass<RecordCardProps<P>> {
+): ComponentConstructor<RecordCardProps<P>> {
   return componentFromEvents<RecordCardProps<P>,P>(
     RecordCardSFC,
     // () => tap(log('record-card:event:')),

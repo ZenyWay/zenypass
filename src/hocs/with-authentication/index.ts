@@ -18,7 +18,7 @@
 import reducer from './reducer'
 import { plugResponse } from './effects'
 import componentFromEvents, {
-  ComponentClass,
+  ComponentConstructor,
   Rest,
   SFC,
   connect,
@@ -64,7 +64,7 @@ createActionDispatchers({
 
 export function withAuthentication <P extends AuthenticationProviderSFCProps> (
   AuthenticationProviderSFC: SFC<P>
-): ComponentClass<AuthenticationProviderProps<P>> {
+): ComponentConstructor<AuthenticationProviderProps<P>> {
   return componentFromEvents<AuthenticationProviderProps<P>, P>(
     AuthenticationProviderSFC,
     // () => tap(console.log.bind(console, 'authentication-provider:event:')),

@@ -16,7 +16,7 @@
 //
 export {
   Component,
-  ComponentClass,
+  ComponentConstructor,
   SFC
 } from 'component-from-events'
 export { autoformatInput, AutoformatInputProps } from './autoformat-input'

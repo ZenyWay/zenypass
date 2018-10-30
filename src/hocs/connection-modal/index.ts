@@ -22,7 +22,7 @@ import {
   openWindowOnClickCopyWhenNotManual
 } from './effects'
 import componentFromEvents, {
-  ComponentClass,
+  ComponentConstructor,
   Rest,
   SFC,
   connect,
@@ -115,7 +115,7 @@ function onFieldCopied (field: 'username' | 'password') {
 
 export function connectionModal <P extends ConnectionModalSFCProps> (
   ConnectionModal: SFC<P>
-): ComponentClass<ConnectionModalProps<P>> {
+): ComponentConstructor<ConnectionModalProps<P>> {
   return componentFromEvents<ConnectionModalProps<P>,P>(
     ConnectionModal,
     // () => tap(log('controlled-connection-modal:event:')),

@@ -16,9 +16,9 @@
 import redux, { connect as _connect, Reducer } from 'component-from-stream-redux'
 import componentFromStream, {
   Component,
-  ComponentClass,
+  ComponentConstructor,
   ComponentFromStreamConstructor,
-  Children,
+  ComponentType,
   OperatorFactory,
   SFC
 } from './component-from-props'
@@ -27,11 +27,11 @@ import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import compose from 'basic-compose'
 
 export {
-  Children,
   Component,
-  ComponentClass,
+  ComponentConstructor,
   ComponentFromStreamConstructor,
   componentFromStream,
+  ComponentType,
   OperatorFactory,
   SFC,
   redux,
@@ -48,7 +48,7 @@ export function connect <S= {},P= {}> (
 }
 
 export default function <P, Q>(
-  render: (props: Q) => Children,
+  render: SFC<Q>,
   factory: OperatorFactory<StandardAction<P>, any, any>,
   ...factories: OperatorFactory<StandardAction<P>, any, any>[]
 ) {
@@ -57,5 +57,5 @@ export default function <P, Q>(
     createActionFactory('PROPS'),
     factory,
     ...factories
-  ) as ComponentClass<P>
+  ) as ComponentConstructor<P>
 }

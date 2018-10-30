@@ -16,7 +16,7 @@ import reducer from './reducer'
 import { callChangeHandlerOnValidChange } from './effects'
 import { Formatter } from './formatters'
 import componentFromEvents, {
-  ComponentClass,
+  ComponentConstructor,
   Rest,
   SFC,
   connect,
@@ -73,7 +73,7 @@ createActionDispatchers({
 
 export function autoformatInput <P extends ControlledInputProps> (
   ControlledInput: SFC<P>
-): ComponentClass<AutoformatInputProps<P>> {
+): ComponentConstructor<AutoformatInputProps<P>> {
   const AutoformatInput =
   componentFromEvents<AutoformatInputProps<P>,P>(
     ControlledInput,
@@ -90,7 +90,8 @@ export function autoformatInput <P extends ControlledInputProps> (
     // () => tap(console.log.bind(console, 'autoformat:PROPS:'))
   )
 
-  AutoformatInput.defaultProps = DEFAULT_PROPS as Partial<AutoformatInputProps<P>>
+  ;(AutoformatInput as any).defaultProps =
+    DEFAULT_PROPS as Partial<AutoformatInputProps<P>>
 
   return AutoformatInput
 }

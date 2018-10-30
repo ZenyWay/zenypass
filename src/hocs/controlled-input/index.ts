@@ -16,7 +16,7 @@
 import reducer, { AutomataState } from './reducer'
 import { callChangeHandlerOnBlurWhenIsChange } from './effects'
 import componentFromEvents, {
-  ComponentClass,
+  ComponentConstructor,
   Rest,
   SFC,
   connect,
@@ -78,7 +78,7 @@ createActionDispatchers({
 
 export function controlledInput <P extends InputProps> (
   Input: SFC<P>
-): ComponentClass<ControlledInputProps<P>> {
+): ComponentConstructor<ControlledInputProps<P>> {
   const ControlledInput = componentFromEvents<ControlledInputProps<P>,P>(
     Input,
     // () => tap(console.log.bind(console, 'controlled-input:EVENT:')),
@@ -92,7 +92,8 @@ export function controlledInput <P extends InputProps> (
     // () => tap(console.log.bind(console, 'controlled-input:PROPS:'))
   )
 
-  ControlledInput.defaultProps = DEFAULT_PROPS as ControlledInputProps<P>
+  ;(ControlledInput as any).defaultProps =
+    DEFAULT_PROPS as ControlledInputProps<P>
 
   return ControlledInput
 }
