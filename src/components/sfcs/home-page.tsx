@@ -16,23 +16,26 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { NavbarMenu, MenuSpecs } from '../navbar-menu'
-import { RecordCards, Record } from './record-cards'
+import { FilteredRecordCards } from '../filtered-record-cards'
+import { Record } from './record-cards'
 import { Observer } from 'rxjs'
 
 export interface HomePageProps {
   locale: string
   menu: MenuSpecs
   records: Record[]
+  filter?: boolean
   session?: string
-  children?: JSX.Element[] | JSX.Element
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onSelectMenuItem?: (event: MouseEvent) => void
+  [prop: string]: unknown
 }
 
 export function HomePage ({
   locale,
   menu,
   records,
+  filter,
   session,
   onAuthenticationRequest,
   onSelectMenuItem,
@@ -44,9 +47,10 @@ export function HomePage ({
         menu={menu}
         onClickItem={onSelectMenuItem}
       />
-      <RecordCards
+      <FilteredRecordCards
         locale={locale}
         records={records}
+        filter={filter}
         session={session}
         onAuthenticationRequest={onAuthenticationRequest}
       />

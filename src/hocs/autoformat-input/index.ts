@@ -24,6 +24,7 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 // import { tap } from 'rxjs/operators'
+// const log = label => console.log.bind(console, label)
 
 export type AutoformatInputProps<P extends ControlledInputProps> =
   AutoformatInputControllerProps & Rest<P,ControlledInputProps>
@@ -32,7 +33,7 @@ export interface AutoformatInputControllerProps {
   type?: string // TODO union type
   value?: string[] | string
   format?: Formatter<string>
-  onChange?: (value: string) => void
+  onChange?: (value: string[] | string) => void
 }
 
 export interface ControlledInputProps extends InputHandlerProps {
@@ -61,8 +62,12 @@ function mapStateToProps (
 ): Rest<ControlledInputProps,InputHandlerProps> {
   const { type, format, onChange, ...attrs } = props
   const csv = type === 'csv'
-  const _value = csv && Array.isArray(value) ? value.join(',') : value as string
-  return { ...attrs, type: csv ? 'text' : type, value: _value, error }
+  return {
+    ...attrs,
+    type: csv ? 'text' : type,
+    value: csv && Array.isArray(value) ? value.join(',') : value as string,
+    error
+  }
 }
 
 const mapDispatchToProps:
@@ -77,9 +82,9 @@ export function autoformatInput <P extends ControlledInputProps> (
   const AutoformatInput =
   componentFromEvents<AutoformatInputProps<P>,P>(
     ControlledInput,
-    // () => tap(console.log.bind(console, 'autoformat:EVENT:')),
+    // () => tap(log('autoformat:EVENT:')),
     redux(reducer, callChangeHandlerOnValidChange),
-    // () => tap(console.log.bind(console, 'autoformat:STATE:')),
+    // () => tap(log('autoformat:STATE:')),
     connect<AutoformatInputState,ControlledInputProps>(
       mapStateToProps,
       mapDispatchToProps
@@ -87,7 +92,7 @@ export function autoformatInput <P extends ControlledInputProps> (
     // let props through, even if same as previous:
     // might need to refresh content of ControlledInput,
     // e.g. if formatting resets value from changed to previous.
-    // () => tap(console.log.bind(console, 'autoformat:PROPS:'))
+    // () => tap(log('autoformat:VIEW_PROPS:'))
   )
 
   AutoformatInput.defaultProps = DEFAULT_PROPS as Partial<AutoformatInputProps<P>>

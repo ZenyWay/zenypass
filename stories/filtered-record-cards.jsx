@@ -17,35 +17,30 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { action } from '@storybook/addon-actions'
+// import { action } from '@storybook/addon-actions'
 import { RECORDS } from './helpers/consts'
-import preventDefaultAction from './helpers/prevent-default'
 import {
-  HomePageSFC,
+  FilteredRecordCards as PrivilegedFilteredRecordCards,
   withAuthenticationModal
 } from 'components'
 import { withAuthentication } from 'hocs'
-import { menu } from './navbar-menu-sfc'
 
 const attrs = {
-  locale: 'fr',
-  menu,
-  onSelectMenuItem: preventDefaultAction('MENU_ITEM_SELECTED'),
-  onAuthenticationRequest: action('AUTHENTICATION_REQUESTED')
+  locale: 'fr'
 }
 
-const HomePage =
-  withAuthentication(withAuthenticationModal(HomePageSFC))
+const FilteredRecordCards =
+  withAuthentication(withAuthenticationModal(PrivilegedFilteredRecordCards))
 
-storiesOf('HomePage (SFC)', module)
+storiesOf('FilteredRecordCards', module)
   .add('default', () => (
-    <HomePage
+    <FilteredRecordCards
       records={RECORDS}
       {...attrs}
     />
   ))
   .add('filter', () => (
-    <HomePage
+    <FilteredRecordCards
       filter
       records={RECORDS}
       {...attrs}

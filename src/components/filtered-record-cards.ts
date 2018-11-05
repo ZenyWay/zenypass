@@ -13,21 +13,18 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
-/** @jsx createElement */
-import { createElement } from 'create-element'
-import { storiesOf } from '@storybook/react'
+
 import {
-  RecordCard as PrivilegedRecordCard,
-  withAuthenticationModal
-} from 'components'
-import { withAuthentication } from 'hocs'
-import { RECORD } from './helpers/consts'
+  filteredRecordCards,
+  FilteredRecordCardsProps as GenericFilteredRecordCardsProps
+} from 'hocs'
+import {
+  FilteredRecordCards as FilteredRecordCardsSFC,
+  FilteredRecordCardsProps as FilteredRecordCardsSFCProps
+} from './sfcs/filtered-record-cards'
 
-const RecordCard =
-  withAuthentication(withAuthenticationModal(PrivilegedRecordCard))
+export const FilteredRecordCards =
+  filteredRecordCards<FilteredRecordCardsSFCProps>(FilteredRecordCardsSFC)
 
-storiesOf('RecordCard', module)
-  .add('default', () => (
-    <RecordCard record={RECORD} locale='fr' />
-  ))
+export type FilteredRecordCardsProps =
+  GenericFilteredRecordCardsProps<FilteredRecordCardsSFCProps>

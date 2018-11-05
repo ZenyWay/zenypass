@@ -19,18 +19,10 @@ import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import { RecordCardSFC as RecordCard } from 'components'
-
-const publicRecord = {
-  _id: '123456',
-  name: 'Example',
-  url: 'https://example.com',
-  username: 'john.doe@example.com',
-  keywords: ['comma', 'separated', 'values'],
-  comments: '42 is *'
-}
+import { RECORD } from './helpers/consts'
 
 const privateRecord = {
-  ...publicRecord,
+  ...RECORD,
   password: 'P@ssw0rd!'
 }
 
@@ -47,10 +39,10 @@ const attrs = {
 
 storiesOf('RecordCard (SFC)', module)
   .add('disabled', () => (
-    <RecordCard record={publicRecord} {...attrs} disabled />
+    <RecordCard record={RECORD} {...attrs} disabled />
   ))
   .add('expanded-disabled', () => (
-    <RecordCard record={publicRecord} {...attrs} expanded disabled />
+    <RecordCard record={RECORD} {...attrs} expanded disabled />
   ))
   .add('expanded-disabled-pending-cleartext', () => (
     <RecordCard record={privateRecord} {...attrs} expanded disabled pending='cleartext' />

@@ -26,7 +26,8 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
-import { tap } from 'rxjs/operators'
+// import { tap } from 'rxjs/operators'
+// const log = label => console.log.bind(console, label)
 
 export type AuthenticationProviderProps<P extends AuthenticationProviderSFCProps> =
   Rest<P, AuthenticationProviderSFCProps>
@@ -67,16 +68,16 @@ export function withAuthentication <P extends AuthenticationProviderSFCProps> (
 ): ComponentClass<AuthenticationProviderProps<P>> {
   return componentFromEvents<AuthenticationProviderProps<P>, P>(
     AuthenticationProviderSFC,
-    // () => tap(console.log.bind(console, 'authentication-provider:event:')),
+    // () => tap(log('authentication-provider:event:')),
     redux(
       reducer,
       plugResponse
     ),
-    () => tap(console.log.bind(console, 'authentication-provider:state:')),
+    // () => tap(log('authentication-provider:state:')),
     connect<AuthenticationProviderState, AuthenticationProviderSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    ),
-    () => tap(console.log.bind(console, 'authentication-provider:view-props:'))
+    )
+    // () => tap(log('authentication-provider:view-props:'))
   )
 }

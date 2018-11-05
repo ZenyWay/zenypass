@@ -77,6 +77,10 @@ export {
   NavbarMenuProps as NavbarMenuSFCProps
 } from './sfcs/navbar-menu'
 export { NavbarMenu, NavBarMenuProps } from './navbar-menu'
+export {
+  FilteredRecordCards,
+  FilteredRecordCardsProps
+} from './filtered-record-cards'
 export { RecordField, RecordFieldProps } from './sfcs/record-field'
 export {
   RecordCard as RecordCardSFC,

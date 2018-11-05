@@ -24,7 +24,7 @@ export { Record }
 export interface RecordCardsProps {
   locale: string
   session: string
-  records?: Record[]
+  records: Record[]
   className?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
   [prop: string]: unknown

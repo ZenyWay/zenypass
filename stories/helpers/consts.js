@@ -14,12 +14,31 @@
  * Limitations under the License.
  */
 //
-export const RECORD = {
-  id: '123456',
-  name: 'Example',
-  url: 'https://randomuser.me/',
-  username: 'john.doe@example.com',
-  password: 'P@ssw0rd!',
-  keywords: ['comma', 'separated', 'values'],
-  comments: '42 is *'
-}
+export const RECORDS = [
+  {
+    _id: '1',
+    name: 'Example',
+    url: 'https://example.com',
+    username: 'john.doe@example.com',
+    keywords: ['comma', 'separated', 'values'],
+    comments: '42 is *'
+  },
+  {
+    _id: '2',
+    name: 'ZenyWay',
+    url: 'https://zenyway.com',
+    username: 'me@zenyway.com',
+    keywords: [],
+    comments: ''
+  },
+  {
+    _id: '2',
+    name: 'HSVC',
+    url: 'https://hvsc.c64.org/',
+    username: 'rob.hubbard@hsvc.org',
+    keywords: ['sid', 'music', 'collection'],
+    comments: 'Rob says wow !'
+  }
+]
+
+export const RECORD = RECORDS[0]

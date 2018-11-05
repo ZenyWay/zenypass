@@ -40,6 +40,21 @@ export function not (fn = identity) {
   }
 }
 
+export function when <A extends any[], T = A[0]> (
+  predicate: (...args: A) => boolean
+) {
+  return function (
+    ontrue: (...args: A) => T,
+    onfalse: (...args: A) => T = identity as any
+  ) {
+    return function (...args: A): T {
+      return predicate(...args)
+      ? ontrue(...args)
+      : onfalse(...args)
+    }
+  }
+}
+
 export function hasEntry <K extends string, V> (key: K, val: V) {
   return function <T extends { [k in K]?: V } = { [k in K]?: V }>(obj?: T) {
     return obj && obj[key] === val

@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
-/** @jsx createElement */
-import { createElement } from 'create-element'
-import { storiesOf } from '@storybook/react'
-import {
-  RecordCard as PrivilegedRecordCard,
-  withAuthenticationModal
-} from 'components'
-import { withAuthentication } from 'hocs'
-import { RECORD } from './helpers/consts'
 
-const RecordCard =
-  withAuthentication(withAuthenticationModal(PrivilegedRecordCard))
+import { into } from 'basic-cursors'
+import { always, forType, mapPayload } from 'utils'
+import compose from 'basic-compose'
 
-storiesOf('RecordCard', module)
-  .add('default', () => (
-    <RecordCard record={RECORD} locale='fr' />
-  ))
+export default compose.into(0)(
+  forType('RESET')(
+    compose.into(0)(
+      into('tokens')(always(void 0)),
+      into('records')(always(void 0))
+    )
+  ),
+  forType('CLEAR')(into('tokens')(always(void 0))),
+  forType('RECORDS')(into('records')(mapPayload())),
+  forType('CHANGE')(into('tokens')(mapPayload())),
+  forType('PROPS')(into('props')(mapPayload()))
+)
