@@ -14,7 +14,10 @@
  */
 //
 import reducer, { AutomataState } from './reducer'
-import { callChangeHandlerOnDebounceOrBlurWhenIsChange } from './effects'
+import {
+  callChangeHandlerOnDebounceOrBlurWhenIsChange,
+  debounceInputWhenDebounce
+} from './effects'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -83,7 +86,11 @@ export function controlledInput <P extends InputProps> (
   const ControlledInput = componentFromEvents<ControlledInputProps<P>,P>(
     Input,
     // () => tap(console.log.bind(console, 'controlled-input:EVENT:')),
-    redux(reducer, callChangeHandlerOnDebounceOrBlurWhenIsChange),
+    redux(
+      reducer,
+      debounceInputWhenDebounce,
+      callChangeHandlerOnDebounceOrBlurWhenIsChange
+    ),
     // () => tap(console.log.bind(console, 'controlled-input:STATE:')),
     connect<ControlledInputState,InputProps>(
       mapStateToProps,

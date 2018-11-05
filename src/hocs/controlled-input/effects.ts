@@ -24,18 +24,17 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators'
-import { Observable, merge } from 'rxjs'
-import { StandardAction } from 'basic-fsa-factories'
+import { Observable } from 'rxjs'
+import { StandardAction, createActionFactory } from 'basic-fsa-factories'
 import { isString } from 'utils'
 
-export function callChangeHandlerOnDebounceOrBlurWhenIsChange (
+const debounce = createActionFactory('DEBOUNCE')
+
+export function debounceInputWhenDebounce (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  const blur$ = event$.pipe(
-    filter(ofType('BLUR'))
-  )
-  const debounce$ = state$.pipe(
+  return state$.pipe(
     pluck('props', 'debounce'),
     filter(Boolean),
     distinctUntilChanged(),
@@ -46,13 +45,20 @@ export function callChangeHandlerOnDebounceOrBlurWhenIsChange (
     ),
     switchMap(
       delay => event$.pipe(
-        filter(ofType('INPUT')),
+        filter(({ type }) => type === 'INPUT'),
         debounceTime(delay)
       )
-    )
+    ),
+    map(() => debounce())
   )
+}
 
-  return merge(blur$, debounce$).pipe(
+export function callChangeHandlerOnDebounceOrBlurWhenIsChange (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return event$.pipe(
+    filter(({ type }) => (type === 'BLUR') || (type === 'DEBOUNCE')),
     withLatestFrom(state$),
     pluck('1'),
     filter(hasOnChangeHandler),
@@ -68,12 +74,6 @@ function hasOnChangeHandler ({ props }) {
 
 function isChange ({ props, value }) {
   return props.value !== value
-}
-
-function ofType (type) {
-  return function (event) {
-    return event.type === type
-  }
 }
 
 function callChangeHandler ({ props, value }) {
