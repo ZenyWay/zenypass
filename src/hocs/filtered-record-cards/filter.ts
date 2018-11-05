@@ -29,31 +29,37 @@ export default function (
   if (!tokens || !tokens.length) return records
   const result = [] as Partial<ZenypassRecord>[]
   for (const record of records) {
-    if (includesSome(tokens, record)) {
-      result.push(record)
-    }
+    if (recordIncludesAllTokens(tokens, record)) result.push(record)
   }
   return result
 }
 
-function includesSome (
+function recordIncludesAllTokens (
   tokens: string[],
   record: Partial<ZenypassRecord>
 ): boolean {
   for (const token of tokens) {
-    for (const field of TARGET_RECORD_FIELDS) {
-      if (includes(token.toLowerCase(), record[field])) return true
-    }
+    if (!recordIncludesToken(token, record)) return false
+  }
+  return true
+}
+
+function recordIncludesToken (
+  token: string,
+  record: Partial<ZenypassRecord>
+): boolean {
+  for (const field of TARGET_RECORD_FIELDS) {
+    if (fieldIncludesToken(token.toLowerCase(), record[field])) return true
   }
   return false
 }
 
-function includes (token: string, field: string[] | string): boolean {
+function fieldIncludesToken (token: string, field?: string[] | string): boolean {
   if (Array.isArray(field)) {
     for (const val of field) {
-      if (includes(token, val)) return true
+      if (fieldIncludesToken(token, val)) return true
     }
     return false
   }
-  return field.toLowerCase().indexOf(token) >= 0
+  return !!field && field.toLowerCase().indexOf(token) >= 0
 }
