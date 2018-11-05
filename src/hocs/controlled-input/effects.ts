@@ -14,16 +14,45 @@
  */
 //
 import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
   ignoreElements,
+  map,
   pluck,
+  switchMap,
   tap,
-  withLatestFrom,
-  filter
+  withLatestFrom
 } from 'rxjs/operators'
+import { Observable, merge } from 'rxjs'
+import { StandardAction } from 'basic-fsa-factories'
+import { isString } from 'utils'
 
-export function callChangeHandlerOnBlurWhenIsChange (event$, state$) {
-  return event$.pipe(
-    filter(ofType('BLUR')),
+export function callChangeHandlerOnDebounceOrBlurWhenIsChange (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  const blur$ = event$.pipe(
+    filter(ofType('BLUR'))
+  )
+  const debounce$ = state$.pipe(
+    pluck('props', 'debounce'),
+    filter(Boolean),
+    distinctUntilChanged(),
+    map(
+      (delay: number | string) => isString(delay)
+        ? Number.parseInt(delay, 10)
+        : delay
+    ),
+    switchMap(
+      delay => event$.pipe(
+        filter(ofType('INPUT')),
+        debounceTime(delay)
+      )
+    )
+  )
+
+  return merge(blur$, debounce$).pipe(
     withLatestFrom(state$),
     pluck('1'),
     filter(hasOnChangeHandler),
