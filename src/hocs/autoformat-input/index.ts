@@ -65,7 +65,7 @@ function mapStateToProps (
   return {
     ...attrs,
     type: csv ? 'text' : type,
-    value: csv && Array.isArray(value) ? value.join(',') : value as string,
+    value: csv && Array.isArray(value) ? value.join(' ') : value as string,
     error
   }
 }
