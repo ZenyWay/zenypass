@@ -16,7 +16,7 @@
 /** @jsx createElement */
 import { createElement, ComponentClass, SFC } from 'create-element'
 import { AuthenticationModal } from '../authentication-modal'
-import { Observer } from 'rxjs'
+import { Observer } from 'component-from-props'
 
 export interface AuthenticationProviderProps {
   locale: string

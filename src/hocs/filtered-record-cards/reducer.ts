@@ -19,14 +19,13 @@ import { always, forType, mapPayload } from 'utils'
 import compose from 'basic-compose'
 
 export default compose.into(0)(
-  forType('RESET')(
+  forType('CLEAR_TOKENS')(
     compose.into(0)(
       into('tokens')(always(void 0)),
-      into('records')(always(void 0))
+      into('filter')(always(void 0))
     )
   ),
-  forType('CLEAR')(into('tokens')(always(void 0))),
-  forType('RECORDS')(into('records')(mapPayload())),
-  forType('CHANGE')(into('tokens')(mapPayload())),
+  forType('SET_FILTER')(into('filter')(mapPayload())),
+  forType('CHANGE_TOKENS')(into('tokens')(mapPayload())),
   forType('PROPS')(into('props')(mapPayload()))
 )

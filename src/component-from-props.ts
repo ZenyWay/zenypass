@@ -20,7 +20,7 @@ import createComponentFromStreamFactory, {
   OperatorFactory as GenericOperatorFactory
 } from 'component-from-stream'
 import { Component, ComponentClass, Children, SFC } from 'create-element'
-import { Observable, from } from 'rxjs'
+import { Observer, Observable, from } from 'rxjs'
 
 export {
   Children,
@@ -28,6 +28,8 @@ export {
   ComponentClass,
   ComponentFromStreamConstructor,
   ComponentFromStreamFactory,
+  Observable,
+  Observer,
   SFC
 }
 export type Operator<I= {},O= I> = GenericOperator<I,O,Observable<I>,Observable<O>>

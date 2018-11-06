@@ -15,7 +15,7 @@
  */
 
 import reducer from './reducer'
-import { resetOnDisableFilter, filterOnChangeOrRecords } from './effects'
+import { clearTokensOnDisableFilter, filterOnChangeOrRecords } from './effects'
 import { ZenypassRecord } from 'services'
 import componentFromEvents, {
   ComponentClass,
@@ -43,10 +43,10 @@ export interface FilteredRecordCardsHocProps {
 
 export interface FilteredRecordCardsSFCProps
 extends FilteredRecordCardsSFCHandlerProps {
-  filter?: boolean
+  records: Partial<ZenypassRecord>[]
+  filter?: boolean[]
   tokens?: string[]
   debounce?: string | number
-  records: Partial<ZenypassRecord>[]
 }
 
 export interface FilteredRecordCardsSFCHandlerProps {
@@ -57,24 +57,20 @@ export interface FilteredRecordCardsSFCHandlerProps {
 interface FilteredRecordCardsState {
   props: FilteredRecordCardsProps<FilteredRecordCardsSFCProps>
   tokens?: string[]
-  records: Partial<ZenypassRecord>[]
+  filter?: boolean[]
 }
 
 function mapStateToProps (
-  {
-    props,
-    tokens,
-    records
-  }: FilteredRecordCardsState
+  { props, tokens, filter }: FilteredRecordCardsState
 ): Rest<FilteredRecordCardsSFCProps, FilteredRecordCardsSFCHandlerProps> {
-  return { ...props, tokens, records: tokens ? records : props.records }
+  return { ...props, tokens, filter }
 }
 
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => FilteredRecordCardsSFCHandlerProps =
 createActionDispatchers({
-  onTokensChange: 'CHANGE',
-  onTokensClear: 'CLEAR'
+  onTokensChange: 'CHANGE_TOKENS',
+  onTokensClear: 'CLEAR_TOKENS'
 })
 
 export function filteredRecordCards <P extends FilteredRecordCardsSFCProps> (
@@ -85,7 +81,7 @@ export function filteredRecordCards <P extends FilteredRecordCardsSFCProps> (
     () => tap(log('filtered-record-cards:event:')),
     redux(
       reducer,
-      resetOnDisableFilter,
+      clearTokensOnDisableFilter,
       filterOnChangeOrRecords
     ),
     () => tap(log('filtered-record-cards:state:')),

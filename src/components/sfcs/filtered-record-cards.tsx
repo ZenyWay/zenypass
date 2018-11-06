@@ -17,14 +17,13 @@
 import { createElement } from 'create-element'
 import { Button, InputGroupAppend } from 'bootstrap'
 import { Icon } from './icon'
-import {
-  IconLabelInputGroup
-} from './icon-label-input-group'
+import { IconLabelInputGroup } from './icon-label-input-group'
 import { AutoformatInput } from '../autoformat-input'
-import { RecordCards, RecordCardsProps } from './record-cards'
+import { RecordCard, Record } from './record-card'
+import { classes } from 'utils'
+import { Observer } from 'component-from-props'
 
 export interface FilteredRecordCardsProps extends RecordCardsProps {
-  filter: boolean
   tokens?: string[]
   debounce?: string | number
   onTokensChange?: (tokens: string[]) => void
@@ -55,7 +54,7 @@ export function FilteredRecordCards ({
           />
         )
       }
-      <RecordCards {...attrs} />
+      <RecordCards {...attrs} filter={filter || []} />
     </div>
   )
 }
@@ -94,4 +93,46 @@ function SearchField ({
       </InputGroupAppend>
     </IconLabelInputGroup>
   )
+}
+
+export interface RecordCardsProps {
+  locale: string
+  session: string
+  records: Record[]
+  filter: boolean[]
+  className?: string
+  onAuthenticationRequest?: (res$: Observer<string>) => void
+  [prop: string]: unknown
+}
+
+export function RecordCards ({
+  locale,
+  session,
+  records,
+  filter,
+  hidden,
+  className,
+  onAuthenticationRequest,
+  ...attrs
+}: RecordCardsProps) {
+  let i = records.length
+  const cards = new Array(i)
+  const classNames = classes(
+    'pl-0',
+    className
+  )
+  while (i--) {
+    const record = records[i]
+    cards[i] = (
+      <RecordCard
+        key={record._id}
+        className={filter[i] ? 'd-none' : ''}
+        locale={locale}
+        session={session}
+        record={records[i]}
+        onAuthenticationRequest={onAuthenticationRequest}
+      />
+    )
+  }
+  return <ul {...attrs} className={classNames} >{cards}</ul>
 }

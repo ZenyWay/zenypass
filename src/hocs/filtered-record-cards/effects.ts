@@ -30,10 +30,10 @@ import { Observable, merge } from 'rxjs'
 // const log = label => console.log.bind(console, label)
 
 const CHANGE_DEBOUNCE = 300 // ms
-const reset = createActionFactory('RESET')
-const records = createActionFactory('RECORDS')
+const clearTokens = createActionFactory('CLEAR_TOKENS')
+const setFilter = createActionFactory('SET_FILTER')
 
-export function resetOnDisableFilter (
+export function clearTokensOnDisableFilter (
   _: any,
   state$: Observable<any>
 ) {
@@ -42,7 +42,7 @@ export function resetOnDisableFilter (
     distinctUntilChanged(),
     skip(1), // no need to reset on initial state
     filter(filter => !filter),
-    map(() => reset())
+    map(() => clearTokens())
   )
 }
 
@@ -51,7 +51,7 @@ export function filterOnChangeOrRecords (
   state$: Observable<any>
 ) {
   const tokens$ = event$.pipe(
-    filter(({ type }) => type === 'CHANGE'),
+    filter(({ type }) => type === 'CHANGE_TOKENS'),
     debounceTime(CHANGE_DEBOUNCE)
   )
   const records$ = event$.pipe(
@@ -63,6 +63,6 @@ export function filterOnChangeOrRecords (
   return merge(tokens$, records$).pipe(
     withLatestFrom(state$),
     pluck('1'),
-    map(({ props, tokens }) => records(filterRecords(tokens, props.records)))
+    map(({ props, tokens }) => setFilter(filterRecords(tokens, props.records)))
   )
 }

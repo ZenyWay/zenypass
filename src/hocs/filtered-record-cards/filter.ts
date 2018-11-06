@@ -25,11 +25,12 @@ const TARGET_RECORD_FIELDS: [
 export default function (
   tokens: string[],
   records: Partial<ZenypassRecord>[]
-): Partial<ZenypassRecord>[] {
-  if (!tokens || !tokens.length) return records
-  const result = [] as Partial<ZenypassRecord>[]
-  for (const record of records) {
-    if (recordIncludesAllTokens(tokens, record)) result.push(record)
+): boolean[] {
+  let i = records.length
+  const result = new Array(i) as boolean[]
+  if (!tokens || !tokens.length) return result
+  while (i--) {
+    if (!recordIncludesAllTokens(tokens, records[i])) result[i] = true
   }
   return result
 }
