@@ -20,8 +20,11 @@ import {
 } from 'hocs'
 import {
   FilteredRecordCards as FilteredRecordCardsSFC,
-  FilteredRecordCardsProps as FilteredRecordCardsSFCProps
+  FilteredRecordCardsProps as FilteredRecordCardsSFCProps,
+  Record
 } from './sfcs/filtered-record-cards'
+
+export { Record }
 
 export const FilteredRecordCards =
   filteredRecordCards<FilteredRecordCardsSFCProps>(FilteredRecordCardsSFC)

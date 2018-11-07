@@ -40,6 +40,7 @@ export {
   filteredRecordCards,
   FilteredRecordCardsProps
 } from './filtered-record-cards'
+export { homePage, HomePageProps } from './home-page'
 // export { pure } from './pure'
 export { recordCard, RecordCardProps } from './record-card'
 export {

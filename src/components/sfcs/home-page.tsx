@@ -15,9 +15,10 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
+import { Button } from 'bootstrap'
+import { FAIconButton } from './fa-icon'
 import { NavbarMenu, MenuSpecs } from '../navbar-menu'
-import { FilteredRecordCards } from '../filtered-record-cards'
-import { Record } from './record-cards'
+import { FilteredRecordCards, Record } from '../filtered-record-cards'
 import { Observer } from 'rxjs'
 
 export interface HomePageProps {
@@ -28,6 +29,7 @@ export interface HomePageProps {
   session?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onSelectMenuItem?: (event: MouseEvent) => void
+  onToggleFilter?: (event: MouseEvent) => void
   [prop: string]: unknown
 }
 
@@ -39,6 +41,7 @@ export function HomePage ({
   session,
   onAuthenticationRequest,
   onSelectMenuItem,
+  onToggleFilter,
   ...attrs
 }: HomePageProps) {
   return (
@@ -46,13 +49,24 @@ export function HomePage ({
       <NavbarMenu
         menu={menu}
         onClickItem={onSelectMenuItem}
-      />
+      >
+        {
+          filter ? null : (
+            <FAIconButton
+              icon='search'
+              color='info'
+              onClick={onToggleFilter}
+            />
+          )
+        }
+      </NavbarMenu>
       <FilteredRecordCards
         locale={locale}
         records={records}
         filter={filter}
         session={session}
         onAuthenticationRequest={onAuthenticationRequest}
+        onFilterCancel={onToggleFilter}
       />
     </section>
   )

@@ -16,6 +16,8 @@
 
 import { ZenypassRecord } from 'services'
 
+export { ZenypassRecord }
+
 const TARGET_RECORD_FIELDS: [
   'name', 'url', 'username', 'comments', 'keywords'
 ] = [

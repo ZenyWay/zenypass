@@ -14,45 +14,56 @@
  * Limitations under the License.
  */
 
-import filterRecords from './filter'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   debounceTime,
+  distinctUntilChanged,
   filter,
+  ignoreElements,
   map,
   pluck,
-  skip,
-  // tap,
-  withLatestFrom,
-  distinctUntilChanged
+  tap,
+  withLatestFrom
 } from 'rxjs/operators'
 import { Observable, merge } from 'rxjs'
 // const log = label => console.log.bind(console, label)
 
-const CHANGE_DEBOUNCE = 300 // ms
-const clearTokens = createActionFactory('CLEAR_TOKENS')
-const setFilter = createActionFactory('SET_FILTER')
+const TOKENS_DEBOUNCE = 300 // ms
+const disable = createActionFactory('DISABLE')
+const enable = createActionFactory('ENABLE')
+const update = createActionFactory('UPDATE')
 
-export function clearTokensOnDisableFilter (
+export function toggleFilterOnFilterProp (
   _: any,
   state$: Observable<any>
 ) {
   return state$.pipe(
-    pluck('filter'),
+    pluck('props', 'filter'),
     distinctUntilChanged(),
-    skip(1), // no need to reset on initial state
-    filter(filter => !filter),
-    map(() => clearTokens())
+    map(filter => filter ? enable() : disable())
   )
 }
 
-export function filterOnChangeOrRecords (
+export function focusSearchFieldOnMountOrEnable (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
+  const enable$ = event$.pipe(filter(({ type }) => type === 'ENABLE'))
+  const mount$ = event$.pipe(filter(({ type }) => type === 'SEARCH_FIELD_REF'))
+
+  return merge(enable$, mount$).pipe(
+    withLatestFrom(state$),
+    tap(([_, { searchField }]) => searchField && searchField.focus()),
+    ignoreElements()
+  )
+}
+
+export function filterOnRecordsPropOrSetTokens (
+  event$: Observable<StandardAction<any>>
+) {
   const tokens$ = event$.pipe(
-    filter(({ type }) => type === 'CHANGE_TOKENS'),
-    debounceTime(CHANGE_DEBOUNCE)
+    filter(({ type }) => type === 'TOKENS'),
+    debounceTime(TOKENS_DEBOUNCE)
   )
   const records$ = event$.pipe(
     filter(({ type, payload }) => (type === 'PROPS') && payload.filter),
@@ -60,9 +71,5 @@ export function filterOnChangeOrRecords (
     distinctUntilChanged()
   )
 
-  return merge(tokens$, records$).pipe(
-    withLatestFrom(state$),
-    pluck('1'),
-    map(({ props, tokens }) => setFilter(filterRecords(tokens, props.records)))
-  )
+  return merge(tokens$, records$).pipe(map(() => update()))
 }

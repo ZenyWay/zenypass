@@ -16,18 +16,21 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { Button, InputGroupAppend } from 'bootstrap'
-import { Icon } from './icon'
+import { FAIcon } from './fa-icon'
 import { IconLabelInputGroup } from './icon-label-input-group'
 import { AutoformatInput } from '../autoformat-input'
-import { RecordCard, Record } from './record-card'
+import { RecordCard, Record } from '../record-card'
 import { classes } from 'utils'
 import { Observer } from 'component-from-props'
+
+export { Record }
 
 export interface FilteredRecordCardsProps extends RecordCardsProps {
   tokens?: string[]
   debounce?: string | number
   onTokensChange?: (tokens: string[]) => void
   onTokensClear?: (event: MouseEvent) => void
+  onSearchFieldRef?: (ref: HTMLElement) => void
 }
 
 export function FilteredRecordCards ({
@@ -36,6 +39,7 @@ export function FilteredRecordCards ({
   debounce,
   onTokensChange,
   onTokensClear,
+  onSearchFieldRef,
   ...attrs
 }: FilteredRecordCardsProps) {
   // TODO replace <div> with <Fragment>
@@ -46,7 +50,8 @@ export function FilteredRecordCards ({
         ? null
         : (
           <SearchField
-            className='mt-1'
+            innerRef={onSearchFieldRef}
+            className='col-12 col-md-6 col-xl-4 mt-1 px-0'
             tokens={tokens}
             debounce={debounce}
             onChange={onTokensChange}
@@ -65,6 +70,7 @@ interface SearchFieldProps {
   className?: string
   onChange?: (tokens: string[]) => void
   onClear?: (event: MouseEvent) => void
+  innerRef?: (ref: HTMLElement) => void
 }
 
 function SearchField ({
@@ -72,14 +78,16 @@ function SearchField ({
   debounce,
   onChange,
   onClear,
+  innerRef,
   ...attrs
 }: SearchFieldProps) {
   return (
     <IconLabelInputGroup
-      icon='fa-search'
+      icon='search'
       {...attrs}
     >
       <AutoformatInput
+        innerRef={innerRef}
         type='csv'
         className='form-control'
         value={tokens}
@@ -88,7 +96,7 @@ function SearchField ({
       />
       <InputGroupAppend>
         <Button outline onClick={onClear}>
-          <Icon icon='fa-times' />
+          <FAIcon icon='times' />
         </Button>
       </InputGroupAppend>
     </IconLabelInputGroup>
@@ -116,7 +124,7 @@ export function RecordCards ({
   ...attrs
 }: RecordCardsProps) {
   let i = records.length
-  const cards = new Array(i)
+  const cards = new Array<JSX.Element>(i)
   const classNames = classes(
     'pl-0',
     className

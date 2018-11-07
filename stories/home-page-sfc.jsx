@@ -17,24 +17,37 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-// import { action } from '@storybook/addon-actions'
+import { action } from '@storybook/addon-actions'
 import { RECORDS } from './helpers/consts'
+import preventDefaultAction from './helpers/prevent-default'
 import {
-  HomePage as PrivilegedHomePage,
+  HomePageSFC,
   withAuthenticationModal
 } from 'components'
 import { withAuthentication } from 'hocs'
+import { menu } from './navbar-menu-sfc'
 
 const attrs = {
-  locale: 'fr'
+  locale: 'fr',
+  menu,
+  onSelectMenuItem: preventDefaultAction('MENU_ITEM_SELECTED'),
+  onAuthenticationRequest: action('AUTHENTICATION_REQUESTED'),
+  onToggleFilter: action('TOGGLE_FILTER')
 }
 
 const HomePage =
-  withAuthentication(withAuthenticationModal(PrivilegedHomePage))
+  withAuthentication(withAuthenticationModal(HomePageSFC))
 
-storiesOf('HomePage', module)
+storiesOf('HomePage (SFC)', module)
   .add('default', () => (
     <HomePage
+      records={RECORDS}
+      {...attrs}
+    />
+  ))
+  .add('filter', () => (
+    <HomePage
+      filter
       records={RECORDS}
       {...attrs}
     />

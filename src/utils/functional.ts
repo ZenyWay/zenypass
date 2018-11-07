@@ -28,7 +28,7 @@ export function pluck <T> (...keys) {
   }
 }
 
-export function always <T> (value) {
+export function always <T> (value?: T) {
   return function (): T {
     return value
   }

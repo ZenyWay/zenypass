@@ -17,7 +17,7 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-// import { action } from '@storybook/addon-actions'
+import { action } from '@storybook/addon-actions'
 import { RECORDS } from './helpers/consts'
 import {
   FilteredRecordCards as PrivilegedFilteredRecordCards,
@@ -26,7 +26,8 @@ import {
 import { withAuthentication } from 'hocs'
 
 const attrs = {
-  locale: 'fr'
+  locale: 'fr',
+  onToggleFilter: action('CANCEL_FILTER')
 }
 
 const FilteredRecordCards =

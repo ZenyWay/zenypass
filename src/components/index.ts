@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
+
 export {
   AgentAuthorizationCard,
   AgentAuthorizationCardProps
@@ -64,10 +64,16 @@ export {
 } from './sfcs/dropdown'
 export { Dropdown, DropdownProps } from './dropdown'
 export {
+  FAIcon,
+  FAIconProps,
+  FAIconButton,
+  FAIconButtonProps
+} from './sfcs/fa-icon'
+export {
   HomePage as HomePageSFC,
   HomePageProps as HomePageSFCProps
 } from './sfcs/home-page'
-export { Icon, IconProps, IconButton, IconButtonProps } from './sfcs/icon'
+export { HomePage, HomePageProps } from './home-page'
 export {
   IconLabelInputGroup,
   IconLabelInputGroupProps

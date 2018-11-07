@@ -14,18 +14,42 @@
  * Limitations under the License.
  */
 
+import getFilterList, { ZenypassRecord } from './filter'
+import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
-import { always, forType, mapPayload } from 'utils'
+import { forType, mapPayload, always } from 'utils'
 import compose from 'basic-compose'
 
+export type AutomataState = 'disabled' | 'enabled'
+
+const clearFilter = into('filter')(always())
+const updateFilter = into('filter')(updateFilterList)
+const clearTokens = into('tokens')(always())
+const mapPayloadIntoTokens = into('tokens')(mapPayload())
+
+const automata: AutomataSpec<AutomataState> = {
+  disabled: {
+    ENABLE: ['enabled', updateFilter]
+  },
+  enabled: {
+    UPDATE: updateFilter,
+    TOKENS: mapPayloadIntoTokens,
+    CLEAR: [updateFilter, clearTokens],
+    DISABLE: ['disabled', clearFilter]
+  }
+}
+
+function updateFilterList <
+  S extends { props: P, tokens: string[] },
+  P extends { records: Partial<ZenypassRecord>[] }
+> (
+  { props, tokens }: S
+) {
+  return getFilterList(tokens, props.records)
+}
+
 export default compose.into(0)(
-  forType('CLEAR_TOKENS')(
-    compose.into(0)(
-      into('tokens')(always(void 0)),
-      into('filter')(always(void 0))
-    )
-  ),
-  forType('SET_FILTER')(into('filter')(mapPayload())),
-  forType('CHANGE_TOKENS')(into('tokens')(mapPayload())),
+  createAutomataReducer(automata, 'disabled'),
+  forType('SEARCH_FIELD_REF')(into('searchField')(mapPayload())),
   forType('PROPS')(into('props')(mapPayload()))
 )

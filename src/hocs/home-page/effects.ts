@@ -13,16 +13,25 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-
+//
+import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
-  homePage,
-  HomePageProps as GenericHomePageProps
-} from 'hocs'
-import {
-  HomePageSFC,
-  HomePageSFCProps
-} from 'components'
+  catchError,
+  ignoreElements,
+  filter,
+  first,
+  last,
+  map,
+  mapTo,
+  merge,
+  pluck,
+  share,
+  switchMap,
+  startWith,
+  takeUntil,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators'
+import { Observable, of as observable } from 'rxjs'
 
-export const HomePage = homePage<HomePageSFCProps>(HomePageSFC)
-
-export type HomePageProps = GenericHomePageProps<HomePageSFCProps>
+const log = (label: string) => console.log.bind(console, label)
