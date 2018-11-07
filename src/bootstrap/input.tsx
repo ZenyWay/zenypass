@@ -25,6 +25,7 @@ export interface InputProps {
   invalid?: boolean
   className?: string
   blurOnEnterKey?: boolean
+  innerRef?: (ref: HTMLElement) => void
   [prop: string]: unknown
 }
 
@@ -35,10 +36,12 @@ export function Input ({
   invalid,
   className,
   blurOnEnterKey,
+  innerRef,
   ...attrs
 }: InputProps) {
   const Tag = type === 'textarea' ? type : 'input'
   return <Tag
+    ref={innerRef}
     type={type}
     className={classes(invalid && 'is-invalid', className)}
     onKeyPress={blurOnEnterKey && onKeyPress}

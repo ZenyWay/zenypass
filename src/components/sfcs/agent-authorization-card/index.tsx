@@ -17,7 +17,7 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { Card, CardProps, CardBody, CardFooter, CardHeader } from 'bootstrap'
-import { IconButton } from '../icon'
+import { FAIconButton } from '../fa-icon'
 import createL10ns from 'basic-l10n'
 const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
 const l10ns = createL10ns(require('./locales.json'), { debug })
@@ -62,15 +62,14 @@ export function AgentAuthorizationCard ({
             <p className='mb-2'>{token}</p>
           </div>
         ) : null}
-        <IconButton
+        <FAIconButton
           color='info'
-          icon={pending && !token && 'fa-spinner fa-spin'}
+          pending={pending && !token}
           onClick={onClick}
           className={pending && 'btn-outline-info'}
-          disabled={pending && !token}
         >
           {buttonTxt}
-        </IconButton>
+        </FAIconButton>
       </CardBody>
       <CardFooter bg='transparent' text={error && 'danger'} className='border-0' >
         {error}

@@ -21,20 +21,20 @@ import {
   DropdownMenu,
   DropdownToggle
 } from 'bootstrap'
-import { Icon } from './icon'
+import { classes } from 'utils'
 
-export interface DropdownProps extends DropdownItemsProps {
+export interface DropdownProps extends DropdownItemSpec {
   navItem?: boolean
   active?: boolean
   expanded?: boolean
-  items?: DropdownItemsProps[]
+  items?: DropdownItemSpec[]
   onClickItem?: (event: MouseEvent) => void
   onClickToggle?: (event: MouseEvent) => void
   innerRef?: (element?: HTMLElement | null) => void
   [prop: string]: unknown
 }
 
-export interface DropdownItemsProps {
+export interface DropdownItemSpec {
   label?: string
   icon?: string[] | string
   href?: string
@@ -63,12 +63,8 @@ export function Dropdown ({
       innerRef={innerRef}
     >
       <DropdownToggle onClick={onClickToggle} nav={navItem} {...attrs}>
-        <Icon
-          icon={
-            Array.isArray(icon) ? icon[0] /* TODO handle icon list */ : icon
-          }
-        />
-        {` ${label}`}
+        <MenuItemIcon icon={icon} />
+        {label}
       </DropdownToggle>
       <DropdownMenu
         expanded={expanded}
@@ -81,7 +77,7 @@ export function Dropdown ({
 }
 
 export interface DropdownMenuItemsProps {
-  items?: DropdownItemsProps[]
+  items?: DropdownItemSpec[]
   className?: string
   onClickItem?: (event: MouseEvent) => void
 }
@@ -99,9 +95,39 @@ function dropdownMenuItems ({
     const { label, icon, ...attrs } = items[key]
     entries[key] = (
       <DropdownItem className={className} onClick={onClickItem} {...attrs}>
+        <MenuItemIcon icon={icon} />
         {label}
       </DropdownItem>
     )
   }
   return entries
+}
+
+export interface MenuItemIconProps {
+  icon?: string[] | string
+  className?: string
+  [prop: string]: unknown
+}
+
+export function MenuItemIcon ({ icon, className, ...attrs }: MenuItemIconProps) {
+  if (!icon) return null
+  return !icon ? null : Array.isArray(icon)
+  ? <MenuItemIcons icons={icon} className={className} {...attrs} />
+  : <i className={classes(icon, 'mr-1', className)} {...attrs} />
+}
+
+interface MenuItemIconsProps extends MenuItemIconProps {
+  icon?: never
+  icons: string[]
+  [prop: string]: unknown
+}
+
+function MenuItemIcons ({ icons, ...attrs }: MenuItemIconsProps) {
+  let i = icons.length
+  const elements = new Array<JSX.Element>(i)
+  while (i--) {
+    const icon = icons[i]
+    elements[i] = !icon ? null : <MenuItemIcon icon={icon} {...attrs} />
+  }
+  return <span>{elements}</span>
 }

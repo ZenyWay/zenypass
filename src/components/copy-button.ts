@@ -14,8 +14,8 @@
  * Limitations under the License.
  */
 import { copyButton, CopyButtonProps } from 'hocs'
-import { IconButton, IconButtonProps } from './sfcs/icon'
+import { FAIconButton, FAIconButtonProps } from './sfcs/fa-icon'
 
-export const CopyButton = copyButton <IconButtonProps>(IconButton)
+export const CopyButton = copyButton <FAIconButtonProps>(FAIconButton)
 
 export { CopyButtonProps }

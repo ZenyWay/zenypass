@@ -25,9 +25,8 @@ import {
   NavLink,
   NavbarToggler
 } from 'bootstrap'
-import { DropdownItemsProps } from './dropdown'
+import { MenuItemIcon, DropdownItemSpec } from './dropdown'
 import { Dropdown } from '../dropdown'
-import { Icon } from './icon'
 import { ZENYPASS_LOGO_SVG } from 'static'
 
 export interface NavbarMenuProps {
@@ -39,7 +38,8 @@ export interface NavbarMenuProps {
   innerRef?: (element?: HTMLElement | null) => void
 }
 
-export interface MenuSpecs extends Array<DropdownItemsProps[] | DropdownItemsProps> {}
+export interface MenuSpecs
+extends Array<DropdownItemSpec[] | DropdownItemSpec> {}
 
 export function NavbarMenu ({
   menu = [],
@@ -60,7 +60,9 @@ export function NavbarMenu ({
         <img height='32' src={ZENYPASS_LOGO_SVG}/>
         <small>&nbsp;ZenyPass</small>
       </NavbarBrand>
-      <span>{ children /* TODO replace wrapping span with Fragment */}</span>
+      <span class='flex-fill text-light'>
+        { children }
+      </span>
       <NavbarToggler onClick={onClickToggle} />
       <Collapse navbar isOpen={expanded} >
         <Nav className='ml-auto' navbar>
@@ -88,7 +90,7 @@ function navMenuItems ({ menu = [], onClickItem }: NavMenuItemsProps) {
 }
 
 interface NavMenuItemProps {
-  item?: DropdownItemsProps[] | DropdownItemsProps
+  item?: DropdownItemSpec[] | DropdownItemSpec
   onClickItem?: (event: MouseEvent) => void
 }
 
@@ -116,7 +118,7 @@ function NavMenuItem ({ item = {}, onClickItem }: NavMenuItemProps) {
 
 interface NavMenuLinkProps {
   className?: string
-  item?: DropdownItemsProps
+  item?: DropdownItemSpec
   onClickItem?: (event: MouseEvent) => void
 }
 
@@ -124,12 +126,8 @@ function NavMenuLink ({ className, item, onClickItem }: NavMenuLinkProps) {
   const { label, icon, ...attrs } = item
   return (
     <NavLink className={className} onClick={onClickItem} {...attrs}>
-      {!icon ? null : <Icon
-        icon={
-          Array.isArray(icon) ? icon[0] /* TODO handle icon list */ : icon
-        }
-      />}
-      {!label ? null : ` ${label}`}
+      <MenuItemIcon icon={icon} />
+      {label}
     </NavLink>
   )
 }

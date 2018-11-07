@@ -16,21 +16,25 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import {
-  Button,
   InputGroup,
   InputGroupText,
   InputGroupPrepend
 } from 'bootstrap'
-import { Icon } from './icon'
+import { FAIcon, FAIconButton } from './fa-icon'
 import { classes } from 'utils'
 
 export interface IconLabelInputGroupProps {
   id?: string
   icon?: string
+  rotate?: '90' | '180' | '270' | '' | false
+  flip?: 'horizontal' | 'vertical' | '' | false
+  animate?: 'spin' | 'pulse' | '' | false
+  pending?: boolean
   invalid?: boolean
   size?: 'sm' | 'lg' | '' | false
   buttonTitle?: string
   disabled?: boolean
+  className?: string
   children?: any
   onIconClick?: (event: MouseEvent) => void
   [prop: string]: unknown
@@ -39,6 +43,10 @@ export interface IconLabelInputGroupProps {
 export function IconLabelInputGroup ({
   id,
   icon,
+  rotate,
+  flip,
+  animate,
+  pending,
   invalid,
   size,
   onIconClick,
@@ -47,27 +55,35 @@ export function IconLabelInputGroup ({
   buttonTitle,
   ...attrs
 }: IconLabelInputGroupProps) {
-  const _icon = invalid ? 'fa-times' : icon
   return (
     <InputGroup id={id} size={size} {...attrs}>
-      {!_icon ? null : (
+      {!icon ? null : (
         <InputGroupPrepend>
           {!onIconClick ? (
             <InputGroupText
               className={classes(invalid && 'border-danger text-danger')}
             >
-              <Icon icon={_icon} fw />
+              <FAIcon
+                icon={invalid ? 'times' : icon}
+                rotate={!invalid && rotate}
+                flip={!invalid && flip}
+                animate={!invalid && animate}
+                fw
+              />
             </InputGroupText>
           ) : (
-            <Button
+            <FAIconButton
               id={`${id}_toggle-button`}
+              icon={invalid ? 'times' : icon}
+              rotate={!invalid && rotate}
+              flip={!invalid && flip}
+              animate={!invalid && animate}
+              pending={pending}
               outline
               onClick={onIconClick}
               disabled={disabled}
               title={buttonTitle}
-            >
-              <Icon icon={_icon} fw />
-            </Button>
+            />
           )}
         </InputGroupPrepend>
       )}

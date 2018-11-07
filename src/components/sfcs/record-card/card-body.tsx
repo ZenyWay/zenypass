@@ -19,15 +19,15 @@ import { InputGroupAppend } from 'bootstrap'
 import { RecordField as PassiveRecordField } from '../record-field'
 import { AutoformatRecordField } from '../../autoformat-record-field'
 import { CopyButton } from '../../copy-button'
-import { IconButton } from '../icon'
+import { FAIconButton } from '../fa-icon'
 import createL10ns, { L10nTag } from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
 export const DEFAULT_ICONS: Partial<RecordCardBodyIcons> = {
-  cleartext: 'fa-eye-slash',
-  keywords: 'fa-tags',
-  password: 'fa-eye',
-  username: 'fa-user'
+  cleartext: 'eye-slash',
+  keywords: 'tags',
+  password: 'eye',
+  username: 'user'
 }
 
 export const DEFAULT_PLACEHOLDERS: Partial<RecordCardBodyPlaceholders> = {
@@ -143,11 +143,8 @@ export function RecordCardBody ({
         type={cleartext ? 'text' : 'password'}
         id={`${_id}_password`}
         className='mb-2'
-        icon={
-          pending === 'cleartext'
-          ? 'fa-spin fa-spinner'
-          : getIcon(icons, cleartext ? 'cleartext' : 'password')
-        }
+        icon={getIcon(icons, cleartext ? 'cleartext' : 'password')}
+        pending={pending === 'cleartext'}
         placeholder={cleartext && getPlaceholder(t, placeholders, 'password')}
         value={cleartext ? password : '*****'}
         onChange={!disabled && onChange.bind(void 0, 'password')}
@@ -157,13 +154,10 @@ export function RecordCardBody ({
       >
         <InputGroupAppend>
           {!cleartext ? (
-            <IconButton
+            <FAIconButton
               id={`${_id}_connexion-button`}
-              icon={
-                pending === 'connect'
-                ? 'fa-spin fa-spinner'
-                : 'fa-external-link fa-fw'
-              }
+              icon='external-link'
+              pending={pending === 'connect'}
               outline
               onClick={onConnectRequest}
             />
@@ -200,10 +194,10 @@ export function RecordCardBody ({
         locale={locale}
       />
       <InputGroupAppend>
-        <IconButton
+        <FAIconButton
           color='light'
           className='border-secondary mb-2'
-          icon = {'fa-lock fa-fw'}
+          icon='lock'
           onChange={!disabled && onChange.bind(void 0, 'lock')}
           disabled={disabled}
         />

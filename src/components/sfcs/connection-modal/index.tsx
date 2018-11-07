@@ -46,8 +46,8 @@ export interface ConnectionModalProps {
 }
 
 const DEFAULT_COPY_BUTTON_ICONS = {
-  disabled: 'fa-check',
-  enabled: 'fa-external-link'
+  disabled: 'check',
+  enabled: 'external-link'
 }
 
 export function ConnectionModal ({
@@ -84,7 +84,7 @@ export function ConnectionModal ({
         <IconLabelInputFormGroup value={name} size='lg' plaintext />
         {!copy || (copy === 'password')
         ? (
-          <IconLabelInputFormGroup value={username} icon='fa-user' plaintext />
+          <IconLabelInputFormGroup value={username} icon='user' plaintext />
         )
         : (
           <RecordField
@@ -92,7 +92,7 @@ export function ConnectionModal ({
             locale={locale}
             type='email'
             className='mb-2'
-            icon='fa-user'
+            icon='user'
             value={username}
             disabled
           >
@@ -119,7 +119,7 @@ export function ConnectionModal ({
             locale={locale}
             type={cleartext ? 'text' : 'password'}
             className='mb-2'
-            icon={cleartext ? 'fa-eye-slash' : 'fa-eye'}
+            icon={cleartext ? 'eye-slash' : 'eye'}
             buttonTitle={t('Show the password')}
             value={cleartext ? password : '*****'}
             onIconClick={onToggleCleartext}

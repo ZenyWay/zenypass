@@ -24,10 +24,10 @@ const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenyp
 const l10ns = createL10ns(require('./locales.json'), { debug })
 
 export const DEFAULT_ICONS = {
-  email: 'fa-envelope',
-  password: 'fa-key fa-flip-vertical',
-  textarea: 'fa-sticky-note',
-  url: 'fa-bookmark'
+  email: 'envelope',
+  password: 'key fa-flip-vertical',
+  textarea: 'sticky-note',
+  url: 'bookmark'
 }
 
 export const DEFAULT_PLACEHOLDERS = {
@@ -46,6 +46,10 @@ export interface RecordFieldProps extends InputProps {
   placeholder?: string
   buttonTitle?: string
   icon?: string
+  rotate?: '90' | '180' | '270' | '' | false
+  flip?: 'horizontal' | 'vertical' | '' | false
+  animate?: 'spin' | 'pulse' | '' | false
+  pending?: boolean
   className?: string
   size?: 'sm' | 'lg' | '' | false
   autocomplete?: 'off' | 'on' | '' | false
@@ -64,6 +68,10 @@ export function RecordField ({
   error,
   placeholder,
   icon,
+  rotate,
+  flip,
+  animate,
+  pending,
   className,
   size,
   autocomplete = 'off',
@@ -76,14 +84,18 @@ export function RecordField ({
   ...attrs
 }: RecordFieldProps) {
   const t = l10ns[locale]
-  const _icon = error ? 'fa-times' : icon || DEFAULT_ICONS[type]
   const Input = disabled ? PassiveInput : ControlledInput
   return (
     <IconLabelInputGroup
       id={id}
       className={className}
       size={size}
-      icon={_icon}
+      icon={icon || DEFAULT_ICONS[type]}
+      rotate={rotate}
+      flip={flip}
+      animate={animate}
+      pending={pending}
+      invalid={!!error}
       onIconClick={onIconClick}
       buttonTitle={buttonTitle}
     >
