@@ -1,7 +1,7 @@
 {
   "fr": {
-    "authorizations": "Autorisations d'accès",
-    "new-bookmark": "Ajouter un site",
+    "devices": "Appareils",
+    "new-entry": "Ajouter un site",
     "lang": "Langue",
     "fr": "Français",
     "en": "English",
@@ -13,8 +13,8 @@
     "sign-out": "Déconnexion"
   },
   "en": {
-    "authorizations": "Access authorizations",
-    "new-bookmark": "Add a website",
+    "devices": "Devices",
+    "new-entry": "Add a website",
     "lang": "Language",
     "fr": "Français",
     "en": "English",

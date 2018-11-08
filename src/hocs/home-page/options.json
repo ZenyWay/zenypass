@@ -6,8 +6,8 @@
     "icon": "fa fa-plus"
   },
   {
-    "data-id": "authorizations",
-    "label": "authorizations",
+    "data-id": "devices",
+    "label": "devices",
     "icon": "fa fa-mobile fa-lg"
   },
   {
