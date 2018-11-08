@@ -66,6 +66,7 @@ export function HomePage ({
             icon='search'
             color='info'
             onClick={onToggleFilter}
+            active={!!filter}
           />
         </NavbarMenu>
         {

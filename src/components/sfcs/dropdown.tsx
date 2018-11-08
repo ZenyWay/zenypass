@@ -27,6 +27,7 @@ export interface DropdownProps extends DropdownItemSpec {
   navItem?: boolean
   active?: boolean
   expanded?: boolean
+  right?: boolean
   items?: DropdownItemSpec[]
   onClickItem?: (event: MouseEvent) => void
   onClickToggle?: (event: MouseEvent) => void
@@ -46,6 +47,7 @@ export function Dropdown ({
   active,
   disabled,
   expanded,
+  right,
   label,
   icon,
   items,
@@ -68,6 +70,7 @@ export function Dropdown ({
       </DropdownToggle>
       <DropdownMenu
         expanded={expanded}
+        right={right}
         className={navItem && 'bg-info border-info'}
       >
         {dropdownMenuItems({ items, onClickItem, className: navItem && 'text-light' })}

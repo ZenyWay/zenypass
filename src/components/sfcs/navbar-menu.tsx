@@ -99,6 +99,7 @@ function NavMenuItem ({ item = {}, onClickItem }: NavMenuItemProps) {
   ? (
     <Dropdown
       className='text-light'
+      right
       navItem
       {...item[0]}
       items={item.slice(1)}
