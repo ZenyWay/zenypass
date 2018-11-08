@@ -15,22 +15,28 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Button } from 'bootstrap'
+import { SearchField } from './search-field'
 import { FAIconButton } from './fa-icon'
 import { NavbarMenu, MenuSpecs } from '../navbar-menu'
-import { FilteredRecordCards, Record } from '../filtered-record-cards'
+import { FilteredRecordCards, Record } from './filtered-record-cards'
 import { Observer } from 'rxjs'
+
+export { Record }
 
 export interface HomePageProps {
   locale: string
   menu: MenuSpecs
   records: Record[]
-  filter?: boolean
   session?: string
+  filter?: boolean[]
+  tokens?: string[]
+  debounce?: string | number
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onSelectMenuItem?: (event: MouseEvent) => void
+  onSearchFieldRef?: (ref: HTMLElement) => void
+  onTokensChange?: (tokens: string[]) => void
+  onTokensClear?: (event: MouseEvent) => void
   onToggleFilter?: (event: MouseEvent) => void
-  [prop: string]: unknown
 }
 
 export function HomePage ({
@@ -39,27 +45,42 @@ export function HomePage ({
   records,
   filter,
   session,
+  tokens,
+  debounce,
   onAuthenticationRequest,
   onSelectMenuItem,
+  onSearchFieldRef,
+  onTokensChange,
+  onTokensClear,
   onToggleFilter,
   ...attrs
-}: HomePageProps) {
+}: HomePageProps & { [prop: string]: unknown}) {
   return (
     <section {...attrs}>
-      <NavbarMenu
-        menu={menu}
-        onClickItem={onSelectMenuItem}
-      >
+      <header className='sticky-top'>
+        <NavbarMenu
+          menu={menu}
+          onClickItem={onSelectMenuItem}
+        >
+          <FAIconButton
+            icon='search'
+            color='info'
+            onClick={onToggleFilter}
+          />
+        </NavbarMenu>
         {
-          filter ? null : (
-            <FAIconButton
-              icon='search'
-              color='info'
-              onClick={onToggleFilter}
+          !filter ? null : (
+            <SearchField
+              innerRef={onSearchFieldRef}
+              className='col-12 col-md-6 col-xl-4 px-0 py-1 bg-white'
+              tokens={tokens}
+              debounce={debounce}
+              onChange={onTokensChange}
+              onClear={onTokensClear}
             />
           )
         }
-      </NavbarMenu>
+      </header>
       <FilteredRecordCards
         locale={locale}
         records={records}

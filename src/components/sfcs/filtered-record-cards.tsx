@@ -15,114 +15,30 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Button, InputGroupAppend } from 'bootstrap'
-import { FAIcon } from './fa-icon'
-import { IconLabelInputGroup } from './icon-label-input-group'
-import { AutoformatInput } from '../autoformat-input'
 import { RecordCard, Record } from '../record-card'
 import { classes } from 'utils'
 import { Observer } from 'component-from-props'
 
 export { Record }
 
-export interface FilteredRecordCardsProps extends RecordCardsProps {
-  tokens?: string[]
-  debounce?: string | number
-  onTokensChange?: (tokens: string[]) => void
-  onTokensClear?: (event: MouseEvent) => void
-  onSearchFieldRef?: (ref: HTMLElement) => void
-}
-
-export function FilteredRecordCards ({
-  filter,
-  tokens,
-  debounce,
-  onTokensChange,
-  onTokensClear,
-  onSearchFieldRef,
-  ...attrs
-}: FilteredRecordCardsProps) {
-  // TODO replace <div> with <Fragment>
-  return (
-    <div>
-      {
-        !filter
-        ? null
-        : (
-          <SearchField
-            innerRef={onSearchFieldRef}
-            className='col-12 col-md-6 col-xl-4 mt-1 px-0'
-            tokens={tokens}
-            debounce={debounce}
-            onChange={onTokensChange}
-            onClear={onTokensClear}
-          />
-        )
-      }
-      <RecordCards {...attrs} filter={filter || []} />
-    </div>
-  )
-}
-
-interface SearchFieldProps {
-  tokens?: string[]
-  debounce?: string | number
-  className?: string
-  onChange?: (tokens: string[]) => void
-  onClear?: (event: MouseEvent) => void
-  innerRef?: (ref: HTMLElement) => void
-}
-
-function SearchField ({
-  tokens,
-  debounce,
-  onChange,
-  onClear,
-  innerRef,
-  ...attrs
-}: SearchFieldProps) {
-  return (
-    <IconLabelInputGroup
-      icon='search'
-      {...attrs}
-    >
-      <AutoformatInput
-        innerRef={innerRef}
-        type='csv'
-        className='form-control'
-        value={tokens}
-        debounce={debounce}
-        onChange={onChange}
-      />
-      <InputGroupAppend>
-        <Button outline onClick={onClear}>
-          <FAIcon icon='times' />
-        </Button>
-      </InputGroupAppend>
-    </IconLabelInputGroup>
-  )
-}
-
-export interface RecordCardsProps {
+export interface FilteredRecordCardsProps {
   locale: string
   session: string
   records: Record[]
-  filter: boolean[]
+  filter?: boolean[]
   className?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
-  [prop: string]: unknown
 }
 
-export function RecordCards ({
+export function FilteredRecordCards ({
   locale,
   session,
   records,
   filter,
-  hidden,
   className,
   onAuthenticationRequest,
   ...attrs
-}: RecordCardsProps) {
+}: FilteredRecordCardsProps & { [prop: string]: unknown }) {
   let i = records.length
   const cards = new Array<JSX.Element>(i)
   const classNames = classes(
@@ -134,7 +50,7 @@ export function RecordCards ({
     cards[i] = (
       <RecordCard
         key={record._id}
-        className={filter[i] ? 'd-none' : ''}
+        className={filter && filter[i] ? 'd-none' : ''}
         locale={locale}
         session={session}
         record={records[i]}

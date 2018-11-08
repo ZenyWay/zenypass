@@ -14,38 +14,31 @@
  * Limitations under the License.
  */
 
-import getFilterList, { ZenypassRecord } from './filter'
+import getFilterList from './filter'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
-import { forType, mapPayload, always } from 'utils'
+import { always, forType, mapPayload } from 'utils'
 import compose from 'basic-compose'
 
 export type AutomataState = 'disabled' | 'enabled'
 
 const clearFilter = into('filter')(always())
-const updateFilter = into('filter')(updateFilterList)
+const updateFilter = into('filter')(
+  ({ props, tokens }) => getFilterList(tokens, props.records)
+)
 const clearTokens = into('tokens')(always())
 const mapPayloadIntoTokens = into('tokens')(mapPayload())
 
 const automata: AutomataSpec<AutomataState> = {
   disabled: {
-    ENABLE: ['enabled', updateFilter]
+    TOGGLE_FILTER: ['enabled', updateFilter]
   },
   enabled: {
     UPDATE: updateFilter,
-    TOKENS: mapPayloadIntoTokens,
+    TOKENS: [updateFilter, mapPayloadIntoTokens],
     CLEAR: [updateFilter, clearTokens],
-    DISABLE: ['disabled', clearFilter]
+    TOGGLE_FILTER: ['disabled', clearFilter, clearTokens]
   }
-}
-
-function updateFilterList <
-  S extends { props: P, tokens: string[] },
-  P extends { records: Partial<ZenypassRecord>[] }
-> (
-  { props, tokens }: S
-) {
-  return getFilterList(tokens, props.records)
 }
 
 export default compose.into(0)(

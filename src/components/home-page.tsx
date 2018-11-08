@@ -13,16 +13,30 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-
+/** @jsx createElement */
+import { createElement } from 'create-element'
 import {
+  filteredRecordCards,
+  FilteredRecordCardsProps as GenericFilteredRecordCardsProps,
   homePage,
   HomePageProps as GenericHomePageProps
 } from 'hocs'
 import {
-  HomePageSFC,
-  HomePageSFCProps
-} from 'components'
+  HomePage as HomePageSFC,
+  HomePageProps as HomePageSFCProps,
+  Record
+} from './sfcs/home-page'
 
-export const HomePage = homePage<HomePageSFCProps>(HomePageSFC)
+export { Record }
 
-export type HomePageProps = GenericHomePageProps<HomePageSFCProps>
+export const FilteredHomePage =
+  filteredRecordCards<HomePageSFCProps>(HomePageSFC)
+
+export type FilteredHomePageProps =
+  GenericFilteredRecordCardsProps<HomePageSFCProps>
+
+export const HomePage = homePage<FilteredHomePageProps>(
+  (props: FilteredHomePageProps) => <FilteredHomePage {...props} />
+)
+
+export type HomePageProps = GenericHomePageProps<FilteredHomePageProps>

@@ -16,11 +16,9 @@
 
 import reducer, { AutomataState } from './reducer'
 import {
-  toggleFilterOnFilterProp,
-  filterOnRecordsPropOrSetTokens,
+  updateOnNewRecordsProp,
   focusSearchFieldOnMountOrEnable
 } from './effects'
-import { ZenypassRecord } from 'services'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -43,13 +41,11 @@ export type FilteredRecordCardsProps<P extends FilteredRecordCardsSFCProps> =
 export interface FilteredRecordCardsHocProps {
   filter?: boolean
   debounce?: string | number
-  records: Partial<ZenypassRecord>[]
   onFilterCancel?: (event: MouseEvent) => void
 }
 
 export interface FilteredRecordCardsSFCProps
 extends FilteredRecordCardsSFCHandlerProps {
-  records: Partial<ZenypassRecord>[]
   filter?: boolean[]
   tokens?: string[]
   debounce?: string | number
@@ -58,6 +54,7 @@ extends FilteredRecordCardsSFCHandlerProps {
 export interface FilteredRecordCardsSFCHandlerProps {
   onTokensChange?: (tokens: string[]) => void
   onTokensClear?: (event: MouseEvent) => void
+  onToggleFilter?: (event: MouseEvent) => void
   onSearchFieldRef?: (ref: HTMLElement) => void
 }
 
@@ -75,7 +72,7 @@ function mapStateToProps (
   return {
     ...attrs,
     tokens,
-    filter
+    filter: state === 'enabled' ? filter || [] : void 0
   }
 }
 
@@ -84,6 +81,7 @@ const mapDispatchToProps:
 createActionDispatchers({
   onTokensChange: 'TOKENS',
   onTokensClear: 'CLEAR',
+  onToggleFilter: 'TOGGLE_FILTER',
   onSearchFieldRef: 'SEARCH_FIELD_REF'
 })
 
@@ -95,9 +93,8 @@ export function filteredRecordCards <P extends FilteredRecordCardsSFCProps> (
     () => tap(log('filtered-record-cards:event:')),
     redux(
       reducer,
-      toggleFilterOnFilterProp, // upfront
       focusSearchFieldOnMountOrEnable,
-      filterOnRecordsPropOrSetTokens,
+      updateOnNewRecordsProp,
       callHandlerOnEvent('onFilterCancel', 'CLEAR')
     ),
     () => tap(log('filtered-record-cards:state:')),

@@ -30,8 +30,12 @@ import { menu } from './navbar-menu-sfc'
 const attrs = {
   locale: 'fr',
   menu,
-  onSelectMenuItem: preventDefaultAction('MENU_ITEM_SELECTED'),
+  records: RECORDS,
   onAuthenticationRequest: action('AUTHENTICATION_REQUESTED'),
+  onSelectMenuItem: preventDefaultAction('MENU_ITEM_SELECTED'),
+  onSearchFieldRef: action('SEARCH_FIELD_REF'),
+  onTokensChange: action('TOKENS_CHANGE'),
+  onTokensClear: action('TOKENS_CLEAR'),
   onToggleFilter: action('TOGGLE_FILTER')
 }
 
@@ -40,15 +44,8 @@ const HomePage =
 
 storiesOf('HomePage (SFC)', module)
   .add('default', () => (
-    <HomePage
-      records={RECORDS}
-      {...attrs}
-    />
+    <HomePage {...attrs} />
   ))
   .add('filter', () => (
-    <HomePage
-      filter
-      records={RECORDS}
-      {...attrs}
-    />
+    <HomePage filter={[false, true, false]} tokens='com zen' {...attrs} />
   ))

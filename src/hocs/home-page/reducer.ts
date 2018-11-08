@@ -14,11 +14,7 @@
  * Limitations under the License.
  */
 
-import { propCursor, into } from 'basic-cursors'
-import { forType, mapPayload, not } from 'utils'
-import compose from 'basic-compose'
+import { into } from 'basic-cursors'
+import { forType, mapPayload } from 'utils'
 
-export default compose.into(0)(
-  forType('TOGGLE_FILTER')(propCursor('filter')(not())),
-  forType('PROPS')(into('props')(mapPayload()))
-)
+export default forType('PROPS')(into('props')(mapPayload()))

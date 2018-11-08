@@ -34,6 +34,7 @@ export type HomePageProps<P extends HomePageSFCProps> =
 
 export interface HomePageHocProps {
   locale: string
+  records: Partial<ZenypassRecord>[]
   onSelectRoute?: (route: string) => void // TODO replace with route object, incl. params
   onSelectLocale?: (locale: string) => void
 }
@@ -42,24 +43,20 @@ export interface HomePageSFCProps extends HomePageSFCHandlerProps {
   locale: string
   menu: MenuSpec
   records: Partial<ZenypassRecord>[]
-  filter?: boolean
-  [prop: string]: unknown
 }
 
 export interface HomePageSFCHandlerProps {
   onSelectMenuItem?: (event: MouseEvent) => void
-  onToggleFilter?: (event: MouseEvent) => void
 }
 
 interface HomePageState {
   props: HomePageProps<HomePageSFCProps>
-  filter?: boolean
 }
 
 function mapStateToProps (
-  { props, filter }: HomePageState
+  { props }: HomePageState
 ): Rest<HomePageSFCProps, HomePageSFCHandlerProps> {
-  return { ...props, filter, menu: menu[props.locale] }
+  return { ...props, menu: menu[props.locale] }
 }
 
 const mapDispatchToProps:

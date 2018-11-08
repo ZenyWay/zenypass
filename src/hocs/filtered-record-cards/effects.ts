@@ -16,7 +16,6 @@
 
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
-  debounceTime,
   distinctUntilChanged,
   filter,
   ignoreElements,
@@ -28,21 +27,7 @@ import {
 import { Observable, merge } from 'rxjs'
 // const log = label => console.log.bind(console, label)
 
-const TOKENS_DEBOUNCE = 300 // ms
-const disable = createActionFactory('DISABLE')
-const enable = createActionFactory('ENABLE')
 const update = createActionFactory('UPDATE')
-
-export function toggleFilterOnFilterProp (
-  _: any,
-  state$: Observable<any>
-) {
-  return state$.pipe(
-    pluck('props', 'filter'),
-    distinctUntilChanged(),
-    map(filter => filter ? enable() : disable())
-  )
-}
 
 export function focusSearchFieldOnMountOrEnable (
   event$: Observable<StandardAction<any>>,
@@ -58,18 +43,13 @@ export function focusSearchFieldOnMountOrEnable (
   )
 }
 
-export function filterOnRecordsPropOrSetTokens (
+export function updateOnNewRecordsProp (
   event$: Observable<StandardAction<any>>
 ) {
-  const tokens$ = event$.pipe(
-    filter(({ type }) => type === 'TOKENS'),
-    debounceTime(TOKENS_DEBOUNCE)
-  )
-  const records$ = event$.pipe(
+  return event$.pipe(
     filter(({ type, payload }) => (type === 'PROPS') && payload.filter),
     pluck('payload', 'records'),
-    distinctUntilChanged()
+    distinctUntilChanged(),
+    map(() => update())
   )
-
-  return merge(tokens$, records$).pipe(map(() => update()))
 }

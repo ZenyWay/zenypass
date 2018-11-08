@@ -26,7 +26,8 @@ import {
 import { withAuthentication } from 'hocs'
 
 const attrs = {
-  locale: 'fr'
+  locale: 'fr',
+  records: RECORDS
 }
 
 const HomePage =
@@ -34,8 +35,5 @@ const HomePage =
 
 storiesOf('HomePage', module)
   .add('default', () => (
-    <HomePage
-      records={RECORDS}
-      {...attrs}
-    />
+    <HomePage {...attrs} />
   ))
