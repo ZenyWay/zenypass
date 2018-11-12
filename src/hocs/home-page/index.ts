@@ -16,7 +16,7 @@
 
 import menu, { MenuSpec } from './menu'
 import reducer from './reducer'
-import {} from './effects'
+import { convertMenuEvents } from './effects'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -27,6 +27,7 @@ import componentFromEvents, {
 import { ZenypassRecord } from 'services'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { tap } from 'rxjs/operators'
+import { callHandlerOnEvent, preventDefault } from 'utils'
 const log = label => console.log.bind(console, label)
 
 export type HomePageProps<P extends HomePageSFCProps> =
@@ -46,7 +47,7 @@ export interface HomePageSFCProps extends HomePageSFCHandlerProps {
 }
 
 export interface HomePageSFCHandlerProps {
-  onSelectMenuItem?: (event: MouseEvent) => void
+  onSelectMenuItem?: (target: HTMLElement) => void
 }
 
 interface HomePageState {
@@ -73,7 +74,10 @@ export function homePage <P extends HomePageSFCProps> (
     HomePageSFC,
     () => tap(log('controlled-authentication-modal:event:')),
     redux(
-      reducer
+      reducer,
+      convertMenuEvents,
+      callHandlerOnEvent('onSelectLocale', 'SELECT_LOCALE'),
+      callHandlerOnEvent('onSelectRoute', 'SELECT_ROUTE')
     ),
     () => tap(log('controlled-authentication-modal:state:')),
     connect<HomePageState, HomePageSFCProps>(

@@ -32,7 +32,7 @@ export interface HomePageProps {
   tokens?: string[]
   debounce?: string | number
   onAuthenticationRequest?: (res$: Observer<string>) => void
-  onSelectMenuItem?: (event: MouseEvent) => void
+  onSelectMenuItem?: (target: HTMLElement) => void
   onSearchFieldRef?: (ref: HTMLElement) => void
   onTokensChange?: (tokens: string[]) => void
   onTokensClear?: (event: MouseEvent) => void
@@ -60,7 +60,7 @@ export function HomePage ({
       <header className='sticky-top'>
         <NavbarMenu
           menu={menu}
-          onClickItem={onSelectMenuItem}
+          onSelectItem={onSelectMenuItem}
         >
           <FAIconButton
             icon='search'

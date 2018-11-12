@@ -35,3 +35,23 @@ import {
 import { Observable, of as observable } from 'rxjs'
 
 const log = (label: string) => console.log.bind(console, label)
+
+const selectLocale = createActionFactory('SELECT_LOCALE')
+const selectRoute = createActionFactory('SELECT_ROUTE')
+
+export function convertMenuEvents (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return event$.pipe(
+    filter(({ type }) => type === 'SELECT_MENU_ITEM'),
+    pluck('payload'),
+    map(convertMenuEvent)
+  )
+}
+
+function convertMenuEvent ({ dataset }: HTMLElement) {
+  const { id } = dataset
+  // TODO intercept 'new-entry'
+  return selectRoute(id)
+}

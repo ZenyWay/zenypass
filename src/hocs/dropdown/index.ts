@@ -16,7 +16,6 @@
 //
 import reducer, { AutomataState } from './reducer'
 import { toggleBackdropHandlers } from './effects'
-import { callHandlerOnEvent, preventDefault } from 'utils'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -25,22 +24,24 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-// import { tap } from 'rxjs/operators'
+import compose from 'basic-compose'
+import { callHandlerOnEvent, pluck, preventDefault } from 'utils'
+import { tap } from 'rxjs/operators'
+const log = label => console.log.bind(console, label)
 
 export type DropdownProps<P extends DropdownSFCProps> =
 DropdownHocProps & Rest<P, DropdownSFCProps>
 
 export interface DropdownHocProps {
-  onClickItem? (event: MouseEvent): void
+  onSelectItem? (target: HTMLElement): void
 }
 
 export interface DropdownSFCProps extends DropdownSFCHandlerProps {
   expanded?: boolean
-  onClickItem?: (event: MouseEvent) => void
-  onClickToggle?: (event: MouseEvent) => void
 }
 
 export interface DropdownSFCHandlerProps {
+  onSelectItem? (target: HTMLElement): void
   onClickItem? (event: MouseEvent): void
   onClickToggle? (event: MouseEvent): void
   innerRef?: (element?: HTMLElement | null) => void
@@ -52,12 +53,9 @@ interface DropdownState {
 }
 
 function mapStateToProps (
-  {
-    props,
-    state
-  }: DropdownState
+  { props, state }: DropdownState
 ): Rest<DropdownSFCProps, DropdownSFCHandlerProps> {
-  const { onClickItem, ...attrs } = props
+  const { onSelectItem, ...attrs } = props
   const expanded = state === 'expanded'
   return { ...attrs, expanded }
 }
@@ -65,27 +63,28 @@ function mapStateToProps (
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => DropdownSFCHandlerProps =
 createActionDispatchers({
-  onClickItem: 'CLICK_ITEM',
+  onClickItem: ['CLICK_ITEM', compose(pluck('target'), preventDefault)],
+  onSelectItem: 'CLICK_ITEM',
   onClickToggle: ['CLICK_TOGGLE', preventDefault],
   innerRef: 'INNER_REF'
 })
 
 export function dropdown <P extends DropdownSFCProps> (
-  DropdownSFC
+  DropdownSFC: SFC<P>
 ): ComponentClass<DropdownProps<P>> {
   return componentFromEvents<DropdownProps<P>,P>(
     DropdownSFC,
-    // () => tap(console.log.bind(console,'dropdown:event:')),
+    () => tap(log('dropdown:event:')),
     redux(
       reducer,
       toggleBackdropHandlers,
-      callHandlerOnEvent('onClickItem', 'CLICK_ITEM')
+      callHandlerOnEvent('onSelectItem', 'CLICK_ITEM')
     ),
-    // () => tap(console.log.bind(console,'dropdown:state:')),
+    () => tap(log('dropdown:state:')),
     connect<DropdownState, DropdownSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // () => tap(console.log.bind(console,'dropdown:view-props:'))
+    ),
+    () => tap(log('dropdown:view-props:'))
   )
 }
