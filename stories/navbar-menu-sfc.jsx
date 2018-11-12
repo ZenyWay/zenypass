@@ -23,8 +23,8 @@ import preventDefaultAction from './helpers/prevent-default'
 
 export const menu = [
   {
-    'data-id': 'new-bookmark',
-    label: 'new-bookmark',
+    'data-id': 'new-entry',
+    label: 'new-entry',
     href: 'https://zenyway.com/password-manager/home/fr/index.html',
     icon: 'fa fa-plus'
   },

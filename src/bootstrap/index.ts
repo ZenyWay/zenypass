@@ -1,3 +1,5 @@
+import { from } from 'rxjs';
+
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
@@ -43,3 +45,4 @@ export {
   NavLink, NavLinkProps,
   NavbarToggler, NavbarTogglerProps
 } from './nav'
+export { ProgressBar, ProgressBarProps } from './progress'

@@ -15,11 +15,14 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { SearchField } from './search-field'
-import { FAIconButton } from './fa-icon'
-import { NavbarMenu, MenuSpecs } from '../navbar-menu'
-import { FilteredRecordCards, Record } from './filtered-record-cards'
+import { SearchField } from '../search-field'
+import { FAIconButton } from '../fa-icon'
+import { NavbarMenu, MenuSpecs } from '../../navbar-menu'
+import { FilteredRecordCards, Record } from '../filtered-record-cards'
+import { ProgressModal } from '../progress-modal'
 import { Observer } from 'rxjs'
+import createL10ns from 'basic-l10n'
+const l10ns = createL10ns(require('./locales.json'))
 
 export { Record }
 
@@ -27,6 +30,8 @@ export interface HomePageProps {
   locale: string
   menu: MenuSpecs
   records: Record[]
+  busy?: boolean
+  error?: string
   session?: string
   filter?: boolean[]
   tokens?: string[]
@@ -43,6 +48,8 @@ export function HomePage ({
   locale,
   menu,
   records,
+  busy,
+  error,
   filter,
   session,
   tokens,
@@ -55,8 +62,13 @@ export function HomePage ({
   onToggleFilter,
   ...attrs
 }: HomePageProps & { [prop: string]: unknown}) {
+  const t = l10ns[locale]
+
   return (
     <section {...attrs}>
+      <ProgressModal locale={locale} expanded={!!busy}>
+        {t('Creating new card')}...
+      </ProgressModal>
       <header className='sticky-top'>
         <NavbarMenu
           menu={menu}

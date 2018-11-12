@@ -14,7 +14,38 @@
  * Limitations under the License.
  */
 
+import homemenu from './menu'
+import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
-import { forType, mapPayload } from 'utils'
+import { always, forType, mapPayload } from 'utils'
+import compose from 'basic-compose'
 
-export default forType('PROPS')(into('props')(mapPayload()))
+export type AutomataState = 'idle' | 'busy' | 'error'
+
+const setBusyCreatingNewRecord = into('busy')(always('creating-new-record'))
+const clearBusy = into('busy')(always())
+const mapPayloadToError = into('error')(mapPayload())
+const clearError = into('error')(always())
+
+const automata: AutomataSpec<AutomataState> = {
+  idle: {
+    CREATE_RECORD_REQUESTED: ['busy', setBusyCreatingNewRecord]
+  },
+  busy: {
+    CREATE_RECORD_RESOLVED: ['idle', clearBusy],
+    CREATE_RECORD_REJECTED: ['error', clearBusy, mapPayloadToError]
+  },
+  error: {
+    CANCEL: ['idle', clearError]
+  }
+}
+
+export default compose.into(0)(
+  createAutomataReducer(automata, 'idle'),
+  forType('PROPS')(
+    compose.into(0)(
+      into('menu')(({ props }) => homemenu[props.locale].concat(props.menu)),
+      into('props')(mapPayload())
+    )
+  )
+)

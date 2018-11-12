@@ -83,6 +83,7 @@ export {
   NavbarMenuProps as NavbarMenuSFCProps
 } from './sfcs/navbar-menu'
 export { NavbarMenu, NavBarMenuProps } from './navbar-menu'
+export { ProgressModal, ProgressModalProps } from './sfcs/progress-modal'
 export { RecordField, RecordFieldProps } from './sfcs/record-field'
 export {
   RecordCard as RecordCardSFC,

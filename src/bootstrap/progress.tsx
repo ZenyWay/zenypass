@@ -13,30 +13,38 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { storiesOf } from '@storybook/react'
-import { action } from '@storybook/addon-actions'
-import { RECORDS } from './helpers/consts'
-import {
-  HomePage as PrivilegedHomePage,
-  withAuthenticationModal
-} from 'components'
-import { withAuthentication } from 'hocs'
-import { menu } from './navbar-menu-sfc'
+import { classes } from 'utils'
 
-const attrs = {
-  locale: 'fr',
-  menu: menu.slice(1), // remove entry from home-page
-  records: RECORDS,
-  onSelectMenuItem: action('SELECT_MENU_ITEM')
+export interface ProgressBarProps {
+  ratio?: '25' | '50' | '75' | '100' | 'auto' | '' | false
+  bg?: 'success' | 'info' | 'warning' | 'danger' | '' | false
+  striped?: boolean
+  animated?: boolean
+  className?: string
+  children?: any
 }
 
-const HomePage =
-  withAuthentication(withAuthenticationModal(PrivilegedHomePage))
-
-storiesOf('HomePage', module)
-  .add('default', () => (
-    <HomePage {...attrs} />
-  ))
+export function ProgressBar ({
+  ratio,
+  bg,
+  striped,
+  animated,
+  className,
+  ...attrs
+}: ProgressBarProps & { [prop: string]: unknown }) {
+  const classNames = classes(
+    'progress-bar',
+    ratio && `w-${ratio}`,
+    bg && `bg-${bg}`,
+    (striped || animated) && 'progress-bar-striped',
+    animated && 'progress-bar-animated',
+    className
+  )
+  return (
+    <div class='progress'>
+      <div className={classNames} {...attrs}/>
+    </div>
+  )
+}

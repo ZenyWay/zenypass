@@ -14,9 +14,9 @@
  * Limitations under the License.
  */
 
-import menu, { MenuSpec } from './menu'
-import reducer from './reducer'
-import { convertMenuEvents } from './effects'
+import { MenuSpec } from './menu'
+import reducer, { AutomataState } from './reducer'
+import { createRecordOnSelectNewRecordMenuItem } from './effects'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -27,7 +27,7 @@ import componentFromEvents, {
 import { ZenypassRecord } from 'services'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { tap } from 'rxjs/operators'
-import { callHandlerOnEvent, preventDefault } from 'utils'
+import { callHandlerOnEvent } from 'utils'
 const log = label => console.log.bind(console, label)
 
 export type HomePageProps<P extends HomePageSFCProps> =
@@ -35,36 +35,47 @@ export type HomePageProps<P extends HomePageSFCProps> =
 
 export interface HomePageHocProps {
   locale: string
-  records: Partial<ZenypassRecord>[]
-  onSelectRoute?: (route: string) => void // TODO replace with route object, incl. params
-  onSelectLocale?: (locale: string) => void
+  menu: MenuSpec
+  records: Partial<ZenypassRecord>[] // TODO remove and get from service in effect
+  onSelectMenuItem?: (target: HTMLElement) => void
 }
 
 export interface HomePageSFCProps extends HomePageSFCHandlerProps {
   locale: string
   menu: MenuSpec
   records: Partial<ZenypassRecord>[]
+  busy?: boolean
+  error?: string
 }
 
 export interface HomePageSFCHandlerProps {
   onSelectMenuItem?: (target: HTMLElement) => void
+  onCancel?: (event?: MouseEvent) => void
 }
 
 interface HomePageState {
   props: HomePageProps<HomePageSFCProps>
+  menu: MenuSpec
+  state: AutomataState
+  error?: string
 }
 
 function mapStateToProps (
-  { props }: HomePageState
+  { props, state, menu, error }: HomePageState
 ): Rest<HomePageSFCProps, HomePageSFCHandlerProps> {
-  return { ...props, menu: menu[props.locale] }
+  return {
+    ...props, // menu and onSelectMenuItem from props are both overwritten
+    menu,
+    busy: state === 'busy',
+    error
+  }
 }
 
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => HomePageSFCHandlerProps =
 createActionDispatchers({
   onSelectMenuItem: 'SELECT_MENU_ITEM',
-  onToggleFilter: 'TOGGLE_FILTER'
+  onCancel: 'CANCEL'
 })
 
 export function homePage <P extends HomePageSFCProps> (
@@ -72,18 +83,17 @@ export function homePage <P extends HomePageSFCProps> (
 ): ComponentClass<HomePageProps<P>> {
   return componentFromEvents<HomePageProps<P>, P>(
     HomePageSFC,
-    () => tap(log('controlled-authentication-modal:event:')),
+    () => tap(log('home-page:event:')),
     redux(
       reducer,
-      convertMenuEvents,
-      callHandlerOnEvent('onSelectLocale', 'SELECT_LOCALE'),
-      callHandlerOnEvent('onSelectRoute', 'SELECT_ROUTE')
+      createRecordOnSelectNewRecordMenuItem,
+      callHandlerOnEvent('onSelectMenuItem', 'SELECT_MENU_ITEM')
     ),
-    () => tap(log('controlled-authentication-modal:state:')),
+    () => tap(log('home-page:state:')),
     connect<HomePageState, HomePageSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
-    () => tap(log('controlled-authentication-modal:view-props:'))
+    () => tap(log('home-page:view-props:'))
   )
 }

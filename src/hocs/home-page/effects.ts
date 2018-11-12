@@ -17,6 +17,7 @@
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   catchError,
+  delay,
   ignoreElements,
   filter,
   first,
@@ -34,24 +35,27 @@ import {
 } from 'rxjs/operators'
 import { Observable, of as observable } from 'rxjs'
 
-const log = (label: string) => console.log.bind(console, label)
+// const log = (label: string) => console.log.bind(console, label)
 
-const selectLocale = createActionFactory('SELECT_LOCALE')
-const selectRoute = createActionFactory('SELECT_ROUTE')
+const createRecordRequested = createActionFactory('CREATE_RECORD_REQUESTED')
+const createRecordResolved = createActionFactory('CREATE_RECORD_RESOLVED')
+const createRecordRejected = createActionFactory('CREATE_RECORD_REJECTED')
 
-export function convertMenuEvents (
+export function createRecordOnSelectNewRecordMenuItem (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
   return event$.pipe(
     filter(({ type }) => type === 'SELECT_MENU_ITEM'),
-    pluck('payload'),
-    map(convertMenuEvent)
+    pluck('payload', 'dataset', 'id'),
+    filter(id => id === 'new-entry'),
+    switchMap(createRecord)
   )
 }
 
-function convertMenuEvent ({ dataset }: HTMLElement) {
-  const { id } = dataset
-  // TODO intercept 'new-entry'
-  return selectRoute(id)
+function createRecord (): Observable<StandardAction<any>> {
+  return observable(createRecordResolved()).pipe(
+    delay(1500), // TODO
+    startWith(createRecordRequested())
+  )
 }

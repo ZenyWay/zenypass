@@ -1,6 +1,7 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
+ * @author Hadrien Boulanger
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,30 +14,14 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
 /** @jsx createElement */
 import { createElement } from 'create-element'
+import { ProgressModal } from 'components'
 import { storiesOf } from '@storybook/react'
-import { action } from '@storybook/addon-actions'
-import { RECORDS } from './helpers/consts'
-import {
-  HomePage as PrivilegedHomePage,
-  withAuthenticationModal
-} from 'components'
-import { withAuthentication } from 'hocs'
-import { menu } from './navbar-menu-sfc'
 
-const attrs = {
-  locale: 'fr',
-  menu: menu.slice(1), // remove entry from home-page
-  records: RECORDS,
-  onSelectMenuItem: action('SELECT_MENU_ITEM')
-}
-
-const HomePage =
-  withAuthentication(withAuthenticationModal(PrivilegedHomePage))
-
-storiesOf('HomePage', module)
+storiesOf('ProgressModal (SFC)', module)
   .add('default', () => (
-    <HomePage {...attrs} />
+    <ProgressModal locale='en' expanded >
+      <p>Processing...</p>
+    </ProgressModal>
   ))

@@ -13,30 +13,36 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { storiesOf } from '@storybook/react'
-import { action } from '@storybook/addon-actions'
-import { RECORDS } from './helpers/consts'
-import {
-  HomePage as PrivilegedHomePage,
-  withAuthenticationModal
-} from 'components'
-import { withAuthentication } from 'hocs'
-import { menu } from './navbar-menu-sfc'
+import { Modal, ModalBody, ModalHeader } from 'reactstrap'
+import { ProgressBar } from 'bootstrap'
+import createL10ns from 'basic-l10n'
+const l10ns = createL10ns(require('./locales.json'))
 
-const attrs = {
-  locale: 'fr',
-  menu: menu.slice(1), // remove entry from home-page
-  records: RECORDS,
-  onSelectMenuItem: action('SELECT_MENU_ITEM')
+export interface ProgressModalProps {
+  locale: string
+  expanded?: boolean
+  children?: any
 }
 
-const HomePage =
-  withAuthentication(withAuthenticationModal(PrivilegedHomePage))
+export function ProgressModal ({
+  locale,
+  expanded,
+  children,
+  ...attrs
+}: ProgressModalProps & { [prop: string]: unknown }) {
+  const t = l10ns[locale]
 
-storiesOf('HomePage', module)
-  .add('default', () => (
-    <HomePage {...attrs} />
-  ))
+  return (
+    <Modal isOpen={expanded} >
+      <ModalHeader className='bg-info text-white' >
+        {t('Please wait')}...
+      </ModalHeader>
+      <ModalBody {...attrs}>
+        {children}
+        <ProgressBar ratio='100' animated striped bg='info' />
+      </ModalBody>
+    </Modal>
+  )
+}
