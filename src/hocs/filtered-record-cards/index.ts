@@ -28,8 +28,8 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { callHandlerOnEvent } from 'utils'
-import { tap } from 'rxjs/operators'
-const log = label => console.log.bind(console, label)
+// import { tap } from 'rxjs/operators'
+// const log = label => console.log.bind(console, label)
 
 const DEFAULT_PROPS: Partial<FilteredRecordCardsProps<FilteredRecordCardsSFCProps>> = {
   debounce: 300 // ms
@@ -90,19 +90,19 @@ export function filteredRecordCards <P extends FilteredRecordCardsSFCProps> (
 ): ComponentClass<FilteredRecordCardsProps<P>> {
   const FilteredRecordCards = componentFromEvents<FilteredRecordCardsProps<P>, P>(
     FilteredRecordCardsSFC,
-    () => tap(log('filtered-record-cards:event:')),
+    // () => tap(log('filtered-record-cards:event:')),
     redux(
       reducer,
       focusSearchFieldOnMountOrEnable,
       updateOnNewRecordsProp,
       callHandlerOnEvent('onFilterCancel', 'CLEAR')
     ),
-    () => tap(log('filtered-record-cards:state:')),
+    // () => tap(log('filtered-record-cards:state:')),
     connect<FilteredRecordCardsState, FilteredRecordCardsSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    ),
-    () => tap(log('filtered-record-cards:view-props:'))
+    )
+    // () => tap(log('filtered-record-cards:view-props:'))
   )
 
   FilteredRecordCards.defaultProps =
