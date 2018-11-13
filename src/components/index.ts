@@ -63,6 +63,7 @@ export {
   DropdownProps as DropdownSFCProps
 } from './sfcs/dropdown'
 export { Dropdown, DropdownProps } from './dropdown'
+export { ErrorPage, ErrorPageProps } from './sfcs/error-page'
 export {
   FAIcon,
   FAIconProps,
@@ -92,5 +93,10 @@ export {
 export {
   RecordCard, RecordCardProps
 } from './record-card'
+export {
+  Router as RouterSFC,
+  RouterProps as RouterSFCProps
+} from './sfcs/router'
+export { Router, RouterProps } from './router'
 export { SearchField, SearchFieldProps } from './sfcs/search-field'
 export { withAuthenticationModal } from './sfcs/with-authentication'

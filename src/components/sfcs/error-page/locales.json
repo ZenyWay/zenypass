@@ -1,0 +1,12 @@
+{
+  "fr": {
+    "Ouch": "Aïe",
+    "Please reload this page to restart ZenyPass": "Veuillez recharger cette page pour relancer ZenyPass",
+    "Sorry, an unrecoverable error occurred": "Désolé, une erreur irrémédiable est survenue"
+  },
+  "en": {
+    "Ouch": "Ouch",
+    "Please reload this page to restart ZenyPass": "Please reload this page to restart ZenyPass",
+    "Sorry, an unrecoverable error occurred": "Sorry, an unrecoverable error occurred"
+  }
+}
