@@ -19,35 +19,31 @@ import { HomePage, HomePageProps } from '../home-page'
 import { ErrorPage } from './error-page'
 import { newStatusError } from 'utils'
 
-export interface Route<
-  U extends string = string,
-  P extends {} = {}
-> {
-  path: U
-  params: P
-}
-
 export interface RouterProps {
   locale: string
   path?: string
   params?: { [prop: string]: unknown }
-  onSelectMenuItem?: (item: HTMLElement) => void
 }
 
 export function Router ({
   locale,
   path,
-  params,
-  onSelectMenuItem,
-  ...attrs
+  params
 }: RouterProps & { [prop: string]: unknown }) {
   switch (path) {
     case '/':
-      return <HomePage locale={locale} {...params as HomePageProps} {...attrs} />
+      return <HomePage locale={locale} {...params as HomePageProps} />
+    case '/fatal':
     default:
+      const {
+        error = newStatusError(404),
+        children = null,
+        ...attrs
+      } = params as any || {}
       return (
-        <ErrorPage locale={locale} error={newStatusError(404)}>
-          <p>ROUTE: {path}</p>
+        <ErrorPage locale={locale} error={error} {...attrs} >
+          {path === '/fatal' ? null : <p>path: {path}</p>}
+          {children}
         </ErrorPage>
       )
   }

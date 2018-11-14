@@ -19,7 +19,7 @@ import { SearchField } from '../search-field'
 import { FAIconButton } from '../fa-icon'
 import { NavbarMenu, MenuSpecs } from '../../navbar-menu'
 import { FilteredRecordCards, Record } from '../filtered-record-cards'
-import { ProgressModal } from '../progress-modal'
+import { InfoModal } from '../info-modal'
 import { Observer } from 'rxjs'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
@@ -42,6 +42,7 @@ export interface HomePageProps {
   onTokensChange?: (tokens: string[]) => void
   onTokensClear?: (event: MouseEvent) => void
   onToggleFilter?: (event: MouseEvent) => void
+  onCloseModal?: (event: MouseEvent) => void
 }
 
 export function HomePage ({
@@ -60,15 +61,24 @@ export function HomePage ({
   onTokensChange,
   onTokensClear,
   onToggleFilter,
+  onCloseModal,
   ...attrs
 }: HomePageProps & { [prop: string]: unknown}) {
   const t = l10ns[locale]
 
   return (
     <section {...attrs}>
-      <ProgressModal locale={locale} expanded={!!busy}>
-        {t('Creating new card')}...
-      </ProgressModal>
+      <InfoModal
+        locale={locale}
+        expanded={!!error || !!busy}
+        progress={busy && '100'}
+        onCancel={!busy && onCloseModal}
+      >
+        <p>
+          {t(busy ? 'Creating new card' : 'Sorry, something went wrong')}...<br/>
+          {busy ? null : error}
+        </p>
+      </InfoModal>
       <header className='sticky-top'>
         <NavbarMenu
           menu={menu}

@@ -27,14 +27,20 @@ import { menu } from './navbar-menu-sfc'
 import { RECORDS } from './helpers/consts'
 
 const attrs = {
-  locale: 'fr',
-  onSelectMenuItem: action('SELECT_MENU_ITEM')
+  locale: 'fr'
 }
+
+const INTERNAL_ERROR = new Error('fatal error')
+INTERNAL_ERROR.status = 500
 
 const params = {
   '/': {
     menu: menu.slice(1), // remove entry from home-page
-    records: RECORDS
+    records: RECORDS,
+    onSelectMenuItem: action('SELECT_MENU_ITEM')
+  },
+  '/fatal': {
+    error: INTERNAL_ERROR
   }
 }
 
@@ -45,6 +51,9 @@ storiesOf('Router (SFC)', module)
   .add('/', () => (
     <Router path='/' params={params['/']} {...attrs} />
   ))
-  .add('undefined', () => (
-    <Router {...attrs} />
+  .add('/fatal', () => (
+    <Router path='/fatal' params={params['/fatal']} {...attrs} />
+  ))
+  .add('/unknown/route', () => (
+    <Router path='/unknown/route' {...attrs} />
   ))

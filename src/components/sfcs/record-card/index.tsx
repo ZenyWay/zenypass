@@ -19,7 +19,7 @@ import { createElement } from 'create-element'
 import { Button, Card, CardHeader, CardBody, CardFooter } from 'bootstrap'
 import { FAIconButton, FAIcon } from '../fa-icon'
 import { IconLabelInputFormGroup } from '../icon-label-form-group'
-import { ConfirmationModal } from '../confirmation-modal'
+import { InfoModal } from '../info-modal'
 import { ConnectionModal } from '../../connection-modal'
 import { Record, RecordCardBody } from './card-body'
 import { classes } from 'utils'
@@ -148,14 +148,14 @@ export function RecordCard ({
           onClick={onToggleExpanded}
         />
       </CardFooter>
-      <ConfirmationModal
+      <InfoModal
         expanded={pending === 'cancel'}
         onConfirm={onToggleExpanded}
         onCancel={onEditRecordRequest}
         locale={locale}
       >
         <p>{t('Do you want to cancel your changes')} ?</p>
-      </ConfirmationModal>
+      </InfoModal>
       <ConnectionModal
         open={connect}
         onDone={onToggleConnect}

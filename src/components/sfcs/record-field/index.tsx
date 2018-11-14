@@ -19,9 +19,7 @@ import { Input as PassiveInput, InputProps } from 'bootstrap'
 import { IconLabelInputGroup } from '../icon-label-input-group'
 import { ControlledInput } from '../../controlled-input'
 import createL10ns, { L10nTag } from 'basic-l10n'
-
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
-const l10ns = createL10ns(require('./locales.json'), { debug })
+const l10ns = createL10ns(require('./locales.json'))
 
 export const DEFAULT_ICONS = {
   email: 'envelope',

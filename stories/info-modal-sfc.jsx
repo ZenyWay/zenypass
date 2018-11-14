@@ -16,12 +16,29 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { ProgressModal } from 'components'
+import { InfoModalSFC as InfoModal } from 'components'
 import { storiesOf } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
 
-storiesOf('ProgressModal (SFC)', module)
-  .add('default', () => (
-    <ProgressModal locale='en' expanded >
-      <p>Processing...</p>
-    </ProgressModal>
+const onCancel = action('CANCEL')
+const onConfirm = action('CONFIRM')
+const attr = {
+  locale: 'fr'
+}
+
+storiesOf('InfoModal (SFC)', module)
+  .add('progress', () => (
+    <InfoModal expanded progress='100' {...attr}>
+      <p>Opération en cours...</p>
+    </InfoModal>
+  ))
+  .add('info', () => (
+    <InfoModal expanded {...attr} onCancel={onCancel}>
+      <p>Il y a eu un problème...</p>
+    </InfoModal>
+  ))
+  .add('confirm', () => (
+    <InfoModal expanded {...attr} onCancel={onCancel} onConfirm={onConfirm}>
+      <p>Voulez-vous annuler vos modifications ?</p>
+    </InfoModal>
   ))

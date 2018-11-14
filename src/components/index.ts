@@ -48,9 +48,9 @@ export {
   AutoformatRecordFieldProps
 } from './autoformat-record-field'
 export {
-  ConfirmationModal as ConfirmationModalSFC,
-  ConfirmationModalProps as ConfirmationModalSFCProps
-} from './sfcs/confirmation-modal'
+  InfoModal as InfoModalSFC,
+  InfoModalProps as InfoModalSFCProps
+} from './sfcs/info-modal'
 export { ConnectionModal, ConnectionModalProps } from './connection-modal'
 export {
   ConnectionModal as ConnectionModalSFC,
@@ -84,7 +84,6 @@ export {
   NavbarMenuProps as NavbarMenuSFCProps
 } from './sfcs/navbar-menu'
 export { NavbarMenu, NavBarMenuProps } from './navbar-menu'
-export { ProgressModal, ProgressModalProps } from './sfcs/progress-modal'
 export { RecordField, RecordFieldProps } from './sfcs/record-field'
 export {
   RecordCard as RecordCardSFC,

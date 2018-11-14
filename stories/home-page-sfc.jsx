@@ -49,3 +49,9 @@ storiesOf('HomePage (SFC)', module)
   .add('filter', () => (
     <HomePage filter={[false, true, false]} tokens='com zen' {...attrs} />
   ))
+  .add('busy', () => (
+    <HomePage busy {...attrs} />
+  ))
+  .add('error', () => (
+    <HomePage error='ouch !' {...attrs} />
+  ))
