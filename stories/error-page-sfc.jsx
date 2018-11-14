@@ -16,7 +16,7 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { ErrorPage, FAIcon } from 'components'
+import { ErrorPage } from 'components'
 import { storiesOf } from '@storybook/react'
 
 const error = new Error('error message')
