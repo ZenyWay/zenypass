@@ -14,10 +14,20 @@
  * Limitations under the License.
  */
 //
+import { KVMap, getRecords$, ZenypassRecord } from 'services'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
+import {
+  createPrivilegedRequest,
+  hasEntry,
+  hasHandlerProp,
+  toProjection,
+  shallowEqual,
+  isFunction
+} from 'utils'
 import {
   catchError,
   delay,
+  distinctUntilChanged,
   ignoreElements,
   filter,
   first,
@@ -31,7 +41,8 @@ import {
   startWith,
   takeUntil,
   tap,
-  withLatestFrom
+  withLatestFrom,
+  distinctUntilKeyChanged
 } from 'rxjs/operators'
 import { Observable, of as observable } from 'rxjs'
 
@@ -57,5 +68,29 @@ function createRecord (): Observable<StandardAction<any>> {
   return observable(createRecordResolved()).pipe(
     delay(1500), // TODO
     startWith(createRecordRequested())
+  )
+}
+
+const updateRecords = createActionFactory('UPDATE_RECORDS')
+const logout = createActionFactory('LOGOUT')
+
+const getRecordsUpdates = createPrivilegedRequest(
+  getRecords$,
+  (records: KVMap<Partial<ZenypassRecord>>) => updateRecords(records),
+  (error: any) => logout(error)
+)
+
+export function injectRecordsFromService (
+  _: any,
+  state$: Observable<any>
+) {
+  return state$.pipe(
+    pluck<any, any>('props'),
+    distinctUntilKeyChanged('onAuthenticationRequest'),
+    filter(({ onAuthenticationRequest }) => isFunction(onAuthenticationRequest)),
+    switchMap(({ onAuthenticationRequest, session }) => getRecordsUpdates(
+      toProjection(onAuthenticationRequest),
+      session
+    ))
   )
 }

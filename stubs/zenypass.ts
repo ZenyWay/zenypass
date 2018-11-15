@@ -38,6 +38,38 @@ const AUTHORIZATIONS = [
   {} as KVMap<AuthorizationDoc>
 )
 const RECORD_PASSWORD = 'p@ssW0rd!'
+const RECORDS = [
+  {
+    _id: '1',
+    name: 'Example',
+    url: 'https://example.com',
+    username: 'john.doe@example.com',
+    keywords: ['comma', 'separated', 'values'],
+    comments: '42 is *'
+  },
+  {
+    _id: '2',
+    name: 'ZenyWay',
+    url: 'https://zenyway.com',
+    username: 'me@zenyway.com',
+    keywords: [],
+    comments: ''
+  },
+  {
+    _id: '3',
+    name: 'HSVC',
+    url: 'https://hvsc.c64.org/',
+    username: 'rob.hubbard@hsvc.org',
+    keywords: ['sid', 'music', 'collection'],
+    comments: 'Rob says wow !'
+  }
+].reduce(
+  function (records, record) {
+    records[record._id] = record
+    return records
+  },
+  {} as KVMap<Partial<ZenypassRecord>>
+)
 
 export function authenticate (password: string): Observable<string> {
   return interval(AUTHENTICATION_DELAY).pipe(
@@ -68,6 +100,14 @@ export function getAuthorizations$ (sessionId: string): Observable<KVMap<Authori
   )
   return sessionId === SESSION_ID
   ? observable(authorizations).pipe(concat(NEVER))
+  : throwError(UNAUTHORIZED)
+}
+
+export function getRecords$ (
+  sessionId: string
+): Observable<KVMap<Partial<ZenypassRecord>>> {
+  return sessionId === SESSION_ID
+  ? observable(RECORDS).pipe(concat(NEVER))
   : throwError(UNAUTHORIZED)
 }
 
@@ -103,8 +143,4 @@ function newStatusError (status = 501, message = '') {
   const err = new Error(message) as StatusError
   err.status = status
   return err
-}
-
-function errorPassword (status: StatusError) {
-  return status
 }

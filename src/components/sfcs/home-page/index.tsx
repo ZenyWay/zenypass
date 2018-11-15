@@ -29,7 +29,7 @@ export { Record }
 export interface HomePageProps {
   locale: string
   menu: MenuSpecs
-  records: Record[]
+  records?: Record[]
   busy?: boolean
   error?: string
   session?: string
@@ -48,7 +48,7 @@ export interface HomePageProps {
 export function HomePage ({
   locale,
   menu,
-  records,
+  records = [],
   busy,
   error,
   filter,

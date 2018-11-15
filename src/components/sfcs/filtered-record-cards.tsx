@@ -24,7 +24,7 @@ export { Record }
 export interface FilteredRecordCardsProps {
   locale: string
   session: string
-  records: Record[]
+  records?: Record[]
   filter?: boolean[]
   className?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
@@ -33,13 +33,14 @@ export interface FilteredRecordCardsProps {
 export function FilteredRecordCards ({
   locale,
   session,
-  records,
+  records = [],
   filter,
   className,
   onAuthenticationRequest,
   ...attrs
 }: FilteredRecordCardsProps & { [prop: string]: unknown }) {
   let i = records.length
+  if (!i) return null
   const cards = new Array<JSX.Element>(i)
   const classNames = classes(
     'pl-0',

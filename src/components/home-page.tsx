@@ -19,8 +19,11 @@ import {
   filteredRecordCards,
   FilteredRecordCardsProps as GenericFilteredRecordCardsProps,
   homePage,
-  HomePageProps as GenericHomePageProps
+  HomePageProps as GenericHomePageProps,
+  withAuthentication,
+  AuthenticationProviderProps
 } from 'hocs'
+import { withAuthenticationModal } from './sfcs/with-authentication'
 import {
   HomePage as HomePageSFC,
   HomePageProps as HomePageSFCProps,
@@ -29,14 +32,20 @@ import {
 
 export { Record }
 
-export const FilteredHomePage =
+const FilteredHomePage =
   filteredRecordCards<HomePageSFCProps>(HomePageSFC)
 
-export type FilteredHomePageProps =
+type FilteredHomePageProps =
   GenericFilteredRecordCardsProps<HomePageSFCProps>
 
-export const HomePage = homePage<FilteredHomePageProps>(
+const PrivilegedHomePage = homePage<FilteredHomePageProps>(
   (props: FilteredHomePageProps) => <FilteredHomePage {...props} />
 )
 
-export type HomePageProps = GenericHomePageProps<FilteredHomePageProps>
+type PrivilegedHomePageProps = GenericHomePageProps<FilteredHomePageProps>
+
+export const HomePage = withAuthentication<PrivilegedHomePageProps>(
+  withAuthenticationModal(PrivilegedHomePage)
+)
+
+export type HomePageProps = AuthenticationProviderProps<PrivilegedHomePageProps>

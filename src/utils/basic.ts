@@ -59,8 +59,11 @@ export function identity (v: any): typeof v {
   return v
 }
 
-export function values <T extends {} = {}> (obj: T): (T[keyof T])[] {
-  return (Object.keys(obj || {}) as (keyof T)[]).map(key => obj[key])
+export function values <T extends {} = {}> (entries: T): T[keyof T][] {
+  const values = Object.keys(entries) as any[]
+  let i = values.length
+  while (i--) values[i] = entries[values[i]]
+  return values
 }
 
 export function setListEntry <V = any> (

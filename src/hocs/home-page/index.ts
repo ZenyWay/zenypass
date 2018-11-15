@@ -16,7 +16,10 @@
 
 import { MenuSpec } from './menu'
 import reducer, { AutomataState } from './reducer'
-import { createRecordOnSelectNewRecordMenuItem } from './effects'
+import {
+  createRecordOnSelectNewRecordMenuItem,
+  injectRecordsFromService
+} from './effects'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -27,6 +30,7 @@ import componentFromEvents, {
 import { ZenypassRecord } from 'services'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { callHandlerOnEvent } from 'utils'
+import { Observer } from 'rxjs'
 // import { tap } from 'rxjs/operators'
 // const log = label => console.log.bind(console, label)
 
@@ -36,14 +40,17 @@ export type HomePageProps<P extends HomePageSFCProps> =
 export interface HomePageHocProps {
   locale: string
   menu: MenuSpec
-  records: Partial<ZenypassRecord>[] // TODO remove and get from service in effect
+  session?: string
+  onAuthenticationRequest?: (res$: Observer<string>) => void
+  onLogout?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
 }
 
 export interface HomePageSFCProps extends HomePageSFCHandlerProps {
   locale: string
   menu: MenuSpec
-  records: Partial<ZenypassRecord>[]
+  session?: string
+  records?: Partial<ZenypassRecord>[]
   busy?: boolean
   error?: string
 }
@@ -57,15 +64,17 @@ interface HomePageState {
   props: HomePageProps<HomePageSFCProps>
   menu: MenuSpec
   state: AutomataState
+  records?: Partial<ZenypassRecord>[]
   error?: string
 }
 
 function mapStateToProps (
-  { props, state, menu, error }: HomePageState
+  { props, state, menu, records, error }: HomePageState
 ): Rest<HomePageSFCProps, HomePageSFCHandlerProps> {
   return {
     ...props, // menu and onSelectMenuItem from props are both overwritten
     menu,
+    records,
     busy: state === 'busy',
     error
   }
@@ -86,8 +95,10 @@ export function homePage <P extends HomePageSFCProps> (
     // () => tap(log('home-page:event:')),
     redux(
       reducer,
+      injectRecordsFromService,
       createRecordOnSelectNewRecordMenuItem,
-      callHandlerOnEvent('onSelectMenuItem', 'SELECT_MENU_ITEM')
+      callHandlerOnEvent('onSelectMenuItem', 'SELECT_MENU_ITEM'),
+      callHandlerOnEvent('onLogout', 'LOGOUT')
     ),
     // () => tap(log('home-page:state:')),
     connect<HomePageState, HomePageSFCProps>(

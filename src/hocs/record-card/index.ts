@@ -25,7 +25,6 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-// import { /*, preventDefault */ } from 'utils'
 import { Observer } from 'rxjs'
 // import { tap } from 'rxjs/operators'
 const log = (label: string) => console.log.bind(console, label)

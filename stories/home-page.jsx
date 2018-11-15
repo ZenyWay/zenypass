@@ -18,23 +18,15 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
-import { RECORDS } from './helpers/consts'
-import {
-  HomePage as PrivilegedHomePage,
-  withAuthenticationModal
-} from 'components'
-import { withAuthentication } from 'hocs'
+import { HomePage } from 'components'
 import { menu } from './navbar-menu-sfc'
 
 const attrs = {
   locale: 'fr',
   menu: menu.slice(1), // remove entry from home-page
-  records: RECORDS,
+  onLogout: action('LOGOUT'),
   onSelectMenuItem: action('SELECT_MENU_ITEM')
 }
-
-const HomePage =
-  withAuthentication(withAuthenticationModal(PrivilegedHomePage))
 
 storiesOf('HomePage', module)
   .add('default', () => (

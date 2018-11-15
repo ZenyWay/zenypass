@@ -17,8 +17,9 @@
 import homemenu from './menu'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
-import { always, forType, mapPayload } from 'utils'
+import { always, forType, mapPayload, values } from 'utils'
 import compose from 'basic-compose'
+import { KVMap, ZenypassRecord } from 'services'
 
 export type AutomataState = 'idle' | 'busy' | 'error'
 
@@ -42,6 +43,7 @@ const automata: AutomataSpec<AutomataState> = {
 
 export default compose.into(0)(
   createAutomataReducer(automata, 'idle'),
+  forType('UPDATE_RECORDS')(into('records')(mapPayload(sortRecords))),
   forType('PROPS')(
     compose.into(0)(
       into('menu')(({ props }) => homemenu[props.locale].concat(props.menu)),
@@ -49,3 +51,10 @@ export default compose.into(0)(
     )
   )
 )
+
+function sortRecords (
+  records: KVMap<Partial<ZenypassRecord>>
+): Partial<ZenypassRecord>[] {
+  return values(records)
+  .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
+}

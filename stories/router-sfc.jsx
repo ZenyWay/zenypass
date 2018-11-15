@@ -18,13 +18,8 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
-import {
-  RouterSFC as PrivilegedRouter,
-  withAuthenticationModal
-} from 'components'
-import { withAuthentication } from 'hocs'
+import { RouterSFC as Router } from 'components'
 import { menu } from './navbar-menu-sfc'
-import { RECORDS } from './helpers/consts'
 
 const attrs = {
   locale: 'fr'
@@ -36,16 +31,13 @@ INTERNAL_ERROR.status = 500
 const params = {
   '/': {
     menu: menu.slice(1), // remove entry from home-page
-    records: RECORDS,
+    onLogout: action('LOGOUT'),
     onSelectMenuItem: action('SELECT_MENU_ITEM')
   },
   '/fatal': {
     error: INTERNAL_ERROR
   }
 }
-
-const Router =
-  withAuthentication(withAuthenticationModal(PrivilegedRouter))
 
 storiesOf('Router (SFC)', module)
   .add('/', () => (
