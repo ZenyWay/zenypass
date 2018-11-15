@@ -14,14 +14,19 @@
  * Limitations under the License.
  */
 
-import homemenu from './menu'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
-import { always, forType, mapPayload, values } from 'utils'
+import { always, forType, localizeMenu, mapPayload, MenuSpec, values } from 'utils'
 import compose from 'basic-compose'
+import createL10ns from 'basic-l10n'
 import { KVMap, ZenypassRecord } from 'services'
 
 export type AutomataState = 'idle' | 'busy' | 'error'
+
+const homemenu = localizeMenu(
+  createL10ns(require('./locales.json')),
+  require('./options.json')
+)
 
 const setBusyCreatingNewRecord = into('busy')(always('creating-new-record'))
 const clearBusy = into('busy')(always())

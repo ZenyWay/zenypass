@@ -20,7 +20,7 @@ import { FAIconButton } from '../fa-icon'
 import { NavbarMenu, MenuSpecs } from '../../navbar-menu'
 import { FilteredRecordCards, Record } from '../filtered-record-cards'
 import { InfoModal } from '../info-modal'
-import { Observer } from 'rxjs'
+import { Observer } from 'component-from-props'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 

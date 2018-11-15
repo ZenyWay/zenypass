@@ -13,29 +13,28 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { storiesOf } from '@storybook/react'
-import { action } from '@storybook/addon-actions'
 import {
-  HomePage as PrivilegedHomePage,
-  withAuthenticationModal
-} from 'components'
-import { withAuthentication } from 'hocs'
-import { menu } from './navbar-menu-sfc'
+  router,
+  RouterProps as GenericRouterProps,
+  withAuthentication,
+  AuthenticationProviderProps
+} from 'hocs'
+import {
+  Router as PrivilegedRouter,
+  RouterProps as PrivilegedRouterProps
+} from './sfcs/router'
+import { withAuthenticationModal } from './sfcs/with-authentication'
 
-const attrs = {
-  locale: 'fr',
-  menu: menu.slice(1), // remove entry from home-page
-  onLogout: action('LOGOUT'),
-  onSelectMenuItem: action('SELECT_MENU_ITEM')
-}
+const AuthenticatedRouter = withAuthentication<PrivilegedRouterProps>(
+  withAuthenticationModal(PrivilegedRouter)
+)
 
-const HomePage =
-  withAuthentication(withAuthenticationModal(PrivilegedHomePage))
+type AuthenticatedRouterProps = AuthenticationProviderProps<PrivilegedRouterProps>
 
-storiesOf('HomePage', module)
-  .add('default', () => (
-    <HomePage {...attrs} />
-  ))
+export const Router = router<AuthenticatedRouterProps>(
+  (props: AuthenticatedRouterProps) => <AuthenticatedRouter {...props} />
+)
+
+export type RouterProps = GenericRouterProps<AuthenticatedRouterProps>

@@ -6,5 +6,13 @@
     "Username": "Identifiant",
     "Strict lock": "Verrouillage strict",
     "Automatic login": "Connexion automatique"
+  },
+  "en": {
+    "Comments": "Comments",
+    "Keywords": "Keywords",
+    "Password": "Password",
+    "Username": "Username",
+    "Strict lock": "Strict lock",
+    "Automatic login": "Automatic login"
   }
 }

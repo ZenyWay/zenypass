@@ -14,7 +14,6 @@
  * Limitations under the License.
  */
 
-import { MenuSpec } from './menu'
 import reducer, { AutomataState } from './reducer'
 import {
   createRecordOnSelectNewRecordMenuItem,
@@ -29,7 +28,7 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { ZenypassRecord } from 'services'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { callHandlerOnEvent } from 'utils'
+import { callHandlerOnEvent, MenuSpec } from 'utils'
 import { Observer } from 'rxjs'
 // import { tap } from 'rxjs/operators'
 // const log = label => console.log.bind(console, label)

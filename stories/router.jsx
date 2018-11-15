@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-export * from './basic'
-export * from './dom'
-export * from './effects'
-export * from './errors'
-export * from './functional'
-export * from './menu'
-export * from './reducers'
-export * from './service-request'
+//
+/** @jsx createElement */
+import { createElement } from 'create-element'
+import { storiesOf } from '@storybook/react'
+// import { action } from '@storybook/addon-actions'
+import { Router } from 'components'
+
+const attrs = {
+  locale: 'fr'
+}
+
+storiesOf('Router', module)
+  .add('default', () => (
+    <Router {...attrs} />
+  ))

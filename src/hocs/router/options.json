@@ -1,0 +1,51 @@
+[
+  {
+    "data-id": "devices",
+    "label": "devices",
+    "icon": "fa fa-mobile fa-lg"
+  },
+  {
+    "data-id": "storage",
+    "label": "storage",
+    "icon": "fa fa-database"
+  },
+  [
+    {
+      "data-id": "locale",
+      "label": "locale",
+      "icon": "fa fa-globe"
+    },
+    {
+      "data-id": "locale/fr",
+      "label": "fr",
+      "icon": "flag-icon flag-icon-fr"
+    },
+    {
+      "data-id": "locale/en",
+      "label": "en",
+      "icon": ["flag-icon flag-icon-gb", "flag-icon flag-icon-us"]
+    }
+  ],
+  [
+    {
+      "data-id": "help",
+      "label": "help",
+      "icon": "fa fa-question-circle"
+    },
+    {
+      "data-id": "help/first-steps",
+      "label": "first-steps",
+      "icon": "fa fa-fast-forward"
+    },
+    {
+      "data-id": "help/online-help",
+      "label": "online-help",
+      "icon": "fa fa-question-circle",
+      "href": "help-link"
+    }
+  ],
+  {
+    "data-id": "sign-out",
+    "icon": "fa fa-power-off"
+  }
+]

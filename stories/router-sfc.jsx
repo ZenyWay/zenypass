@@ -18,7 +18,8 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
-import { RouterSFC as Router } from 'components'
+import { RouterSFC, withAuthenticationModal } from 'components'
+import { withAuthentication } from 'hocs'
 import { menu } from './navbar-menu-sfc'
 
 const attrs = {
@@ -38,6 +39,9 @@ const params = {
     error: INTERNAL_ERROR
   }
 }
+
+const Router =
+  withAuthentication(withAuthenticationModal(RouterSFC))
 
 storiesOf('Router (SFC)', module)
   .add('/', () => (

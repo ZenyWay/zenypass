@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 
-import createL10ns, { KVs, L10nTag } from 'basic-l10n'
+import { KVs, L10nTag } from 'basic-l10n'
 
 export type MenuSpec = (MenuItemSpec[] | MenuItemSpec)[]
 
@@ -25,12 +25,7 @@ export interface MenuItemSpec {
   disabled?: boolean
 }
 
-export default localize(
-  createL10ns(require('./locales.json')),
-  require('./options.json')
-)
-
-function localize (l10ns: KVs<L10nTag>, menu: MenuSpec): KVs<MenuSpec> {
+export function localizeMenu (l10ns: KVs<L10nTag>, menu: MenuSpec): KVs<MenuSpec> {
   return Object.keys(l10ns).reduce(
     function (specs: KVs<MenuSpec>, locale: string) {
       const t = l10ns[locale]

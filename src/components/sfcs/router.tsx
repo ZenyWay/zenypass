@@ -18,21 +18,36 @@ import { createElement } from 'create-element'
 import { HomePage, HomePageProps } from '../home-page'
 import { ErrorPage } from './error-page'
 import { newStatusError } from 'utils'
+import { Observer } from 'component-from-props'
 
 export interface RouterProps {
   locale: string
   path?: string
   params?: { [prop: string]: unknown }
+  session?: string
+  onAuthenticationRequest?: (res$: Observer<string>) => void
+  onSelectMenuItem?: (target: HTMLElement) => void
 }
 
 export function Router ({
   locale,
+  session,
   path,
-  params
+  params,
+  onAuthenticationRequest,
+  onSelectMenuItem
 }: RouterProps & { [prop: string]: unknown }) {
   switch (path) {
     case '/':
-      return <HomePage locale={locale} {...params as HomePageProps} />
+      return (
+        <HomePage
+          locale={locale}
+          session={session}
+          {...params as HomePageProps}
+          onAuthenticationRequest={onAuthenticationRequest}
+          onSelectMenuItem={onSelectMenuItem}
+        />
+      )
     case '/fatal':
     default:
       const {

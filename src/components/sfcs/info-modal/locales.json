@@ -3,5 +3,10 @@
     "Confirmation": "Confirmation",
     "Yes": "Oui",
     "No": "Non"
+  },
+  "en": {
+    "Confirmation": "Confirmation",
+    "Yes": "Yes",
+    "No": "No"
   }
 }
