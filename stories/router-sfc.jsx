@@ -29,11 +29,12 @@ const attrs = {
 const INTERNAL_ERROR = new Error('fatal error')
 INTERNAL_ERROR.status = 500
 
+const onSelectMenuItem = action('SELECT_MENU_ITEM')
+
 const params = {
   '/': {
     menu: menu.slice(1), // remove entry from home-page
-    onLogout: action('LOGOUT'),
-    onSelectMenuItem: action('SELECT_MENU_ITEM')
+    onLogout: action('LOGOUT')
   },
   '/fatal': {
     error: INTERNAL_ERROR
@@ -45,7 +46,12 @@ const Router =
 
 storiesOf('Router (SFC)', module)
   .add('/', () => (
-    <Router path='/' params={params['/']} {...attrs} />
+    <Router
+      path='/'
+      params={params['/']}
+      {...attrs}
+      onSelectMenuItem={onSelectMenuItem}
+    />
   ))
   .add('/fatal', () => (
     <Router path='/fatal' params={params['/fatal']} {...attrs} />
