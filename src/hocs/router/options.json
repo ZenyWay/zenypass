@@ -45,7 +45,7 @@
     }
   ],
   {
-    "data-id": "sign-out",
+    "data-id": "logout",
     "icon": "fa fa-power-off"
   }
 ]

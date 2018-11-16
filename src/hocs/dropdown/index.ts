@@ -63,7 +63,7 @@ function mapStateToProps (
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => DropdownSFCHandlerProps =
 createActionDispatchers({
-  onClickItem: ['CLICK_ITEM', compose(pluck('target'), preventDefault)],
+  onClickItem: ['CLICK_ITEM', compose(pluck('currentTarget'), preventDefault)],
   onSelectItem: 'CLICK_ITEM',
   onClickToggle: ['CLICK_TOGGLE', preventDefault],
   innerRef: 'INNER_REF'

@@ -23,9 +23,10 @@ export type AutomataState = '/' | '/auth' | '/devices' | '/storage'
 
 const automata: AutomataSpec<AutomataState> = {
   '/': {
-    DEVICES: '/devices',
-    STORAGE: '/storage',
-    LOGOUT: ['/auth', into('session')(always())]
+    // TODO remove comments when corresponding pages are available
+    // DEVICES: '/devices',
+    // STORAGE: '/storage',
+    // LOGOUT: ['/auth', into('session')(always())]
   },
   '/auth': {
     PROPS: '/', // TODO remove when AuthenticationPage available

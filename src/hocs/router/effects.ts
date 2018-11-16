@@ -40,7 +40,8 @@ const actions = createActionFactories({
   devices: 'DEVICES',
   storage: 'STORAGE',
   locale: 'LOCALE',
-  help: 'HELP'
+  help: 'HELP',
+  logout: 'LOGOUT'
 })
 
 export function actionsFromSelectMenuItem (
@@ -55,7 +56,7 @@ export function actionsFromSelectMenuItem (
   )
 }
 
-const MENU_ITEM_REGEX = /^(\w+)\/(\w+)$/
+const MENU_ITEM_REGEX = /^(\w+)(?:\/(\w+))?$/
 function actionFromMenuItemDataId (id: string) {
   const [_, type, param] = MENU_ITEM_REGEX.exec(id) || [] as string[]
   const action = actions[type]
