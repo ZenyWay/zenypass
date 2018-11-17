@@ -14,16 +14,19 @@
  * Limitations under the License.
  */
 //
-import { createActionFactories, StandardAction } from 'basic-fsa-factories'
 import {
-  catchError,
+  createActionFactories,
+  StandardAction,
+  createActionFactory
+} from 'basic-fsa-factories'
+import {
   ignoreElements,
   filter,
   first,
   last,
   map,
   mapTo,
-  merge,
+  partition,
   pluck,
   share,
   switchMap,
@@ -32,18 +35,18 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators'
-import { Observable, of as observable } from 'rxjs'
+import { Observable, of as observable, merge } from 'rxjs'
 
 const log = (label: string) => console.log.bind(console, label)
 
-export function openLinkOnHelp (
+export function openLinkOnCloseInfo (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
   return event$.pipe(
-    filter(({ type }) => type === 'HELP'),
-    pluck('payload', 'item'),
-    filter(({ baseURI, href }) => href && (href.indexOf(baseURI) < 0)),
+    filter(({ type }) => type === 'CLOSE_INFO'),
+    withLatestFrom(state$),
+    pluck('1', 'link'),
     tap(openItemLink),
     ignoreElements()
   )
@@ -61,15 +64,30 @@ const actions = createActionFactories({
   logout: 'LOGOUT'
 })
 
+const link = createActionFactory('LINK')
+
 export function actionsFromSelectMenuItem (
   event$: Observable<StandardAction<any>>
 ) {
-  return event$.pipe(
+  const selectedMenuItem$ = event$.pipe(
     filter(({ type }) => type === 'SELECT_MENU_ITEM'),
-    pluck('payload'),
+    pluck('payload')
+  )
+  const [ selectLinkItem$, selectAction$ ] =
+    partition(isLinkItem)(selectedMenuItem$)
+
+  const link$ = selectLinkItem$.pipe(map(link))
+  const action$ = selectAction$.pipe(
     map(actionFromMenuItem),
     filter(Boolean)
   )
+
+  return merge(link$, action$)
+}
+
+function isLinkItem (item: any): item is HTMLLinkElement {
+  const { baseURI, href } = item || {} as HTMLLinkElement
+  return href && (href.indexOf(baseURI) < 0)
 }
 
 const MENU_ITEM_REGEX = /^([\w-]+)(?:\/([\w-]+))?$/

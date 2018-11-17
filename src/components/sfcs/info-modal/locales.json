@@ -1,11 +1,13 @@
 {
   "fr": {
     "Confirmation": "Confirmation",
+    "Ok": "Ok",
     "Yes": "Oui",
     "No": "Non"
   },
   "en": {
     "Confirmation": "Confirmation",
+    "Ok": "Ok",
     "Yes": "Yes",
     "No": "No"
   }

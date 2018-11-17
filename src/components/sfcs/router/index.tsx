@@ -15,12 +15,20 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { HomePage, HomePageProps } from '../home-page'
-import { ErrorPage } from './error-page'
+import { HomePage, HomePageProps } from '../../home-page'
+import { ErrorPage } from '../error-page'
+import { InfoModal } from '../info-modal'
 import { newStatusError } from 'utils'
 import { Observer } from 'component-from-props'
+import createL10ns from 'basic-l10n'
+const l10ns = createL10ns(require('./locales.json'))
 
-export interface RouterProps {
+export interface RouterProps extends CoreRouterProps {
+  info: boolean
+  onCloseInfo: (event: MouseEvent) => void
+}
+
+export interface CoreRouterProps {
   locale: string
   path?: string
   params?: { [prop: string]: unknown }
@@ -31,12 +39,31 @@ export interface RouterProps {
 
 export function Router ({
   locale,
+  info,
+  onCloseInfo,
+  ...attrs
+
+}: RouterProps & { [prop: string]: unknown }) {
+  const t = l10ns[locale]
+  return (
+    <div>
+      <InfoModal locale={locale} expanded={info} onCancel={onCloseInfo} >
+        <p>{t('ZenyPass Help is hosted on Medium')}:<br/>
+        {t('a dedicated window will open')}</p>
+      </InfoModal>
+      <CoreRouter locale={locale} {...attrs} />
+    </div>
+  )
+}
+
+function CoreRouter ({
+  locale,
   session,
   path,
   params,
   onAuthenticationRequest,
   onSelectMenuItem
-}: RouterProps & { [prop: string]: unknown }) {
+}: CoreRouterProps & { [prop: string]: unknown }) {
   switch (path) {
     case '/':
       return (

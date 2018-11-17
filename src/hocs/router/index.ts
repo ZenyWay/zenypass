@@ -14,8 +14,8 @@
  * Limitations under the License.
  */
 
-import reducer, { AutomataState } from './reducer'
-import { actionsFromSelectMenuItem, openLinkOnHelp } from './effects'
+import reducer, { RouteAutomataState, LinkAutomataState } from './reducer'
+import { actionsFromSelectMenuItem, openLinkOnCloseInfo } from './effects'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -29,28 +29,28 @@ import { localizeMenu, MenuSpec } from 'utils'
 import createL10ns, { KVs } from 'basic-l10n'
 const log = label => console.log.bind(console, label)
 
-const MENUS: { [path in AutomataState]?: KVs<MenuSpec> } = {
+const MENUS: { [path in RouteAutomataState]?: KVs<MenuSpec> } = {
   '/': localizeMenu(
     createL10ns(require('./locales.json')),
     require('./options.json')
   )
 }
 
-export type RouterProps<P extends RouterSFCProps> =
-  RouterHocProps & Rest<P, RouterSFCProps>
+const DEFAULT_LOCALE = 'en'
 
-export interface RouterHocProps {
-  locale: string
-}
+export type RouterProps<P extends RouterSFCProps> =
+  Rest<P, RouterSFCProps>
 
 export interface RouterSFCProps extends RouterSFCHandlerProps {
   locale: string
   session?: string
   path?: string
   params?: { [prop: string]: unknown }
+  info?: boolean
 }
 
 export interface RouterSFCHandlerProps {
+  onCloseInfo?: (event: MouseEvent) => void
   onSelectMenuItem?: (target: HTMLElement) => void
 }
 
@@ -58,22 +58,32 @@ interface RouterState {
   props: RouterProps<RouterSFCProps>
   locale: string
   session: string
-  path: string
+  path: RouteAutomataState
+  info: LinkAutomataState
+  link: HTMLLinkElement
 }
 
 function mapStateToProps (
-  { props, locale, path, session }: RouterState
+  { props, locale, path, info, session }: RouterState
 ): Rest<RouterSFCProps, RouterSFCHandlerProps> {
   const menu = MENUS[path]
-  const lang = locale || props.locale
+  const lang = locale || DEFAULT_LOCALE
   const params = { menu: menu && menu[lang] }
-  return { ...props, locale: lang, path, session, params }
+  return {
+    ...props,
+    locale: lang,
+    path,
+    info: info === 'info',
+    session,
+    params
+  }
 }
 
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => RouterSFCHandlerProps =
 createActionDispatchers({
-  onSelectMenuItem: 'SELECT_MENU_ITEM'
+  onSelectMenuItem: 'SELECT_MENU_ITEM',
+  onCloseInfo: 'CLOSE_INFO'
 })
 
 export function router <P extends RouterSFCProps> (
@@ -85,7 +95,7 @@ export function router <P extends RouterSFCProps> (
     redux(
       reducer,
       actionsFromSelectMenuItem,
-      openLinkOnHelp
+      openLinkOnCloseInfo
     ),
     () => tap(log('router:state:')),
     connect<RouterState, RouterSFCProps>(

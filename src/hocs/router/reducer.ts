@@ -17,11 +17,12 @@
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload, pluck } from 'utils'
+import { forType, mapPayload, pluck } from 'utils'
 
-export type AutomataState = '/' | '/auth' | '/devices' | '/storage'
+export type RouteAutomataState = '/' | '/auth' | '/devices' | '/storage'
+export type LinkAutomataState = 'idle' | 'info'
 
-const automata: AutomataSpec<AutomataState> = {
+const routeAutomata: AutomataSpec<RouteAutomataState> = {
   '/': {
     // TODO remove comments when corresponding pages are available
     // DEVICES: '/devices',
@@ -40,8 +41,18 @@ const automata: AutomataSpec<AutomataState> = {
   }
 }
 
+const linkAutomata: AutomataSpec<LinkAutomataState> = {
+  'idle': {
+    LINK: ['info', into('link')(mapPayload())]
+  },
+  'info': {
+    CLOSE_INFO: 'idle'
+  }
+}
+
 export default compose.into(0)(
-  createAutomataReducer(automata, '/auth', 'path'),
+  createAutomataReducer(routeAutomata, '/auth', 'path'),
+  createAutomataReducer(linkAutomata, 'idle', 'info'),
   forType('LOCALE')(into('locale')(mapPayload(pluck('param')))),
   forType('PROPS')(into('props')(mapPayload()))
 )

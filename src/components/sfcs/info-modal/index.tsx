@@ -55,13 +55,17 @@ export function InfoModal ({
         }
       </ModalBody>
       {
-        !onConfirm ? null : (
+        !onConfirm && !onCancel ? null : (
           <ModalFooter className='bg-light'>
-            <Button color='info' outline onClick={onConfirm}>
-              {t('Yes')}
-            </Button>
+            {
+              !onConfirm ? null : (
+                <Button color='info' outline onClick={onConfirm}>
+                  {t('Yes')}
+                </Button>
+              )
+            }
             <Button color='info' onClick={onCancel}>
-              {t('No')}
+              {t(!onConfirm ? 'Ok' : 'No')}
             </Button>
           </ModalFooter>
         )
