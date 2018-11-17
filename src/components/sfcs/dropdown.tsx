@@ -97,7 +97,12 @@ function dropdownMenuItems ({
   while (key--) {
     const { label, icon, ...attrs } = items[key]
     entries[key] = (
-      <DropdownItem className={className} onClick={onClickItem} {...attrs}>
+      <DropdownItem
+        className={className}
+        onClick={onClickItem}
+        target={attrs.href && '_blank'}
+        {...attrs}
+      >
         <MenuItemIcon icon={icon} />
         {label}
       </DropdownItem>

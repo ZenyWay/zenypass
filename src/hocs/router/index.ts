@@ -15,7 +15,7 @@
  */
 
 import reducer, { AutomataState } from './reducer'
-import { actionsFromSelectMenuItem } from './effects'
+import { actionsFromSelectMenuItem, openLinkOnHelp } from './effects'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -84,7 +84,8 @@ export function router <P extends RouterSFCProps> (
     () => tap(log('router:event:')),
     redux(
       reducer,
-      actionsFromSelectMenuItem
+      actionsFromSelectMenuItem,
+      openLinkOnHelp
     ),
     () => tap(log('router:state:')),
     connect<RouterState, RouterSFCProps>(

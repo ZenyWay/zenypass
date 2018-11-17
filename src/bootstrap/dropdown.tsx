@@ -105,6 +105,7 @@ export function DropdownHeader ({
 export interface DropdownItemProps {
   active?: boolean
   href?: string
+  target?: '_self' | '_blank' | '_parent' | '_top' | ''
   className?: string
   children?: Children
   tag?: string

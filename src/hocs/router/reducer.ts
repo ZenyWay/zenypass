@@ -17,7 +17,7 @@
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload } from 'utils'
+import { always, forType, mapPayload, pluck } from 'utils'
 
 export type AutomataState = '/' | '/auth' | '/devices' | '/storage'
 
@@ -42,6 +42,6 @@ const automata: AutomataSpec<AutomataState> = {
 
 export default compose.into(0)(
   createAutomataReducer(automata, '/auth', 'path'),
-  forType('LOCALE')(into('locale')(mapPayload())),
+  forType('LOCALE')(into('locale')(mapPayload(pluck('param')))),
   forType('PROPS')(into('props')(mapPayload()))
 )

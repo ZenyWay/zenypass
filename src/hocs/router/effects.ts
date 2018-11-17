@@ -36,6 +36,23 @@ import { Observable, of as observable } from 'rxjs'
 
 const log = (label: string) => console.log.bind(console, label)
 
+export function openLinkOnHelp (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return event$.pipe(
+    filter(({ type }) => type === 'HELP'),
+    pluck('payload', 'item'),
+    filter(({ baseURI, href }) => href && (href.indexOf(baseURI) < 0)),
+    tap(openItemLink),
+    ignoreElements()
+  )
+}
+
+function openItemLink ({ target, href }: HTMLLinkElement) {
+  window.open(href, target)
+}
+
 const actions = createActionFactories({
   devices: 'DEVICES',
   storage: 'STORAGE',
@@ -45,20 +62,20 @@ const actions = createActionFactories({
 })
 
 export function actionsFromSelectMenuItem (
-  event$: Observable<StandardAction<any>>,
-  state$: Observable<any>
+  event$: Observable<StandardAction<any>>
 ) {
   return event$.pipe(
     filter(({ type }) => type === 'SELECT_MENU_ITEM'),
-    pluck('payload', 'dataset', 'id'),
-    map(actionFromMenuItemDataId),
+    pluck('payload'),
+    map(actionFromMenuItem),
     filter(Boolean)
   )
 }
 
-const MENU_ITEM_REGEX = /^(\w+)(?:\/(\w+))?$/
-function actionFromMenuItemDataId (id: string) {
+const MENU_ITEM_REGEX = /^([\w-]+)(?:\/([\w-]+))?$/
+function actionFromMenuItem (item: HTMLElement) {
+  const { id } = item.dataset
   const [_, type, param] = MENU_ITEM_REGEX.exec(id) || [] as string[]
   const action = actions[type]
-  return action && action(param)
+  return action && action({ item, param })
 }
