@@ -39,23 +39,6 @@ import { Observable, of as observable, merge } from 'rxjs'
 
 const log = (label: string) => console.log.bind(console, label)
 
-export function openLinkOnCloseInfo (
-  event$: Observable<StandardAction<any>>,
-  state$: Observable<any>
-) {
-  return event$.pipe(
-    filter(({ type }) => type === 'CLOSE_INFO'),
-    withLatestFrom(state$),
-    pluck('1', 'link'),
-    tap(openItemLink),
-    ignoreElements()
-  )
-}
-
-function openItemLink ({ target, href }: HTMLLinkElement) {
-  window.open(href, target)
-}
-
 const actions = createActionFactories({
   devices: 'DEVICES',
   storage: 'STORAGE',
@@ -65,6 +48,8 @@ const actions = createActionFactories({
 })
 
 const link = createActionFactory('LINK')
+
+const fatal = createActionFactory('FATAL')
 
 export function actionsFromSelectMenuItem (
   event$: Observable<StandardAction<any>>
@@ -91,9 +76,46 @@ function isLinkItem (item: any): item is HTMLLinkElement {
 }
 
 const MENU_ITEM_REGEX = /^([\w-]+)(?:\/([\w-]+))?$/
+
 function actionFromMenuItem (item: HTMLElement) {
   const { id } = item.dataset
   const [_, type, param] = MENU_ITEM_REGEX.exec(id) || [] as string[]
   const action = actions[type]
   return action && action({ item, param })
+}
+
+export function logoutOrFatalOnError (
+  event$: Observable<StandardAction<any>>
+) {
+  const error$ = event$.pipe(filter(({ type }) => type === 'ERROR'))
+
+  const [logoutError$, fatalError$] = partition(isLogoutErrorCode)(error$)
+
+  const logout$ = logoutError$.pipe(map(() => actions.logout()))
+  const fatal$ = fatalError$.pipe(map(({ payload }) => fatal(payload)))
+
+  return merge(logout$, fatal$)
+}
+
+const LOGOUT_ERROR_CODES = [401, 403, 499]
+
+function isLogoutErrorCode ({ payload: error }) {
+  return error && LOGOUT_ERROR_CODES.indexOf(error.status) >= 0
+}
+
+export function openLinkOnCloseInfo (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return event$.pipe(
+    filter(({ type }) => type === 'CLOSE_INFO'),
+    withLatestFrom(state$),
+    pluck('1', 'link'),
+    tap(openItemLink),
+    ignoreElements()
+  )
+}
+
+function openItemLink ({ target, href }: HTMLLinkElement) {
+  window.open(href, target)
 }

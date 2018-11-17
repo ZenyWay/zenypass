@@ -72,12 +72,12 @@ function createRecord (): Observable<StandardAction<any>> {
 }
 
 const updateRecords = createActionFactory('UPDATE_RECORDS')
-const logout = createActionFactory('LOGOUT')
+const error = createActionFactory('ERROR')
 
 const getRecordsUpdates = createPrivilegedRequest(
   getRecords$,
-  (records: KVMap<Partial<ZenypassRecord>>) => updateRecords(records),
-  (error: any) => logout(error)
+  updateRecords,
+  error
 )
 
 export function injectRecordsFromService (

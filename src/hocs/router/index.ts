@@ -15,7 +15,11 @@
  */
 
 import reducer, { RouteAutomataState, LinkAutomataState } from './reducer'
-import { actionsFromSelectMenuItem, openLinkOnCloseInfo } from './effects'
+import {
+  actionsFromSelectMenuItem,
+  logoutOrFatalOnError,
+  openLinkOnCloseInfo
+} from './effects'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -50,6 +54,7 @@ export interface RouterSFCProps extends RouterSFCHandlerProps {
 }
 
 export interface RouterSFCHandlerProps {
+  onError?: (error?: any) => void
   onCloseInfo?: (event: MouseEvent) => void
   onSelectMenuItem?: (target: HTMLElement) => void
 }
@@ -60,15 +65,16 @@ interface RouterState {
   session: string
   path: RouteAutomataState
   info: LinkAutomataState
-  link: HTMLLinkElement
+  error?: any
+  link?: HTMLLinkElement
 }
 
 function mapStateToProps (
-  { props, locale, path, info, session }: RouterState
+  { props, locale, path, info, session, error }: RouterState
 ): Rest<RouterSFCProps, RouterSFCHandlerProps> {
   const menu = MENUS[path]
   const lang = locale || DEFAULT_LOCALE
-  const params = { menu: menu && menu[lang] }
+  const params = { menu: menu && menu[lang], error }
   return {
     ...props,
     locale: lang,
@@ -83,6 +89,7 @@ const mapDispatchToProps:
 (dispatch: (event: any) => void) => RouterSFCHandlerProps =
 createActionDispatchers({
   onSelectMenuItem: 'SELECT_MENU_ITEM',
+  onError: 'ERROR',
   onCloseInfo: 'CLOSE_INFO'
 })
 
@@ -95,6 +102,7 @@ export function router <P extends RouterSFCProps> (
     redux(
       reducer,
       actionsFromSelectMenuItem,
+      logoutOrFatalOnError,
       openLinkOnCloseInfo
     ),
     () => tap(log('router:state:')),

@@ -33,7 +33,7 @@ const clearBusy = into('busy')(always())
 const mapPayloadToError = into('error')(mapPayload())
 const clearError = into('error')(always())
 
-const automata: AutomataSpec<AutomataState> = {
+const newRecordAutomata: AutomataSpec<AutomataState> = {
   idle: {
     CREATE_RECORD_REQUESTED: ['busy', setBusyCreatingNewRecord]
   },
@@ -47,7 +47,7 @@ const automata: AutomataSpec<AutomataState> = {
 }
 
 export default compose.into(0)(
-  createAutomataReducer(automata, 'idle'),
+  createAutomataReducer(newRecordAutomata, 'idle'),
   forType('UPDATE_RECORDS')(into('records')(mapPayload(sortRecords))),
   forType('PROPS')(
     compose.into(0)(

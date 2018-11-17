@@ -41,7 +41,7 @@ export interface HomePageHocProps {
   menu: MenuSpec
   session?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
-  onLogout?: (error?: any) => void
+  onError?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
 }
 
@@ -97,7 +97,7 @@ export function homePage <P extends HomePageSFCProps> (
       injectRecordsFromService,
       createRecordOnSelectNewRecordMenuItem,
       callHandlerOnEvent('onSelectMenuItem', 'SELECT_MENU_ITEM'),
-      callHandlerOnEvent('onLogout', 'LOGOUT')
+      callHandlerOnEvent('onError', 'ERROR')
     ),
     // () => tap(log('home-page:state:')),
     connect<HomePageState, HomePageSFCProps>(

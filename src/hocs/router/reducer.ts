@@ -19,25 +19,34 @@ import { into } from 'basic-cursors'
 import compose from 'basic-compose'
 import { forType, mapPayload, pluck } from 'utils'
 
-export type RouteAutomataState = '/' | '/auth' | '/devices' | '/storage'
+export type RouteAutomataState = '/' | '/auth' | '/devices' | '/storage' | '/fatal'
 export type LinkAutomataState = 'idle' | 'info'
+
+const mapPayloadIntoError = into('error')(mapPayload())
 
 const routeAutomata: AutomataSpec<RouteAutomataState> = {
   '/': {
     // TODO remove comments when corresponding pages are available
     // DEVICES: '/devices',
     // STORAGE: '/storage',
-    // LOGOUT: ['/auth', into('session')(always())]
+    // LOGOUT: ['/auth', into('session')(always())],
+    FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/auth': {
     PROPS: '/', // TODO remove when AuthenticationPage available
-    LOGIN_RESOLVED: ['/', into('session')(mapPayload())]
+    LOGIN_RESOLVED: ['/', into('session')(mapPayload())],
+    FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/devices': {
-    CLOSE: '/'
+    CLOSE: '/',
+    FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/storage': {
-    CLOSE: '/'
+    CLOSE: '/',
+    FATAL: ['/fatal', mapPayloadIntoError]
+  },
+  '/fatal': {
+    // DEAD-END
   }
 }
 

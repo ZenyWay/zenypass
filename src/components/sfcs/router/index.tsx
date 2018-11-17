@@ -34,6 +34,7 @@ export interface CoreRouterProps {
   params?: { [prop: string]: unknown }
   session?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
+  onError?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
 }
 
@@ -42,7 +43,6 @@ export function Router ({
   info,
   onCloseInfo,
   ...attrs
-
 }: RouterProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
   return (
@@ -62,6 +62,7 @@ function CoreRouter ({
   path,
   params,
   onAuthenticationRequest,
+  onError,
   onSelectMenuItem
 }: CoreRouterProps & { [prop: string]: unknown }) {
   switch (path) {
@@ -72,6 +73,7 @@ function CoreRouter ({
           session={session}
           {...params as HomePageProps}
           onAuthenticationRequest={onAuthenticationRequest}
+          onError={onError}
           onSelectMenuItem={onSelectMenuItem}
         />
       )
