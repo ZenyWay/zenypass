@@ -14,94 +14,17 @@
  * Limitations under the License.
  */
 //
-import {
-  createActionFactories,
-  StandardAction,
-  createActionFactory
-} from 'basic-fsa-factories'
+import { StandardAction } from 'basic-fsa-factories'
 import {
   ignoreElements,
   filter,
-  first,
-  last,
-  map,
-  mapTo,
-  partition,
   pluck,
-  share,
-  switchMap,
-  startWith,
-  takeUntil,
   tap,
   withLatestFrom
 } from 'rxjs/operators'
-import { Observable, of as observable, merge } from 'rxjs'
+import { Observable } from 'rxjs'
 
-const log = (label: string) => console.log.bind(console, label)
-
-const actions = createActionFactories({
-  devices: 'DEVICES',
-  storage: 'STORAGE',
-  locale: 'LOCALE',
-  help: 'HELP',
-  logout: 'LOGOUT'
-})
-
-const link = createActionFactory('LINK')
-
-const fatal = createActionFactory('FATAL')
-
-export function actionsFromSelectMenuItem (
-  event$: Observable<StandardAction<any>>
-) {
-  const selectedMenuItem$ = event$.pipe(
-    filter(({ type }) => type === 'SELECT_MENU_ITEM'),
-    pluck('payload')
-  )
-  const [ selectLinkItem$, selectAction$ ] =
-    partition(isLinkItem)(selectedMenuItem$)
-
-  const link$ = selectLinkItem$.pipe(map(link))
-  const action$ = selectAction$.pipe(
-    map(actionFromMenuItem),
-    filter(Boolean)
-  )
-
-  return merge(link$, action$)
-}
-
-function isLinkItem (item: any): item is HTMLLinkElement {
-  const { baseURI, href } = item || {} as HTMLLinkElement
-  return href && (href.indexOf(baseURI) < 0)
-}
-
-const MENU_ITEM_REGEX = /^([\w-]+)(?:\/([\w-]+))?$/
-
-function actionFromMenuItem (item: HTMLElement) {
-  const { id } = item.dataset
-  const [_, type, param] = MENU_ITEM_REGEX.exec(id) || [] as string[]
-  const action = actions[type]
-  return action && action({ item, param })
-}
-
-export function logoutOrFatalOnError (
-  event$: Observable<StandardAction<any>>
-) {
-  const error$ = event$.pipe(filter(({ type }) => type === 'ERROR'))
-
-  const [logoutError$, fatalError$] = partition(isLogoutErrorCode)(error$)
-
-  const logout$ = logoutError$.pipe(map(() => actions.logout()))
-  const fatal$ = fatalError$.pipe(map(({ payload }) => fatal(payload)))
-
-  return merge(logout$, fatal$)
-}
-
-const LOGOUT_ERROR_CODES = [401, 403, 499]
-
-function isLogoutErrorCode ({ payload: error }) {
-  return error && LOGOUT_ERROR_CODES.indexOf(error.status) >= 0
-}
+// const log = (label: string) => console.log.bind(console, label)
 
 export function openLinkOnCloseInfo (
   event$: Observable<StandardAction<any>>,

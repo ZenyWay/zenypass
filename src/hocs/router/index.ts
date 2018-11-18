@@ -15,11 +15,8 @@
  */
 
 import reducer, { RouteAutomataState, LinkAutomataState } from './reducer'
-import {
-  actionsFromSelectMenuItem,
-  logoutOrFatalOnError,
-  openLinkOnCloseInfo
-} from './effects'
+import { actionFromMenuItem, actionFromError } from './dispatchers'
+import { openLinkOnCloseInfo } from './effects'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -88,8 +85,8 @@ function mapStateToProps (
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => RouterSFCHandlerProps =
 createActionDispatchers({
-  onSelectMenuItem: 'SELECT_MENU_ITEM',
-  onError: 'ERROR',
+  onSelectMenuItem: actionFromMenuItem,
+  onError: actionFromError,
   onCloseInfo: 'CLOSE_INFO'
 })
 
@@ -101,8 +98,6 @@ export function router <P extends RouterSFCProps> (
     () => tap(log('router:event:')),
     redux(
       reducer,
-      actionsFromSelectMenuItem,
-      logoutOrFatalOnError,
       openLinkOnCloseInfo
     ),
     () => tap(log('router:state:')),
