@@ -26,7 +26,7 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-// import { shallowEqual } from 'utils'
+import { callHandlerOnEvent /*, shallowEqual */ } from 'utils'
 // import { /* distinctUntilChanged,*/ tap } from 'rxjs/operators'
 // const log = label => console.log.bind(console, label)
 
@@ -89,6 +89,7 @@ export function controlledInput <P extends InputProps> (
     // () => tap(log('controlled-input:EVENT:')),
     redux(
       reducer,
+      callHandlerOnEvent('onBlur', 'BLUR'),
       debounceInputWhenDebounce,
       callChangeHandlerOnDebounceOrBlurWhenIsChange
     ),
