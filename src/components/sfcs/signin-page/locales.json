@@ -1,0 +1,22 @@
+{
+  "fr": {
+    "Create your account": "Créez votre compte",
+    "help-link": "https://medium.com/zenypass-fr/tagged/aide-zenypass",
+    "Login": "Connexion",
+    "Login to your ZenyPass account": "Connexion à votre compte ZenyPass",
+    "Online-help": "Aide en ligne",
+    "You don't have an account": "Vous n'avez pas encore de compte",
+    "Your email address": "Votre adresse email",
+    "Your password": "Votre mot de passe"
+  },
+  "en": {
+    "Create your account": "Create your account",
+    "help-link": "https://medium.com/zenypass-en/tagged/zenypass-help",
+    "Login": "Login",
+    "Login to your ZenyPass account": "Login to your ZenyPass account",
+    "Online-help": "Online-help",
+    "You don't have an account": "You don't have an account",
+    "Your email address": "Your email address",
+    "Your password": "Your password"
+  }
+}

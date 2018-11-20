@@ -16,38 +16,38 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { SplashCard, SplashFooterCard } from '../splash-card'
+import { AutoformatRecordField } from '../../autoformat-record-field'
 import { RecordField as PassiveRecordField } from '../record-field'
 import { LangDropdown } from '../lang-dropdown'
 import { Button, CardBody, CardTitle, Row } from 'bootstrap'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
-export interface SignupPageProps {
+export interface SigninPageProps {
   locale: string
   email?: string
   password?: string
-  confirm?: string
   cleartext?: boolean,
-  onChange?: (id: string, field: SignupPageFields, value: string) => void
-  onLogin?: (event: Event) => void
+  onChange?: (id: string, field: SigninPageFields, value: string) => void
+  onSignup?: (event: Event) => void
   onSelectItem?: (item?: HTMLElement) => void
   onSubmit?: (event: Event) => void
 }
 
-export type SignupPageFields = 'email' | 'password' | 'confirm-password'
+export type SigninPageFields = 'email' | 'password'
 
-export function SignupPage ({
+export function SigninPage ({
   locale,
   email,
   password,
   confirm,
   cleartext,
   onChange,
-  onLogin,
+  onSignup,
   onSelectItem,
   onSubmit,
   ...attrs
-}: SignupPageProps & { [prop: string]: unknown }) {
+}: SigninPageProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
 
   return (
@@ -55,7 +55,7 @@ export function SignupPage ({
       <Row className='justify-content-center' >
         <SplashCard tag='form' onSubmit={onSubmit} >
           <CardTitle className='mt-3'>
-            {t('Create your ZenyPass account')}
+            {t('Login to your ZenyPass account')}
           </CardTitle>
           <CardBody className='px-0' >
             <PassiveRecordField
@@ -78,31 +78,13 @@ export function SignupPage ({
               onChange={onChange.bind(void 0, 'password')}
               locale={locale}
             />
-            <PassiveRecordField
-              type={cleartext ? 'text' : 'password'}
-              id='confirm-password'
-              className='mb-2'
-              icon='lock'
-              placeholder={t('Confirm your password')}
-              value={confirm}
-              onChange={onChange.bind(void 0, 'confirm-password')}
-              locale={locale}
-            />
-            <p>
-              <small>
-                {t('security-info')}.<br/>
-                <a href={t('info-link')} target='_blank' className='text-info'>
-                  {t('More information')}...
-                </a>
-              </small>
-            </p>
             <LangDropdown
               locale={locale}
               className='float-left'
               onSelectItem={onSelectItem}
             />
             <Button type='submit' color='info' className='float-right' >
-              {t('Create an account')}
+              {t('Login')}
             </Button>
           </CardBody>
         </SplashCard>
@@ -120,9 +102,11 @@ export function SignupPage ({
         <SplashFooterCard>
           <CardBody>
             <p>
-              <small>{t('Already have an account')} ?</small>
+              <small>{t('You don\'t have an account')} ?</small>
             </p>
-            <Button color='info' onClick={onLogin} >{t('Login')}</Button>
+            <Button color='info' onClick={onSignup} >
+              {t('Create your account')}
+            </Button>
           </CardBody>
         </SplashFooterCard>
       </Row>
