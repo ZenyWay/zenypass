@@ -45,7 +45,7 @@ export interface RecordCardBodyProps {
   pending?: string
   icons?: Partial<RecordCardBodyIcons>
   placeholders?: Partial<RecordCardBodyPlaceholders>
-  onChange?: (id: string, field: keyof Record, value: string[] | string) => void
+  onChange?: (value: string[] | string, target?: HTMLElement) => void
   onConnectRequest?: (event: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
   [prop: string]: unknown
@@ -108,7 +108,8 @@ export function RecordCardBody ({
             size='lg'
             placeholder={getPlaceholder(t, placeholders, 'name')}
             value={name}
-            onChange={!disabled && onChange.bind(void 0, 'name')}
+            data-id='name'
+            onChange={onChange}
             locale={locale}
           />
         )
@@ -120,7 +121,8 @@ export function RecordCardBody ({
         icon={getIcon(icons, 'url')}
         placeholder={getPlaceholder(t, placeholders, 'url')}
         value={url}
-        onChange={!disabled && onChange.bind(void 0, 'url')}
+        data-id='url'
+        onChange={onChange}
         disabled={disabled}
         locale={locale}
       />
@@ -131,7 +133,8 @@ export function RecordCardBody ({
         icon={getIcon(icons, 'username')}
         placeholder={getPlaceholder(t, placeholders, 'username')}
         value={username}
-        onChange={!disabled && onChange.bind(void 0, 'username')}
+        data-id='username'
+        onChange={onChange}
         disabled={disabled}
         locale={locale}
       >
@@ -147,7 +150,8 @@ export function RecordCardBody ({
         pending={pending === 'cleartext'}
         placeholder={cleartext && getPlaceholder(t, placeholders, 'password')}
         value={cleartext ? password : '*****'}
-        onChange={!disabled && onChange.bind(void 0, 'password')}
+        data-id='password'
+        onChange={onChange}
         onIconClick={onToggleCleartext}
         disabled={disabled || !cleartext}
         locale={locale}
@@ -177,7 +181,8 @@ export function RecordCardBody ({
         icon={getIcon(icons, 'keywords')}
         placeholder={getPlaceholder(t, placeholders, 'keywords')}
         value={keywords}
-        onChange={!disabled && onChange.bind(void 0, 'keywords')}
+        data-id='keywords'
+        onChange={onChange}
         disabled={disabled}
         locale={locale}
       />
@@ -189,7 +194,8 @@ export function RecordCardBody ({
         placeholder={getPlaceholder(t, placeholders, 'comments')}
         value={comments}
         rows='3'
-        onChange={!disabled && onChange.bind(void 0, 'comments')}
+        data-id='comments'
+        onChange={onChange}
         disabled={disabled}
         locale={locale}
       />
@@ -198,7 +204,8 @@ export function RecordCardBody ({
           color='light'
           className='border-secondary mb-2'
           icon='lock'
-          onChange={!disabled && onChange.bind(void 0, 'lock')}
+          data-id='unrestricted'
+          onChange={onChange}
           disabled={disabled}
         />
         <p className='form-control-static pl-3'>{t(

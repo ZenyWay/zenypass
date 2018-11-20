@@ -49,7 +49,7 @@ export function debounceInputWhenDebounce (
         debounceTime(delay)
       )
     ),
-    map(() => debounce())
+    map(({ payload }) => debounce(payload))
   )
 }
 
@@ -60,9 +60,7 @@ export function callChangeHandlerOnDebounceOrBlurWhenIsChange (
   return event$.pipe(
     filter(({ type }) => (type === 'BLUR') || (type === 'DEBOUNCE')),
     withLatestFrom(state$),
-    pluck('1'),
-    filter(hasOnChangeHandler),
-    filter(isChange),
+    filter(([_, state]) => hasOnChangeHandler(state) && isChange(state)),
     tap(callChangeHandler),
     ignoreElements()
   )
@@ -76,6 +74,6 @@ function isChange ({ props, value }) {
   return props.value !== value
 }
 
-function callChangeHandler ({ props, value }) {
-  props.onChange(value)
+function callChangeHandler ([ { payload: event }, { props, value } ]) {
+  props.onChange(value, event.currentTarget)
 }

@@ -26,8 +26,9 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-// import { /* distinctUntilChanged,*/ tap } from 'rxjs/operators'
 // import { shallowEqual } from 'utils'
+// import { /* distinctUntilChanged,*/ tap } from 'rxjs/operators'
+// const log = label => console.log.bind(console, label)
 
 export type ControlledInputProps<P extends InputProps> =
 ControlledInputControllerProps & Rest<P, InputProps>
@@ -37,7 +38,7 @@ export interface ControlledInputControllerProps {
   debounce?: string | number
   autocorrect?: 'off' | 'on' | '' | false
   autocomplete?: 'off' | 'on' | '' | false
-  onChange?: (value: string) => void
+  onChange?: (value: string, item?: HTMLElement) => void
 }
 
 export interface InputProps extends InputHandlerProps {
@@ -85,19 +86,19 @@ export function controlledInput <P extends InputProps> (
 ): ComponentClass<ControlledInputProps<P>> {
   const ControlledInput = componentFromEvents<ControlledInputProps<P>,P>(
     Input,
-    // () => tap(console.log.bind(console, 'controlled-input:EVENT:')),
+    // () => tap(log('controlled-input:EVENT:')),
     redux(
       reducer,
       debounceInputWhenDebounce,
       callChangeHandlerOnDebounceOrBlurWhenIsChange
     ),
-    // () => tap(console.log.bind(console, 'controlled-input:STATE:')),
+    // () => tap(log('controlled-input:STATE:')),
     connect<ControlledInputState,InputProps>(
       mapStateToProps,
       mapDispatchToProps
     )
     // () => distinctUntilChanged(shallowEqual),
-    // () => tap(console.log.bind(console, 'controlled-input:PROPS:'))
+    // () => tap(log('controlled-input:PROPS:'))
   )
 
   ControlledInput.defaultProps = DEFAULT_PROPS as ControlledInputProps<P>

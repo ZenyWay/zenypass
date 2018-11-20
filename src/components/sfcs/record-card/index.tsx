@@ -42,7 +42,7 @@ export interface RecordCardProps {
   onToggleCleartext?: (event: MouseEvent) => void
   onToggleExpanded?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
-  onChange?: (field: keyof Record, value: string[] | string) => void
+  onChange?: (value: string[] | string, target?: HTMLElement) => void
   onUpdateRecordRequest?: (event: MouseEvent) => void
   onDeleteRecordRequest?: (event: MouseEvent) => void
   [prop: string]: unknown

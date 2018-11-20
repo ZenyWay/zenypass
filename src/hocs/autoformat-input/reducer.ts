@@ -25,7 +25,7 @@ export default compose.into(0)(
   forType('CHANGE')(
     compose.into(0)(
       formatIfDefined,
-      intoValue(mapPayload())
+      intoValue(mapPayload(pluck('value')))
     )
   ),
   forType('PROPS')(

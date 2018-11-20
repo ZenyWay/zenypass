@@ -56,10 +56,7 @@ export interface RecordCardSFCHandlerProps {
   onToggleConnect?: (event: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
-  onChange?: (
-    field: keyof ZenypassRecord,
-    value: string[] | string
-  ) => void
+  onChange?: (value: string[] | string, target: HTMLElement) => void
   onUpdateRecordRequest?: (event: MouseEvent) => void
   onDeleteRecordRequest?: (event: MouseEvent) => void
 }
@@ -118,10 +115,11 @@ createActionDispatchers({
   onChange: [
     'CHANGE',
     function (
-      field: keyof ZenypassRecord,
-      value: string[] | string
+      value: string[] | string,
+      target: HTMLElement
     ): Partial<ZenypassRecord> {
-      return { [field]: value }
+      const { id } = target.dataset
+      return { [id]: value }
     }
   ],
   onUpdateRecordRequest: 'UPDATE_RECORD_REQUESTED',

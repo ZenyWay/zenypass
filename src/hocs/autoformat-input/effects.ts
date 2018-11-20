@@ -17,16 +17,17 @@ import {
   filter,
   ignoreElements,
   tap,
-  pluck,
   withLatestFrom
 } from 'rxjs/operators'
+import { hasHandlerProp } from 'utils'
+
+const hasChangeHandler = hasHandlerProp('onChange')
 
 export function callChangeHandlerOnValidChange (event$, state$) {
   return event$.pipe(
     filter(ofType('CHANGE')),
     withLatestFrom(state$),
-    pluck('1'),
-    filter(isValidChange),
+    filter(([_, state]) => hasChangeHandler(state) && isValidChange(state)),
     tap(callChangeHandler),
     ignoreElements()
   )
@@ -42,6 +43,7 @@ function isValidChange ({ props, value, error }) {
   return !error && props.value !== value
 }
 
-function callChangeHandler ({ props, value }) {
-  props.onChange && props.onChange(value)
+function callChangeHandler ([{ payload }, { props, value }]) {
+  const { target } = payload
+  props.onChange(value, target)
 }

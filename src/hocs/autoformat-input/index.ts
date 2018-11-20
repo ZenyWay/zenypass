@@ -33,7 +33,7 @@ export interface AutoformatInputControllerProps {
   type?: string // TODO union type
   value?: string[] | string
   format?: Formatter<string>
-  onChange?: (value: string[] | string) => void
+  onChange?: (value: string[] | string, target?: HTMLElement) => void
 }
 
 export interface ControlledInputProps extends InputHandlerProps {
@@ -43,7 +43,7 @@ export interface ControlledInputProps extends InputHandlerProps {
 }
 
 export interface InputHandlerProps {
-  onChange?: (value: string) => void
+  onChange?: (value: string, target: HTMLElement) => void
 }
 
 const DEFAULT_PROPS: Partial<AutoformatInputProps<ControlledInputProps>> = {
@@ -73,7 +73,15 @@ function mapStateToProps (
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => InputHandlerProps =
 createActionDispatchers({
-  onChange: 'CHANGE'
+  onChange: [
+    'CHANGE',
+    function (
+      value: string[] | string,
+      target: HTMLElement
+    ) {
+      return { value, target }
+    }
+  ]
 })
 
 export function autoformatInput <P extends ControlledInputProps> (

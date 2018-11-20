@@ -15,7 +15,7 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Input as PassiveInput, InputProps } from 'bootstrap'
+import { InputProps, InputGroupText } from 'bootstrap'
 import { IconLabelInputGroup } from '../icon-label-input-group'
 import { ControlledInput } from '../../controlled-input'
 import createL10ns, { L10nTag } from 'basic-l10n'
@@ -54,7 +54,7 @@ export interface RecordFieldProps extends InputProps {
   autocorrect?: 'off' | 'on' | '' | false
   disabled?: boolean
   children?: any
-  onChange?: (value: string) => void
+  onChange?: (value: string, target?: HTMLElement) => void
   onIconClick?: (event: MouseEvent) => void
 }
 
@@ -82,7 +82,6 @@ export function RecordField ({
   ...attrs
 }: RecordFieldProps) {
   const t = l10ns[locale]
-  const Input = disabled ? PassiveInput : ControlledInput
   return (
     <IconLabelInputGroup
       id={id}
@@ -97,7 +96,7 @@ export function RecordField ({
       onIconClick={onIconClick}
       buttonTitle={buttonTitle}
     >
-      <Input
+      <ControlledInput
         type={type}
         id={`${id}${type ? `_${type}` : ''}_input`}
         className='form-control'
