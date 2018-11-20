@@ -1,5 +1,6 @@
 {
   "fr": {
+    "Add my account": "Ajouter mon compte",
     "Create your account": "Créez votre compte",
     "help-link": "https://medium.com/zenypass-fr/tagged/aide-zenypass",
     "Login": "Connexion",
@@ -10,6 +11,7 @@
     "Your password": "Votre mot de passe"
   },
   "en": {
+    "Add my account": "Add my account",
     "Create your account": "Create your account",
     "help-link": "https://medium.com/zenypass-en/tagged/zenypass-help",
     "Login": "Login",

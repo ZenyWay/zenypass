@@ -24,6 +24,7 @@ import {
 import { classes } from 'utils'
 
 export interface DropdownProps extends DropdownItemSpec {
+  inputGroup?: 'prepend' | 'append' | '' | false
   navItem?: boolean
   active?: boolean
   expanded?: boolean
@@ -43,6 +44,7 @@ export interface DropdownItemSpec {
 }
 
 export function Dropdown ({
+  inputGroup,
   navItem,
   active,
   disabled,
@@ -58,6 +60,7 @@ export function Dropdown ({
 }: DropdownProps) {
   return (
     <BSDropdown
+      inputGroup={inputGroup}
       navItem={navItem}
       active={active}
       disabled={disabled}

@@ -14,7 +14,12 @@ const attrs = {
   onSubmit: preventDefaultAction('SUBMIT')
 }
 
+const emails = [
+  'jane.doe@example.com',
+  'rob@hvsc.org'
+]
+
 storiesOf('SigninPage (SFC)', module)
   .add('default', () => (
-    <SigninPage {...attrs} />
+    <SigninPage {...attrs} emails={emails} />
   ))

@@ -16,16 +16,23 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { SplashCard, SplashFooterCard } from '../splash-card'
-import { AutoformatRecordField } from '../../autoformat-record-field'
-import { RecordField as PassiveRecordField } from '../record-field'
+import { RecordField } from '../record-field'
+import { Dropdown, DropdownItemSpec } from '../../dropdown'
 import { LangDropdown } from '../lang-dropdown'
-import { Button, CardBody, CardTitle, Row } from 'bootstrap'
+import {
+  Button,
+  CardBody,
+  CardTitle,
+  InputGroup,
+  InputGroupText,
+  Row
+} from 'bootstrap'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
 export interface SigninPageProps {
   locale: string
-  email?: string
+  emails?: string[]
   password?: string
   cleartext?: boolean,
   onChange?: (id: string, field: SigninPageFields, value: string) => void
@@ -38,7 +45,7 @@ export type SigninPageFields = 'email' | 'password'
 
 export function SigninPage ({
   locale,
-  email,
+  emails,
   password,
   confirm,
   cleartext,
@@ -49,6 +56,13 @@ export function SigninPage ({
   ...attrs
 }: SigninPageProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
+  let i = emails.length
+  const items = new Array(i) as DropdownItemSpec[]
+  items[--i] = { icon: 'fa fa-plus', label: t('Add my account') }
+  while (i) {
+    const item = { icon: 'fa fa-user', label: emails[i] }
+    items[--i] = item
+  }
 
   return (
     <section className='container bg-light' {...attrs}>
@@ -58,17 +72,20 @@ export function SigninPage ({
             {t('Login to your ZenyPass account')}
           </CardTitle>
           <CardBody className='px-0' >
-            <PassiveRecordField
-              type='email'
-              id='email'
-              className='mb-2'
-              icon='user'
-              placeholder={t('Your email address')}
-              value={email}
-              onChange={onChange.bind(void 0, 'email')}
-              locale={locale}
-            />
-            <PassiveRecordField
+            <InputGroup className='mb-2' >
+              <Dropdown
+                icon='fa fa-user'
+                inputGroup='prepend'
+                outline
+                items={items}
+                onSelectItem={onSelectItem}
+                className=''
+              />
+              <InputGroupText className='form-control'>
+                {emails[0]}
+              </InputGroupText>
+            </InputGroup>
+            <RecordField
               type={cleartext ? 'text' : 'password'}
               id='password'
               className='mb-2'

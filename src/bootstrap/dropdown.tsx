@@ -23,6 +23,7 @@ import { BasicColor } from './types'
 export interface DropdownProps {
   expanded?: boolean
   direction?: 'up' | 'down' | 'left' | 'right' | '' | false
+  inputGroup?: 'prepend' | 'append' | '' | false
   navItem?: boolean
   active?: boolean
   disabled?: boolean
@@ -36,6 +37,7 @@ export interface DropdownProps {
 export function Dropdown ({
   expanded,
   direction,
+  inputGroup,
   navItem,
   active,
   disabled,
@@ -46,7 +48,7 @@ export function Dropdown ({
 }: DropdownProps) {
   const Tag = tag || (navItem ? 'li' : 'div')
   const classNames = classes(
-    'dropdown',
+    inputGroup ? `input-group-${inputGroup}` : 'dropdown',
     direction && direction !== 'down' && `drop${direction}`,
     navItem && 'nav-item',
     navItem && active && 'active',
