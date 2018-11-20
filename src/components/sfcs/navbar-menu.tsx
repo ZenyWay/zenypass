@@ -27,7 +27,7 @@ import {
 } from 'bootstrap'
 import { MenuItemIcon, DropdownItemSpec } from './dropdown'
 import { Dropdown } from '../dropdown'
-import { ZENYPASS_LOGO_SVG } from 'static'
+import { ZENYPASS_LOGO_WHITE_SVG } from 'static'
 
 export interface NavbarMenuProps {
   menu?: MenuSpecs
@@ -59,7 +59,7 @@ export function NavbarMenu ({
       innerRef={innerRef}
     >
       <NavbarBrand>
-        <img height='32' src={ZENYPASS_LOGO_SVG}/>
+        <img height='32' src={ZENYPASS_LOGO_WHITE_SVG}/>
         <small>&nbsp;ZenyPass</small>
       </NavbarBrand>
       <span class='flex-fill text-light'>

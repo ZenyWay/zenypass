@@ -25,28 +25,75 @@ export interface CardProps {
   bg?: BasicColor | 'white' | 'transparent' | '' | false
   align?: 'left' | 'center' | 'right' | '' | false
   text?: BasicColor | 'white' | 'muted' | '' | false
+  tag?: string
   className?: string
 }
 
-export function Card (props: Partial<CardProps> & UnknownProps) {
+export function Card (props: CardProps & UnknownProps) {
   return CardFragment(props)
 }
 
-export function CardHeader (props: Partial<CardProps> & UnknownProps) {
+export function CardHeader (props: CardProps & UnknownProps) {
   return CardFragment({ ...props, type: 'header' })
 }
 
-export function CardBody (props: Partial<CardProps> & UnknownProps) {
+export function CardBody (props: CardProps & UnknownProps) {
   return CardFragment({ ...props, type: 'body' })
 }
 
-export function CardFooter (props: Partial<CardProps> & UnknownProps) {
+export function CardFooter (props: CardProps & UnknownProps) {
   return CardFragment({ ...props, type: 'footer' })
+}
+
+export interface CardImgProps {
+  tag?: string,
+  align?: 'top' | 'bottom' | '' | false,
+  className?: string
+}
+
+export function CardImg ({
+  tag: Tag = 'img',
+  align,
+  className,
+  ...attrs
+}: CardImgProps & UnknownProps) {
+  const classNames = classes(
+    align ? `card-img-${align}` : 'card-img',
+    className
+  )
+  return <Tag className={classNames} {...attrs} />
+}
+
+export const CardLink = createComponent({
+  tag: 'a',
+  className: 'card-link'
+})
+
+export const CardSubtitle = createComponent({
+  tag: 'h6',
+  className: 'card-subtitle'
+})
+
+export const CardTitle = createComponent({
+  tag: 'h5',
+  className: 'card-title'
+})
+
+function createComponent (defaults: { tag: string, className: string }) {
+  return function ({
+    tag: Tag = defaults.tag,
+    className,
+    ...attrs
+  }: { tag?: string, className?: string } & UnknownProps) {
+    const classNames = classes(defaults.className, className)
+    return <Tag className={classNames} {...attrs} />
+  }
 }
 
 type CardFragmentType = 'header' | 'body' | 'footer'
 
 function CardFragment ({
+  tag: Tag = 'div',
   type,
   border,
   bg,
@@ -55,7 +102,7 @@ function CardFragment ({
   align,
   className,
   ...attrs
-}: Partial<CardProps & { type: CardFragmentType }> & UnknownProps) {
+}: CardProps & { type?: CardFragmentType } & UnknownProps) {
   const classNames = classes(
     type ? `card-${type}` : 'card',
     border && `border-${border}`,
@@ -65,5 +112,5 @@ function CardFragment ({
     rounded && 'rounded',
     className
   )
-  return <div className={classNames} {...attrs} />
+  return <Tag className={classNames} {...attrs} />
 }

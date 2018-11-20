@@ -16,7 +16,17 @@ import { from } from 'rxjs';
  * Limitations under the License.
  */
 export { Button, ButtonProps } from './button'
-export { Card, CardHeader, CardBody, CardFooter, CardProps } from './card'
+export {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  CardImg,
+  CardLink,
+  CardSubtitle,
+  CardTitle,
+  CardProps
+} from './card'
 export { Collapse, CollapseProps } from './collapse'
 export {
   Dropdown, DropdownProps,
@@ -37,6 +47,7 @@ export {
   InputGroupAddonProps
 } from './input-group'
 export { Label, LabelProps } from './label'
+export { Row } from './layout'
 export {
   Nav, NavProps,
   Navbar, NavbarProps,

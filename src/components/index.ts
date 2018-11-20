@@ -79,6 +79,7 @@ export {
   IconLabelInputGroup,
   IconLabelInputGroupProps
 } from './sfcs/icon-label-input-group'
+export { LangDropdown, LangDropdownProps } from './sfcs/lang-dropdown'
 export {
   NavbarMenu as NavbarMenuSFC,
   NavbarMenuProps as NavbarMenuSFCProps
@@ -98,4 +99,6 @@ export {
 } from './sfcs/router'
 export { Router, RouterProps } from './router'
 export { SearchField, SearchFieldProps } from './sfcs/search-field'
+export { SplashCard, SplashCardProps } from './sfcs/splash-card'
+export { SignupPage, SignupPageProps } from './sfcs/signup-page'
 export { withAuthenticationModal } from './sfcs/with-authentication'

@@ -13,6 +13,27 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
-export const ZENYPASS_LOGO_WHITE_SVG = require('./zenypass-icon-white.svg')
-export const ZENYPASS_LOGO_CYAN_SVG = require('./icon_zenypass_fill21A0B7.svg')
+/** @jsx createElement */
+import { createElement } from 'create-element'
+import { classes } from 'utils'
+import { UnknownProps } from './types'
+
+export interface RowProps {
+  tag?: string,
+  noGutter?: boolean,
+  className?: string
+}
+
+export function Row ({
+  tag: Tag = 'div',
+  noGutter,
+  className,
+  ...attrs
+}: RowProps & UnknownProps) {
+  const classNames = classes(
+    'row',
+    noGutter && 'no-gutter',
+    className
+  )
+  return <Tag className={classNames} {...attrs} />
+}

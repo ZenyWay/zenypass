@@ -1,0 +1,30 @@
+{
+  "fr": {
+    "Already have an account": "Vous avez déjà un compte",
+    "Confirm your password": "Confirmez votre mot de passe",
+    "Create an account": "Créer un compte",
+    "Create your ZenyPass account": "Créez votre compte ZenyPass",
+    "Your email address": "Votre adresse email",
+    "help-link": "https://medium.com/zenypass-fr/tagged/aide-zenypass",
+    "info-link": "https://www.medium.com/zenypass-fr",
+    "Login": "Connexion",
+    "More information": "Plus d'informations",
+    "Online-help": "Aide en ligne",
+    "Your password": "Votre mot de passe",
+    "security-info": "Pour plus de sécurité, choisissez un mot de passe exclusif que vous n'utilisez pas ailleurs, et assurez-vous de ne pas l'oublier ou le perdre."
+  },
+  "en": {
+    "Already have an account": "Already have an account",
+    "Confirm your password": "Confirm your password",
+    "Create an account": "Create an account",
+    "Create your ZenyPass account": "Create your ZenyPass account",
+    "Your email address": "Your email address",
+    "help-link": "https://medium.com/zenypass-en/tagged/zenypass-help",
+    "info-link": "https://medium.com/zenypass-en",
+    "Login": "Login",
+    "More information": "More information",
+    "Online-help": "Online-help",
+    "Your password": "Your password",
+    "security-info": "For enhanced security, please choose an exclusive password that you don't use elsewhere, and make sure you don't forget or loose it"
+  }
+}

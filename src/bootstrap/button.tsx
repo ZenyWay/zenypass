@@ -41,7 +41,6 @@ export function Button ({
   size,
   href,
   disabled,
-  children,
   onClick,
   ...attrs
 }: ButtonProps) {
@@ -63,8 +62,6 @@ export function Button ({
       onClick={onClick}
       disabled={disabled}
       {...attrs}
-    >
-      {children}
-    </Tag>
+    />
   )
 }
