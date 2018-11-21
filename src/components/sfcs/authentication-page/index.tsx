@@ -33,7 +33,6 @@ export interface AuthenticationPageProps
 extends SignupFormProps, EmailDropdownProps {
   locales?: DropdownItemSpec[]
   signup?: boolean
-  onSubmit?: (event: Event) => void
   onTogglePage?: (event: Event) => void
 }
 
@@ -52,10 +51,13 @@ export interface AuthenticationFormProps {
   password?: string
   cleartext?: boolean,
   onChange?: (value: string, target: HTMLElement) => void
+  onSubmit?: (event: Event) => void
   onToggleFocus?: (event: Event) => void
 }
 
-export function AuthenticationPage (props: AuthenticationPageProps & { [prop: string]: unknown }) {
+export function AuthenticationPage (
+  props: AuthenticationPageProps & { [prop: string]: unknown }
+) {
   const {
     locale,
     locales,
@@ -73,11 +75,12 @@ export function AuthenticationPage (props: AuthenticationPageProps & { [prop: st
     ...attrs
   } = props
   const t = l10ns[locale]
+  const Form = signup ? SignupForm : SigninForm
 
   return (
     <section className='container bg-light' {...attrs}>
       <Row className='justify-content-center' >
-        <SplashCard tag='form' onSubmit={onSubmit} >
+        <SplashCard >
           <CardTitle className='mt-3'>
             {
               t(
@@ -88,11 +91,7 @@ export function AuthenticationPage (props: AuthenticationPageProps & { [prop: st
             }
           </CardTitle>
           <CardBody className='px-0' >
-            {
-              signup
-              ? <SignupFields {...props} />
-              : <SigninFields {...props} />
-            }
+            <Form id='authentication-form' {...props} />
             <Dropdown
               {...locales[0]}
               outline
@@ -100,7 +99,12 @@ export function AuthenticationPage (props: AuthenticationPageProps & { [prop: st
               onSelectItem={onSelectItem}
               className='float-left'
             />
-            <Button type='submit' color='info' className='float-right' >
+            <Button
+              type='submit'
+              form='authentication-form'
+              color='info'
+              className='float-right'
+            >
               {t(signup ? 'Create your account' : 'Login')}
             </Button>
           </CardBody>
@@ -137,19 +141,21 @@ export function AuthenticationPage (props: AuthenticationPageProps & { [prop: st
   )
 }
 
-function SigninFields ({
+function SigninForm ({
   locale,
   emails,
   email,
   password,
   cleartext,
   onChange,
+  onSubmit,
   onToggleFocus,
-  onSelectItem
-}: AuthenticationFormProps & EmailDropdownProps) {
+  onSelectItem,
+  ...attrs
+}: AuthenticationFormProps & EmailDropdownProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
   return (
-    <form>
+    <form {...attrs} onSubmit={onSubmit}>
       <InputGroup className='mb-2' >
         <Dropdown
           icon='fa fa-user'
@@ -187,26 +193,31 @@ function SigninFields ({
   )
 }
 
-function SignupFields ({
+function SignupForm ({
   locale,
   email,
   password,
   confirm,
   cleartext,
   onChange,
-  onToggleFocus
-}: SignupFormProps) {
+  onSubmit,
+  onToggleFocus,
+  ...attrs
+}: SignupFormProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
   return (
-    <form>
+    <form {...attrs} onSubmit={onSubmit}>
       <PassiveRecordField
         type='email'
         id='email'
         className='mb-2'
         icon='user'
-        placeholder={t('Your email address')}
+        placeholder={t('Enter your email')}
         value={email}
-        onChange={onChange.bind(void 0, 'email')}
+        dataId='email'
+        onBlur={onToggleFocus}
+        onChange={onChange}
+        onFocus={onToggleFocus}
         locale={locale}
       />
       <PassiveRecordField
@@ -214,9 +225,12 @@ function SignupFields ({
         id='password'
         className='mb-2'
         icon='lock'
-        placeholder={t('Your password')}
+        placeholder={t('Enter your password')}
         value={password}
-        onChange={onChange.bind(void 0, 'password')}
+        dataId='password'
+        onBlur={onToggleFocus}
+        onChange={onChange}
+        onFocus={onToggleFocus}
         locale={locale}
       />
       <PassiveRecordField
@@ -226,6 +240,7 @@ function SignupFields ({
         icon='lock'
         placeholder={t('Confirm your password')}
         value={confirm}
+        dataId='confirm'
         onBlur={onToggleFocus}
         onChange={onChange}
         onFocus={onToggleFocus}
