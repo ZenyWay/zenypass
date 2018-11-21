@@ -17,6 +17,7 @@
 import { createElement } from 'create-element'
 import { SplashCard, SplashFooterCard } from '../splash-card'
 import { RecordField } from '../record-field'
+import { ControlledInput } from '../../controlled-input'
 import { Dropdown, DropdownItemSpec } from '../../dropdown'
 import { LangDropdown } from '../lang-dropdown'
 import {
@@ -35,9 +36,10 @@ export interface SigninPageProps {
   emails?: string[]
   password?: string
   cleartext?: boolean,
-  onChange?: (id: string, field: SigninPageFields, value: string) => void
-  onSignup?: (event: Event) => void
+  onChange?: (value: string, target: HTMLElement) => void
+  onToggleFocus?: (event: Event) => void
   onSelectItem?: (item?: HTMLElement) => void
+  onSignup?: (event: Event) => void
   onSubmit?: (event: Event) => void
 }
 
@@ -50,17 +52,27 @@ export function SigninPage ({
   confirm,
   cleartext,
   onChange,
-  onSignup,
+  onToggleFocus,
   onSelectItem,
+  onSignup,
   onSubmit,
   ...attrs
 }: SigninPageProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
   let i = emails.length
-  const items = new Array(i) as DropdownItemSpec[]
-  items[--i] = { icon: 'fa fa-plus', label: t('Add my account') }
+  const items = new Array(i) as (DropdownItemSpec & { 'data-id': string })[]
+  items[--i] = {
+    'data-id': 'email',
+    icon: 'fa fa-plus',
+    label: t('Enter another email')
+  }
   while (i) {
-    const item = { icon: 'fa fa-user', label: emails[i] }
+    const email = emails[i]
+    const item = {
+      'data-id': `email/${email}`,
+      icon: 'fa fa-user',
+      label: email
+    }
     items[--i] = item
   }
 
@@ -79,20 +91,30 @@ export function SigninPage ({
                 outline
                 items={items}
                 onSelectItem={onSelectItem}
-                className=''
               />
-              <InputGroupText className='form-control'>
-                {emails[0]}
-              </InputGroupText>
+              <ControlledInput
+                type='email'
+                value={emails[0]}
+                data-id='email'
+                debounce='300'
+                onBlur={onToggleFocus}
+                onChange={onChange}
+                onFocus={onToggleFocus}
+                placeholder={t('Enter your email')}
+                className='form-control'
+              />
             </InputGroup>
             <RecordField
               type={cleartext ? 'text' : 'password'}
               id='password'
               className='mb-2'
-              icon='lock'
-              placeholder={t('Your password')}
+              icon='lock mx-1'
+              placeholder={t('Enter your password')}
               value={password}
-              onChange={onChange.bind(void 0, 'password')}
+              dataId='password'
+              onBlur={onToggleFocus}
+              onChange={onChange}
+              onFocus={onToggleFocus}
               locale={locale}
             />
             <LangDropdown
