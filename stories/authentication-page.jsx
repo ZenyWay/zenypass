@@ -2,7 +2,7 @@
 
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { SigninPage } from 'components'
+import { AuthenticationPage } from 'components'
 import { action } from '@storybook/addon-actions'
 import preventDefaultAction from './helpers/prevent-default'
 import { LANG_MENU } from './helpers/consts'
@@ -32,9 +32,15 @@ const emails = [ 'jane.doe@example.com', 'rob@hvsc.org' ]
     label: 'Enter another email'
   })
 
-storiesOf('SigninPage (SFC)', module)
-  .add('default', () => (
-    <SigninPage
+storiesOf('AuthenticationPage (SFC)', module)
+  .add('signup', () => (
+    <AuthenticationPage
+      signup
+      {...attrs}
+    />
+  ))
+  .add('signin', () => (
+    <AuthenticationPage
       email={emails[0].label}
       emails={emails.slice(1)}
       {...attrs}

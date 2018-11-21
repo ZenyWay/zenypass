@@ -39,6 +39,10 @@ export {
   AuthenticationModalProps as AuthenticationModalSFCProps
 } from './sfcs/authentication-modal'
 export {
+  AuthenticationPage,
+  AuthenticationPageProps
+} from './sfcs/authentication-page'
+export {
   AuthorizedAgentCard,
   AuthorizedAgentCardProps
 } from './sfcs/authorized-agent-card'
@@ -99,6 +103,4 @@ export {
 export { Router, RouterProps } from './router'
 export { SearchField, SearchFieldProps } from './sfcs/search-field'
 export { SplashCard, SplashCardProps } from './sfcs/splash-card'
-export { SignupPage, SignupPageProps } from './sfcs/signup-page'
-export { SigninPage, SigninPageProps } from './sfcs/signin-page'
 export { withAuthenticationModal } from './sfcs/with-authentication'
