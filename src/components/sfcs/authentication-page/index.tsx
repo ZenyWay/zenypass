@@ -76,19 +76,18 @@ export function AuthenticationPage (
   } = props
   const t = l10ns[locale]
   const Form = signup ? SignupForm : SigninForm
-
+  const title = t(
+    signup ? 'Create your ZenyPass account' : 'Login to your ZenyPass account'
+  )
+  const question = t(
+    signup ? 'Already have an account' : 'You don\'t have an account'
+  )
   return (
     <section className='container bg-light' {...attrs}>
       <Row className='justify-content-center' >
         <SplashCard >
           <CardTitle className='mt-3'>
-            {
-              t(
-                signup
-                ? 'Create your ZenyPass account'
-                : 'Login to your ZenyPass account'
-              )
-            }
+            {title}
           </CardTitle>
           <CardBody className='px-0' >
             <Form id='authentication-form' {...props} />
@@ -122,15 +121,7 @@ export function AuthenticationPage (
       <Row className='justify-content-center' >
         <SplashFooterCard>
           <CardBody>
-            <p>
-              <small>{
-                t(
-                  signup
-                  ? 'Already have an account'
-                  : 'You don\'t have an account'
-                )
-              } ?</small>
-            </p>
+            <p><small>{question} ?</small></p>
             <Button color='info' onClick={onTogglePage} >
               {t(signup ? 'Login' : 'Create your account')}
             </Button>
@@ -166,9 +157,9 @@ function SigninForm ({
         />
         <ControlledInput
           type='email'
+          blurOnEnterKey
           value={email}
           data-id='email'
-          debounce='300'
           onBlur={onToggleFocus}
           onChange={onChange}
           onFocus={onToggleFocus}
@@ -178,6 +169,7 @@ function SigninForm ({
       </InputGroup>
       <PassiveRecordField
         type={cleartext ? 'text' : 'password'}
+        blurOnEnterKey
         id='password'
         className='mb-2'
         icon='lock mx-1'
@@ -210,6 +202,7 @@ function SignupForm ({
       <PassiveRecordField
         type='email'
         id='email'
+        blurOnEnterKey
         className='mb-2'
         icon='user'
         placeholder={t('Enter your email')}
@@ -223,6 +216,7 @@ function SignupForm ({
       <PassiveRecordField
         type={cleartext ? 'text' : 'password'}
         id='password'
+        blurOnEnterKey
         className='mb-2'
         icon='lock'
         placeholder={t('Enter your password')}
@@ -236,6 +230,7 @@ function SignupForm ({
       <PassiveRecordField
         type={cleartext ? 'text' : 'password'}
         id='confirm-password'
+        blurOnEnterKey
         className='mb-2'
         icon='lock'
         placeholder={t('Confirm your password')}

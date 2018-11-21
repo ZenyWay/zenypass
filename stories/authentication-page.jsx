@@ -14,10 +14,10 @@ const attrs = {
   locale: 'fr',
   locales: LANG_MENU,
   onChange: action('CHANGE'),
-  onToggleFocus: action('TOGGLE_FOCUS'),
-  onSignup: action('SIGNUP'),
   onSelectItem: action('SELECT_ITEM'),
-  onSubmit: preventDefaultAction('SUBMIT')
+  onSubmit: preventDefaultAction('SUBMIT'),
+  onToggleFocus: action('TOGGLE_FOCUS'),
+  onTogglePage: action('TOGGLE_PAGE')
 }
 
 const emails = [ 'jane.doe@example.com', 'rob@hvsc.org' ]
