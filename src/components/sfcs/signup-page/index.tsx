@@ -17,13 +17,14 @@
 import { createElement } from 'create-element'
 import { SplashCard, SplashFooterCard } from '../splash-card'
 import { RecordField as PassiveRecordField } from '../record-field'
-import { LangDropdown } from '../lang-dropdown'
 import { Button, CardBody, CardTitle, Row } from 'bootstrap'
+import { Dropdown, DropdownItemSpec } from '../../dropdown'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
 export interface SignupPageProps {
   locale: string
+  locales?: DropdownItemSpec[]
   email?: string
   password?: string
   confirm?: string
@@ -38,6 +39,7 @@ export type SignupPageFields = 'email' | 'password' | 'confirm-password'
 
 export function SignupPage ({
   locale,
+  locales,
   email,
   password,
   confirm,
@@ -96,10 +98,12 @@ export function SignupPage ({
                 </a>
               </small>
             </p>
-            <LangDropdown
-              locale={locale}
-              className='float-left'
+            <Dropdown
+              {...locales[0]}
+              outline
+              items={locales.slice(1)}
               onSelectItem={onSelectItem}
+              className='float-left'
             />
             <Button type='submit' color='info' className='float-right' >
               {t('Create an account')}

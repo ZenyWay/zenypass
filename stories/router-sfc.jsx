@@ -20,7 +20,7 @@ import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import { RouterSFC, withAuthenticationModal } from 'components'
 import { withAuthentication } from 'hocs'
-import { menu } from './navbar-menu-sfc'
+import { MENU } from './helpers/consts'
 
 const attrs = {
   locale: 'fr'
@@ -33,7 +33,7 @@ const onSelectMenuItem = action('SELECT_MENU_ITEM')
 
 const params = {
   '/': {
-    menu: menu.slice(1), // remove entry from home-page
+    menu: MENU.slice(1), // remove entry from home-page
     onLogout: action('LOGOUT')
   },
   '/fatal': {

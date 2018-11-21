@@ -42,3 +42,66 @@ export const RECORDS = [
 ]
 
 export const RECORD = RECORDS[0]
+
+export const LANG_MENU = [
+  {
+    'data-id': 'lang',
+    label: 'lang',
+    icon: 'fa fa-globe'
+  },
+  {
+    'data-id': 'lang/fr',
+    label: 'fr',
+    icon: 'flag-icon flag-icon-fr'
+  },
+  {
+    'data-id': 'lang/en',
+    label: 'en',
+    icon: ['flag-icon flag-icon-gb', 'flag-icon flag-icon-us']
+  }
+]
+
+export const HELP_MENU = [
+  {
+    'data-id': 'help',
+    label: 'help',
+    icon: 'fa fa-question-circle'
+  },
+  {
+    'data-id': 'help/first-steps',
+    label: 'first-steps',
+    icon: 'fa fa-fast-forward'
+  },
+  {
+    'data-id': 'help/online-help',
+    label: 'online-help',
+    icon: 'fa fa-question-circle',
+    href: 'help-link'
+  }
+]
+
+export const MENU = [
+  {
+    'data-id': 'new-entry',
+    label: 'new-entry',
+    href: 'https://zenyway.com/password-manager/home/fr/index.html',
+    icon: 'fa fa-plus'
+  },
+  {
+    'data-id': 'authorizations',
+    label: 'authorizations',
+    icon: 'fa fa-mobile fa-lg'
+  },
+  {
+    'data-id': 'storage',
+    label: 'storage',
+    icon: 'fa fa-database'
+  },
+  LANG_MENU,
+  HELP_MENU,
+  {
+    'data-id': 'sign-out',
+    label: 'sign-out',
+    icon: 'fa fa-power-off'
+  }
+]

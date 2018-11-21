@@ -19,13 +19,11 @@ import { SplashCard, SplashFooterCard } from '../splash-card'
 import { RecordField } from '../record-field'
 import { ControlledInput } from '../../controlled-input'
 import { Dropdown, DropdownItemSpec } from '../../dropdown'
-import { LangDropdown } from '../lang-dropdown'
 import {
   Button,
   CardBody,
   CardTitle,
   InputGroup,
-  InputGroupText,
   Row
 } from 'bootstrap'
 import createL10ns from 'basic-l10n'
@@ -33,7 +31,9 @@ const l10ns = createL10ns(require('./locales.json'))
 
 export interface SigninPageProps {
   locale: string
-  emails?: string[]
+  locales?: DropdownItemSpec[]
+  emails?: DropdownItemSpec[]
+  email: string
   password?: string
   cleartext?: boolean,
   onChange?: (value: string, target: HTMLElement) => void
@@ -43,11 +43,11 @@ export interface SigninPageProps {
   onSubmit?: (event: Event) => void
 }
 
-export type SigninPageFields = 'email' | 'password'
-
 export function SigninPage ({
   locale,
+  locales,
   emails,
+  email,
   password,
   confirm,
   cleartext,
@@ -59,22 +59,6 @@ export function SigninPage ({
   ...attrs
 }: SigninPageProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
-  let i = emails.length
-  const items = new Array(i) as (DropdownItemSpec & { 'data-id': string })[]
-  items[--i] = {
-    'data-id': 'email',
-    icon: 'fa fa-plus',
-    label: t('Enter another email')
-  }
-  while (i) {
-    const email = emails[i]
-    const item = {
-      'data-id': `email/${email}`,
-      icon: 'fa fa-user',
-      label: email
-    }
-    items[--i] = item
-  }
 
   return (
     <section className='container bg-light' {...attrs}>
@@ -89,12 +73,12 @@ export function SigninPage ({
                 icon='fa fa-user'
                 inputGroup='prepend'
                 outline
-                items={items}
+                items={emails}
                 onSelectItem={onSelectItem}
               />
               <ControlledInput
                 type='email'
-                value={emails[0]}
+                value={email}
                 data-id='email'
                 debounce='300'
                 onBlur={onToggleFocus}
@@ -117,10 +101,12 @@ export function SigninPage ({
               onFocus={onToggleFocus}
               locale={locale}
             />
-            <LangDropdown
-              locale={locale}
-              className='float-left'
+            <Dropdown
+              {...locales[0]}
+              outline
+              items={locales.slice(1)}
               onSelectItem={onSelectItem}
+              className='float-left'
             />
             <Button type='submit' color='info' className='float-right' >
               {t('Login')}

@@ -18,18 +18,17 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
-import { RECORDS } from './helpers/consts'
+import { RECORDS, MENU } from './helpers/consts'
 import preventDefaultAction from './helpers/prevent-default'
 import {
   HomePageSFC,
   withAuthenticationModal
 } from 'components'
 import { withAuthentication } from 'hocs'
-import { menu } from './navbar-menu-sfc'
 
 const attrs = {
   locale: 'fr',
-  menu,
+  menu: MENU,
   records: RECORDS,
   onAuthenticationRequest: action('AUTHENTICATION_REQUESTED'),
   onSelectMenuItem: preventDefaultAction('MENU_ITEM_SELECTED'),

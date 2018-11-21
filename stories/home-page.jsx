@@ -23,11 +23,11 @@ import {
   withAuthenticationModal
 } from 'components'
 import { withAuthentication } from 'hocs'
-import { menu } from './navbar-menu-sfc'
+import { MENU } from './helpers/consts'
 
 const attrs = {
   locale: 'fr',
-  menu: menu.slice(1), // remove entry from home-page
+  menu: MENU.slice(1), // remove entry from home-page
   onLogout: action('LOGOUT'),
   onSelectMenuItem: action('SELECT_MENU_ITEM')
 }
