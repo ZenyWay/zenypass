@@ -19,11 +19,14 @@ import { SplashCard, SplashFooterCard } from '../splash-card'
 import { RecordField as PassiveRecordField } from '../record-field'
 import { ControlledInput } from '../../controlled-input'
 import { Dropdown, DropdownItemSpec } from '../../dropdown'
+import { FAIcon } from '../fa-icon'
 import {
   Button,
   CardBody,
   CardTitle,
   InputGroup,
+  InputGroupPrepend,
+  InputGroupText,
   Row
 } from 'bootstrap'
 import createL10ns from 'basic-l10n'
@@ -148,13 +151,25 @@ function SigninForm ({
   return (
     <form {...attrs} onSubmit={onSubmit}>
       <InputGroup className='mb-2' >
-        <Dropdown
-          icon='fa fa-user'
-          inputGroup='prepend'
-          outline
-          items={emails}
-          onSelectItem={onSelectItem}
-        />
+        {
+          emails && emails.length
+          ? (
+            <Dropdown
+              icon='fa fa-user'
+              inputGroup='prepend'
+              outline
+              items={emails}
+              onSelectItem={onSelectItem}
+            />
+          )
+          : (
+            <InputGroupPrepend>
+              <InputGroupText>
+                <FAIcon icon='user' fw className='mx-1' />
+              </InputGroupText>
+            </InputGroupPrepend>
+          )
+        }
         <ControlledInput
           type='email'
           blurOnEnterKey

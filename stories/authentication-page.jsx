@@ -39,6 +39,12 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
+  .add('signin_no-emails', () => (
+    <AuthenticationPage
+      email={emails[0].label}
+      {...attrs}
+    />
+  ))
   .add('signin', () => (
     <AuthenticationPage
       email={emails[0].label}
