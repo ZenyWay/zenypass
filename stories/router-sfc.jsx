@@ -20,7 +20,7 @@ import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import { RouterSFC, withAuthenticationModal } from 'components'
 import { withAuthentication } from 'hocs'
-import { MENU } from './helpers/consts'
+import { LANG_MENU, MENU } from './helpers/consts'
 
 const attrs = {
   locale: 'fr'
@@ -33,8 +33,13 @@ const onSelectMenuItem = action('SELECT_MENU_ITEM')
 
 const params = {
   '/': {
-    menu: MENU.slice(1), // remove entry from home-page
     onLogout: action('LOGOUT')
+  },
+  '/signup': {
+    onToggleSignup: action('TOGGLE_SIGNUP')
+  },
+  '/signin': {
+    onToggleSignup: action('TOGGLE_SIGNUP')
   },
   '/fatal': {
     error: INTERNAL_ERROR
@@ -48,13 +53,37 @@ storiesOf('Router (SFC)', module)
   .add('/', () => (
     <Router
       path='/'
+      menu={MENU.slice(1) /* remove entry from home-page */}
       params={params['/']}
       {...attrs}
       onSelectMenuItem={onSelectMenuItem}
     />
   ))
+  .add('/signup', () => (
+    <Router
+      path='/signup'
+      menu={LANG_MENU}
+      onSelectMenuItem={onSelectMenuItem}
+      params={params['/signup']}
+      {...attrs}
+    />
+  ))
+  .add('/signin', () => (
+    <Router
+      path='/signin'
+      menu={LANG_MENU}
+      onSelectMenuItem={onSelectMenuItem}
+      params={params['/signin']}
+      {...attrs}
+    />
+  ))
   .add('/fatal', () => (
-    <Router path='/fatal' params={params['/fatal']} {...attrs} />
+    <Router
+      path='/fatal'
+      error={INTERNAL_ERROR}
+      params={params['/fatal']}
+      {...attrs}
+    />
   ))
   .add('/unknown/route', () => (
     <Router path='/unknown/route' {...attrs} />

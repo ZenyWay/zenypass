@@ -42,6 +42,8 @@ export interface NavbarMenuProps {
 export interface MenuSpecs
 extends Array<DropdownItemSpec[] | DropdownItemSpec> {}
 
+export { DropdownItemSpec }
+
 export function NavbarMenu ({
   menu = [],
   expanded,

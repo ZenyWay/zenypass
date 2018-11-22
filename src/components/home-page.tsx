@@ -24,10 +24,12 @@ import {
 import {
   HomePage as HomePageSFC,
   HomePageProps as HomePageSFCProps,
+  DropdownItemSpec,
+  MenuSpecs,
   Record
 } from './sfcs/home-page'
 
-export { Record }
+export { DropdownItemSpec, MenuSpecs, Record }
 
 const FilteredHomePage =
   filteredRecordCards<HomePageSFCProps>(HomePageSFC)

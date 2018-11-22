@@ -15,7 +15,9 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { HomePage, HomePageProps } from '../../home-page'
+import { HomePage, HomePageProps, MenuSpecs, DropdownItemSpec } from '../../home-page'
+import { SignupPage, SignupPageProps } from '../../signup-page'
+import { SigninPage, SigninPageProps } from '../../signin-page'
 import { ErrorPage } from '../error-page'
 import { InfoModal } from '../info-modal'
 import { newStatusError } from 'utils'
@@ -31,6 +33,7 @@ export interface RouterProps extends CoreRouterProps {
 export interface CoreRouterProps {
   locale: string
   path?: string
+  menu?: MenuSpecs
   params?: { [prop: string]: unknown }
   session?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
@@ -60,6 +63,7 @@ function CoreRouter ({
   locale,
   session,
   path,
+  menu,
   params,
   onAuthenticationRequest,
   onError,
@@ -71,10 +75,30 @@ function CoreRouter ({
         <HomePage
           locale={locale}
           session={session}
-          {...params as HomePageProps}
+          menu={menu}
           onAuthenticationRequest={onAuthenticationRequest}
           onError={onError}
           onSelectMenuItem={onSelectMenuItem}
+          {...params as HomePageProps}
+        />
+      )
+    case '/signup':
+      return (
+        <SignupPage
+          locale={locale}
+          locales={menu as DropdownItemSpec[]}
+          signup
+          onSelectLocale={onSelectMenuItem}
+          {...params as SignupPageProps}
+        />
+      )
+    case '/signin':
+      return (
+        <SigninPage
+          locale={locale}
+          locales={menu as DropdownItemSpec[] }
+          onSelectLocale={onSelectMenuItem}
+          {...params as SigninPageProps}
         />
       )
     case '/fatal':

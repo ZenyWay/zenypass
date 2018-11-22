@@ -17,14 +17,14 @@
 import { createElement } from 'create-element'
 import { SearchField } from '../search-field'
 import { FAIconButton } from '../fa-icon'
-import { NavbarMenu, MenuSpecs } from '../../navbar-menu'
+import { NavbarMenu, MenuSpecs, DropdownItemSpec } from '../../navbar-menu'
 import { FilteredRecordCards, Record } from '../filtered-record-cards'
 import { InfoModal } from '../info-modal'
 import { Observer } from 'component-from-props'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
-export { Record }
+export { Record, MenuSpecs, DropdownItemSpec }
 
 export interface HomePageProps {
   locale: string

@@ -1,0 +1,18 @@
+[
+  {
+    "data-id": "help",
+    "label": "help",
+    "icon": "fa fa-question-circle"
+  },
+  {
+    "data-id": "help/first-steps",
+    "label": "first-steps",
+    "icon": "fa fa-fast-forward"
+  },
+  {
+    "data-id": "help/online-help",
+    "label": "online-help",
+    "icon": "fa fa-question-circle",
+    "href": "help-link"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "data-id": "locale",
+    "label": "locale",
+    "icon": "fa fa-globe"
+  },
+  {
+    "data-id": "locale/fr",
+    "label": "fr",
+    "icon": "flag-icon flag-icon-fr"
+  },
+  {
+    "data-id": "locale/en",
+    "label": "en",
+    "icon": ["flag-icon flag-icon-gb", "flag-icon flag-icon-us"]
+  }
+]

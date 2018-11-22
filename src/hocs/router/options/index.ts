@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
-import { dropdown, DropdownProps } from 'hocs'
-import {
-  NavbarMenu as NavbarMenuSFC,
-  NavbarMenuProps as NavbarMenuSFCProps,
-  MenuSpecs,
-  DropdownItemSpec
-} from './sfcs/navbar-menu'
 
-export { MenuSpecs, DropdownItemSpec }
+import { isString, localizeMenu } from 'utils'
+import createL10ns from 'basic-l10n'
+const l10ns = createL10ns(require('./locales.json'))
+const locale = require('./locale.json')
+const LOCALE_MENU = localizeMenu(l10ns, locale)
 
-export const NavbarMenu = dropdown<NavbarMenuSFCProps>(
-  NavbarMenuSFC
-)
+export default {
+  '/': localizeMenu(
+    l10ns,
+    assemble(require('./homepage.json'), { locale, help: require('./help.json') })
+  ),
+  '/signup': LOCALE_MENU,
+  '/signin': LOCALE_MENU
+}
 
-export type NavBarMenuProps = DropdownProps<NavbarMenuSFCProps>
+function assemble <T> (
+  root: (T | string)[],
+  branches: { [key: string]: T[] }
+): (T[] | T)[] {
+  return root.map(entry => isString(entry) ? branches[entry] : entry)
+}

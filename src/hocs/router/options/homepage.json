@@ -1,0 +1,18 @@
+[
+  {
+    "data-id": "devices",
+    "label": "devices",
+    "icon": "fa fa-mobile fa-lg"
+  },
+  {
+    "data-id": "storage",
+    "label": "storage",
+    "icon": "fa fa-database"
+  },
+  "locale",
+  "help",
+  {
+    "data-id": "logout",
+    "icon": "fa fa-power-off"
+  }
+]
