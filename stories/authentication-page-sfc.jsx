@@ -2,7 +2,7 @@
 
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { AuthenticationPage } from 'components'
+import { AuthenticationPageSFC as AuthenticationPage } from 'components'
 import { action } from '@storybook/addon-actions'
 import preventDefaultAction from './helpers/prevent-default'
 import { LANG_MENU } from './helpers/consts'
@@ -14,7 +14,8 @@ const attrs = {
   locale: 'fr',
   locales: LANG_MENU,
   onChange: action('CHANGE'),
-  onSelectItem: action('SELECT_ITEM'),
+  onSelectEmail: action('SELECT_EMAIL'),
+  onSelectLocale: action('SELECT_LOCALE'),
   onSubmit: preventDefaultAction('SUBMIT'),
   onToggleFocus: action('TOGGLE_FOCUS'),
   onTogglePage: action('TOGGLE_PAGE')

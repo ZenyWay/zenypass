@@ -36,7 +36,8 @@ export interface AuthenticationPageProps
 extends SignupFormProps, EmailDropdownProps {
   locales?: DropdownItemSpec[]
   signup?: boolean
-  onTogglePage?: (event: Event) => void
+  onSelectLocale?: (item?: HTMLElement) => void
+  onToggleSignup?: (event: Event) => void
 }
 
 export interface SignupFormProps extends AuthenticationFormProps {
@@ -45,14 +46,14 @@ export interface SignupFormProps extends AuthenticationFormProps {
 
 export interface EmailDropdownProps {
   emails?: DropdownItemSpec[]
-  onSelectItem?: (item?: HTMLElement) => void
+  onSelectEmail?: (item?: HTMLElement) => void
 }
 
 export interface AuthenticationFormProps {
   locale: string
   email?: string
   password?: string
-  cleartext?: boolean,
+  cleartext?: boolean
   onChange?: (value: string, target: HTMLElement) => void
   onSubmit?: (event: Event) => void
   onToggleFocus?: (event: Event) => void
@@ -71,10 +72,11 @@ export function AuthenticationPage (
     confirm,
     cleartext,
     onChange,
-    onSelectItem,
+    onSelectLocale,
+    onSelectEmail,
     onSubmit,
     onToggleFocus,
-    onTogglePage,
+    onToggleSignup,
     ...attrs
   } = props
   const t = l10ns[locale]
@@ -98,7 +100,7 @@ export function AuthenticationPage (
               {...locales[0]}
               outline
               items={locales.slice(1)}
-              onSelectItem={onSelectItem}
+              onSelectItem={onSelectLocale}
               className='float-left'
             />
             <Button
@@ -125,7 +127,7 @@ export function AuthenticationPage (
         <SplashFooterCard>
           <CardBody>
             <p><small>{question} ?</small></p>
-            <Button color='info' onClick={onTogglePage} >
+            <Button color='info' onClick={onToggleSignup} >
               {t(signup ? 'Login' : 'Create your account')}
             </Button>
           </CardBody>
@@ -144,7 +146,7 @@ function SigninForm ({
   onChange,
   onSubmit,
   onToggleFocus,
-  onSelectItem,
+  onSelectEmail,
   ...attrs
 }: AuthenticationFormProps & EmailDropdownProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
@@ -159,7 +161,7 @@ function SigninForm ({
               inputGroup='prepend'
               outline
               items={emails}
-              onSelectItem={onSelectItem}
+              onSelectItem={onSelectEmail}
             />
           )
           : (
