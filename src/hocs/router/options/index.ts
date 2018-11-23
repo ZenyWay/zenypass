@@ -14,16 +14,22 @@
  * Limitations under the License.
  */
 
-import { isString, localizeMenu } from 'utils'
+import { isString, localizeMenu, MenuItemSpec } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 const locale = require('./locale.json')
-const LOCALE_MENU = localizeMenu(l10ns, locale)
+const LOCALE_REGEXP = /^locale\/(\w+)$/
+const LOCALE_MENU =
+  localizeMenu(l10ns, locale, excludeCurrentLocale)
 
 export default {
   '/': localizeMenu(
     l10ns,
-    assemble(require('./homepage.json'), { locale, help: require('./help.json') })
+    assemble(
+      require('./homepage.json'),
+      { locale, help: require('./help.json') }
+    ),
+    excludeCurrentLocale
   ),
   '/signup': LOCALE_MENU,
   '/signin': LOCALE_MENU
@@ -34,4 +40,9 @@ function assemble <T> (
   branches: { [key: string]: T[] }
 ): (T[] | T)[] {
   return root.map(entry => isString(entry) ? branches[entry] : entry)
+}
+
+function excludeCurrentLocale (locale: string, item: MenuItemSpec) {
+  const match = LOCALE_REGEXP.exec(item['data-id'])
+  return match && match[1] === locale
 }

@@ -97,7 +97,7 @@ export function AuthenticationPage (
           <CardBody className='px-0' >
             <Form id='authentication-form' {...props} />
             <Dropdown
-              {...locales[0]}
+              icon={locales[0].icon}
               outline
               items={locales.slice(1)}
               onSelectItem={onSelectLocale}
