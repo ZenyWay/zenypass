@@ -39,6 +39,7 @@ export interface CoreRouterProps {
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onError?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
+  onExit?: (event?: MouseEvent) => void
 }
 
 export function Router ({
@@ -67,7 +68,8 @@ function CoreRouter ({
   params,
   onAuthenticationRequest,
   onError,
-  onSelectMenuItem
+  onSelectMenuItem,
+  onExit
 }: CoreRouterProps & { [prop: string]: unknown }) {
   switch (path) {
     case '/':
@@ -89,6 +91,7 @@ function CoreRouter ({
           locales={menu as DropdownItemSpec[]}
           signup
           onSelectLocale={onSelectMenuItem}
+          onToggleSignup={onExit}
           {...params as SignupPageProps}
         />
       )
@@ -98,6 +101,7 @@ function CoreRouter ({
           locale={locale}
           locales={menu as DropdownItemSpec[] }
           onSelectLocale={onSelectMenuItem}
+          onToggleSignup={onExit}
           {...params as SigninPageProps}
         />
       )

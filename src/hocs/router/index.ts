@@ -49,6 +49,7 @@ export interface RouterSFCHandlerProps {
   onError?: (error?: any) => void
   onCloseInfo?: (event: MouseEvent) => void
   onSelectMenuItem?: (target: HTMLElement) => void
+  onExit?: (event: MouseEvent) => void
 }
 
 interface RouterState {
@@ -80,6 +81,7 @@ function mapStateToProps (
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => RouterSFCHandlerProps =
 createActionDispatchers({
+  onExit: 'EXIT',
   onSelectMenuItem: actionFromMenuItem,
   onError: actionFromError,
   onCloseInfo: 'CLOSE_INFO'

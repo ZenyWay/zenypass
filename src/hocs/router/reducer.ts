@@ -34,9 +34,11 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/signup': {
+    EXIT: '/signin',
     FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/signin': {
+    EXIT: '/signup',
     LOGIN_RESOLVED: ['/', into('session')(mapPayload())],
     FATAL: ['/fatal', mapPayloadIntoError]
   },
