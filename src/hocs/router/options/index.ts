@@ -22,6 +22,9 @@ const LOCALE_REGEXP = /^locale\/(\w+)$/
 const LOCALE_MENU =
   localizeMenu(l10ns, locale, excludeCurrentLocale)
 
+export const LOCALES = Object.keys(l10ns)
+export const DEFAULT_LOCALE = LOCALES[0]
+
 export default {
   '/': localizeMenu(
     l10ns,

@@ -46,9 +46,7 @@ function actionFromNonLinkMenuItem (item: HTMLElement): StandardAction<any> {
   const { id } = item.dataset
   const [_, type, param] = MENU_ITEM_REGEX.exec(id) || [] as string[]
   const action = type && actions[type]
-  return action
-  ? action({ item, param })
-  : selectMenuItem(item)
+  return action ? action(param) : selectMenuItem(item)
 }
 
 export function actionFromError (error?: any): StandardAction<any> {

@@ -14,17 +14,21 @@
  * Limitations under the License.
  */
 //
-import { StandardAction } from 'basic-fsa-factories'
+import { LOCALES } from './options'
+import { StandardAction, createActionFactory } from 'basic-fsa-factories'
+import * as qs from 'query-string'
 import {
   ignoreElements,
   filter,
   pluck,
+  map,
   tap,
   withLatestFrom
 } from 'rxjs/operators'
-import { Observable } from 'rxjs'
+import { Observable, fromEvent, merge } from 'rxjs'
+import { isBoolean, isString } from 'utils'
 
-// const log = (label: string) => console.log.bind(console, label)
+const log = (label: string) => console.log.bind(console, label)
 
 export function openLinkOnCloseInfo (
   event$: Observable<StandardAction<any>>,
@@ -41,4 +45,55 @@ export function openLinkOnCloseInfo (
 
 function openItemLink ({ target, href }: HTMLLinkElement) {
   window.open(href, target)
+}
+
+const email = createActionFactory('EMAIL')
+const locale = createActionFactory('LOCALE')
+const signup = createActionFactory('SIGNUP')
+const signin = createActionFactory('SIGNIN')
+
+export function injectParamsFromUrl () {
+  // support url hash in storybook (iframe in development mode)
+  const win = process.env.NODE_ENV === 'development' ? window.top : window
+  const hash$ = fromEvent(win, 'hashchange').pipe(
+    map(() => qs.parse(win.location.hash))
+  )
+  const email$ = hash$.pipe(
+    pluck('email'),
+    map(sanitizeEmail),
+    filter(Boolean),
+    map(email)
+  )
+  const locale$ = hash$.pipe(
+    pluck('lang'),
+    map(sanitizeLang),
+    filter(Boolean),
+    map(locale)
+  )
+  const signup$ = hash$.pipe(
+    pluck('signup'),
+    map(sanitizeSignup),
+    filter(isBoolean),
+    map(isSignup => isSignup ? signup() : signin())
+  )
+  return merge(email$, locale$, signup$)
+}
+
+const INVALID_EMAIL = /^(?:[^@]+|.*[\n(){}\/\\<>]+.*)$/m
+function sanitizeEmail (email: unknown) {
+  return !isString(email) || INVALID_EMAIL.test(email.valueOf())
+  ? void 0
+  : email
+}
+
+function sanitizeLang (lang: unknown) {
+  if (!isString(lang)) return void 0
+  const i = LOCALES.indexOf(lang.trim().toLowerCase())
+  return i < 0 ? void 0 : LOCALES[i]
+}
+
+function sanitizeSignup (signup: unknown) {
+  return isString(signup)
+  ? signup.trim().toLowerCase() === 'true'
+  : isBoolean(signup) ? signup : void 0
 }

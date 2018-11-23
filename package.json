@@ -73,6 +73,7 @@
     "inferno": "^5.6.1",
     "inferno-bootstrap": "^5.1.4",
     "inferno-create-element": "^5.6.1",
+    "query-string": "^6.2.0",
     "rxjs": "^6.3.3",
     "typestyle": "^2.0.1"
   },

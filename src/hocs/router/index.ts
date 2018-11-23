@@ -16,8 +16,8 @@
 
 import reducer, { RouteAutomataState, LinkAutomataState } from './reducer'
 import { actionFromMenuItem, actionFromError } from './dispatchers'
-import { openLinkOnCloseInfo } from './effects'
-import MENUS from './options'
+import { injectParamsFromUrl, openLinkOnCloseInfo } from './effects'
+import MENUS, { DEFAULT_LOCALE } from './options'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -29,8 +29,6 @@ import { createActionDispatchers } from 'basic-fsa-factories'
 import { tap } from 'rxjs/operators'
 import { MenuSpec } from 'utils'
 const log = label => console.log.bind(console, label)
-
-const DEFAULT_LOCALE = 'en'
 
 export type RouterProps<P extends RouterSFCProps> =
   Rest<P, RouterSFCProps>
@@ -57,13 +55,14 @@ interface RouterState {
   locale: string
   session: string
   path: RouteAutomataState
+  params: { [prop: string]: unknown }
   info: LinkAutomataState
   error?: any
   link?: HTMLLinkElement
 }
 
 function mapStateToProps (
-  { props, locale, path, info, session, error }: RouterState
+  { props, locale, path, params, info, session, error }: RouterState
 ): Rest<RouterSFCProps, RouterSFCHandlerProps> {
   const menu = MENUS[path]
   const lang = locale || DEFAULT_LOCALE
@@ -71,6 +70,7 @@ function mapStateToProps (
     ...props,
     locale: lang,
     path,
+    params,
     menu: menu && menu[lang],
     info: info === 'info',
     session,
@@ -95,6 +95,7 @@ export function router <P extends RouterSFCProps> (
     () => tap(log('router:event:')),
     redux(
       reducer,
+      injectParamsFromUrl,
       openLinkOnCloseInfo
     ),
     () => tap(log('router:state:')),

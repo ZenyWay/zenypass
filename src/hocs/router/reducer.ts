@@ -25,6 +25,8 @@ export type LinkAutomataState = 'idle' | 'info'
 
 const mapPayloadIntoError = into('error')(mapPayload())
 
+const mapPayloadIntoParamsEmail = into('params')(mapPayload(email => ({ email })))
+
 const routeAutomata: AutomataSpec<RouteAutomataState> = {
   '/': {
     // TODO remove comments when corresponding pages are available
@@ -34,11 +36,15 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/signup': {
+    SIGNIN: '/signin',
     EXIT: '/signin',
+    EMAIL: mapPayloadIntoParamsEmail,
     FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/signin': {
+    SIGNUP: '/signup',
     EXIT: '/signup',
+    EMAIL: mapPayloadIntoParamsEmail,
     LOGIN_RESOLVED: ['/', into('session')(mapPayload())],
     FATAL: ['/fatal', mapPayloadIntoError]
   },
@@ -65,8 +71,8 @@ const linkAutomata: AutomataSpec<LinkAutomataState> = {
 }
 
 export default compose.into(0)(
-  createAutomataReducer(routeAutomata, '/signup', 'path'),
+  createAutomataReducer(routeAutomata, '/signin', 'path'),
   createAutomataReducer(linkAutomata, 'idle', 'info'),
-  forType('LOCALE')(into('locale')(mapPayload(pluck('param')))),
+  forType('LOCALE')(into('locale')(mapPayload())),
   forType('PROPS')(into('props')(mapPayload()))
 )
