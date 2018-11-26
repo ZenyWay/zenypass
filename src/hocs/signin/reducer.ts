@@ -15,10 +15,23 @@
  */
 
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
-import { into } from 'basic-cursors'
+import { into, propCursor } from 'basic-cursors'
 import compose from 'basic-compose'
-import { forType, mapPayload, pluck } from 'utils'
+import { forType, mapPayload, mergePayload } from 'utils'
+
+export type AutomataState = 'invalid' | 'valid'
+const automata: AutomataSpec<AutomataState> = {
+  invalid: {
+    VALID_EMAIL: 'valid'
+  },
+  valid: {
+    INVALID_EMAIL: 'invalid'
+  }
+}
 
 export const reducer = compose.into(0)(
+  createAutomataReducer(automata, 'invalid'),
+  forType('CHANGE')(propCursor('changes')(mergePayload())),
+  forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(into('props')(mapPayload()))
 )

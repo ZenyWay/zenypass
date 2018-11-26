@@ -37,6 +37,14 @@ export function mapPayload <I,O> (project = identity as (val: I) => O) {
     return project(payload)
   }
 }
+export function mergePayload <S,I,O> (project = identity as (val: I) => O) {
+  return function <S extends O, A extends { payload: I }>(
+    state: S,
+    { payload }: A
+  ): S {
+    return { ...(state as any), ...(project(payload) as any) }
+  }
+}
 
 export function forType (type) {
   return function (reduce) {

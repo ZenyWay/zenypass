@@ -14,7 +14,12 @@
  * Limitations under the License.
  */
 
-import { reducer } from './reducer'
+import { reducer, AutomataState } from './reducer'
+import {
+  focusEmailInputOnMount,
+  focusPasswordInputOnValidEmailAndNoPassword,
+  validateEmailOnEmailChange
+} from './effects'
 import componentFromEvents, {
   ComponentClass,
   Rest,
@@ -22,11 +27,17 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { createActionDispatchers } from 'basic-fsa-factories'
-import { preventDefault } from 'utils'
-import { tap } from 'rxjs/operators'
-import createL10ns from 'basic-l10n'
-const l10ns = createL10ns(require('./locales.json'))
+import {
+  createActionDispatchers,
+  createActionFactories,
+  createActionFactory
+} from 'basic-fsa-factories'
+import {
+  newStatusError,
+  preventDefault,
+  shallowEqual
+} from 'utils'
+import { tap, distinctUntilChanged } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
 export type SigninProps<P extends SigninSFCProps> =
@@ -38,9 +49,12 @@ export interface SigninHocProps {
 
 export interface SigninSFCProps
 extends SigninSFCHandlerProps {
+  state?: AutomataState
   emails?: DropdownItemSpec[]
+  valid?: boolean
   email?: string
   password?: string
+  confirm?: string
   cleartext?: boolean
 }
 
@@ -55,25 +69,48 @@ export interface SigninSFCHandlerProps {
   onSelectEmail?: (item?: HTMLElement) => void
   onSubmit?: (event: Event) => void
   onToggleFocus?: (event: Event) => void
+  onEmailInputRef?: (target: HTMLElement) => void
+  onPasswordInputRef?: (target: HTMLElement) => void
+  onConfirmInputRef?: (target: HTMLElement) => void
 }
 
 interface SigninState {
   props: SigninProps<SigninSFCProps>
+  state: AutomataState
+  changes?: { [key in SigninInputs]: string }
+  inputs?: { [key in SigninInputs]: HTMLElement }
 }
 
+type SigninInputs = 'email' | 'password' | 'confirm'
+
 function mapStateToProps (
-  { props }: SigninState
+  { props, state, changes }: SigninState
 ): Rest<SigninSFCProps, SigninSFCHandlerProps> {
-  return props
+  return { ...props, ...changes, valid: state === 'valid' }
 }
+
+const TOGGLE_FOCUS_ACTIONS = createActionFactories({
+  email: 'TOGGLE_EMAIL_FOCUS',
+  password: 'TOGGLE_PASSWORD_FOCUS'
+})
+const error = createActionFactory('ERROR')
 
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => SigninSFCHandlerProps =
 createActionDispatchers({
-  onChange: 'CHANGE',
+  onChange: [
+    'CHANGE',
+    (value: string, input: HTMLElement) => ({ [input.dataset.id]: value })
+  ],
   onSelectEmail: 'SELECT_EMAIL',
   onSubmit: ['SUBMIT', preventDefault],
-  onToggleFocus: 'TOGGLE_FOCUS'
+  onToggleFocus ({ currentTarget: input }: { currentTarget: HTMLElement }) {
+    const action = input && TOGGLE_FOCUS_ACTIONS[input.dataset.id]
+    return action ? action(input) : error(newStatusError())
+  },
+  onEmailInputRef: ['INPUT_REF', input => ({ email: input })],
+  onPasswordInputRef: ['INPUT_REF', input => ({ password: input })],
+  onConfirmInputRef: ['INPUT_REF', input => ({ confirm: input })]
 })
 
 export function signin <P extends SigninSFCProps> (
@@ -83,13 +120,17 @@ export function signin <P extends SigninSFCProps> (
     SigninSFC,
     () => tap(log('signin:event:')),
     redux(
-      reducer
+      reducer,
+      validateEmailOnEmailChange,
+      focusEmailInputOnMount,
+      focusPasswordInputOnValidEmailAndNoPassword
     ),
     () => tap(log('signin:state:')),
     connect<SigninState, SigninSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
+    () => distinctUntilChanged(shallowEqual),
     () => tap(log('signin:view-props:'))
   )
 }

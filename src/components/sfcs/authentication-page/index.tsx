@@ -17,18 +17,11 @@
 import { createElement } from 'create-element'
 import { SplashCard, SplashFooterCard } from '../splash-card'
 import { RecordField as PassiveRecordField } from '../record-field'
-import { ControlledInput } from '../../controlled-input'
+import { AutoformatRecordField } from '../../autoformat-record-field'
 import { Dropdown, DropdownItemSpec } from '../../dropdown'
-import { FAIcon } from '../fa-icon'
-import {
-  Button,
-  CardBody,
-  CardTitle,
-  InputGroup,
-  InputGroupPrepend,
-  InputGroupText,
-  Row
+import { Button, CardBody, CardTitle, Row
 } from 'bootstrap'
+import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
@@ -42,6 +35,7 @@ extends SignupFormProps, EmailDropdownProps {
 
 export interface SignupFormProps extends AuthenticationFormProps {
   confirm?: string
+  onConfirmInputRef?: (target: HTMLElement) => void
 }
 
 export interface EmailDropdownProps {
@@ -49,38 +43,57 @@ export interface EmailDropdownProps {
   onSelectEmail?: (item?: HTMLElement) => void
 }
 
-export interface AuthenticationFormProps {
-  locale: string
-  email?: string
+export interface AuthenticationFormProps extends EmailFieldProps {
+  valid?: boolean
   password?: string
   cleartext?: boolean
-  onChange?: (value: string, target: HTMLElement) => void
   onSubmit?: (event: Event) => void
-  onToggleFocus?: (event: Event) => void
+  onPasswordInputRef?: (target: HTMLElement) => void
 }
 
-export function AuthenticationPage (
-  props: AuthenticationPageProps & { [prop: string]: unknown }
-) {
-  const {
+export interface EmailFieldProps {
+  locale: string
+  email?: string
+  onChange?: (value: string, target: HTMLElement) => void
+  onToggleFocus?: (event: Event) => void
+  onEmailInputRef?: (target: HTMLElement) => void
+}
+
+export function AuthenticationPage ({
+  locale,
+  locales,
+  signup,
+  emails,
+  valid,
+  email,
+  password,
+  confirm,
+  cleartext,
+  onChange,
+  onSelectLocale,
+  onSelectEmail,
+  onSubmit,
+  onToggleFocus,
+  onToggleSignup,
+  onEmailInputRef,
+  onPasswordInputRef,
+  onConfirmInputRef,
+  ...attrs
+}: AuthenticationPageProps & { [prop: string]: unknown }) {
+  const formProps = {
+    id: 'authentication-form',
     locale,
-    locales,
-    signup,
-    emails,
+    valid,
     email,
     password,
-    confirm,
     cleartext,
     onChange,
-    onSelectLocale,
-    onSelectEmail,
     onSubmit,
     onToggleFocus,
-    onToggleSignup,
-    ...attrs
-  } = props
+    onEmailInputRef,
+    onPasswordInputRef
+  }
   const t = l10ns[locale]
-  const Form = signup ? SignupForm : SigninForm
   const title = t(
     signup ? 'Create your ZenyPass account' : 'Login to your ZenyPass account'
   )
@@ -95,7 +108,23 @@ export function AuthenticationPage (
             {title}
           </CardTitle>
           <CardBody className='px-0' >
-            <Form id='authentication-form' {...props} />
+            {
+              signup
+              ? (
+                <SignupForm
+                  {...formProps}
+                  confirm={confirm}
+                  onConfirmInputRef={onConfirmInputRef}
+                />
+              )
+              : (
+                <SigninForm
+                  {...formProps}
+                  emails={emails}
+                  onSelectEmail={onSelectEmail}
+                />
+              )
+            }
             <Dropdown
               icon={locales[0].icon}
               outline
@@ -140,6 +169,7 @@ export function AuthenticationPage (
 function SigninForm ({
   locale,
   emails,
+  valid,
   email,
   password,
   cleartext,
@@ -147,56 +177,47 @@ function SigninForm ({
   onSubmit,
   onToggleFocus,
   onSelectEmail,
+  onEmailInputRef,
+  onPasswordInputRef,
+  onConfirmInputRef,
   ...attrs
 }: AuthenticationFormProps & EmailDropdownProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
+  const dropdown = emails && emails.length
   return (
     <form {...attrs} onSubmit={onSubmit}>
-      <InputGroup className='mb-2' >
-        {
-          emails && emails.length
-          ? (
-            <Dropdown
-              icon='fa fa-user'
-              inputGroup='prepend'
-              outline
-              items={emails}
-              onSelectItem={onSelectEmail}
-            />
-          )
-          : (
-            <InputGroupPrepend>
-              <InputGroupText>
-                <FAIcon icon='user' fw className='mx-1' />
-              </InputGroupText>
-            </InputGroupPrepend>
-          )
-        }
-        <ControlledInput
-          type='email'
-          blurOnEnterKey
-          value={email}
-          data-id='email'
-          onBlur={onToggleFocus}
-          onChange={onChange}
-          onFocus={onToggleFocus}
-          placeholder={t('Enter your email')}
-          className='form-control'
-        />
-      </InputGroup>
+      <AutoformatRecordField
+        type='email'
+        id='email'
+        blurOnEnterKey
+        className='mb-2'
+        options={emails}
+        icon={dropdown ? 'fa fa-user' : 'user'}
+        placeholder={t('Enter your email')}
+        value={email}
+        data-id='email'
+        onBlur={onToggleFocus}
+        onChange={onChange}
+        onFocus={onToggleFocus}
+        onSelectEmail={onSelectEmail}
+        locale={locale}
+        innerRef={onEmailInputRef}
+      />
       <PassiveRecordField
         type={cleartext ? 'text' : 'password'}
         blurOnEnterKey
         id='password'
         className='mb-2'
-        icon='lock mx-1'
-        placeholder={t('Enter your password')}
+        icon={classes('lock', dropdown && 'mx-1')}
+        placeholder={valid && t('Enter your password')}
         value={password}
-        dataId='password'
+        data-id='password'
         onBlur={onToggleFocus}
         onChange={onChange}
         onFocus={onToggleFocus}
         locale={locale}
+        disabled={!valid}
+        innerRef={onPasswordInputRef}
       />
     </form>
   )
@@ -204,6 +225,7 @@ function SigninForm ({
 
 function SignupForm ({
   locale,
+  valid,
   email,
   password,
   confirm,
@@ -211,12 +233,15 @@ function SignupForm ({
   onChange,
   onSubmit,
   onToggleFocus,
+  onEmailInputRef,
+  onPasswordInputRef,
+  onConfirmInputRef,
   ...attrs
 }: SignupFormProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
   return (
     <form {...attrs} onSubmit={onSubmit}>
-      <PassiveRecordField
+      <AutoformatRecordField
         type='email'
         id='email'
         blurOnEnterKey
@@ -224,11 +249,12 @@ function SignupForm ({
         icon='user'
         placeholder={t('Enter your email')}
         value={email}
-        dataId='email'
+        data-id='email'
         onBlur={onToggleFocus}
         onChange={onChange}
         onFocus={onToggleFocus}
         locale={locale}
+        innerRef={onEmailInputRef}
       />
       <PassiveRecordField
         type={cleartext ? 'text' : 'password'}
@@ -236,13 +262,15 @@ function SignupForm ({
         blurOnEnterKey
         className='mb-2'
         icon='lock'
-        placeholder={t('Enter your password')}
+        placeholder={valid && t('Enter your password')}
         value={password}
-        dataId='password'
+        data-id='password'
         onBlur={onToggleFocus}
         onChange={onChange}
         onFocus={onToggleFocus}
         locale={locale}
+        disabled={!valid}
+        innerRef={onPasswordInputRef}
       />
       <PassiveRecordField
         type={cleartext ? 'text' : 'password'}
@@ -250,13 +278,15 @@ function SignupForm ({
         blurOnEnterKey
         className='mb-2'
         icon='lock'
-        placeholder={t('Confirm your password')}
+        placeholder={valid && t('Confirm your password')}
         value={confirm}
-        dataId='confirm'
+        data-id='confirm'
         onBlur={onToggleFocus}
         onChange={onChange}
         onFocus={onToggleFocus}
         locale={locale}
+        disabled={!valid}
+        innerRef={onConfirmInputRef}
       />
       <p>
         <small>

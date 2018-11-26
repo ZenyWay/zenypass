@@ -114,13 +114,9 @@ createActionDispatchers({
   onEditRecordRequest: 'EDIT_RECORD_REQUESTED',
   onChange: [
     'CHANGE',
-    function (
-      value: string[] | string,
-      target: HTMLElement
-    ): Partial<ZenypassRecord> {
-      const { id } = target.dataset
-      return { [id]: value }
-    }
+    (value: string[] | string, input: HTMLElement) => ({
+      [input.dataset.id]: value
+    })
   ],
   onUpdateRecordRequest: 'UPDATE_RECORD_REQUESTED',
   onDeleteRecordRequest: 'DELETE_RECORD_REQUESTED'

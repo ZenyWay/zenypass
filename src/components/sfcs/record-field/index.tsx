@@ -17,6 +17,7 @@
 import { createElement } from 'create-element'
 import { InputProps, InputGroupText } from 'bootstrap'
 import { IconLabelInputGroup } from '../icon-label-input-group'
+import { Dropdown, DropdownItemSpec } from '../../dropdown'
 import { ControlledInput } from '../../controlled-input'
 import createL10ns, { L10nTag } from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
@@ -39,6 +40,7 @@ export interface RecordFieldProps extends InputProps {
   id: string
   locale: string
   type?: string
+  options?: DropdownItemSpec[]
   value?: string
   error?: string
   placeholder?: string
@@ -62,6 +64,7 @@ export function RecordField ({
   id,
   locale,
   type,
+  options,
   value,
   error,
   placeholder,
@@ -87,6 +90,7 @@ export function RecordField ({
       id={id}
       className={className}
       size={size}
+      options={options}
       icon={icon || DEFAULT_ICONS[type]}
       rotate={rotate}
       flip={flip}
