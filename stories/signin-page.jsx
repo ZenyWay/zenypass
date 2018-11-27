@@ -27,6 +27,7 @@ delete locales[0].label // remove label of dropdown toggle
 const attrs = {
   locale: 'fr',
   locales: LANG_MENU,
+  onAuthenticated: action('AUTHENTICATED'),
   onSelectLocale: action('SELECT_LOCALE'),
   onToggleSignup: action('TOGGLE_SIGNUP')
 }

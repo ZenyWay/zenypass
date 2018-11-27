@@ -45,7 +45,7 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     SIGNUP: '/signup',
     EXIT: '/signup',
     EMAIL: mapPayloadIntoParamsEmail,
-    LOGIN_RESOLVED: ['/', into('session')(mapPayload())],
+    AUTHENTICATED: ['/', into('session')(mapPayload())],
     FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/devices': {

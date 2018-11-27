@@ -36,6 +36,7 @@ export interface CoreRouterProps {
   menu?: MenuSpecs
   params?: { [prop: string]: unknown }
   session?: string
+  onAuthenticated?: (session?: string) => void
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onError?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
@@ -66,6 +67,7 @@ function CoreRouter ({
   path,
   menu,
   params,
+  onAuthenticated,
   onAuthenticationRequest,
   onError,
   onSelectMenuItem,
@@ -100,6 +102,7 @@ function CoreRouter ({
         <SigninPage
           locale={locale}
           locales={menu as DropdownItemSpec[] }
+          onAuthenticated={onAuthenticated}
           onSelectLocale={onSelectMenuItem}
           onToggleSignup={onExit}
           {...params as SigninPageProps}

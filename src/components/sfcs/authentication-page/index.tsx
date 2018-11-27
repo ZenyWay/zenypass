@@ -47,6 +47,7 @@ export interface AuthenticationFormProps extends EmailFieldProps {
   valid?: boolean
   password?: string
   cleartext?: boolean
+  error?: boolean
   onSubmit?: (event: Event) => void
   onPasswordInputRef?: (target: HTMLElement) => void
 }
@@ -69,6 +70,7 @@ export function AuthenticationPage ({
   password,
   confirm,
   cleartext,
+  error,
   onChange,
   onSelectLocale,
   onSelectEmail,
@@ -87,6 +89,7 @@ export function AuthenticationPage ({
     email,
     password,
     cleartext,
+    error,
     onChange,
     onSubmit,
     onToggleFocus,
@@ -173,6 +176,7 @@ function SigninForm ({
   email,
   password,
   cleartext,
+  error,
   onChange,
   onSubmit,
   onToggleFocus,
@@ -216,9 +220,21 @@ function SigninForm ({
         onChange={onChange}
         onFocus={onToggleFocus}
         locale={locale}
-        disabled={!valid}
+        disabled={!password && !valid}
         innerRef={onPasswordInputRef}
       />
+      {
+        !error
+        ? null
+        : (
+          <p>
+            <small className='text-danger'>
+              {t('UNAUTHORIZED')}:<br/>
+              {t('Please check your email and enter your password again')}.
+            </small>
+          </p>
+        )
+      }
     </form>
   )
 }
@@ -269,7 +285,7 @@ function SignupForm ({
         onChange={onChange}
         onFocus={onToggleFocus}
         locale={locale}
-        disabled={!valid}
+        disabled={!password && !valid}
         innerRef={onPasswordInputRef}
       />
       <PassiveRecordField
@@ -285,7 +301,7 @@ function SignupForm ({
         onChange={onChange}
         onFocus={onToggleFocus}
         locale={locale}
-        disabled={!valid}
+        disabled={!password && !valid}
         innerRef={onConfirmInputRef}
       />
       <p>

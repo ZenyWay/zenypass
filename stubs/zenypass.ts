@@ -21,6 +21,7 @@ const AUTHENTICATION_DELAY = 1500 // ms
 const AUTHORIZATION_DELAY = 10000 // ms
 const TOKEN_DELAY = 500 // ms
 const RECORD_SERVICE_DELAY = 500 // ms
+const USERNAME = 'me@zw.fr'
 const PASSWORD = '!!!'
 const SESSION_ID = '42'
 const TOKEN = 'BCDE FGHI JKLN'
@@ -70,6 +71,19 @@ const RECORDS = [
   },
   {} as KVMap<Partial<ZenypassRecord>>
 )
+
+export function signin (
+  creds: { username: string, password: string }
+): Observable<string> {
+  const { username, password } = creds
+  return interval(AUTHENTICATION_DELAY).pipe(
+    take(1),
+    switchMap(() => username === USERNAME && password === PASSWORD
+      ? observable(SESSION_ID)
+      : throwError(UNAUTHORIZED)
+    )
+  )
+}
 
 export function authenticate (password: string): Observable<string> {
   return interval(AUTHENTICATION_DELAY).pipe(

@@ -17,15 +17,24 @@
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into, propCursor } from 'basic-cursors'
 import compose from 'basic-compose'
-import { forType, mapPayload, mergePayload } from 'utils'
+import { always, forType, mapPayload, mergePayload } from 'utils'
 
-export type AutomataState = 'invalid' | 'valid'
+export type AutomataState = 'invalid' | 'valid' | 'authenticating'
+
+const clearPassword = propCursor('changes')(propCursor('password')(always()))
+const clearError = propCursor('error')(always())
+
 const automata: AutomataSpec<AutomataState> = {
   invalid: {
     VALID_EMAIL: 'valid'
   },
   valid: {
-    INVALID_EMAIL: 'invalid'
+    INVALID_EMAIL: 'invalid',
+    SUBMIT: ['authenticating',clearError]
+  },
+  authenticating: {
+    UNAUTHORIZED: ['valid', clearPassword, into('error')(mapPayload())],
+    AUTHENTICATED: ['valid', clearPassword]
   }
 }
 

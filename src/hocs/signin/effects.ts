@@ -14,7 +14,9 @@
  * Limitations under the License.
  */
 
+import { signin } from 'services'
 import { StandardAction, createActionFactory } from 'basic-fsa-factories'
+import { ERROR_STATUS } from 'utils'
 import {
   ignoreElements,
   filter,
@@ -24,9 +26,10 @@ import {
   tap,
   withLatestFrom,
   catchError,
-  startWith
+  startWith,
+  switchMap
 } from 'rxjs/operators'
-import { Observable, merge } from 'rxjs'
+import { Observable, of as observable, merge } from 'rxjs'
 // const log = label => console.log.bind(console, label)
 
 export function focusEmailInputOnMount (
@@ -74,5 +77,34 @@ export function focusPasswordInputOnValidEmailAndNoPassword (
     tap(({ inputs }) => inputs.password.focus()),
     catchError((err, state$) => state$.pipe(startWith(error(err)))),
     ignoreElements()
+  )
+}
+
+const authenticated = createActionFactory('AUTHENTICATED')
+const unauthorized = createActionFactory('UNAUTHORIZED')
+export function signinOnSubmit (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return event$.pipe(
+    filter(({ type }) => type === 'SUBMIT'),
+    withLatestFrom(state$),
+    pluck('1'),
+    filter(({ state, changes }) => state !== 'invalid' && changes.password),
+    switchMap(
+      ({ changes }) => signin({
+        username: changes.email,
+        password: changes.password
+      }).pipe(
+        map(authenticated),
+        catchError(
+          err => observable(
+            err && err.status !== ERROR_STATUS.UNAUTHORIZED
+            ? error(err)
+            : unauthorized(err.status)
+          )
+        )
+      )
+    )
   )
 }

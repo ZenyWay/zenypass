@@ -18,6 +18,7 @@ import { reducer, AutomataState } from './reducer'
 import {
   focusEmailInputOnMount,
   focusPasswordInputOnValidEmailAndNoPassword,
+  signinOnSubmit,
   validateEmailOnEmailChange
 } from './effects'
 import componentFromEvents, {
@@ -33,6 +34,7 @@ import {
   createActionFactory
 } from 'basic-fsa-factories'
 import {
+  callHandlerOnEvent,
   newStatusError,
   preventDefault,
   shallowEqual
@@ -41,7 +43,7 @@ import { tap, distinctUntilChanged } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
 export type SigninProps<P extends SigninSFCProps> =
-  Rest<P, SigninSFCProps>
+  SigninHocProps & Rest<P, SigninSFCProps>
 
 export interface SigninHocProps {
   onAuthenticated?: (sessionId: string) => void
@@ -56,6 +58,7 @@ extends SigninSFCHandlerProps {
   password?: string
   confirm?: string
   cleartext?: boolean
+  error?: boolean
 }
 
 export interface DropdownItemSpec {
@@ -79,14 +82,15 @@ interface SigninState {
   state: AutomataState
   changes?: { [key in SigninInputs]: string }
   inputs?: { [key in SigninInputs]: HTMLElement }
+  error?: string
 }
 
 type SigninInputs = 'email' | 'password' | 'confirm'
 
 function mapStateToProps (
-  { props, state, changes }: SigninState
+  { props, state, changes, error }: SigninState
 ): Rest<SigninSFCProps, SigninSFCHandlerProps> {
-  return { ...props, ...changes, valid: state === 'valid' }
+  return { ...props, ...changes, valid: state !== 'invalid', error: !!error }
 }
 
 const TOGGLE_FOCUS_ACTIONS = createActionFactories({
@@ -123,7 +127,9 @@ export function signin <P extends SigninSFCProps> (
       reducer,
       validateEmailOnEmailChange,
       focusEmailInputOnMount,
-      focusPasswordInputOnValidEmailAndNoPassword
+      focusPasswordInputOnValidEmailAndNoPassword,
+      signinOnSubmit,
+      callHandlerOnEvent('onAuthenticated', 'AUTHENTICATED')
     ),
     () => tap(log('signin:state:')),
     connect<SigninState, SigninSFCProps>(

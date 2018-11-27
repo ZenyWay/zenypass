@@ -44,6 +44,7 @@ export interface RouterSFCProps extends RouterSFCHandlerProps {
 }
 
 export interface RouterSFCHandlerProps {
+  onAuthenticated?: (session?: string) => void
   onError?: (error?: any) => void
   onCloseInfo?: (event: MouseEvent) => void
   onSelectMenuItem?: (target: HTMLElement) => void
@@ -81,6 +82,7 @@ function mapStateToProps (
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => RouterSFCHandlerProps =
 createActionDispatchers({
+  onAuthenticated: 'AUTHENTICATED',
   onExit: 'EXIT',
   onSelectMenuItem: actionFromMenuItem,
   onError: actionFromError,

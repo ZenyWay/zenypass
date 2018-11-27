@@ -30,7 +30,11 @@ import { Observer } from 'rxjs'
 // const log = label => console.log.bind(console, label)
 
 export type AuthenticationProviderProps<P extends AuthenticationProviderSFCProps> =
-  Rest<P, AuthenticationProviderSFCProps>
+  AuthenticationProviderHocProps & Rest<P, AuthenticationProviderSFCProps>
+
+export interface AuthenticationProviderHocProps {
+  session?: string
+}
 
 export interface AuthenticationProviderSFCProps extends AuthenticationProviderSFCHandlerProps {
   authenticate?: boolean
@@ -44,7 +48,7 @@ export interface AuthenticationProviderSFCHandlerProps {
 }
 
 interface AuthenticationProviderState {
-  props: { [prop: string]: unknown }
+  props: AuthenticationProviderHocProps & { [prop: string]: unknown }
   authenticate: boolean
   session: string
 }
@@ -52,7 +56,7 @@ interface AuthenticationProviderState {
 function mapStateToProps (
   { props, authenticate, session }: AuthenticationProviderState
 ): Rest<AuthenticationProviderSFCProps, AuthenticationProviderSFCHandlerProps> {
-  return { ...props, authenticate, session }
+  return { ...props, authenticate, session: session || props.session }
 }
 
 const mapDispatchToProps:
