@@ -37,7 +37,12 @@ const automata: AutomataSpec<AutomataState> = {
   },
   authenticating: {
     AUTHENTICATION_REJECTED: ['dirty', into('error')(mapPayload())],
-    AUTHENTICATION_RESOLVED: ['pristine', clearValue, clearError]
+    AUTHENTICATION_RESOLVED: [
+      'pristine',
+      clearValue,
+      clearError,
+      into('session')(mapPayload())
+    ]
   }
 }
 

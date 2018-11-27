@@ -33,6 +33,7 @@ export type AuthenticationModalProps<P extends AuthenticationModalSFCProps> =
 
 export interface AuthenticationModalHocProps {
   authenticate?: boolean
+  session?: string
   onCancelled?: () => void
   onAuthenticated?: (sessionId: string) => void
 }
@@ -53,6 +54,7 @@ export interface AuthenticationModalSFCHandlerProps {
 interface AuthenticationModalState {
   props: AuthenticationModalHocProps & { [prop: string]: unknown }
   state: AutomataState
+  session?: string
   value?: string
   error?: string
 }

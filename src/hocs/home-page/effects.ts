@@ -14,14 +14,11 @@
  * Limitations under the License.
  */
 //
-import { KVMap, getRecords$, ZenypassRecord } from 'services'
+import { zenypass } from 'services'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   createPrivilegedRequest,
-  hasEntry,
-  hasHandlerProp,
   toProjection,
-  shallowEqual,
   isFunction
 } from 'utils'
 import {
@@ -75,7 +72,7 @@ const updateRecords = createActionFactory('UPDATE_RECORDS')
 const error = createActionFactory('ERROR')
 
 const getRecordsUpdates = createPrivilegedRequest(
-  getRecords$,
+  (session: string) => zenypass.getService(session).records.records$,
   updateRecords,
   error
 )

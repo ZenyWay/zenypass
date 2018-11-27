@@ -35,6 +35,7 @@ export function withAuthenticationModal <
   return function ({
       locale,
       authenticate,
+      session,
       onAuthenticationResolved,
       onAuthenticationRejected,
       ...attrs
@@ -45,10 +46,11 @@ export function withAuthenticationModal <
         <AuthenticationModal
           locale={locale}
           authenticate={authenticate}
+          session={session}
           onCancelled={onAuthenticationRejected}
           onAuthenticated={onAuthenticationResolved}
         />
-        <PrivilegedComponent locale={locale} {...attrs} />
+        <PrivilegedComponent locale={locale} session={session} {...attrs} />
       </div>
     )
   }

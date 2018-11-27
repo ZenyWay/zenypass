@@ -15,9 +15,23 @@
 import { Observable } from 'rxjs'
 
 export interface ZenypassServiceAccess {
+  /**
+   * @return Promise that resolves to `uuid`
+   */
   signup (creds: Credentials, opts?: Partial<SignupSpec>): Promise<string>
-  signin (creds: Credentials, opts?: Partial<SigninSpec>): Promise<ZenypassService>
+  /**
+   * @return Promise that resolves to `uuid`
+   */
   requestAccess (creds: Credentials, secret: string): Promise<string>
+  /**
+   * TODO split v1 implementation into signin & getService
+   * @return Promise that resolves to the accessed session id
+   */
+  signin (creds: Credentials, opts?: Partial<SigninSpec>): Promise<string>
+  /**
+   * @return Promise that resolves to the accessed session id
+   */
+  getService (session: string): ZenypassService
 }
 
 export interface SignupSpec {

@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 
-import { signin } from 'services'
+import { zenypass } from 'services'
 import { StandardAction, createActionFactory } from 'basic-fsa-factories'
 import { ERROR_STATUS } from 'utils'
 import {
@@ -92,7 +92,7 @@ export function signinOnSubmit (
     pluck('1'),
     filter(({ state, changes }) => state !== 'invalid' && changes.password),
     switchMap(
-      ({ changes }) => signin({
+      ({ changes }) => zenypass.signin({
         username: changes.email,
         password: changes.password
       }).pipe(
