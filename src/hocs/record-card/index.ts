@@ -27,7 +27,7 @@ import componentFromEvents, {
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
 // import { tap } from 'rxjs/operators'
-const log = (label: string) => console.log.bind(console, label)
+// const log = (label: string) => console.log.bind(console, label)
 
 export type RecordCardProps<P extends RecordCardSFCProps> =
 RecordCardHocProps & Rest<P, RecordCardSFCProps>

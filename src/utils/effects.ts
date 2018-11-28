@@ -13,62 +13,53 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
+
 import { StandardAction } from 'basic-fsa-factories'
 import { Observable, Observer, Subject } from 'rxjs'
-import { filter, ignoreElements, tap, withLatestFrom } from 'rxjs/operators'
+import { filter, ignoreElements, map, tap, withLatestFrom, switchMap } from 'rxjs/operators'
 import { isFunction } from './basic'
+import { pluck } from './functional'
+import { mapPayload } from './reducers'
 
 export type StandardActionSpec =
   (string | ((...args: any[]) => any))[] | string | ((...args: any[]) => any)
 
-export type Handler<V> = (val?: V) => void
+export type Handler = (...args: any) => void
 
-export function callHandlerOnEvent <
-  H extends string,
-  V = any,
-  S extends T & { props: P } = T & { props: P },
-  T extends void | {} = void,
-  P extends { [prop in H]?: Handler<V> } = { [prop in H]?: Handler<V> }
-> (
-  handler: H,
+export type Effect<S = any> = (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<S>
+) => Observable<StandardAction<any>>
+
+export function callHandlerOnEvent <S = any> (
   type: string,
-  payload?: (state: T, event: StandardAction<any>) => V
-)
-export function callHandlerOnEvent <
-  V = any,
-  S extends T = T,
-  T extends void | {} = void
-> (
-  handler: (state: S) => Handler<V>,
-  type: string,
-  payload?: (state: T, event: StandardAction<any>) => V
-)
-export function callHandlerOnEvent <V = any, S = any> (
-  handler: string | ((state: S) => Handler<V>),
-  type: string,
-  payload?: (state: S, event: StandardAction<any>) => V
+  handler: string | string[] | ((state: S) => Handler),
+  payload = mapPayload() as (state: S, event: StandardAction<any>) => any
 ) {
-  if (!isFunction(handler)) {
-    return callHandlerOnEvent(
-      pluckHandlerProp(handler),
-      type,
-      payload
-    )
-  }
-  return function (
+  return applyHandlerOnEvent(
+    type,
+    handler,
+    (state, event) => [payload(state, event)]
+  )
+}
+
+export function applyHandlerOnEvent <S = any> (
+  type: string,
+  handler: string | string[] | ((state: S) => Handler),
+  payload = mapPayload(v => [v]) as (state: S, event: StandardAction<any>) => any[]
+) {
+  return !isFunction(handler)
+  ? applyHandlerOnEvent(type, pluck(handler), payload)
+  : function (
     event$: Observable<StandardAction<any>>,
     state$: Observable<S>
   ) {
     return event$.pipe(
       filter(event => event.type === type),
       withLatestFrom(state$),
-      tap(
-        ([event, state]) => callHandler(
-          handler(state),
-          payload ? payload(state, event) : event.payload
-        )
-      ),
+      map(([ event, state ]) => ({ event, state, handler: handler(state) })),
+      filter(({ handler }) => isFunction(handler)),
+      tap(({ event, state, handler }) => handler(...payload(state, event))),
       ignoreElements()
     )
   }
@@ -84,15 +75,6 @@ export function toProjection <I,O> (
   }
 }
 
-export function pluckHandlerProp <
-  K extends string,
-  P extends { [prop in K]?: Function } = { [prop in K]?: Function }
-> (handler: K) {
-  return function (state: any) {
-    return hasHandlerProp(handler) && state.props[handler]
-  }
-}
-
 export function hasHandlerProp <
   K extends string,
   P extends { [prop in K]?: Function } = { [prop in K]?: Function }
@@ -100,8 +82,4 @@ export function hasHandlerProp <
   return function ({ props }: { props: P }) {
     return isFunction(props[prop])
   }
-}
-
-function callHandler <V> (handler?: (val: V) => void, val?: V) {
-  handler && handler(val)
 }

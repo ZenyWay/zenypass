@@ -12,7 +12,9 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
+
+import { isInvalidEmail } from 'utils'
+
 export type Formatter<V> = (value: V) => { value: V, error?: string }
 
 const IS_ACCEPTABLE_URL = // 1 = protocol, 2 = auth, 3 = domain, 4 = port, 5 = path
@@ -25,10 +27,8 @@ function formatUrl (value: string) {
     : { value, error: 'Invalid URL' }
 }
 
-const IS_ACCEPTABLE_EMAIL = /^[^@]+@[^@.]+\.[^@.]+$/
-
 function formatEmail (value: string) {
-  return !value || IS_ACCEPTABLE_EMAIL.test(value)
+  return !value || !isInvalidEmail(value)
     ? { value }
     : { value, error: 'Invalid Email' }
 }

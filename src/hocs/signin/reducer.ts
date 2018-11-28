@@ -30,7 +30,7 @@ const automata: AutomataSpec<AutomataState> = {
   },
   valid: {
     INVALID_EMAIL: 'invalid',
-    SUBMIT: ['authenticating',clearError]
+    AUTHENTICATING: 'authenticating'
   },
   authenticating: {
     UNAUTHORIZED: ['valid', clearPassword, into('error')(mapPayload())],
@@ -40,6 +40,7 @@ const automata: AutomataSpec<AutomataState> = {
 
 export const reducer = compose.into(0)(
   createAutomataReducer(automata, 'invalid'),
+  forType('SUBMIT')(clearError),
   forType('CHANGE')(propCursor('changes')(mergePayload())),
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(into('props')(mapPayload()))

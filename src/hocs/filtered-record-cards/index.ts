@@ -95,7 +95,7 @@ export function filteredRecordCards <P extends FilteredRecordCardsSFCProps> (
       reducer,
       focusSearchFieldOnMountOrEnable,
       updateOnNewRecordsProp,
-      callHandlerOnEvent('onFilterCancel', 'CLEAR')
+      callHandlerOnEvent('CLEAR', ['props', 'onFilterCancel'])
     ),
     // () => tap(log('filtered-record-cards:state:')),
     connect<FilteredRecordCardsState, FilteredRecordCardsSFCProps>(

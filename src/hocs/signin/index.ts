@@ -47,17 +47,18 @@ export type SigninProps<P extends SigninSFCProps> =
 
 export interface SigninHocProps {
   onAuthenticated?: (sessionId: string) => void
+  onError?: (error?: any) => void
 }
 
 export interface SigninSFCProps
 extends SigninSFCHandlerProps {
-  state?: AutomataState
   emails?: DropdownItemSpec[]
   valid?: boolean
   email?: string
   password?: string
   confirm?: string
   cleartext?: boolean
+  busy?: boolean
   error?: boolean
 }
 
@@ -90,7 +91,13 @@ type SigninInputs = 'email' | 'password' | 'confirm'
 function mapStateToProps (
   { props, state, changes, error }: SigninState
 ): Rest<SigninSFCProps, SigninSFCHandlerProps> {
-  return { ...props, ...changes, valid: state !== 'invalid', error: !!error }
+  return {
+    ...props,
+    ...changes,
+    valid: state !== 'invalid',
+    busy: state === 'authenticating',
+    error: !!error
+  }
 }
 
 const TOGGLE_FOCUS_ACTIONS = createActionFactories({
@@ -129,7 +136,8 @@ export function signin <P extends SigninSFCProps> (
       focusEmailInputOnMount,
       focusPasswordInputOnValidEmailAndNoPassword,
       signinOnSubmit,
-      callHandlerOnEvent('onAuthenticated', 'AUTHENTICATED')
+      callHandlerOnEvent('AUTHENTICATED', ['props', 'onAuthenticated']),
+      callHandlerOnEvent('ERROR', ['props', 'onError'])
     ),
     () => tap(log('signin:state:')),
     connect<SigninState, SigninSFCProps>(

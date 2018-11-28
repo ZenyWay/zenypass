@@ -13,7 +13,6 @@
  * Limitations under the License.
  */
 import reducer from './reducer'
-import { callChangeHandlerOnValidChange } from './effects'
 import { Formatter } from './formatters'
 import componentFromEvents, {
   ComponentClass,
@@ -23,8 +22,9 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-// import { tap } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import { applyHandlerOnEvent, shallowEqual } from 'utils'
+import { tap, distinctUntilChanged } from 'rxjs/operators'
+const log = label => console.log.bind(console, label)
 
 export type AutoformatInputProps<P extends ControlledInputProps> =
   AutoformatInputControllerProps & Rest<P,ControlledInputProps>
@@ -43,7 +43,7 @@ export interface ControlledInputProps extends InputHandlerProps {
 }
 
 export interface InputHandlerProps {
-  onChange?: (value: string, target: HTMLElement) => void
+  onChange?: (value: string[] | string, target: HTMLElement) => void
 }
 
 const DEFAULT_PROPS: Partial<AutoformatInputProps<ControlledInputProps>> = {
@@ -61,13 +61,16 @@ function mapStateToProps (
   { props, value, error }: AutoformatInputState
 ): Rest<ControlledInputProps,InputHandlerProps> {
   const { type, format, onChange, ...attrs } = props
-  const csv = type === 'csv'
   return {
     ...attrs,
-    type: csv ? 'text' : type,
-    value: csv && Array.isArray(value) ? value.join(' ') : value as string,
+    type: type === 'csv' ? 'text' : type,
+    value: toString(value || props.value),
     error
   }
+}
+
+function toString (val: string[] | string): string {
+  return Array.isArray(val) ? val.join(' ') : val
 }
 
 const mapDispatchToProps:
@@ -75,12 +78,7 @@ const mapDispatchToProps:
 createActionDispatchers({
   onChange: [
     'CHANGE',
-    function (
-      value: string[] | string,
-      target: HTMLElement
-    ) {
-      return { value, target }
-    }
+    (value: string, target: HTMLElement) => ({ value, target })
   ]
 })
 
@@ -90,17 +88,22 @@ export function autoformatInput <P extends ControlledInputProps> (
   const AutoformatInput =
   componentFromEvents<AutoformatInputProps<P>,P>(
     ControlledInput,
-    // () => tap(log('autoformat:EVENT:')),
-    redux(reducer, callChangeHandlerOnValidChange),
-    // () => tap(log('autoformat:STATE:')),
+    () => tap(log('autoformat:EVENT:')),
+    redux(
+      reducer,
+      applyHandlerOnEvent(
+        'CHANGE',
+        ['props', 'onChange'],
+        ({ value }, { payload }) => [value, payload.target]
+      )
+    ),
+    () => tap(log('autoformat:STATE:')),
     connect<AutoformatInputState,ControlledInputProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // let props through, even if same as previous:
-    // might need to refresh content of ControlledInput,
-    // e.g. if formatting resets value from changed to previous.
-    // () => tap(log('autoformat:VIEW_PROPS:'))
+    ),
+    () => distinctUntilChanged(shallowEqual),
+    () => tap(log('autoformat:VIEW_PROPS:'))
   )
 
   AutoformatInput.defaultProps = DEFAULT_PROPS as Partial<AutoformatInputProps<P>>

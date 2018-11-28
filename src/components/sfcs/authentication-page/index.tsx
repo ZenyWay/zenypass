@@ -19,6 +19,7 @@ import { SplashCard, SplashFooterCard } from '../splash-card'
 import { RecordField as PassiveRecordField } from '../record-field'
 import { AutoformatRecordField } from '../../autoformat-record-field'
 import { Dropdown, DropdownItemSpec } from '../../dropdown'
+import { FAIcon } from '../fa-icon'
 import { Button, CardBody, CardTitle, Row
 } from 'bootstrap'
 import { classes } from 'utils'
@@ -29,6 +30,7 @@ export interface AuthenticationPageProps
 extends SignupFormProps, EmailDropdownProps {
   locales?: DropdownItemSpec[]
   signup?: boolean
+  busy?: boolean
   onSelectLocale?: (item?: HTMLElement) => void
   onToggleSignup?: (event: Event) => void
 }
@@ -70,6 +72,7 @@ export function AuthenticationPage ({
   password,
   confirm,
   cleartext,
+  busy,
   error,
   onChange,
   onSelectLocale,
@@ -139,8 +142,14 @@ export function AuthenticationPage ({
               type='submit'
               form='authentication-form'
               color='info'
+              disabled={!valid || busy}
               className='float-right'
             >
+              {
+                !busy ? null : (
+                  <FAIcon icon='spinner' animate='spin' className='mr-1'/>
+                )
+              }
               {t(signup ? 'Create your account' : 'Login')}
             </Button>
           </CardBody>
@@ -159,7 +168,7 @@ export function AuthenticationPage ({
         <SplashFooterCard>
           <CardBody>
             <p><small>{question} ?</small></p>
-            <Button color='info' onClick={onToggleSignup} >
+            <Button color='info' onClick={onToggleSignup} disabled={busy} >
               {t(signup ? 'Login' : 'Create your account')}
             </Button>
           </CardBody>

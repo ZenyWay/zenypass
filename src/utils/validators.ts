@@ -13,12 +13,21 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-export * from './basic'
-export * from './dom'
-export * from './effects'
-export * from './errors'
-export * from './functional'
-export * from './menu'
-export * from './reducers'
-export * from './service-request'
-export * from './validators'
+
+const INVALID_EMAIL =
+  /^(?:[^@]*|@.*|.*@|[^@]+@[^@]*@.*|.*\.|.*@\.[^@]+|.*@[^@.]+|.*[\n(){}\/\\<>]+.*)$/m
+
+/**
+ * an email is considered invalid when at least one of the following applies:
+ * - it does not include a `@` character
+ * - it starts or ends with a `@`
+ * - it includes more than one `@`
+ * - it ends with a dot
+ * - a dot immediately follows the last `@`
+ * - no dot follows the last `@`
+ * note that if none of the above apply,
+ * the email might still be invalid...
+ */
+export function isInvalidEmail (email: string) {
+  return INVALID_EMAIL.test(email)
+}

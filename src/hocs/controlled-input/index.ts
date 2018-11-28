@@ -89,7 +89,7 @@ export function controlledInput <P extends InputProps> (
     // () => tap(log('controlled-input:EVENT:')),
     redux(
       reducer,
-      callHandlerOnEvent('onBlur', 'BLUR'),
+      callHandlerOnEvent('BLUR', ['props', 'onBlur']),
       debounceInputWhenDebounce,
       callChangeHandlerOnDebounceOrBlurWhenIsChange
     ),

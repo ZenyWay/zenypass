@@ -40,16 +40,37 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('signin_no-emails', () => (
+  .add('signin', () => (
     <AuthenticationPage
       email={emails[0].label}
       {...attrs}
     />
   ))
-  .add('signin', () => (
+  .add('signin_emails', () => (
     <AuthenticationPage
       email={emails[0].label}
       emails={emails.slice(1)}
+      {...attrs}
+    />
+  ))
+  .add('signin_valid', () => (
+    <AuthenticationPage
+      email={emails[0].label}
+      valid
+      {...attrs}
+    />
+  ))
+  .add('signin_error', () => (
+    <AuthenticationPage
+      email={emails[0].label}
+      error
+      {...attrs}
+    />
+  ))
+  .add('signin_busy', () => (
+    <AuthenticationPage
+      email={emails[0].label}
+      busy
       {...attrs}
     />
   ))

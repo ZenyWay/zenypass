@@ -14,33 +14,21 @@
  */
 //
 import DEFAULT_FORMATTERS from './formatters'
-import { propCursor, into } from 'basic-cursors'
+import { into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { forType, mapPayload, pluck } from 'utils'
-
-const inProps = propCursor('props')
-const intoValue = into('value')
+import { forType, mapPayload, shallowEqual } from 'utils'
 
 export default compose.into(0)(
-  forType('CHANGE')(
-    compose.into(0)(
-      formatIfDefined,
-      intoValue(mapPayload(pluck('value')))
-    )
-  ),
-  forType('PROPS')(
-    compose.into(0)(
-      intoValue(mapPayload(pluck('value'))),
-      inProps(mapPayload())
-    )
-  )
+  forType('CHANGE')(formatPayloadValueIntoValueOrError),
+  forType('PROPS')(into('props')(mapPayload()))
 )
 
-function formatIfDefined (state) {
-  const { props, value, error } = state
+function formatPayloadValueIntoValueOrError (state, { payload }) {
+  const { value } = payload
+  const { props, error } = state
   const format = props.format || DEFAULT_FORMATTERS[props.type]
   const update = format ? format(value) : { value }
-  return update.value !== value || update.error !== error
+  return !shallowEqual(update.value, state.value) || (update.error !== error)
     ? { ...state, value: update.value, error: update.error }
     : state
 }

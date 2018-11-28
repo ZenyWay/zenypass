@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
+
 export function shallowEqual (a, b) {
   if (a === b) {
     return true

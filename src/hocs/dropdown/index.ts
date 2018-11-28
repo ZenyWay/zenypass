@@ -78,7 +78,7 @@ export function dropdown <P extends DropdownSFCProps> (
     redux(
       reducer,
       toggleBackdropHandlers,
-      callHandlerOnEvent('onSelectItem', 'CLICK_ITEM')
+      callHandlerOnEvent('CLICK_ITEM', ['props', 'onSelectItem'])
     ),
     // () => tap(log('dropdown:state:')),
     connect<DropdownState, DropdownSFCProps>(

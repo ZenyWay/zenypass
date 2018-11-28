@@ -96,8 +96,8 @@ export function homePage <P extends HomePageSFCProps> (
       reducer,
       injectRecordsFromService,
       createRecordOnSelectNewRecordMenuItem,
-      callHandlerOnEvent('onSelectMenuItem', 'SELECT_MENU_ITEM'),
-      callHandlerOnEvent('onError', 'ERROR')
+      callHandlerOnEvent('SELECT_MENU_ITEM', ['props', 'onSelectMenuItem']),
+      callHandlerOnEvent('ERROR', ['props', 'onError'])
     ),
     // () => tap(log('home-page:state:')),
     connect<HomePageState, HomePageSFCProps>(

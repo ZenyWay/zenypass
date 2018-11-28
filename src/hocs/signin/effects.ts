@@ -14,9 +14,9 @@
  * Limitations under the License.
  */
 
-import { zenypass } from 'services'
+import { zenypass, Credentials } from 'services'
 import { StandardAction, createActionFactory } from 'basic-fsa-factories'
-import { ERROR_STATUS } from 'utils'
+import { ERROR_STATUS, isInvalidEmail } from 'utils'
 import {
   ignoreElements,
   filter,
@@ -32,6 +32,13 @@ import {
 import { Observable, of as observable, merge } from 'rxjs'
 // const log = label => console.log.bind(console, label)
 
+const invalidEmail = createActionFactory('INVALID_EMAIL')
+const validEmail = createActionFactory('VALID_EMAIL')
+const authenticating = createActionFactory('AUTHENTICATING')
+const authenticated = createActionFactory('AUTHENTICATED')
+const unauthorized = createActionFactory('UNAUTHORIZED')
+const error = createActionFactory('ERROR')
+
 export function focusEmailInputOnMount (
   event$: Observable<StandardAction<any>>
 ) {
@@ -41,9 +48,6 @@ export function focusEmailInputOnMount (
     ignoreElements()
   )
 }
-
-const invalidEmail = createActionFactory('INVALID_EMAIL')
-const validEmail = createActionFactory('VALID_EMAIL')
 
 export function validateEmailOnEmailChange (
   event$: Observable<StandardAction<any>>
@@ -59,12 +63,6 @@ export function validateEmailOnEmailChange (
   )
 }
 
-const INVALID_EMAIL = /^(?:[^@]+|.*[\n(){}\/\\<>]+.*)$/m
-function isInvalidEmail (email: string) {
-  return INVALID_EMAIL.test(email)
-}
-
-const error = createActionFactory('ERROR')
 export function focusPasswordInputOnValidEmailAndNoPassword (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
@@ -75,13 +73,11 @@ export function focusPasswordInputOnValidEmailAndNoPassword (
     pluck('1'),
     filter<any>(({ changes }) => !changes || !changes.password),
     tap(({ inputs }) => inputs.password.focus()),
-    catchError((err, state$) => state$.pipe(startWith(error(err)))),
-    ignoreElements()
+    ignoreElements(),
+    catchError((err, $) => $.pipe(startWith(error(err))))
   )
 }
 
-const authenticated = createActionFactory('AUTHENTICATED')
-const unauthorized = createActionFactory('UNAUTHORIZED')
 export function signinOnSubmit (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
@@ -90,21 +86,28 @@ export function signinOnSubmit (
     filter(({ type }) => type === 'SUBMIT'),
     withLatestFrom(state$),
     pluck('1'),
-    filter(({ state, changes }) => state !== 'invalid' && changes.password),
+    filter(
+      ({ state, changes }) => state === 'valid' && changes && changes.password
+    ),
     switchMap(
-      ({ changes }) => zenypass.signin({
+      ({ changes }) => signin({
         username: changes.email,
-        password: changes.password
-      }).pipe(
-        map(authenticated),
-        catchError(
-          err => observable(
-            err && err.status !== ERROR_STATUS.UNAUTHORIZED
-            ? error(err)
-            : unauthorized(err.status)
-          )
-        )
-      )
+        passphrase: changes.password
+      })
     )
   )
+}
+
+function signin (credentials: Credentials) {
+  return zenypass.signin(credentials).pipe(
+    map(authenticated),
+    startWith(authenticating()),
+    catchError(err => observable(unauthorizedOrError(err)))
+  )
+}
+
+function unauthorizedOrError (err: any) {
+  return err && err.status !== ERROR_STATUS.UNAUTHORIZED
+  ? error(err)
+  : unauthorized(err.status)
 }
