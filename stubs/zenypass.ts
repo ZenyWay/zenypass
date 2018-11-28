@@ -16,6 +16,7 @@ import { interval, NEVER, of as observable, Observable, throwError } from 'rxjs'
 import { concat, switchMap, takeUntil, delay, take } from 'rxjs/operators'
 import {
   AuthorizationDoc,
+  Credentials,
   KVMap,
   ZenypassRecord,
   PouchDoc,
@@ -84,14 +85,11 @@ export const zenypass = {
   getService
 }
 
-function signin (
-  creds: { username: string, password: string },
-  opts?: any
-): Observable<string> {
-  const { username, password } = creds
+function signin (creds: Credentials, opts?: any): Observable<string> {
+  const { username, passphrase } = creds
   return interval(AUTHENTICATION_DELAY).pipe(
     take(1),
-    switchMap(() => username === USERNAME && password === PASSWORD
+    switchMap(() => username === USERNAME && passphrase === PASSWORD
       ? observable(SESSION_ID)
       : throwError(UNAUTHORIZED)
     )
