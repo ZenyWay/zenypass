@@ -103,6 +103,7 @@ function CoreRouter ({
           locale={locale}
           locales={menu as DropdownItemSpec[] }
           onAuthenticated={onAuthenticated}
+          onError={onError}
           onSelectLocale={onSelectMenuItem}
           onToggleSignup={onExit}
           {...params as SigninPageProps}

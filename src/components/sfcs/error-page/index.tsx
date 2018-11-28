@@ -48,11 +48,11 @@ export function ErrorPage <E extends Error> (
   }: ErrorPageProps<E> & { [prop: string]: unknown }
 ) {
   const t = l10ns[locale]
-  const { status = null, message = null }: {
-    status?: string,
+  const { status = 500, message = null }: {
+    status?: number,
     message?: string
   } = error as any || INTERNAL_SERVER_ERROR
-  const type = status && ERROR_TYPES[status] || null
+  const type = ERROR_TYPES[status] || null
   return (
     <section {...attrs}>
       <h3><FAIcon icon='bomb'/> <FAIcon icon='bomb'/> <FAIcon icon='bomb'/></h3>
@@ -60,9 +60,7 @@ export function ErrorPage <E extends Error> (
         {t('Sorry, an unrecoverable error occurred')}...<br/>
         {t('Please reload this page to restart ZenyPass')}.
       </p>
-      { !status && !message ? null : (
-        <div><p>{status} {type}<br/>{message}</p></div>
-      )}
+      <div><p>{status} {type}<br/>{message}</p></div>
       {children}
     </section>
   )
