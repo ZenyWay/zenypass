@@ -62,7 +62,9 @@ const automata: AutomataSpec<AutomataState> = {
       'credentials', clearPasswords, clearError('confirm'), setError('email')
     ],
     VALID_EMAIL: ['password', clearPasswords, clearError('confirm')],
-    INVALID_PASSWORD: ['password', clearConfirm, setError('password')],
+    INVALID_PASSWORD: [
+      'password', clearConfirm, clearError('confirm'), setError('password')
+    ],
     VALID_PASSWORD: [clearConfirm, clearError('confirm')],
     INVALID_CONFIRM: [clearConfirm, setError('confirm')],
     VALID_CONFIRM: ['valid', clearError('confirm')]
