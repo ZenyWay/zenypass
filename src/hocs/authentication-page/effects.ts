@@ -78,14 +78,21 @@ export function validateEmailOnEmailChange (
   )
 }
 
-export function validatePasswordOnPasswordChange (
-  event$: Observable<StandardAction<any>>
+export function validatePasswordOnPasswordChangeWhenSignup (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
 ) {
-  const password$ = selectChange('password')(event$)
+  const stateOnPasswordChange$ = event$.pipe(
+    filter(isChange('password')),
+    withLatestFrom(state$),
+    pluck<any,any>('1')
+  )
+  const [signup$, signin$] = partition(isSignup)(stateOnPasswordChange$)
+  const password$ = pluck<any,string>('changes', 'password')(signup$)
   const [invalid$, valid$] = partition(isInvalidPassword)(password$)
   return merge(
     invalid$.pipe(map(() => invalidPassword())),
-    valid$.pipe(map(() => validPassword()))
+    merge(signin$, valid$).pipe(map(() => validPassword()))
   )
 }
 
@@ -96,8 +103,8 @@ export function validConfirmOnValidPasswordWhenSignin (
   return event$.pipe(
     filter(({ type }) => type === 'VALID_PASSWORD'),
     withLatestFrom(state$),
-    pluck('1', 'props', 'signup'),
-    filter(not(Boolean)),
+    pluck('1'),
+    filter(not(isSignup)),
     map(() => validConfirm())
   )
 }
@@ -136,15 +143,19 @@ export function signinOrSignupOnSubmit (
   )
 }
 
+function isSignup ({ props } = {} as any) {
+  return props && !!props.signup
+}
+
 const MIN_PASSWORD_LENGTH = 4
-function isInvalidPassword (password: string): boolean {
-  return password.length < MIN_PASSWORD_LENGTH
+function isInvalidPassword (password?: string) {
+  return !password || password.length < MIN_PASSWORD_LENGTH
 }
 
 function isInvalidConfirm (
-  { password, confirm }: { password: string, confirm: string }
+  { password, confirm } = {} as { password: string, confirm: string }
 ) {
-  return password !== confirm
+  return !confirm || (confirm !== password)
 }
 
 type ChangeFields = 'email' | 'password' | 'confirm'

@@ -20,7 +20,7 @@ import {
   focusInputOnEvent,
   signinOrSignupOnSubmit,
   validateEmailOnEmailChange,
-  validatePasswordOnPasswordChange,
+  validatePasswordOnPasswordChangeWhenSignup,
   validateConfirmOnConfirmChange,
   validConfirmOnValidPasswordWhenSignin
 } from './effects'
@@ -150,7 +150,7 @@ export function authenticationPage <P extends AuthenticationPageSFCProps> (
     redux(
       reducer,
       validateEmailOnEmailChange,
-      validatePasswordOnPasswordChange,
+      validatePasswordOnPasswordChangeWhenSignup,
       validateConfirmOnConfirmChange,
       validConfirmOnValidPasswordWhenSignin,
       focusEmailInputOnMount,
