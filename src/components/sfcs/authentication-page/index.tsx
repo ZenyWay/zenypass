@@ -29,6 +29,7 @@ export interface AuthenticationPageProps
 extends SignupFormProps, EmailDropdownProps {
   locales?: DropdownItemSpec[]
   signup?: boolean
+  submittable?: boolean
   pending?: boolean
   onSelectLocale?: (item?: HTMLElement) => void
   onToggleSignup?: (event: Event) => void
@@ -45,7 +46,6 @@ export interface EmailDropdownProps {
 }
 
 export interface AuthenticationFormProps extends EmailFieldProps {
-  valid?: boolean
   password?: InputSpec
   cleartext?: boolean
   error?: boolean
@@ -70,6 +70,7 @@ export function AuthenticationPage ({
   locale,
   locales,
   signup,
+  submittable,
   emails,
   valid,
   email,
@@ -91,7 +92,6 @@ export function AuthenticationPage ({
   const formProps = {
     id: 'authentication-form',
     locale,
-    valid,
     email,
     password,
     cleartext,
@@ -144,7 +144,7 @@ export function AuthenticationPage ({
               type='submit'
               form='authentication-form'
               color='info'
-              disabled={!valid || pending}
+              disabled={!submittable}
               className='float-right'
             >
               {
@@ -183,7 +183,6 @@ export function AuthenticationPage ({
 function SigninForm ({
   locale,
   emails,
-  valid,
   email = {},
   password = {},
   cleartext,
@@ -223,7 +222,7 @@ function SigninForm ({
         id='password'
         className='mb-2'
         icon={classes('lock', dropdown && 'mx-1')}
-        placeholder={valid && t('Enter your password')}
+        placeholder={password.enabled && t('Enter your password')}
         value={password.value}
         error={password.error && t('PASSWORD_INPUT_ERROR')}
         data-id='password'
@@ -250,7 +249,6 @@ function SigninForm ({
 
 function SignupForm ({
   locale,
-  valid,
   email = {},
   password = {},
   confirm = {},
@@ -287,7 +285,7 @@ function SignupForm ({
         blurOnEnterKey
         className='mb-2'
         icon='lock'
-        placeholder={valid && t('Enter your password')}
+        placeholder={password.enabled && t('Enter your password')}
         value={password.value}
         error={password.error && t('PASSWORD_INPUT_ERROR')}
         data-id='password'
@@ -302,7 +300,7 @@ function SignupForm ({
         blurOnEnterKey
         className='mb-2'
         icon='lock'
-        placeholder={valid && t('Confirm your password')}
+        placeholder={confirm.enabled && t('Confirm your password')}
         value={confirm.value}
         error={confirm.error && t('CONFIRM_INPUT_ERROR')}
         data-id='confirm'

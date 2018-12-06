@@ -20,7 +20,7 @@ import {
   focusInputOnEvent,
   signinOrSignupOnSubmit,
   validateEmailOnEmailChange,
-  validatePasswordOnPasswordChangeWhenSignup,
+  validatePasswordOnPasswordChange,
   validateConfirmOnConfirmChange,
   validConfirmOnValidPasswordWhenSignin
 } from './effects'
@@ -54,7 +54,7 @@ extends AuthenticationPageSFCHandlerProps {
   password?: InputSpec
   confirm?: InputSpec
   cleartext?: boolean
-  valid?: boolean
+  submittable?: boolean
   pending?: boolean
   error?: boolean
 }
@@ -115,7 +115,8 @@ function mapStateToProps (
       enabled: attrs.password.enabled && state !== 'password'
     }
   }
-  attrs.valid = attrs.pending || state === 'valid'
+  attrs.submittable =
+    props.signup ? attrs.confirm.enabled : attrs.password.enabled
   attrs.error = errors && errors.service
   return attrs
 }
@@ -150,7 +151,7 @@ export function authenticationPage <P extends AuthenticationPageSFCProps> (
     redux(
       reducer,
       validateEmailOnEmailChange,
-      validatePasswordOnPasswordChangeWhenSignup,
+      validatePasswordOnPasswordChange,
       validateConfirmOnConfirmChange,
       validConfirmOnValidPasswordWhenSignin,
       focusEmailInputOnMount,

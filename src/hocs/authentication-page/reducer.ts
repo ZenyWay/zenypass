@@ -47,27 +47,34 @@ const automata: AutomataSpec<AutomataState> = {
   },
   password: { // email is valid, password is not
     TOGGLE_SIGNUP: [clearPassword, clearError('password')],
+    SUBMIT: setError('password'),
     INVALID_EMAIL: [
       'credentials', clearPassword, clearError('password'), setError('email')
     ],
+    VALID_EMAIL: [clearPassword, clearError('password')],
     INVALID_PASSWORD: setError('password'),
     VALID_PASSWORD: ['confirm', clearError('password')]
   },
   confirm: { // both email and password are valid
     TOGGLE_SIGNUP: ['password', clearPasswords, clearError('confirm')],
+    SUBMIT: setError('confirm'),
     INVALID_EMAIL: [
       'credentials', clearPasswords, clearError('confirm'), setError('email')
     ],
+    VALID_EMAIL: ['password', clearPasswords, clearError('confirm')],
     INVALID_PASSWORD: ['password', clearConfirm, setError('password')],
-    INVALID_CONFIRM: ['confirm', clearConfirm, setError('confirm')],
+    VALID_PASSWORD: [clearConfirm, clearError('confirm')],
+    INVALID_CONFIRM: [clearConfirm, setError('confirm')],
     VALID_CONFIRM: ['valid', clearError('confirm')]
   },
   valid: { // all inputs are valid
     TOGGLE_SIGNUP: ['password', clearPasswords],
-    INVALID_EMAIL: ['email', clearConfirm, setError('email')],
-    INVALID_PASSWORD: ['password', clearConfirm, setError('password')],
-    INVALID_CONFIRM: ['confirm', clearConfirm, setError('confirm')],
     SUBMIT: clearError('service'),
+    INVALID_EMAIL: ['email', clearConfirm, setError('email')],
+    VALID_EMAIL: ['password', clearPasswords],
+    INVALID_PASSWORD: ['password', clearConfirm, setError('password')],
+    VALID_PASSWORD: ['confirm', clearConfirm],
+    INVALID_CONFIRM: ['confirm', clearConfirm, setError('confirm')],
     PENDING: 'pending'
   },
   pending: { // service call on submit

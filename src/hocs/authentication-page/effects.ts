@@ -68,31 +68,28 @@ export function focusInputOnEvent (type: string, input: string) {
 }
 
 export function validateEmailOnEmailChange (
-  event$: Observable<StandardAction<any>>
-) {
-  const email$ = selectChange('email')(event$)
-  const [invalid$, valid$] = partition(isInvalidEmail)(email$)
-  return merge(
-    invalid$.pipe(map(() => invalidEmail())),
-    valid$.pipe(map(() => validEmail()))
-  )
-}
-
-export function validatePasswordOnPasswordChangeWhenSignup (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  const stateOnPasswordChange$ = event$.pipe(
-    filter(isChange('password')),
-    withLatestFrom(state$),
-    pluck<any,any>('1')
+  return stateAfterInputChange('email')(event$, state$).pipe(
+    validateInput(hasValidEmail, validEmail, invalidEmail)
   )
-  const [signup$, signin$] = partition(isSignup)(stateOnPasswordChange$)
-  const password$ = pluck<any,string>('changes', 'password')(signup$)
-  const [invalid$, valid$] = partition(isInvalidPassword)(password$)
+}
+
+export function validatePasswordOnPasswordChange (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  const [signup$, signin$] =
+    partition(isSignup)(stateAfterInputChange('password')(event$, state$))
+
   return merge(
-    invalid$.pipe(map(() => invalidPassword())),
-    merge(signin$, valid$).pipe(map(() => validPassword()))
+    signup$.pipe(
+      validateInput(hasValidSignupPassword, validPassword, invalidPassword)
+    ),
+    signin$.pipe(
+      validateInput(hasValidSigninPassword, validPassword, invalidPassword)
+    )
   )
 }
 
@@ -113,15 +110,8 @@ export function validateConfirmOnConfirmChange (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  const confirm$ = event$.pipe(
-    filter(isChange('confirm')),
-    withLatestFrom(state$),
-    pluck<any,{ password: string, confirm: string }>('1', 'changes')
-  )
-  const [invalid$, valid$] = partition(isInvalidConfirm)(confirm$)
-  return merge(
-    invalid$.pipe(map(() => invalidConfirm())),
-    valid$.pipe(map(() => validConfirm()))
+  return stateAfterInputChange('confirm')(event$, state$).pipe(
+    validateInput(hasValidConfirm, validConfirm, invalidConfirm)
   )
 }
 
@@ -147,31 +137,59 @@ function isSignup ({ props } = {} as any) {
   return props && !!props.signup
 }
 
+function hasValidEmail ({ email } = {} as { email?: string }) {
+  return email && !isInvalidEmail(email)
+}
+
 const MIN_PASSWORD_LENGTH = 4
-function isInvalidPassword (password?: string) {
-  return !password || password.length < MIN_PASSWORD_LENGTH
+function hasValidSignupPassword ({ password } = {} as { password?: string }) {
+  return password && password.length >= MIN_PASSWORD_LENGTH
 }
 
-function isInvalidConfirm (
-  { password, confirm } = {} as { password: string, confirm: string }
+function hasValidSigninPassword ({ password } = {} as { password?: string }) {
+  return password && password.length > 0
+}
+
+function hasValidConfirm (
+  { password, confirm } = {} as { password?: string, confirm?: string }
 ) {
-  return !confirm || (confirm !== password)
+  return confirm && confirm === password
 }
 
-type ChangeFields = 'email' | 'password' | 'confirm'
+type InputChanges = { [input in InputField]: string }
+type InputField = 'email' | 'password' | 'confirm'
 
-function selectChange (field: ChangeFields) {
-  return function (event$: Observable<StandardAction<any>>) {
+function stateAfterInputChange (input: InputField) {
+  return function (
+    event$: Observable<StandardAction<any>>,
+    state$: Observable<any>
+  ) {
     return event$.pipe(
-      filter(isChange(field)),
-      pluck<any,string>('payload', field)
+      filter(isChange(input)),
+      withLatestFrom(state$),
+      pluck<any,any>('1')
     )
   }
 }
 
-function isChange (field: ChangeFields) {
+function isChange (input: InputField) {
   return function ({ type, payload }: StandardAction<any>) {
-    return (type === 'CHANGE') && (field in payload)
+    return (type === 'CHANGE') && (input in payload)
+  }
+}
+
+function validateInput (
+  hasValidInput: (inputs?: InputChanges) => boolean,
+  validInputAction: () => StandardAction<void>,
+  invalidInputAction: () => StandardAction<void>
+) {
+  return function (state$: Observable<any>) {
+    const inputs$ = pluck<any,InputChanges>('changes')(state$)
+    const [valid$, invalid$] = partition(hasValidInput)(inputs$)
+    return merge(
+      valid$.pipe(map(() => validInputAction())),
+      invalid$.pipe(map(() => invalidInputAction()))
+    )
   }
 }
 
