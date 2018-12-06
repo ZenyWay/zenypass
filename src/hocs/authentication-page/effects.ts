@@ -166,7 +166,7 @@ function isChange (field: ChangeFields) {
 
 function signinOrSignup (signup: boolean, credentials: Credentials) {
   return (signup ? zenypass.signup : zenypass.signin)(credentials).pipe(
-    map(() => success()),
+    map(session => success(session)),
     startWith(pending()),
     catchError(err => observable(error(err)))
   )
