@@ -36,6 +36,7 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
   },
   '/signup': {
     SIGNIN: '/signin',
+    ACCOUNT_CREATED: '/signin', // TODO account creation confirmation screen
     EXIT: '/signin',
     EMAIL: mapPayloadIntoParamsEmail,
     FATAL: ['/fatal', mapPayloadIntoParamsError]

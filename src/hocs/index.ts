@@ -44,8 +44,7 @@ export { homePage, HomePageProps } from './home-page'
 // export { pure } from './pure'
 export { recordCard, RecordCardProps } from './record-card'
 export { router, RouterProps } from './router'
-export { signin, SigninProps } from './signin'
-export { signup, SignupProps } from './signup'
+export { authenticationPage, AuthenticationPageProps } from './authentication-page'
 export {
   withAuthentication,
   AuthenticationProviderProps

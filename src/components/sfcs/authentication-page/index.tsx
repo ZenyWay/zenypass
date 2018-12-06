@@ -17,7 +17,6 @@
 import { createElement } from 'create-element'
 import { SplashCard, SplashFooterCard } from '../splash-card'
 import { RecordField as PassiveRecordField } from '../record-field'
-import { AutoformatRecordField } from '../../autoformat-record-field'
 import { Dropdown, DropdownItemSpec } from '../../dropdown'
 import { FAIcon } from '../fa-icon'
 import { Button, CardBody, CardTitle, Row
@@ -30,13 +29,13 @@ export interface AuthenticationPageProps
 extends SignupFormProps, EmailDropdownProps {
   locales?: DropdownItemSpec[]
   signup?: boolean
-  busy?: boolean
+  pending?: boolean
   onSelectLocale?: (item?: HTMLElement) => void
   onToggleSignup?: (event: Event) => void
 }
 
 export interface SignupFormProps extends AuthenticationFormProps {
-  confirm?: string
+  confirm?: InputSpec
   onConfirmInputRef?: (target: HTMLElement) => void
 }
 
@@ -47,7 +46,7 @@ export interface EmailDropdownProps {
 
 export interface AuthenticationFormProps extends EmailFieldProps {
   valid?: boolean
-  password?: string
+  password?: InputSpec
   cleartext?: boolean
   error?: boolean
   onSubmit?: (event: Event) => void
@@ -56,10 +55,15 @@ export interface AuthenticationFormProps extends EmailFieldProps {
 
 export interface EmailFieldProps {
   locale: string
-  email?: string
+  email?: InputSpec
   onChange?: (value: string, target: HTMLElement) => void
-  onToggleFocus?: (event: Event) => void
   onEmailInputRef?: (target: HTMLElement) => void
+}
+
+export interface InputSpec {
+  value?: string
+  error?: boolean
+  enabled?: boolean
 }
 
 export function AuthenticationPage ({
@@ -72,13 +76,12 @@ export function AuthenticationPage ({
   password,
   confirm,
   cleartext,
-  busy,
+  pending,
   error,
   onChange,
   onSelectLocale,
   onSelectEmail,
   onSubmit,
-  onToggleFocus,
   onToggleSignup,
   onEmailInputRef,
   onPasswordInputRef,
@@ -95,7 +98,6 @@ export function AuthenticationPage ({
     error,
     onChange,
     onSubmit,
-    onToggleFocus,
     onEmailInputRef,
     onPasswordInputRef
   }
@@ -142,11 +144,11 @@ export function AuthenticationPage ({
               type='submit'
               form='authentication-form'
               color='info'
-              disabled={!valid || busy}
+              disabled={!valid || pending}
               className='float-right'
             >
               {
-                !busy ? null : (
+                !pending ? null : (
                   <FAIcon icon='spinner' animate='spin' className='mr-1'/>
                 )
               }
@@ -168,7 +170,7 @@ export function AuthenticationPage ({
         <SplashFooterCard>
           <CardBody>
             <p><small>{question} ?</small></p>
-            <Button color='info' onClick={onToggleSignup} disabled={busy} >
+            <Button color='info' onClick={onToggleSignup} disabled={pending} >
               {t(signup ? 'Login' : 'Create your account')}
             </Button>
           </CardBody>
@@ -182,13 +184,12 @@ function SigninForm ({
   locale,
   emails,
   valid,
-  email,
-  password,
+  email = {},
+  password = {},
   cleartext,
   error,
   onChange,
   onSubmit,
-  onToggleFocus,
   onSelectEmail,
   onEmailInputRef,
   onPasswordInputRef,
@@ -199,7 +200,7 @@ function SigninForm ({
   const dropdown = emails && emails.length
   return (
     <form {...attrs} onSubmit={onSubmit}>
-      <AutoformatRecordField
+      <PassiveRecordField
         type='email'
         id='email'
         blurOnEnterKey
@@ -207,13 +208,13 @@ function SigninForm ({
         options={emails}
         icon={dropdown ? 'fa fa-user' : 'user'}
         placeholder={t('Enter your email')}
-        value={email}
+        value={email.value}
+        error={email.error && t('EMAIL_INPUT_ERROR')}
         data-id='email'
-        onBlur={onToggleFocus}
         onChange={onChange}
-        onFocus={onToggleFocus}
         onSelectEmail={onSelectEmail}
         locale={locale}
+        disabled={!email.enabled}
         innerRef={onEmailInputRef}
       />
       <PassiveRecordField
@@ -223,13 +224,12 @@ function SigninForm ({
         className='mb-2'
         icon={classes('lock', dropdown && 'mx-1')}
         placeholder={valid && t('Enter your password')}
-        value={password}
+        value={password.value}
+        error={password.error && t('PASSWORD_INPUT_ERROR')}
         data-id='password'
-        onBlur={onToggleFocus}
         onChange={onChange}
-        onFocus={onToggleFocus}
         locale={locale}
-        disabled={!password && !valid}
+        disabled={!password.enabled}
         innerRef={onPasswordInputRef}
       />
       {
@@ -239,7 +239,7 @@ function SigninForm ({
           <p>
             <small className='text-danger'>
               {t('UNAUTHORIZED')}:<br/>
-              {t('Please check your email and enter your password again')}.
+              {t('Please verify your email and enter your password again')}.
             </small>
           </p>
         )
@@ -251,9 +251,9 @@ function SigninForm ({
 function SignupForm ({
   locale,
   valid,
-  email,
-  password,
-  confirm,
+  email = {},
+  password = {},
+  confirm = {},
   cleartext,
   onChange,
   onSubmit,
@@ -266,19 +266,19 @@ function SignupForm ({
   const t = l10ns[locale]
   return (
     <form {...attrs} onSubmit={onSubmit}>
-      <AutoformatRecordField
+      <PassiveRecordField
         type='email'
         id='email'
         blurOnEnterKey
         className='mb-2'
         icon='user'
         placeholder={t('Enter your email')}
-        value={email}
+        value={email.value}
+        error={email.error && t('EMAIL_INPUT_ERROR')}
         data-id='email'
-        onBlur={onToggleFocus}
         onChange={onChange}
-        onFocus={onToggleFocus}
         locale={locale}
+        disabled={!email.enabled}
         innerRef={onEmailInputRef}
       />
       <PassiveRecordField
@@ -288,13 +288,12 @@ function SignupForm ({
         className='mb-2'
         icon='lock'
         placeholder={valid && t('Enter your password')}
-        value={password}
+        value={password.value}
+        error={password.error && t('PASSWORD_INPUT_ERROR')}
         data-id='password'
-        onBlur={onToggleFocus}
         onChange={onChange}
-        onFocus={onToggleFocus}
         locale={locale}
-        disabled={!password && !valid}
+        disabled={!password.enabled}
         innerRef={onPasswordInputRef}
       />
       <PassiveRecordField
@@ -304,13 +303,12 @@ function SignupForm ({
         className='mb-2'
         icon='lock'
         placeholder={valid && t('Confirm your password')}
-        value={confirm}
+        value={confirm.value}
+        error={confirm.error && t('CONFIRM_INPUT_ERROR')}
         data-id='confirm'
-        onBlur={onToggleFocus}
         onChange={onChange}
-        onFocus={onToggleFocus}
         locale={locale}
-        disabled={!password && !valid}
+        disabled={!confirm.enabled}
         innerRef={onConfirmInputRef}
       />
       <p>

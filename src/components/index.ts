@@ -102,7 +102,6 @@ export {
 } from './sfcs/router'
 export { Router, RouterProps } from './router'
 export { SearchField, SearchFieldProps } from './sfcs/search-field'
-export { SigninPage, SigninPageProps } from './signin-page'
-export { SignupPage, SignupPageProps } from './signup-page'
+export { AuthenticationPage, AuthenticationPageProps } from './authentication-page'
 export { SplashCard, SplashCardProps } from './sfcs/splash-card'
 export { withAuthenticationModal } from './sfcs/with-authentication'

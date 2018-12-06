@@ -13,7 +13,7 @@
     "Login to your ZenyPass account": "Connexion à votre compte ZenyPass",
     "More information": "Plus d'informations",
     "Online-help": "Aide en ligne",
-    "Please check your email and enter your password again": "Veuillez vérifier votre email puis saisir à nouveau votre mot de passe",
+    "Please verify your email and enter your password again": "Veuillez vérifier votre email puis saisir à nouveau votre mot de passe",
     "security-info": "Pour plus de sécurité, choisissez un mot de passe exclusif que vous n'utilisez pas ailleurs, et assurez-vous de ne pas l'oublier ou le perdre.",
     "UNAUTHORIZED": "Accès refusé",
     "You don't have an account": "Vous n'avez pas encore de compte"
@@ -32,7 +32,7 @@
     "Login to your ZenyPass account": "Login to your ZenyPass account",
     "More information": "More information",
     "Online-help": "Online-help",
-    "Please check your email and enter your password again": "Please check your email and enter your password again",
+    "Please verify your email and enter your password again": "Please verify your email and enter your password again",
     "security-info": "For enhanced security, please choose an exclusive password that you don't use elsewhere, and make sure you don't forget or loose it",
     "UNAUTHORIZED": "Unauthorized access",
     "You don't have an account": "You don't have an account"

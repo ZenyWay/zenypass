@@ -17,7 +17,7 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { SigninPage } from 'components'
+import { AuthenticationPage } from 'components'
 import { action } from '@storybook/addon-actions'
 import { LANG_MENU } from './helpers/consts'
 
@@ -44,10 +44,16 @@ const emails = [ 'jane.doe@example.com', 'rob@hvsc.org' ]
     label: 'Enter another email'
   })
 
-storiesOf('SigninPage', module)
-  .add('default', () => (
-    <SigninPage
+storiesOf('AuthenticationPage', module)
+  .add('signin', () => (
+    <AuthenticationPage
       emails={emails.slice(1)} // TODO remove
+      {...attrs}
+    />
+  ))
+  .add('signup', () => (
+    <AuthenticationPage
+      signup
       {...attrs}
     />
   ))
