@@ -42,7 +42,8 @@ export function mergePayload <S,I,O> (project = identity as (val: I) => O) {
     state: S,
     { payload }: A
   ): S {
-    return { ...(state as any), ...(project(payload) as any) }
+    const update = project(payload)
+    return !update ? state : { ...(state as any), ...(update as any) }
   }
 }
 
