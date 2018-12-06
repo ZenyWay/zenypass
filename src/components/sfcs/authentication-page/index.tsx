@@ -206,9 +206,9 @@ function SigninForm ({
         className='mb-2'
         options={emails}
         icon={dropdown ? 'fa fa-user' : 'user'}
-        placeholder={t('Enter your email')}
+        placeholder={t('Enter your email address')}
         value={email.value}
-        error={email.error && t('EMAIL_INPUT_ERROR')}
+        error={email.error && t('Please enter a valid email address')}
         data-id='email'
         onChange={onChange}
         onSelectEmail={onSelectEmail}
@@ -224,7 +224,7 @@ function SigninForm ({
         icon={classes('lock', dropdown && 'mx-1')}
         placeholder={password.enabled && t('Enter your password')}
         value={password.value}
-        error={password.error && t('PASSWORD_INPUT_ERROR')}
+        error={password.error && t('Please enter your password')}
         data-id='password'
         onChange={onChange}
         locale={locale}
@@ -237,8 +237,8 @@ function SigninForm ({
         : (
           <p>
             <small className='text-danger'>
-              {t('UNAUTHORIZED')}:<br/>
-              {t('Please verify your email and enter your password again')}.
+              {t('Unauthorized access')}:<br/>
+              {t('Please verify your email address and enter your password again')}.
             </small>
           </p>
         )
@@ -270,9 +270,9 @@ function SignupForm ({
         blurOnEnterKey
         className='mb-2'
         icon='user'
-        placeholder={t('Enter your email')}
+        placeholder={t('Enter your email address')}
         value={email.value}
-        error={email.error && t('EMAIL_INPUT_ERROR')}
+        error={email.error && t('Please enter a valid email address')}
         data-id='email'
         onChange={onChange}
         locale={locale}
@@ -287,7 +287,7 @@ function SignupForm ({
         icon='lock'
         placeholder={password.enabled && t('Enter your password')}
         value={password.value}
-        error={password.error && t('PASSWORD_INPUT_ERROR')}
+        error={password.error && t('Please enter a password with at least four characters')}
         data-id='password'
         onChange={onChange}
         locale={locale}
@@ -302,7 +302,7 @@ function SignupForm ({
         icon='lock'
         placeholder={confirm.enabled && t('Confirm your password')}
         value={confirm.value}
-        error={confirm.error && t('CONFIRM_INPUT_ERROR')}
+        error={confirm.error && t('Please enter the exact same password')}
         data-id='confirm'
         onChange={onChange}
         locale={locale}
