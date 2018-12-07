@@ -21,10 +21,10 @@ import { always, forType, mapPayload, mergePayload } from 'utils'
 
 export type AutomataState =
   | 'email' | 'error_email' // only email enabled
-  | 'password' | 'error_password' | 'unauthorized' // only confirm disabled
+  | 'password' | 'error_password' | 'unauthorized' // all enabled except confirm (signup only)
   | 'confirm' | 'error_confirm' // all enabled
-  | 'valid'
-  | 'pending'
+  | 'valid' // all enabled
+  | 'pending' // all disabled
 
 const clearPassword = propCursor('changes')(propCursor('password')(always()))
 const clearConfirm = propCursor('changes')(propCursor('confirm')(always()))

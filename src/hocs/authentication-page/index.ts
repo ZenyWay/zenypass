@@ -49,20 +49,26 @@ export interface AuthenticationPageSFCProps
 extends AuthenticationPageSFCHandlerProps {
   signup?: boolean
   emails?: DropdownItemSpec[]
-  email?: InputProps
-  password?: InputProps
-  confirm?: InputProps
+  email?: string
+  password?: string
+  confirm?: string
   cleartext?: boolean
-  submittable?: boolean
+  /**
+   * email: email field enabled; password, confirm and submit disabled
+   *
+   * password: email and password field enabled; confirm and submit disabled
+   *
+   * true: all enabled
+   *
+   * false: all disabled
+   */
+  enabled?: SigninInputs | boolean
   pending?: boolean
-  error?: boolean
+  error?: SignupInputs | 'unauthorized' | false
 }
 
-export interface InputProps {
-  value?: string
-  error?: boolean
-  enabled?: boolean
-}
+export type SignupInputs = SigninInputs | 'confirm'
+export type SigninInputs = 'email' | 'password'
 
 export interface DropdownItemSpec {
   label?: string
@@ -83,87 +89,42 @@ export interface AuthenticationPageSFCHandlerProps {
 interface AuthenticationPageState {
   props: AuthenticationPageProps<AuthenticationPageSFCProps>
   state: AutomataState
-  changes?: { [key in AuthenticationPageInputs]: string }
-  inputs?: { [key in AuthenticationPageInputs]: HTMLElement }
+  changes?: { [key in SignupInputs]: string }
+  inputs?: { [key in SignupInputs]: HTMLElement }
 }
 
-type AuthenticationPageInputs = 'email' | 'password' | 'confirm'
-
-type InputSpec = { [key in keyof InputProps]: boolean }
-
-const INPUT_SPECS: { [k: string]: Partial<InputSpec> } = {
-  DISABLED: { enabled: false, error: false },
-  ENABLED: { enabled: true, error: false },
-  INVALID: { enabled: true, error: true }
+const STATE_TO_ENABLED: { [key in AutomataState]: SigninInputs | boolean} = {
+  email: 'email',
+  error_email: 'email',
+  password: 'password',
+  error_password: 'password',
+  unauthorized: 'password',
+  confirm: true,
+  error_confirm: true,
+  valid: true,
+  pending: false
 }
 
-const STATE_TO_EMAIL_SPEC: { [state in Partial<AutomataState>]: InputSpec } = {
-  email: INPUT_SPECS.ENABLED,
-  error_email: INPUT_SPECS.INVALID,
-  password: INPUT_SPECS.ENABLED,
-  error_password: INPUT_SPECS.ENABLED,
-  unauthorized: INPUT_SPECS.ENABLED,
-  confirm: INPUT_SPECS.ENABLED,
-  error_confirm: INPUT_SPECS.ENABLED,
-  valid: INPUT_SPECS.ENABLED,
-  pending: INPUT_SPECS.DISABLED
-}
-
-const STATE_TO_PASSWORD_SPEC: { [state in Partial<AutomataState>]: InputSpec } = {
-  email: INPUT_SPECS.DISABLED,
-  error_email: INPUT_SPECS.DISABLED,
-  password: INPUT_SPECS.ENABLED,
-  error_password: INPUT_SPECS.INVALID,
-  unauthorized: INPUT_SPECS.ENABLED,
-  confirm: INPUT_SPECS.ENABLED,
-  error_confirm: INPUT_SPECS.ENABLED,
-  valid: INPUT_SPECS.ENABLED,
-  pending: INPUT_SPECS.DISABLED
-}
-
-const STATE_TO_CONFIRM_SPEC: { [state in Partial<AutomataState>]: InputSpec } = {
-  email: INPUT_SPECS.DISABLED,
-  error_email: INPUT_SPECS.DISABLED,
-  password: INPUT_SPECS.DISABLED,
-  error_password: INPUT_SPECS.DISABLED,
-  unauthorized: INPUT_SPECS.DISABLED,
-  confirm: INPUT_SPECS.ENABLED,
-  error_confirm: INPUT_SPECS.INVALID,
-  valid: INPUT_SPECS.ENABLED,
-  pending: INPUT_SPECS.DISABLED
+const STATE_TO_ERROR: Partial<{
+  [key in AutomataState]: SignupInputs | 'unauthorized'
+}> = {
+  error_email: 'email',
+  error_password: 'password',
+  error_confirm: 'confirm',
+  unauthorized: 'unauthorized'
 }
 
 function mapStateToProps (
   { props, state, changes }: AuthenticationPageState
 ): Rest<AuthenticationPageSFCProps, AuthenticationPageSFCHandlerProps> {
-  const { onSuccess, onError, ...attrs } =
-    props as AuthenticationPageProps<AuthenticationPageSFCProps> &
-      Rest<AuthenticationPageSFCProps, AuthenticationPageSFCHandlerProps>
-  attrs.pending = state === 'pending'
-  const emailSpec = STATE_TO_EMAIL_SPEC[state]
-  attrs.email = {
-    value: changes && changes.email,
-    error: emailSpec.error,
-    enabled: emailSpec.enabled
+  const { onSuccess, onError, ...attrs } = props
+  return {
+    ...attrs,
+    ...changes,
+    pending: state === 'pending',
+    enabled: STATE_TO_ENABLED[state],
+    error: STATE_TO_ERROR[state]
   }
-  const passwordSpec = STATE_TO_PASSWORD_SPEC[state]
-  attrs.password = {
-    value: changes && changes.password,
-    error: passwordSpec.error,
-    enabled: passwordSpec.enabled
-  }
-  if (props.signup) {
-    const confirmSpec = STATE_TO_CONFIRM_SPEC[state]
-    attrs.confirm = {
-      value: changes && changes.confirm,
-      error: confirmSpec.error,
-      enabled: confirmSpec.enabled
-    }
-  }
-  attrs.submittable =
-    props.signup ? attrs.confirm.enabled : attrs.password.enabled
-  attrs.error = state === 'unauthorized'
-  return attrs
 }
 
 const mapDispatchToProps:
