@@ -21,8 +21,7 @@ import {
   signinOrSignupOnSubmit,
   validateEmailOnEmailChange,
   validatePasswordOnPasswordChange,
-  validateConfirmOnConfirmChange,
-  validConfirmOnValidPasswordWhenSignin
+  validateConfirmOnConfirmChange
 } from './effects'
 import componentFromEvents, {
   ComponentClass,
@@ -50,16 +49,16 @@ export interface AuthenticationPageSFCProps
 extends AuthenticationPageSFCHandlerProps {
   signup?: boolean
   emails?: DropdownItemSpec[]
-  email?: InputSpec
-  password?: InputSpec
-  confirm?: InputSpec
+  email?: InputProps
+  password?: InputProps
+  confirm?: InputProps
   cleartext?: boolean
   submittable?: boolean
   pending?: boolean
   error?: boolean
 }
 
-export interface InputSpec {
+export interface InputProps {
   value?: string
   error?: boolean
   enabled?: boolean
@@ -86,38 +85,84 @@ interface AuthenticationPageState {
   state: AutomataState
   changes?: { [key in AuthenticationPageInputs]: string }
   inputs?: { [key in AuthenticationPageInputs]: HTMLElement }
-  errors?: { [key in AuthenticationPageInputs | 'service']: boolean }
 }
 
 type AuthenticationPageInputs = 'email' | 'password' | 'confirm'
 
+type InputSpec = { [key in keyof InputProps]: boolean }
+
+const INPUT_SPECS: { [k: string]: Partial<InputSpec> } = {
+  DISABLED: { enabled: false, error: false },
+  ENABLED: { enabled: true, error: false },
+  INVALID: { enabled: true, error: true }
+}
+
+const STATE_TO_EMAIL_SPEC: { [state in Partial<AutomataState>]: InputSpec } = {
+  email: INPUT_SPECS.ENABLED,
+  error_email: INPUT_SPECS.INVALID,
+  password: INPUT_SPECS.ENABLED,
+  error_password: INPUT_SPECS.ENABLED,
+  unauthorized: INPUT_SPECS.ENABLED,
+  confirm: INPUT_SPECS.ENABLED,
+  error_confirm: INPUT_SPECS.ENABLED,
+  valid: INPUT_SPECS.ENABLED,
+  pending: INPUT_SPECS.DISABLED
+}
+
+const STATE_TO_PASSWORD_SPEC: { [state in Partial<AutomataState>]: InputSpec } = {
+  email: INPUT_SPECS.DISABLED,
+  error_email: INPUT_SPECS.DISABLED,
+  password: INPUT_SPECS.ENABLED,
+  error_password: INPUT_SPECS.INVALID,
+  unauthorized: INPUT_SPECS.ENABLED,
+  confirm: INPUT_SPECS.ENABLED,
+  error_confirm: INPUT_SPECS.ENABLED,
+  valid: INPUT_SPECS.ENABLED,
+  pending: INPUT_SPECS.DISABLED
+}
+
+const STATE_TO_CONFIRM_SPEC: { [state in Partial<AutomataState>]: InputSpec } = {
+  email: INPUT_SPECS.DISABLED,
+  error_email: INPUT_SPECS.DISABLED,
+  password: INPUT_SPECS.DISABLED,
+  error_password: INPUT_SPECS.DISABLED,
+  unauthorized: INPUT_SPECS.DISABLED,
+  confirm: INPUT_SPECS.ENABLED,
+  error_confirm: INPUT_SPECS.INVALID,
+  valid: INPUT_SPECS.ENABLED,
+  pending: INPUT_SPECS.DISABLED
+}
+
 function mapStateToProps (
-  { props, state, changes, errors }: AuthenticationPageState
+  { props, state, changes }: AuthenticationPageState
 ): Rest<AuthenticationPageSFCProps, AuthenticationPageSFCHandlerProps> {
   const { onSuccess, onError, ...attrs } =
     props as AuthenticationPageProps<AuthenticationPageSFCProps> &
       Rest<AuthenticationPageSFCProps, AuthenticationPageSFCHandlerProps>
   attrs.pending = state === 'pending'
+  const emailSpec = STATE_TO_EMAIL_SPEC[state]
   attrs.email = {
     value: changes && changes.email,
-    error: errors && errors.email,
-    enabled: !attrs.pending
+    error: emailSpec.error,
+    enabled: emailSpec.enabled
   }
+  const passwordSpec = STATE_TO_PASSWORD_SPEC[state]
   attrs.password = {
     value: changes && changes.password,
-    error: errors && errors.password,
-    enabled: attrs.email.enabled && state !== 'credentials' && state !== 'email'
+    error: passwordSpec.error,
+    enabled: passwordSpec.enabled
   }
   if (props.signup) {
+    const confirmSpec = STATE_TO_CONFIRM_SPEC[state]
     attrs.confirm = {
       value: changes && changes.confirm,
-      error: errors && errors.confirm,
-      enabled: attrs.password.enabled && state !== 'password'
+      error: confirmSpec.error,
+      enabled: confirmSpec.enabled
     }
   }
   attrs.submittable =
     props.signup ? attrs.confirm.enabled : attrs.password.enabled
-  attrs.error = errors && errors.service
+  attrs.error = state === 'unauthorized'
   return attrs
 }
 
@@ -153,12 +198,11 @@ export function authenticationPage <P extends AuthenticationPageSFCProps> (
       validateEmailOnEmailChange,
       validatePasswordOnPasswordChange,
       validateConfirmOnConfirmChange,
-      validConfirmOnValidPasswordWhenSignin,
       focusEmailInputOnMount,
       focusInputOnEvent('INVALID_EMAIL', 'email'),
       focusInputOnEvent('VALID_EMAIL', 'password'),
       focusInputOnEvent('INVALID_PASSWORD', 'password'),
-      focusInputOnEvent('VALID_PASSWORD', 'confirm'),
+      focusInputOnEvent('VALID_SIGNUP_PASSWORD', 'confirm'),
       focusInputOnEvent('INVALID_CONFIRM', 'confirm'),
       signinOrSignupOnSubmit,
       callHandlerOnEvent('TOGGLE_SIGNUP', ['props', 'onToggleSignup']),

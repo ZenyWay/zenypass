@@ -20,74 +20,81 @@ import compose from 'basic-compose'
 import { always, forType, mapPayload, mergePayload } from 'utils'
 
 export type AutomataState =
-  'credentials'
-  | 'email'
-  | 'password'
-  | 'confirm'
+  | 'email' | 'error_email' // only email enabled
+  | 'password' | 'error_password' | 'unauthorized' // only confirm disabled
+  | 'confirm' | 'error_confirm' // all enabled
   | 'valid'
   | 'pending'
 
 const clearPassword = propCursor('changes')(propCursor('password')(always()))
 const clearConfirm = propCursor('changes')(propCursor('confirm')(always()))
 const clearPasswords = compose.into(0)(clearPassword, clearConfirm)
-const setError = error => propCursor('errors')(propCursor(error)(always(true)))
-const clearError = error => propCursor('errors')(propCursor(error)(always()))
-const clearErrors = propCursor('errors')(always())
 
 const automata: AutomataSpec<AutomataState> = {
-  credentials: { // neither email nor password are valid
-    INVALID_EMAIL: setError('email'),
-    VALID_EMAIL: ['password', clearError('email')]
+  email: {
+    SUBMIT: 'error_email',
+    INVALID_EMAIL: 'error_email',
+    VALID_EMAIL: 'password'
   },
-  email: { // password is valid, email is not
-    TOGGLE_SIGNUP: ['credentials', clearPassword],
-    INVALID_PASSWORD: ['credentials', setError('password')],
-    INVALID_EMAIL: ['credentials', clearPassword, setError('email')],
-    VALID_EMAIL: ['confirm', clearError('email')]
+  error_email: {
+    VALID_EMAIL: 'password'
   },
-  password: { // email is valid, password is not
-    TOGGLE_SIGNUP: [clearPassword, clearError('password')],
-    SUBMIT: setError('password'),
-    INVALID_EMAIL: [
-      'credentials', clearPassword, clearError('password'), setError('email')
-    ],
-    VALID_EMAIL: [clearPassword, clearError('password')],
-    INVALID_PASSWORD: setError('password'),
-    VALID_PASSWORD: ['confirm', clearError('password')]
+  password: {
+    SUBMIT: 'error_password',
+    INVALID_EMAIL: 'error_email',
+    INVALID_PASSWORD: 'error_password',
+    VALID_SIGNUP_PASSWORD: 'confirm',
+    VALID_SIGNIN_PASSWORD: 'valid'
   },
-  confirm: { // both email and password are valid
-    TOGGLE_SIGNUP: ['password', clearPasswords, clearError('confirm')],
-    SUBMIT: setError('confirm'),
-    INVALID_EMAIL: [
-      'credentials', clearPasswords, clearError('confirm'), setError('email')
-    ],
-    VALID_EMAIL: ['password', clearPasswords, clearError('confirm')],
-    INVALID_PASSWORD: [
-      'password', clearConfirm, clearError('confirm'), setError('password')
-    ],
-    VALID_PASSWORD: [clearConfirm, clearError('confirm')],
-    INVALID_CONFIRM: [clearConfirm, setError('confirm')],
-    VALID_CONFIRM: ['valid', clearError('confirm')]
+  error_password: {
+    TOGGLE_SIGNUP: ['password', clearPassword],
+    INVALID_EMAIL: ['error_email', clearPassword],
+    VALID_EMAIL: ['password', clearPassword],
+    VALID_SIGNUP_PASSWORD: 'confirm',
+    VALID_SIGNIN_PASSWORD: 'valid'
   },
-  valid: { // all inputs are valid
+  unauthorized: {
+    TOGGLE_SIGNUP: 'password',
+    SUBMIT: 'error_password',
+    INVALID_EMAIL: 'error_email',
+    VALID_EMAIL: 'password',
+    VALID_SIGNIN_PASSWORD: 'valid'
+  },
+  confirm: {
+    TOGGLE_SIGNUP: ['password', clearPassword],
+    SUBMIT: 'error_confirm',
+    INVALID_EMAIL: ['error_email', clearPassword],
+    INVALID_PASSWORD: 'error_password',
+    INVALID_CONFIRM: 'error_confirm',
+    VALID_EMAIL: ['password', clearPassword],
+    VALID_SIGNUP_PASSWORD: ['confirm', clearConfirm],
+    VALID_CONFIRM: 'valid'
+  },
+  error_confirm: {
     TOGGLE_SIGNUP: ['password', clearPasswords],
-    SUBMIT: clearError('service'),
-    INVALID_EMAIL: ['email', clearConfirm, setError('email')],
+    INVALID_EMAIL: ['error_email', clearPasswords],
+    INVALID_PASSWORD: ['error_password', clearConfirm],
     VALID_EMAIL: ['password', clearPasswords],
-    INVALID_PASSWORD: ['password', clearConfirm, setError('password')],
-    VALID_PASSWORD: ['confirm', clearConfirm],
-    INVALID_CONFIRM: ['confirm', clearConfirm, setError('confirm')],
+    VALID_SIGNUP_PASSWORD: ['confirm', clearConfirm],
+    VALID_CONFIRM: 'valid'
+  },
+  valid: {
+    TOGGLE_SIGNUP: ['password', clearPasswords],
+    INVALID_EMAIL: ['error_email', clearPasswords],
+    INVALID_PASSWORD: ['error_password', clearConfirm],
+    INVALID_CONFIRM: 'error_confirm',
+    VALID_EMAIL: ['password', clearPasswords],
     PENDING: 'pending'
   },
   pending: { // service call on submit
-    ERROR: ['password', clearPasswords, setError('service')],
-    SUCCESS: ['password', clearPasswords, clearErrors]
+    ERROR: ['email', propCursor('changes')(always())],
+    UNAUTHORIZED: ['unauthorized', clearPasswords],
+    SUCCESS: ['password', clearPasswords]
   }
 }
 
 export const reducer = compose.into(0)(
-  createAutomataReducer(automata, 'credentials'),
-  forType('TOGGLE_SIGNUP')(clearError('service')),
+  createAutomataReducer(automata, 'email'),
   forType('CHANGE')(propCursor('changes')(mergePayload())),
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(into('props')(mapPayload()))
