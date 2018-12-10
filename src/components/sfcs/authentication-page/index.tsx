@@ -15,58 +15,23 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
+import { SigninForm, SigninFormProps } from './signin-form'
+import { SignupForm, SignupFormProps } from './signup-form'
 import { SplashCard, SplashFooterCard } from '../splash-card'
-import { RecordField as PassiveRecordField } from '../record-field'
 import { Dropdown, DropdownItemSpec } from '../../dropdown'
 import { FAIcon } from '../fa-icon'
-import { Button, CardBody, CardTitle, Row
-} from 'bootstrap'
-import { classes } from 'utils'
+import { Button, CardBody, CardTitle, Row } from 'bootstrap'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
 export interface AuthenticationPageProps
-extends EmailDropdownProps, SignupFormProps {
+extends SigninFormProps, SignupFormProps {
   locales?: DropdownItemSpec[]
   signup?: boolean
   pending?: boolean
   onSelectLocale?: (item?: HTMLElement) => void
   onToggleSignup?: (event: Event) => void
 }
-
-export interface EmailDropdownProps {
-  emails?: DropdownItemSpec[]
-  onSelectEmail?: (item?: HTMLElement) => void
-}
-
-export interface SignupFormProps extends SigninFormProps {
-  confirm?: string
-  onConfirmInputRef?: (target: HTMLElement) => void
-}
-
-export interface SigninFormProps {
-  locale: string
-  email?: string
-  password?: string
-  /**
-   * email: email field enabled; password, confirm and submit disabled
-   *
-   * password: email and password field enabled; confirm and submit disabled
-   *
-   * true: all enabled
-   *
-   * false: all disabled
-   */
-  enabled?: SigninFormField | boolean
-  error?: SignupFormField | 'unauthorized' | false
-  onChange?: (value: string, target: HTMLElement) => void
-  onSubmit?: (event: Event) => void
-  onEmailInputRef?: (target: HTMLElement) => void
-  onPasswordInputRef?: (target: HTMLElement) => void
-}
-
-export type SignupFormField = SigninFormField | 'confirm'
-export type SigninFormField = 'email' | 'password'
 
 export type UnknownProps = { [prop: string]: unknown }
 
@@ -181,155 +146,5 @@ export function AuthenticationPage ({
         </SplashFooterCard>
       </Row>
     </section>
-  )
-}
-
-function SigninForm ({
-  locale,
-  emails,
-  email,
-  password,
-  cleartext,
-  enabled,
-  error,
-  onChange,
-  onSubmit,
-  onSelectEmail,
-  onEmailInputRef,
-  onPasswordInputRef,
-  onConfirmInputRef,
-  ...attrs
-}: SigninFormProps & EmailDropdownProps & UnknownProps) {
-  const t = l10ns[locale]
-  const dropdown = emails && emails.length
-  const passwordEnabled = enabled && (enabled !== 'email')
-  return (
-    <form {...attrs} onSubmit={onSubmit}>
-      <PassiveRecordField
-        type='email'
-        id='email'
-        blurOnEnterKey
-        className='mb-2'
-        options={emails}
-        icon={dropdown ? 'fa fa-user' : 'user'}
-        placeholder={t('Enter your email address')}
-        value={email}
-        error={(error === 'email') && t('Please enter a valid email address')}
-        data-id='email'
-        onChange={onChange}
-        onSelectEmail={onSelectEmail}
-        locale={locale}
-        disabled={!enabled}
-        innerRef={onEmailInputRef}
-      />
-      <PassiveRecordField
-        type={cleartext ? 'text' : 'password'}
-        blurOnEnterKey
-        id='password'
-        className='mb-2'
-        icon={classes('lock', dropdown && 'mx-1')}
-        placeholder={passwordEnabled && t('Enter your password')}
-        value={password}
-        error={(error === 'password') && t('Please enter your password')}
-        data-id='password'
-        onChange={onChange}
-        locale={locale}
-        disabled={!passwordEnabled}
-        innerRef={onPasswordInputRef}
-      />
-      {
-        error !== 'unauthorized'
-        ? null
-        : (
-          <p>
-            <small className='text-danger'>
-              {t('Unauthorized access')}:<br/>
-              {t('Please verify your email address and enter your password again')}.
-            </small>
-          </p>
-        )
-      }
-    </form>
-  )
-}
-
-function SignupForm ({
-  locale,
-  email,
-  password,
-  confirm,
-  cleartext,
-  enabled,
-  error,
-  onChange,
-  onSubmit,
-  onToggleFocus,
-  onEmailInputRef,
-  onPasswordInputRef,
-  onConfirmInputRef,
-  ...attrs
-}: SignupFormProps & UnknownProps) {
-  const t = l10ns[locale]
-  const passwordEnabled = enabled && (enabled !== 'email')
-  const confirmEnabled = enabled === true
-  return (
-    <form {...attrs} onSubmit={onSubmit}>
-      <PassiveRecordField
-        type='email'
-        id='email'
-        blurOnEnterKey
-        className='mb-2'
-        icon='user'
-        placeholder={t('Enter your email address')}
-        value={email}
-        error={(error === 'email') && t('Please enter a valid email address')}
-        data-id='email'
-        onChange={onChange}
-        locale={locale}
-        disabled={!enabled}
-        innerRef={onEmailInputRef}
-      />
-      <PassiveRecordField
-        type={cleartext ? 'text' : 'password'}
-        id='password'
-        blurOnEnterKey
-        className='mb-2'
-        icon='lock'
-        placeholder={passwordEnabled && t('Enter your password')}
-        value={password}
-        error={
-          (error === 'password')
-          && t('Please choose a password with at least four characters')
-        }
-        data-id='password'
-        onChange={onChange}
-        locale={locale}
-        disabled={!passwordEnabled}
-        innerRef={onPasswordInputRef}
-      />
-      <PassiveRecordField
-        type={cleartext ? 'text' : 'password'}
-        id='confirm-password'
-        blurOnEnterKey
-        className='mb-2'
-        icon='lock'
-        placeholder={confirmEnabled && t('Confirm your password')}
-        value={confirm}
-        error={(error === 'confirm') && t('Please enter the exact same password')}
-        data-id='confirm'
-        onChange={onChange}
-        locale={locale}
-        disabled={!confirmEnabled}
-        innerRef={onConfirmInputRef}
-      />
-      <p>
-        <small>
-          {t('security-info')}.<br/>
-          <a href={t('info-link')} target='_blank' className='text-info'>
-            {t('More information')}...
-          </a>
-        </small>
-      </p>
-    </form>
   )
 }
