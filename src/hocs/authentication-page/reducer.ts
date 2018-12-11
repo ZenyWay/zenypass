@@ -94,13 +94,13 @@ const automata: AutomataSpec<AutomataState> = {
   consents: {
     CANCEL_CONSENTS: ['confirm', clearConfirm],
     TOGGLE_CONSENT: propCursor('changes')(toggleConsent),
-    PENDING: ['pending', resetConsents]
+    PENDING: 'pending'
   },
   pending: { // service call on submit
     ERROR: ['email', propCursor('changes')(always())],
     UNAUTHORIZED: ['unauthorized', clearPasswords],
     SIGNED_IN: ['password', clearPasswords],
-    SIGNED_UP: ['password', clearPasswords]
+    SIGNED_UP: ['password', clearPasswords, resetConsents]
   }
 }
 
