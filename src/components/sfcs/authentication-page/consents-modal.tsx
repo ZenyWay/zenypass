@@ -123,7 +123,7 @@ export function ConsentsModal ({
             className='mb-0'
           >
             <small className='form-text text-muted'>
-              {`${t('Also follow Zenypass on')} `}
+              {`${t('Also follow ZenyPass on')} `}
               <a target='_blank' href={t('info-link')}>Medium</a>
               {` ${t('and')} `}
               <a target='_blank' href={t('facebook-link')}>Facebook</a>.

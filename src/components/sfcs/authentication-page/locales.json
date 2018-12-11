@@ -1,5 +1,6 @@
 {
   "fr": {
+    "Accept": "Accepter",
     "Already have an account": "Vous avez déjà un compte",
     "Also follow ZenyPass on": "Suivez aussi ZenyPass sur",
     "and": "et",
@@ -33,6 +34,7 @@
     "You don't have an account": "Vous n'avez pas encore de compte"
   },
   "en": {
+    "Accept": "Accept",
     "Already have an account": "Already have an account",
     "Also follow ZenyPass on": "Also follow ZenyPass on",
     "and": "and",
