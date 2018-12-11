@@ -92,7 +92,8 @@ const automata: AutomataSpec<AutomataState> = {
     SIGNUP: ['consents', resetConsents]
   },
   consents: {
-    CANCEL_CONSENTS: ['password', clearPasswords],
+    CANCEL_CONSENTS: ['confirm', clearConfirm],
+    TOGGLE_CONSENT: propCursor('changes')(toggleConsent),
     PENDING: ['pending', resetConsents]
   },
   pending: { // service call on submit
@@ -100,6 +101,13 @@ const automata: AutomataSpec<AutomataState> = {
     UNAUTHORIZED: ['unauthorized', clearPasswords],
     SIGNED_IN: ['password', clearPasswords],
     SIGNED_UP: ['password', clearPasswords]
+  }
+}
+
+function toggleConsent (changes, { payload }) {
+  return {
+    ...changes,
+    [payload]: !(changes && changes[payload])
   }
 }
 

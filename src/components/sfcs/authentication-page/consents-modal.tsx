@@ -57,14 +57,14 @@ export function ConsentsModal ({
       <ModalBody>
         <form id='consents-modal-form' onSubmit={onSubmit}>
           <p>CONSENTS_FORM</p>
-          <CheckboxFormGroup
-            id='terms-consent'
+          <ConsentCheckbox
+            id='terms'
             label={t('I have read and accept the T&Cs of ZenyPass')}
             error={!terms && t('Required for creating an account')}
             onToggle={onToggle}
           />
-          <CheckboxFormGroup
-            id='news-consent'
+          <ConsentCheckbox
+            id='news'
             label={t('I subscribe to the newsletter containing help and news about ZenyPass')}
             onToggle={onToggle}
           >
@@ -74,7 +74,7 @@ export function ConsentsModal ({
               {` ${t('and')} `}
               <a target='_blank' href={t('facebook-link')}>Facebook</a>.
             </small>
-          </CheckboxFormGroup>
+          </ConsentCheckbox>
         </form>
       </ModalBody>
       <ModalFooter>
@@ -82,6 +82,7 @@ export function ConsentsModal ({
           type='submit'
           form='consents-modal-form'
           color='info'
+          disabled={!terms}
         >
           {t('Accept')}
         </Button>
@@ -90,22 +91,23 @@ export function ConsentsModal ({
   )
 }
 
-export interface CheckboxFormGroupProps {
-  id: string
+export interface ConsentCheckboxProps {
+  id: 'terms' | 'news'
   label?: string
   error?: string
   children?: any
   onToggle?: (event: Event) => void
 }
 
-function CheckboxFormGroup ({
+function ConsentCheckbox ({
   id,
   label,
   error,
   children,
   onToggle,
   ...attrs
-}: CheckboxFormGroupProps & UnknownProps) {
+}: ConsentCheckboxProps & UnknownProps) {
+  const inputId = `${id}_consent`
   return (
     <FormGroup {...attrs} >
       <InputGroup>
@@ -115,7 +117,7 @@ function CheckboxFormGroup ({
           >
             <Input
               type='checkbox'
-              id={id}
+              id={inputId}
               data-id={id}
               onInput={onToggle}
             />
@@ -125,7 +127,7 @@ function CheckboxFormGroup ({
           className={
             classes('form-control form-control-sm h-auto', error && 'is-invalid')
           }
-          htmlFor={id}
+          htmlFor={inputId}
         >
           {label || null}
         </label>
