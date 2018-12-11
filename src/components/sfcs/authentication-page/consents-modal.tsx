@@ -20,14 +20,18 @@ import {
   Button,
   FormGroup,
   Input,
-  Label,
   InputGroup,
   InputGroupPrepend,
   InputGroupText
 } from 'bootstrap'
 import { classes } from 'utils'
+import { style } from 'typestyle'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
+const TERMS_MD = {
+  fr: require('./terms-fr.md'),
+  en: require('./terms-en.md')
+}
 
 export interface ConsentsModalProps {
   locale: string
@@ -40,6 +44,39 @@ export interface ConsentsModalProps {
 }
 
 export type UnknownProps = { [prop: string]: unknown }
+
+namespace css {
+  export const markdown = style({
+    lineHeight: 'normal',
+    $nest: {
+      '& h5, & h4, & h3, & h2, & h1': {
+        fontSize: 'inherit'
+      },
+      '& h1, & h1': {
+        fontWeight: 'bold'
+      },
+      '& h3, & h2, & h1': {
+        textTransform: 'uppercase'
+      },
+      '& ol': {
+        paddingBlockStart: '1rem'
+      },
+      '& ol>ul': {
+        paddingBlockStart: '2rem'
+      }
+    }
+  })
+  export const notepad = classes(
+    style({
+      height: '30vh',
+      overflowY: 'scroll',
+      fontSize: '0.8rem',
+      border: '1px solid rgba(0,0,0,0.15)'
+    }),
+    markdown,
+    'text-left rounded p-1'
+  )
+}
 
 export function ConsentsModal ({
   locale,
@@ -54,30 +91,47 @@ export function ConsentsModal ({
   const t = l10ns[locale]
   return (
     <Modal isOpen={display} toggle={onCancel} size='lg' {...attrs}>
+      <ModalHeader toggle={onCancel} className='bg-info text-white' >
+        {t('T&Cs')}
+      </ModalHeader>
       <ModalBody>
         <form id='consents-modal-form' onSubmit={onSubmit}>
-          <p>CONSENTS_FORM</p>
+          <div class='mb-3'>
+            <div className={css.notepad} >
+              <small
+                dangerouslySetInnerHTML={{ // https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml
+                  __html: TERMS_MD[locale]
+                }}
+              />
+            </div>
+            <a target='_blank' href={t('tnc-link')}>
+              <small>{t('View the T&Cs online')}</small>
+            </a>
+          </div>
           <ConsentCheckbox
             id='terms'
+            checked={terms}
             label={t('I have read and accept the T&Cs of ZenyPass')}
             error={!terms && t('Required for creating an account')}
             onToggle={onToggle}
           />
           <ConsentCheckbox
             id='news'
+            checked={news}
             label={t('I subscribe to the newsletter containing help and news about ZenyPass')}
             onToggle={onToggle}
+            className='mb-0'
           >
             <small className='form-text text-muted'>
               {`${t('Also follow Zenypass on')} `}
-              <a target='_blank' href={t('medium-link')}>Medium</a>
+              <a target='_blank' href={t('info-link')}>Medium</a>
               {` ${t('and')} `}
               <a target='_blank' href={t('facebook-link')}>Facebook</a>.
             </small>
           </ConsentCheckbox>
         </form>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter className='bg-light'>
         <Button
           type='submit'
           form='consents-modal-form'
@@ -93,6 +147,7 @@ export function ConsentsModal ({
 
 export interface ConsentCheckboxProps {
   id: 'terms' | 'news'
+  checked?: boolean
   label?: string
   error?: string
   children?: any
@@ -101,6 +156,7 @@ export interface ConsentCheckboxProps {
 
 function ConsentCheckbox ({
   id,
+  checked,
   label,
   error,
   children,
@@ -119,6 +175,7 @@ function ConsentCheckbox ({
               type='checkbox'
               id={inputId}
               data-id={id}
+              checked={checked}
               onInput={onToggle}
             />
           </InputGroupText>
