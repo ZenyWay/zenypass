@@ -24,15 +24,19 @@ export type AutomataState =
   | 'password' | 'error_password' | 'unauthorized' // all enabled except confirm (signup only)
   | 'confirm' | 'error_confirm' // all enabled
   | 'valid' // all enabled
+  | 'consents' // all disabled
   | 'pending' // all disabled
 
+const DEFAULT_CONSENTS = { terms: false, news: false }
+
+const resetConsents = propCursor('changes')(mergePayload(always(DEFAULT_CONSENTS)))
 const clearPassword = propCursor('changes')(propCursor('password')(always()))
 const clearConfirm = propCursor('changes')(propCursor('confirm')(always()))
 const clearPasswords = compose.into(0)(clearPassword, clearConfirm)
 
 const automata: AutomataSpec<AutomataState> = {
   email: {
-    SUBMIT: 'error_email',
+    SIGNIN: 'error_email',
     INVALID_EMAIL: 'error_email',
     VALID_EMAIL: 'password'
   },
@@ -40,7 +44,7 @@ const automata: AutomataSpec<AutomataState> = {
     VALID_EMAIL: 'password'
   },
   password: {
-    SUBMIT: 'error_password',
+    SIGNIN: 'error_password',
     INVALID_EMAIL: 'error_email',
     INVALID_PASSWORD: 'error_password',
     VALID_SIGNUP_PASSWORD: 'confirm',
@@ -55,14 +59,14 @@ const automata: AutomataSpec<AutomataState> = {
   },
   unauthorized: {
     TOGGLE_SIGNUP: 'password',
-    SUBMIT: 'error_password',
+    SIGNIN: 'error_password',
     INVALID_EMAIL: 'error_email',
     VALID_EMAIL: 'password',
     VALID_SIGNIN_PASSWORD: 'valid'
   },
   confirm: {
     TOGGLE_SIGNUP: ['password', clearPassword],
-    SUBMIT: 'error_confirm',
+    SIGNUP: 'error_confirm',
     INVALID_EMAIL: ['error_email', clearPassword],
     INVALID_PASSWORD: 'error_password',
     INVALID_CONFIRM: 'error_confirm',
@@ -84,12 +88,18 @@ const automata: AutomataSpec<AutomataState> = {
     INVALID_PASSWORD: ['error_password', clearConfirm],
     INVALID_CONFIRM: 'error_confirm',
     VALID_EMAIL: ['password', clearPasswords],
-    PENDING: 'pending'
+    PENDING: 'pending',
+    SIGNUP: ['consents', resetConsents]
+  },
+  consents: {
+    CANCEL_CONSENTS: ['password', clearPasswords],
+    PENDING: ['pending', resetConsents]
   },
   pending: { // service call on submit
     ERROR: ['email', propCursor('changes')(always())],
     UNAUTHORIZED: ['unauthorized', clearPasswords],
-    SUCCESS: ['password', clearPasswords]
+    SIGNED_IN: ['password', clearPasswords],
+    SIGNED_UP: ['password', clearPasswords]
   }
 }
 

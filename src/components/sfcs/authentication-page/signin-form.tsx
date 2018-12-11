@@ -15,7 +15,6 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { SignupFormField } from './signup-form'
 import { RecordField as PassiveRecordField } from '../record-field'
 import { DropdownItemSpec } from '../../dropdown'
 import { classes } from 'utils'
@@ -30,16 +29,14 @@ export interface SigninFormProps {
   /**
    * email: email field enabled; password, confirm and submit disabled
    *
-   * password: email and password field enabled; confirm and submit disabled
-   *
    * true: all enabled
    *
    * false: all disabled
    */
-  enabled?: SigninFormField | boolean
-  error?: SignupFormField | 'unauthorized' | false
+  enabled?: 'email' | boolean
+  error?: SigninFormField | 'unauthorized' | false
   onChange?: (value: string, target: HTMLElement) => void
-  onSubmit?: (event: Event) => void
+  onSignin?: (event: Event) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
   onSelectEmail?: (item?: HTMLElement) => void
@@ -58,7 +55,7 @@ export function SigninForm ({
   enabled,
   error,
   onChange,
-  onSubmit,
+  onSignin,
   onSelectEmail,
   onEmailInputRef,
   onPasswordInputRef,
@@ -69,7 +66,7 @@ export function SigninForm ({
   const dropdown = emails && emails.length
   const passwordEnabled = enabled && (enabled !== 'email')
   return (
-    <form {...attrs} onSubmit={onSubmit}>
+    <form {...attrs} onSubmit={onSignin}>
       <PassiveRecordField
         type='email'
         id='email'

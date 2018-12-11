@@ -14,9 +14,9 @@
  * Limitations under the License.
  */
 
-import { zenypass, Credentials } from 'services'
+import { zenypass, Credentials, ZenypassServiceAccess } from 'services'
 import { StandardAction, createActionFactory } from 'basic-fsa-factories'
-import { isInvalidEmail, not, ERROR_STATUS } from 'utils'
+import { isInvalidEmail, ERROR_STATUS } from 'utils'
 import {
   ignoreElements,
   filter,
@@ -40,7 +40,8 @@ const validSigninPassword = createActionFactory<void>('VALID_SIGNIN_PASSWORD')
 const invalidConfirm = createActionFactory<void>('INVALID_CONFIRM')
 const validConfirm = createActionFactory<void>('VALID_CONFIRM')
 const pending = createActionFactory<void>('PENDING')
-const success = createActionFactory<void>('SUCCESS')
+const signedIn = createActionFactory<void>('SIGNED_IN')
+const signedUp = createActionFactory<void>('SIGNED_UP')
 const unauthorized = createActionFactory<void>('UNAUTHORIZED')
 const error = createActionFactory<any>('ERROR')
 
@@ -73,7 +74,7 @@ export function validateEmailOnEmailChange (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  return stateAfterInputChange('email')(event$, state$).pipe(
+  return stateOnEvent(isChange('email'))(event$, state$).pipe(
     validateInput(hasValidEmail, validEmail, invalidEmail)
   )
 }
@@ -83,7 +84,7 @@ export function validatePasswordOnPasswordChange (
   state$: Observable<any>
 ) {
   const [signup$, signin$] =
-    partition(isSignup)(stateAfterInputChange('password')(event$, state$))
+    partition(isSignup)(stateOnEvent(isChange('password'))(event$, state$))
 
   return merge(
     signup$.pipe(
@@ -99,25 +100,45 @@ export function validateConfirmOnConfirmChange (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  return stateAfterInputChange('confirm')(event$, state$).pipe(
+  return stateOnEvent(isChange('confirm'))(event$, state$).pipe(
     validateInput(hasValidConfirm, validConfirm, invalidConfirm)
   )
 }
 
-export function signinOrSignupOnSubmit (
+export function signinOnSigninFromValid (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  return event$.pipe(
-    filter(({ type }) => type === 'SUBMIT'),
-    withLatestFrom(state$),
-    pluck('1'),
+  return stateOnEvent(({ type }) => type === 'SIGNIN')(event$, state$).pipe(
     filter<any>(({ state }) => state === 'valid'),
     switchMap(
-      ({ props, changes }) => signinOrSignup(props.signup, {
+      ({ changes }) => zenypass.signin({
         username: changes.email,
         passphrase: changes.password
-      })
+      }).pipe(
+        map(session => signedIn(session)),
+        startWith(pending()),
+        catchError(err => observable(unauthorizedOrError(err)))
+      )
+    )
+  )
+}
+
+export function signupOnSignupFromConsentsWhenAccepted (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return stateOnEvent(({ type }) => type === 'SIGNUP')(event$, state$).pipe(
+    filter<any>(({ state, changes }) => (state === 'consents') && !!changes.terms),
+    switchMap(
+      ({ changes }) => zenypass.signup({
+        username: changes.email,
+        passphrase: changes.password
+      }).pipe(
+        map(() => signedUp()),
+        startWith(pending()),
+        catchError(err => observable(error(err)))
+      )
     )
   )
 }
@@ -148,13 +169,13 @@ function hasValidConfirm (
 type InputChanges = { [input in InputField]: string }
 type InputField = 'email' | 'password' | 'confirm'
 
-function stateAfterInputChange (input: InputField) {
+function stateOnEvent (predicate: (event: StandardAction<any>) => boolean) {
   return function (
     event$: Observable<StandardAction<any>>,
     state$: Observable<any>
   ) {
     return event$.pipe(
-      filter(isChange(input)),
+      filter(predicate),
       withLatestFrom(state$),
       pluck<any,any>('1')
     )
@@ -180,14 +201,6 @@ function validateInput (
       invalid$.pipe(map(() => invalidInputAction()))
     )
   }
-}
-
-function signinOrSignup (signup: boolean, credentials: Credentials) {
-  return (signup ? zenypass.signup : zenypass.signin)(credentials).pipe(
-    map(session => success(session)),
-    startWith(pending()),
-    catchError(err => observable(signup ? error(err) : unauthorizedOrError(err)))
-  )
 }
 
 function unauthorizedOrError (err: any) {

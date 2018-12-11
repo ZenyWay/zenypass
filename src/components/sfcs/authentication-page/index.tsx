@@ -15,8 +15,9 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { SigninForm, SigninFormProps } from './signin-form'
-import { SignupForm, SignupFormProps } from './signup-form'
+import { SigninForm, SigninFormField } from './signin-form'
+import { SignupForm, SignupFormField } from './signup-form'
+import { ConsentsModal } from './consents-modal'
 import { SplashCard, SplashFooterCard } from '../splash-card'
 import { Dropdown, DropdownItemSpec } from '../../dropdown'
 import { FAIcon } from '../fa-icon'
@@ -24,12 +25,40 @@ import { Button, CardBody, CardTitle, Row } from 'bootstrap'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
-export interface AuthenticationPageProps
-extends SigninFormProps, SignupFormProps {
+export interface AuthenticationPageProps {
+  locale: string
   locales?: DropdownItemSpec[]
   signup?: boolean
+  consents?: boolean
+  emails?: DropdownItemSpec[]
+  email?: string
+  password?: string
+  confirm?: string
+  terms?: boolean
+  news?: boolean
   pending?: boolean
+  error?: SignupFormField | 'unauthorized' | false
+  /**
+   * email: email field enabled; password, confirm and submit disabled
+   *
+   * password: (signup only)
+   * email and password field enabled; confirm and submit disabled
+   *
+   * true: all enabled
+   *
+   * false: all disabled
+   */
+  enabled?: SigninFormField | boolean
+  onCancelConsents: (event: MouseEvent) => void
+  onChange?: (value: string, target: HTMLElement) => void
+  onConfirmInputRef?: (target: HTMLElement) => void
+  onEmailInputRef?: (target: HTMLElement) => void
+  onPasswordInputRef?: (target: HTMLElement) => void
+  onSelectEmail?: (item?: HTMLElement) => void
   onSelectLocale?: (item?: HTMLElement) => void
+  onSignin?: (event: Event) => void
+  onSignup?: (event: Event) => void
+  onToggleConsent?: (event: Event) => void
   onToggleSignup?: (event: Event) => void
 }
 
@@ -39,18 +68,24 @@ export function AuthenticationPage ({
   locale,
   locales,
   signup,
+  consents,
   emails,
   email,
   password,
   confirm,
+  terms,
+  news,
   cleartext,
   pending,
   enabled,
   error,
+  onCancelConsents,
   onChange,
   onSelectLocale,
   onSelectEmail,
-  onSubmit,
+  onSignup,
+  onSignin,
+  onToggleConsent,
   onToggleSignup,
   onEmailInputRef,
   onPasswordInputRef,
@@ -63,10 +98,7 @@ export function AuthenticationPage ({
     email,
     password,
     cleartext,
-    enabled,
-    error,
     onChange,
-    onSubmit,
     onEmailInputRef,
     onPasswordInputRef
   }
@@ -79,6 +111,15 @@ export function AuthenticationPage ({
   )
   return (
     <section className='container bg-light' {...attrs}>
+      <ConsentsModal
+        locale={locale}
+        display={consents}
+        terms={terms}
+        news={news}
+        onCancel={onCancelConsents}
+        onSubmit={onSignup}
+        onToggle={onToggleConsent}
+      />
       <Row className='justify-content-center' >
         <SplashCard >
           <CardTitle className='mt-3'>
@@ -91,14 +132,20 @@ export function AuthenticationPage ({
                 <SignupForm
                   {...formProps}
                   confirm={confirm}
+                  error={error as SignupFormField | false}
+                  enabled={enabled}
                   onConfirmInputRef={onConfirmInputRef}
+                  onSignup={onSignup}
                 />
               )
               : (
                 <SigninForm
                   {...formProps}
                   emails={emails}
+                  error={error as SigninFormField | 'unauthorized' | false}
+                  enabled={enabled as 'email' | boolean}
                   onSelectEmail={onSelectEmail}
+                  onSignin={onSignin}
                 />
               )
             }
@@ -113,7 +160,10 @@ export function AuthenticationPage ({
               type='submit'
               form='authentication-form'
               color='info'
-              disabled={enabled !== true}
+              disabled={
+                !enabled || (enabled === 'email')
+                || (signup && enabled === 'password')
+              }
               className='float-right'
             >
               {

@@ -24,6 +24,7 @@ export interface SignupFormProps {
   locale: string
   email?: string
   password?: string
+  confirm?: string
   /**
    * email: email field enabled; password, confirm and submit disabled
    *
@@ -34,13 +35,12 @@ export interface SignupFormProps {
    * false: all disabled
    */
   enabled?: SigninFormField | boolean
-  error?: SignupFormField | 'unauthorized' | false
+  error?: SignupFormField | false
   onChange?: (value: string, target: HTMLElement) => void
-  onSubmit?: (event: Event) => void
+  onConfirmInputRef?: (target: HTMLElement) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
-  confirm?: string
-  onConfirmInputRef?: (target: HTMLElement) => void
+  onSignup?: (event: Event) => void
 }
 
 export type SignupFormField = SigninFormField | 'confirm'
@@ -56,7 +56,7 @@ export function SignupForm ({
   enabled,
   error,
   onChange,
-  onSubmit,
+  onSignup,
   onToggleFocus,
   onEmailInputRef,
   onPasswordInputRef,
@@ -67,7 +67,7 @@ export function SignupForm ({
   const passwordEnabled = enabled && (enabled !== 'email')
   const confirmEnabled = enabled === true
   return (
-    <form {...attrs} onSubmit={onSubmit}>
+    <form {...attrs} onSubmit={onSignup}>
       <PassiveRecordField
         type='email'
         id='email'

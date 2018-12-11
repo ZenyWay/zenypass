@@ -18,7 +18,8 @@ import { reducer, AutomataState } from './reducer'
 import {
   focusEmailInputOnMount,
   focusInputOnEvent,
-  signinOrSignupOnSubmit,
+  signinOnSigninFromValid,
+  signupOnSignupFromConsentsWhenAccepted,
   validateEmailOnEmailChange,
   validatePasswordOnPasswordChange,
   validateConfirmOnConfirmChange
@@ -48,10 +49,13 @@ export interface AuthenticationPageHocProps {
 export interface AuthenticationPageSFCProps
 extends AuthenticationPageSFCHandlerProps {
   signup?: boolean
+  consents?: boolean
   emails?: DropdownItemSpec[]
   email?: string
   password?: string
   confirm?: string
+  terms?: boolean
+  news?: boolean
   cleartext?: boolean
   /**
    * email: email field enabled; password, confirm and submit disabled
@@ -64,11 +68,12 @@ extends AuthenticationPageSFCHandlerProps {
    */
   enabled?: SigninInputs | boolean
   pending?: boolean
-  error?: SignupInputs | 'unauthorized' | false
+  error?: SignupInputs | 'unauthorized' | 'terms' | unknown | false
 }
 
 export type SignupInputs = SigninInputs | 'confirm'
 export type SigninInputs = 'email' | 'password'
+export type ConsentInputs = 'terms' | 'news'
 
 export interface DropdownItemSpec {
   label?: string
@@ -77,9 +82,12 @@ export interface DropdownItemSpec {
 }
 
 export interface AuthenticationPageSFCHandlerProps {
+  onCancelConsents?: (event: Event) => void
   onChange?: (value: string, target: HTMLElement) => void
   onSelectEmail?: (item?: HTMLElement) => void
-  onSubmit?: (event: Event) => void
+  onSignin?: (event: Event) => void
+  onSignup?: (event: Event) => void
+  onToggleConsent?: (event: Event) => void
   onToggleSignup?: (event: Event) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
@@ -89,11 +97,17 @@ export interface AuthenticationPageSFCHandlerProps {
 interface AuthenticationPageState {
   props: AuthenticationPageProps<AuthenticationPageSFCProps>
   state: AutomataState
-  changes?: { [key in SignupInputs]: string }
+  changes?: { [key in SignupInputs]: string } & { [key in ConsentInputs]: boolean }
   inputs?: { [key in SignupInputs]: HTMLElement }
+  consents?: { terms: boolean, news: boolean }
 }
 
-const STATE_TO_ENABLED: { [key in AutomataState]: SigninInputs | boolean} = {
+/**
+ * signup only
+ */
+const STATE_TO_ENABLED: Partial<{
+  [key in AutomataState]: SigninInputs | boolean
+}> = {
   email: 'email',
   error_email: 'email',
   password: 'password',
@@ -102,6 +116,7 @@ const STATE_TO_ENABLED: { [key in AutomataState]: SigninInputs | boolean} = {
   confirm: true,
   error_confirm: true,
   valid: true,
+  consents: false,
   pending: false
 }
 
@@ -118,11 +133,13 @@ function mapStateToProps (
   { props, state, changes }: AuthenticationPageState
 ): Rest<AuthenticationPageSFCProps, AuthenticationPageSFCHandlerProps> {
   const { onSuccess, onError, ...attrs } = props
+  const enabled = STATE_TO_ENABLED[state]
   return {
     ...attrs,
     ...changes,
+    consents: state === 'consents',
     pending: state === 'pending',
-    enabled: STATE_TO_ENABLED[state],
+    enabled: !props.signup && enabled === 'password' ? true : enabled,
     error: STATE_TO_ERROR[state]
   }
 }
@@ -130,13 +147,19 @@ function mapStateToProps (
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => AuthenticationPageSFCHandlerProps =
 createActionDispatchers({
+  onCancelConsents: 'CANCEL_CONSENTS',
   onChange: [
     'CHANGE',
     (value: string, input: HTMLElement) => ({ [input.dataset.id]: value })
   ],
   onSelectEmail: 'SELECT_EMAIL',
-  onSubmit: ['SUBMIT', preventDefault],
+  onSignin: ['SIGNIN', preventDefault],
+  onSignup: ['SIGNUP', preventDefault],
   onToggleSignup: 'TOGGLE_SIGNUP',
+  onToggleConsent: [
+    'TOGGLE_CONSENT',
+    ({ currentTarget }) => currentTarget.dataset.id
+  ],
   onEmailInputRef: ['INPUT_REF', inputRef('email')],
   onPasswordInputRef: ['INPUT_REF', inputRef('password')],
   onConfirmInputRef: ['INPUT_REF', inputRef('confirm')]
@@ -165,9 +188,11 @@ export function authenticationPage <P extends AuthenticationPageSFCProps> (
       focusInputOnEvent('INVALID_PASSWORD', 'password'),
       focusInputOnEvent('VALID_SIGNUP_PASSWORD', 'confirm'),
       focusInputOnEvent('INVALID_CONFIRM', 'confirm'),
-      signinOrSignupOnSubmit,
+      signinOnSigninFromValid,
+      signupOnSignupFromConsentsWhenAccepted,
       callHandlerOnEvent('TOGGLE_SIGNUP', ['props', 'onToggleSignup']),
-      callHandlerOnEvent('SUCCESS', ['props', 'onSuccess']),
+      callHandlerOnEvent('SIGNED_IN', ['props', 'onSuccess']),
+      callHandlerOnEvent('SIGNED_UP', ['props', 'onSuccess']),
       callHandlerOnEvent('ERROR', ['props', 'onError'])
     ),
     () => tap(log('authentication-page:state:')),
