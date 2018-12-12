@@ -15,6 +15,10 @@
  */
 
 export {
+  AccountCreatedPage,
+  AccountCreatedPageProps
+} from './sfcs/account-created-page'
+export {
   AgentAuthorizationCard,
   AgentAuthorizationCardProps
 } from './agent-authorization-card'

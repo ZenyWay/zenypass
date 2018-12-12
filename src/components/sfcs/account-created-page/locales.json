@@ -1,0 +1,14 @@
+{
+  "fr":{
+    "An account validation email was just sent to you": "Un email vient de vous être envoyé",
+    "If you haven't received the validation email, please check your spam folder": "Si vous n'avez pas reçu cet email, vérifiez s'il n'est pas dans votre dossier \"indésirables\"",
+    "The validation email is sent from the address info@zenyway.com": "Cet email est envoyé depuis l'adresse info@zenyway.com",
+    "To finalize the creation of your account, please follow the link in that email": "Pour finaliser la création de votre compte, vous devez cliquer sur le lien fourni dans cet email"
+  },
+  "en":{
+    "An account validation email was just sent to you": "An account validation email was just sent to you",
+    "If you haven't received the validation email, please check your spam folder": "If you haven't received the validation email, please check your spam folder",
+    "The validation email is sent from the address info@zenyway.com": "The validation email is sent from the address info@zenyway.com",
+    "To finalize the creation of your account, please follow the link in that email": "To finalize the creation of your account, please follow the link in that email"
+  }
+}

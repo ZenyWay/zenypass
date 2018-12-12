@@ -18,20 +18,17 @@
 
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { ControlledInput } from 'components'
+import { AccountCreatedPage } from 'components'
 import { action } from '@storybook/addon-actions'
 
 const attrs = {
-  onChange: action('CHANGE')
+  onSubmit: action('SUBMIT')
 }
 
-storiesOf('ControlledInput', module)
-  .add('default', () => (
-    <ControlledInput {...attrs} />
+storiesOf('AccountCreatedPage (SFC)', module)
+  .add('fr', () => (
+    <AccountCreatedPage locale='fr' {...attrs} />
   ))
-  .add('debounce 300ms', () => (
-    <ControlledInput {...attrs} debounce='300' />
-  ))
-  .add('blurOnEnterKey', () => (
-    <ControlledInput {...attrs} blurOnEnterKey />
+  .add('en', () => (
+    <AccountCreatedPage locale='en' {...attrs} />
   ))

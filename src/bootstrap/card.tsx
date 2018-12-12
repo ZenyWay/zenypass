@@ -21,7 +21,7 @@ import { BasicColor, UnknownProps } from './types'
 
 export interface CardProps {
   rounded?: boolean
-  border?: BasicColor | 'white' | '' | false
+  border?: BasicColor | 'white' | 'none' | '' | false
   bg?: BasicColor | 'white' | 'transparent' | '' | false
   align?: 'left' | 'center' | 'right' | '' | false
   text?: BasicColor | 'white' | 'muted' | '' | false
@@ -105,7 +105,7 @@ function CardFragment ({
 }: CardProps & { type?: CardFragmentType } & UnknownProps) {
   const classNames = classes(
     type ? `card-${type}` : 'card',
-    border && `border-${border}`,
+    border && `border-${border === 'none' ? '0' : border}`,
     bg && `bg-${bg}`,
     text && `text-${text}`,
     align && `text-${align}`,
