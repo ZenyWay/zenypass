@@ -21,7 +21,7 @@ import { always, forType, mapPayload, mergePayload } from 'utils'
 
 export type AutomataState =
   | 'email' | 'error_email' // only email enabled
-  | 'password' | 'error_password' | 'unauthorized' // all enabled except confirm (signup only)
+  | 'password' | 'error_password' | 'unauthorized' | 'created' // all enabled except confirm (signup only)
   | 'confirm' | 'error_confirm' // all enabled
   | 'valid' // all enabled
   | 'consents' // all disabled
@@ -64,6 +64,12 @@ const automata: AutomataSpec<AutomataState> = {
     VALID_EMAIL: 'password',
     VALID_SIGNIN_PASSWORD: 'valid'
   },
+  created: {
+    SIGNIN: 'error_password',
+    INVALID_EMAIL: 'error_email',
+    INVALID_PASSWORD: 'error_password',
+    VALID_SIGNIN_PASSWORD: 'valid'
+  },
   confirm: {
     TOGGLE_SIGNUP: ['password', clearPassword],
     SIGNUP: 'error_confirm',
@@ -100,7 +106,7 @@ const automata: AutomataSpec<AutomataState> = {
     ERROR: ['email', propCursor('changes')(always())],
     UNAUTHORIZED: ['unauthorized', clearPasswords],
     SIGNED_IN: ['password', clearPasswords],
-    SIGNED_UP: ['password', clearPasswords, resetConsents]
+    SIGNED_UP: ['created', clearPasswords, resetConsents]
   }
 }
 

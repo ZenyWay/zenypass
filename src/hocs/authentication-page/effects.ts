@@ -116,7 +116,7 @@ export function signinOnSigninFromValid (
         username: changes.email,
         passphrase: changes.password
       }).pipe(
-        map(session => signedIn(session)),
+        map(session => signedIn({ email: changes.email, session })),
         startWith(pending()),
         catchError(err => observable(unauthorizedOrError(err)))
       )
@@ -135,7 +135,7 @@ export function signupOnSignupFromConsentsWhenAccepted (
         username: changes.email,
         passphrase: changes.password
       }).pipe(
-        map(() => signedUp()),
+        map(() => signedUp(changes.email)),
         startWith(pending()),
         catchError(err => observable(error(err)))
       )

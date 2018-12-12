@@ -30,6 +30,7 @@ export interface AuthenticationPageProps {
   locales?: DropdownItemSpec[]
   signup?: boolean
   consents?: boolean
+  created?: boolean
   emails?: DropdownItemSpec[]
   email?: string
   password?: string
@@ -69,6 +70,7 @@ export function AuthenticationPage ({
   locales,
   signup,
   consents,
+  created,
   emails,
   email,
   password,
@@ -126,6 +128,21 @@ export function AuthenticationPage ({
             {title}
           </CardTitle>
           <CardBody className='px-0' >
+            {
+              !created ? null : (
+                <div>
+                  <p>
+                    {t('An email was just sent to you')}:<br/>
+                    {t('follow the instructions in that email to validate your account, then login below')}.
+                  </p>
+                  <p className='text-muted'>
+                    <small>
+                      {t('If you haven\'t received the validation email, sent from the address info@zenyway.com, please check your spam folder')}.
+                    </small>
+                  </p>
+                </div>
+              )
+            }
             {
               signup
               ? (

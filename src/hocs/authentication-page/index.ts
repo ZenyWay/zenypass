@@ -32,7 +32,12 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { callHandlerOnEvent, preventDefault, shallowEqual } from 'utils'
+import {
+  applyHandlerOnEvent,
+  callHandlerOnEvent,
+  preventDefault,
+  shallowEqual
+} from 'utils'
 import { tap, distinctUntilChanged } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
@@ -41,8 +46,9 @@ export type AuthenticationPageProps<P extends AuthenticationPageSFCProps> =
 
 export interface AuthenticationPageHocProps {
   signup?: boolean
+  email?: string
   onToggleSignup?: (event: Event) => void
-  onSuccess?: (...args: any[]) => void
+  onSuccess?: (email?: string, session?: string) => void
   onError?: (error?: any) => void
 }
 
@@ -50,6 +56,7 @@ export interface AuthenticationPageSFCProps
 extends AuthenticationPageSFCHandlerProps {
   signup?: boolean
   consents?: boolean
+  created?: boolean
   emails?: DropdownItemSpec[]
   email?: string
   password?: string
@@ -113,6 +120,7 @@ const STATE_TO_ENABLED: Partial<{
   password: 'password',
   error_password: 'password',
   unauthorized: 'password',
+  created: true,
   confirm: true,
   error_confirm: true,
   valid: true,
@@ -138,6 +146,7 @@ function mapStateToProps (
     ...attrs,
     ...changes,
     consents: state === 'consents',
+    created: state === 'created',
     pending: state === 'pending',
     enabled: !props.signup && enabled === 'password' ? true : enabled,
     error: STATE_TO_ERROR[state]
@@ -191,7 +200,11 @@ export function authenticationPage <P extends AuthenticationPageSFCProps> (
       signinOnSigninFromValid,
       signupOnSignupFromConsentsWhenAccepted,
       callHandlerOnEvent('TOGGLE_SIGNUP', ['props', 'onToggleSignup']),
-      callHandlerOnEvent('SIGNED_IN', ['props', 'onSuccess']),
+      applyHandlerOnEvent(
+        'SIGNED_IN',
+        ['props', 'onSuccess'],
+        ({ email, session }) => [ email, session ]
+      ),
       callHandlerOnEvent('SIGNED_UP', ['props', 'onSuccess']),
       callHandlerOnEvent('ERROR', ['props', 'onError'])
     ),

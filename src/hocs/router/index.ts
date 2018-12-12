@@ -35,8 +35,9 @@ export type RouterProps<P extends RouterSFCProps> =
 
 export interface RouterSFCProps extends RouterSFCHandlerProps {
   locale: string
-  session?: string
   path?: string
+  email?: string
+  session?: string
   menu?: MenuSpec
   error?: string
   info?: boolean
@@ -44,8 +45,8 @@ export interface RouterSFCProps extends RouterSFCHandlerProps {
 }
 
 export interface RouterSFCHandlerProps {
-  onAccountCreated?: () => void
-  onAuthenticated?: (session?: string) => void
+  onAccountCreated?: (email?: string) => void
+  onAuthenticated?: (email?: string, session?: string) => void
   onError?: (error?: any) => void
   onCloseInfo?: (event: MouseEvent) => void
   onSelectMenuItem?: (target: HTMLElement) => void
@@ -55,7 +56,8 @@ export interface RouterSFCHandlerProps {
 interface RouterState {
   props: RouterProps<RouterSFCProps>
   locale: string
-  session: string
+  email?: string
+  session?: string
   path: RouteAutomataState
   params: { [prop: string]: unknown }
   info: LinkAutomataState
@@ -64,7 +66,7 @@ interface RouterState {
 }
 
 function mapStateToProps (
-  { props, locale, path, params, info, session, error }: RouterState
+  { props, locale, path, params, info, email, session, error }: RouterState
 ): Rest<RouterSFCProps, RouterSFCHandlerProps> {
   const menu = MENUS[path]
   const lang = locale || DEFAULT_LOCALE
@@ -75,6 +77,7 @@ function mapStateToProps (
     params,
     menu: menu && menu[lang],
     info: info === 'info',
+    email,
     session,
     error
   }
@@ -84,7 +87,10 @@ const mapDispatchToProps:
 (dispatch: (event: any) => void) => RouterSFCHandlerProps =
 createActionDispatchers({
   onAccountCreated: 'ACCOUNT_CREATED',
-  onAuthenticated: 'AUTHENTICATED',
+  onAuthenticated: [
+    'AUTHENTICATED',
+    (email: string, session: string) => ({ email, session })
+  ],
   onExit: 'EXIT',
   onSelectMenuItem: actionFromMenuItem,
   onError: actionFromError,

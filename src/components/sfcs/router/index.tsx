@@ -17,7 +17,6 @@
 import { createElement } from 'create-element'
 import { HomePage, HomePageProps, MenuSpecs, DropdownItemSpec } from '../../home-page'
 import { AuthenticationPage, AuthenticationPageProps } from '../../authentication-page'
-import { AccountCreatedPage } from '../account-created-page'
 import { ErrorPage } from '../error-page'
 import { InfoModal } from '../info-modal'
 import { newStatusError } from 'utils'
@@ -35,9 +34,10 @@ export interface CoreRouterProps {
   path?: string
   menu?: MenuSpecs
   params?: { [prop: string]: unknown }
+  email?: string
   session?: string
-  onAccountCreated?: () => void
-  onAuthenticated?: (session?: string) => void
+  onAccountCreated?: (email?: string) => void
+  onAuthenticated?: (email?: string, session?: string) => void
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onError?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
@@ -64,6 +64,7 @@ export function Router ({
 
 function CoreRouter ({
   locale,
+  email,
   session,
   path,
   menu,
@@ -101,13 +102,12 @@ function CoreRouter ({
           {...params as AuthenticationPageProps}
         />
       )
-    case '/signup/ok':
-      return <AccountCreatedPage locale={locale} onClick={onExit} />
     case '/signin':
       return (
         <AuthenticationPage
           locale={locale}
           locales={menu as DropdownItemSpec[] }
+          email={email}
           onSuccess={onAuthenticated}
           onError={onError}
           onSelectLocale={onSelectMenuItem}

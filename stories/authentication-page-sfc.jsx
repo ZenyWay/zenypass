@@ -38,7 +38,7 @@ const emails = [ 'jane.doe@example.com', 'rob@hvsc.org' ]
     label: 'Enter another email'
   })
 
-  const password = 'P@ssw0rd!'
+const password = 'P@ssw0rd!'
 
 storiesOf('AuthenticationPage (SFC)', module)
   .add('signup', () => (
@@ -152,6 +152,14 @@ storiesOf('AuthenticationPage (SFC)', module)
   .add('signin_enabled', () => (
     <AuthenticationPage
       email={emails[0].label}
+      enabled
+      {...attrs}
+    />
+  ))
+  .add('signin_created', () => (
+    <AuthenticationPage
+      email={emails[0].label}
+      created
       enabled
       {...attrs}
     />
