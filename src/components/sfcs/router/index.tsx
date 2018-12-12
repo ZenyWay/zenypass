@@ -17,6 +17,7 @@
 import { createElement } from 'create-element'
 import { HomePage, HomePageProps, MenuSpecs, DropdownItemSpec } from '../../home-page'
 import { AuthenticationPage, AuthenticationPageProps } from '../../authentication-page'
+import { AccountCreatedPage } from '../account-created-page'
 import { ErrorPage } from '../error-page'
 import { InfoModal } from '../info-modal'
 import { newStatusError } from 'utils'
@@ -100,6 +101,8 @@ function CoreRouter ({
           {...params as AuthenticationPageProps}
         />
       )
+    case '/signup/ok':
+      return <AccountCreatedPage locale={locale} onClick={onExit} />
     case '/signin':
       return (
         <AuthenticationPage

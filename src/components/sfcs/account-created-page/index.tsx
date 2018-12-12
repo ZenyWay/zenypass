@@ -22,14 +22,14 @@ const l10ns = createL10ns(require('./locales.json'))
 
 export interface AccountCreatedPageProps {
   locale: string
-  onSubmit: (event: Event) => void
+  onClick: (event: Event) => void
 }
 
 export interface UnknownProps { [prop: string]: unknown }
 
 export function AccountCreatedPage ({
   locale,
-  onSubmit,
+  onClick,
   ...attrs
 }: AccountCreatedPageProps & UnknownProps) {
   const t = l10ns[locale]
@@ -52,7 +52,7 @@ export function AccountCreatedPage ({
             </p>
           </CardBody>
           <CardFooter bg='transparent' border='none'>
-            <Button type='submit' color='info' onSubmit={onSubmit}>
+            <Button type='submit' color='info' onClick={onClick}>
               {t('ok')}
             </Button>
           </CardFooter>

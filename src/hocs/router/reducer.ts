@@ -20,7 +20,7 @@ import compose from 'basic-compose'
 import { always, forType, mapPayload, pluck } from 'utils'
 
 export type RouteAutomataState =
-  '/' | '/signup' | '/signin' | '/devices' | '/storage' | '/fatal'
+  '/' | '/signup' | '/signup/ok' | '/signin' | '/devices' | '/storage' | '/fatal'
 export type LinkAutomataState = 'idle' | 'info'
 
 const mapPayloadIntoParamsError = into('params')(mapPayload(error => ({ error })))
@@ -36,10 +36,13 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
   },
   '/signup': {
     SIGNIN: '/signin',
-    ACCOUNT_CREATED: '/signin', // TODO account creation confirmation screen
+    ACCOUNT_CREATED: '/signup/ok',
     EXIT: '/signin',
     EMAIL: mapPayloadIntoParamsEmail,
     FATAL: ['/fatal', mapPayloadIntoParamsError]
+  },
+  '/signup/ok': {
+    EXIT: '/signin'
   },
   '/signin': {
     SIGNUP: '/signup',

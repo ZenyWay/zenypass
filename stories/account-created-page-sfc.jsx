@@ -22,7 +22,7 @@ import { AccountCreatedPage } from 'components'
 import { action } from '@storybook/addon-actions'
 
 const attrs = {
-  onSubmit: action('SUBMIT')
+  onClick: action('CLICK')
 }
 
 storiesOf('AccountCreatedPage (SFC)', module)
