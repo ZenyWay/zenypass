@@ -28,7 +28,8 @@ export function shallowEqual (a, b) {
   }
   while (i--) {
     const k = keys[i]
-    if (a[k] !== b[k]) {
+    const v = a[k]
+    if (v !== b[k] || !v && !(k in b)) {
       return false
     }
   }
