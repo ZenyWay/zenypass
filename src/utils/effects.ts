@@ -16,7 +16,13 @@
 
 import { StandardAction } from 'basic-fsa-factories'
 import { Observable, Observer, Subject } from 'rxjs'
-import { filter, ignoreElements, map, tap, withLatestFrom, switchMap } from 'rxjs/operators'
+import {
+  filter,
+  ignoreElements,
+  map,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators'
 import { isFunction } from './basic'
 import { pluck } from './functional'
 import { mapPayload } from './reducers'

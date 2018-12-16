@@ -33,12 +33,12 @@ export function keepIfEqual (equal = shallowEqual) {
 }
 
 export function mapPayload <I,O> (project = identity as (val: I) => O) {
-  return function <A extends { payload: I }>(_, { payload }: A) {
+  return function <A extends StandardAction<I>>(_, { payload }: A) {
     return project(payload)
   }
 }
-export function mergePayload <S,I,O> (project = identity as (val: I) => O) {
-  return function <S extends O, A extends { payload: I }>(
+export function mergePayload <S extends O,I,O> (project = identity as (val: I) => O) {
+  return function <A extends StandardAction<I>>(
     state: S,
     { payload }: A
   ): S {

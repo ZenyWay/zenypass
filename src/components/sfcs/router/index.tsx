@@ -36,9 +36,9 @@ export interface CoreRouterProps {
   params?: { [prop: string]: unknown }
   email?: string
   session?: string
-  onAccountCreated?: (email?: string) => void
-  onAuthenticated?: (email?: string, session?: string) => void
+  onAuthenticated?: (session?: string) => void
   onAuthenticationRequest?: (res$: Observer<string>) => void
+  onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
   onExit?: (event?: MouseEvent) => void
@@ -69,9 +69,9 @@ function CoreRouter ({
   path,
   menu,
   params,
-  onAccountCreated,
   onAuthenticated,
   onAuthenticationRequest,
+  onEmailChange,
   onError,
   onSelectMenuItem,
   onExit
@@ -90,27 +90,17 @@ function CoreRouter ({
         />
       )
     case '/signup':
-      return (
-        <AuthenticationPage
-          locale={locale}
-          locales={menu as DropdownItemSpec[]}
-          signup
-          onSuccess={onAccountCreated}
-          onError={onError}
-          onSelectLocale={onSelectMenuItem}
-          onToggleSignup={onExit}
-          {...params as AuthenticationPageProps}
-        />
-      )
     case '/signin':
       return (
         <AuthenticationPage
           locale={locale}
-          locales={menu as DropdownItemSpec[] }
+          locales={menu as DropdownItemSpec[]}
           email={email}
-          onSuccess={onAuthenticated}
+          signup={path === '/signup'}
+          onEmailChange={onEmailChange}
           onError={onError}
           onSelectLocale={onSelectMenuItem}
+          onAuthenticated={onAuthenticated}
           onToggleSignup={onExit}
           {...params as AuthenticationPageProps}
         />

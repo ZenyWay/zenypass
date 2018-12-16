@@ -18,11 +18,12 @@ import { reducer, AutomataState } from './reducer'
 import {
   focusEmailInputOnMount,
   focusInputOnEvent,
-  signinOnSigninFromValid,
-  signupOnSignupFromConsentsWhenAccepted,
-  validateEmailOnEmailChange,
-  validatePasswordOnPasswordChange,
-  validateConfirmOnConfirmChange
+  toggleSignupOnSignupPropChange,
+  serviceSigninOnSigninFromValid,
+  serviceSignupOnSignupFromConsentsWhenAccepted,
+  validateEmailOnEmailPropChange,
+  validatePasswordOnChangePassword,
+  validateConfirmOnChangeConfirm
 } from './effects'
 import componentFromEvents, {
   ComponentClass,
@@ -31,9 +32,8 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { createActionDispatchers } from 'basic-fsa-factories'
+import { createActionDispatchers, createActionFactories } from 'basic-fsa-factories'
 import {
-  applyHandlerOnEvent,
   callHandlerOnEvent,
   preventDefault,
   shallowEqual
@@ -47,9 +47,10 @@ export type AuthenticationPageProps<P extends AuthenticationPageSFCProps> =
 export interface AuthenticationPageHocProps {
   signup?: boolean
   email?: string
-  onToggleSignup?: (event: Event) => void
-  onSuccess?: (email?: string, session?: string) => void
+  onAuthenticated?: (session?: string) => void
+  onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
+  onToggleSignup?: (event: Event) => void
 }
 
 export interface AuthenticationPageSFCProps
@@ -75,7 +76,7 @@ extends AuthenticationPageSFCHandlerProps {
    */
   enabled?: SigninInputs | boolean
   pending?: boolean
-  error?: SignupInputs | 'unauthorized' | 'terms' | unknown | false
+  error?: SignupInputs | 'unauthorized' | false
 }
 
 export type SignupInputs = SigninInputs | 'confirm'
@@ -104,9 +105,13 @@ export interface AuthenticationPageSFCHandlerProps {
 interface AuthenticationPageState {
   props: AuthenticationPageProps<AuthenticationPageSFCProps>
   state: AutomataState
-  changes?: { [key in SignupInputs]: string } & { [key in ConsentInputs]: boolean }
   inputs?: { [key in SignupInputs]: HTMLElement }
-  consents?: { terms: boolean, news: boolean }
+  password?: string
+  confirm?: string
+  terms?: boolean
+  news?: boolean
+  created?: boolean
+  error?: SignupInputs | 'unauthorized' | false
 }
 
 /**
@@ -116,55 +121,45 @@ const STATE_TO_ENABLED: Partial<{
   [key in AutomataState]: SigninInputs | boolean
 }> = {
   email: 'email',
-  error_email: 'email',
   password: 'password',
-  error_password: 'password',
-  unauthorized: 'password',
-  created: true,
   confirm: true,
-  error_confirm: true,
   valid: true,
   consents: false,
   pending: false
 }
 
-const STATE_TO_ERROR: Partial<{
-  [key in AutomataState]: SignupInputs | 'unauthorized'
-}> = {
-  error_email: 'email',
-  error_password: 'password',
-  error_confirm: 'confirm',
-  unauthorized: 'unauthorized'
-}
-
 function mapStateToProps (
-  { props, state, changes }: AuthenticationPageState
+  { props, state, created, error, inputs, ...changes }: AuthenticationPageState
 ): Rest<AuthenticationPageSFCProps, AuthenticationPageSFCHandlerProps> {
-  const { onSuccess, onError, ...attrs } = props
+  const { onAuthenticated, onEmailChange, onError, ...attrs } = props
   const enabled = STATE_TO_ENABLED[state]
   return {
     ...attrs,
     ...changes,
     consents: state === 'consents',
-    created: state === 'created',
     pending: state === 'pending',
     enabled: !props.signup && enabled === 'password' ? true : enabled,
-    error: STATE_TO_ERROR[state]
+    created,
+    error
   }
 }
+
+const change = createActionFactories({
+  email: 'CHANGE_EMAIL',
+  password: 'CHANGE_PASSWORD',
+  confirm: 'CHANGE_CONFIRM'
+})
 
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => AuthenticationPageSFCHandlerProps =
 createActionDispatchers({
   onCancelConsents: 'CANCEL_CONSENTS',
-  onChange: [
-    'CHANGE',
-    (value: string, input: HTMLElement) => ({ [input.dataset.id]: value })
-  ],
+  onChange:
+    (value: string, input: HTMLElement) => change[input.dataset.id](value),
   onSelectEmail: 'SELECT_EMAIL',
   onSignin: ['SIGNIN', preventDefault],
   onSignup: ['SIGNUP', preventDefault],
-  onToggleSignup: 'TOGGLE_SIGNUP',
+  onToggleSignup: 'TOGGLE_SIGNUP_REQUEST',
   onToggleConsent: [
     'TOGGLE_CONSENT',
     ({ currentTarget }) => currentTarget.dataset.id
@@ -188,24 +183,22 @@ export function authenticationPage <P extends AuthenticationPageSFCProps> (
     () => tap(log('authentication-page:event:')),
     redux(
       reducer,
-      validateEmailOnEmailChange,
-      validatePasswordOnPasswordChange,
-      validateConfirmOnConfirmChange,
+      toggleSignupOnSignupPropChange,
+      validateEmailOnEmailPropChange,
+      validatePasswordOnChangePassword,
+      validateConfirmOnChangeConfirm,
       focusEmailInputOnMount,
       focusInputOnEvent('INVALID_EMAIL', 'email'),
       focusInputOnEvent('VALID_EMAIL', 'password'),
       focusInputOnEvent('INVALID_PASSWORD', 'password'),
       focusInputOnEvent('VALID_SIGNUP_PASSWORD', 'confirm'),
       focusInputOnEvent('INVALID_CONFIRM', 'confirm'),
-      signinOnSigninFromValid,
-      signupOnSignupFromConsentsWhenAccepted,
-      callHandlerOnEvent('TOGGLE_SIGNUP', ['props', 'onToggleSignup']),
-      applyHandlerOnEvent(
-        'SIGNED_IN',
-        ['props', 'onSuccess'],
-        ({ email, session }) => [ email, session ]
-      ),
-      callHandlerOnEvent('SIGNED_UP', ['props', 'onSuccess']),
+      focusInputOnEvent('UNAUTHORIZED', 'password'),
+      serviceSigninOnSigninFromValid,
+      serviceSignupOnSignupFromConsentsWhenAccepted,
+      callHandlerOnEvent('TOGGLE_SIGNUP_REQUEST', ['props', 'onToggleSignup']),
+      callHandlerOnEvent('AUTHENTICATED', ['props', 'onAuthenticated']),
+      callHandlerOnEvent('CHANGE_EMAIL', ['props', 'onEmailChange']),
       callHandlerOnEvent('ERROR', ['props', 'onError'])
     ),
     () => tap(log('authentication-page:state:')),

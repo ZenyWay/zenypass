@@ -23,8 +23,8 @@ export type RouteAutomataState =
   '/' | '/signup' | '/signin' | '/devices' | '/storage' | '/fatal'
 export type LinkAutomataState = 'idle' | 'info'
 
-const mapPayloadIntoParamsError = into('params')(mapPayload(error => ({ error })))
-const mapPayloadIntoParamsEmail = into('params')(mapPayload(email => ({ email })))
+const mapPayloadIntoError = into('error')(mapPayload())
+const mapPayloadIntoEmail = into('email')(mapPayload())
 
 const routeAutomata: AutomataSpec<RouteAutomataState> = {
   '/': {
@@ -32,33 +32,28 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     // DEVICES: '/devices',
     // STORAGE: '/storage',
     LOGOUT: ['/signin', into('session')(always())],
-    FATAL: ['/fatal', mapPayloadIntoParamsError]
+    FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/signup': {
     SIGNIN: '/signin',
-    ACCOUNT_CREATED: ['/signin', into('email')(mapPayload())],
     EXIT: '/signin',
-    EMAIL: mapPayloadIntoParamsEmail,
-    FATAL: ['/fatal', mapPayloadIntoParamsError]
+    EMAIL: mapPayloadIntoEmail,
+    FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/signin': {
     SIGNUP: '/signup',
     EXIT: '/signup',
-    EMAIL: mapPayloadIntoParamsEmail,
-    AUTHENTICATED: [
-      '/',
-      into('email')(mapPayload(pluck('email'))),
-      into('session')(mapPayload(pluck('session')))
-    ],
-    FATAL: ['/fatal', mapPayloadIntoParamsError]
+    EMAIL: mapPayloadIntoEmail,
+    AUTHENTICATED: ['/', into('session')(mapPayload())],
+    FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/devices': {
     CLOSE: '/',
-    FATAL: ['/fatal', mapPayloadIntoParamsError]
+    FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/storage': {
     CLOSE: '/',
-    FATAL: ['/fatal', mapPayloadIntoParamsError]
+    FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/fatal': {
     // DEAD-END

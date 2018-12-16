@@ -28,6 +28,8 @@ const attrs = {
   locale: 'fr',
   locales: LANG_MENU,
   onAuthenticated: action('AUTHENTICATED'),
+  onEmailChange: action('EMAIL_CHANGE'),
+  onError: action('ERROR'),
   onSelectLocale: action('SELECT_LOCALE'),
   onToggleSignup: action('TOGGLE_SIGNUP')
 }
@@ -51,9 +53,23 @@ storiesOf('AuthenticationPage', module)
       {...attrs}
     />
   ))
+  .add('signin-email', () => (
+    <AuthenticationPage
+      emails={emails.slice(1)} // TODO remove
+      email={emails[0].label}
+      {...attrs}
+    />
+  ))
   .add('signup', () => (
     <AuthenticationPage
       signup
+      {...attrs}
+    />
+  ))
+  .add('signup-email', () => (
+    <AuthenticationPage
+      signup
+      email={emails[0].label}
       {...attrs}
     />
   ))

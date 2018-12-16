@@ -17,109 +17,100 @@
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into, propCursor } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload, mergePayload } from 'utils'
+import { always, forType, mapPayload, mergePayload, StandardAction } from 'utils'
 
 export type AutomataState =
-  | 'email' | 'error_email' // only email enabled
-  | 'password' | 'error_password' | 'unauthorized' | 'created' // all enabled except confirm (signup only)
-  | 'confirm' | 'error_confirm' // all enabled
+  | 'email' // only email enabled
+  | 'password' // all enabled except confirm (signup only)
+  | 'confirm' // all enabled
   | 'valid' // all enabled
   | 'consents' // all disabled
   | 'pending' // all disabled
 
 const DEFAULT_CONSENTS = { terms: false, news: false }
 
-const resetConsents = propCursor('changes')(mergePayload(always(DEFAULT_CONSENTS)))
-const clearPassword = propCursor('changes')(propCursor('password')(always()))
-const clearConfirm = propCursor('changes')(propCursor('confirm')(always()))
-const clearPasswords = compose.into(0)(clearPassword, clearConfirm)
+const resetConsents = mergePayload(always(DEFAULT_CONSENTS))
+const mapPayloadIntoPassword = into('password')(mapPayload())
+const mapPayloadIntoConfirm = into('confirm')(mapPayload())
+const clearPassword = propCursor('password')(always(''))
+const clearConfirm = propCursor('confirm')(always(''))
+const clearPasswords = mergePayload(always({ password: '', confirm: '' }))
+const setEmailError = setError('email')
+const setPasswordError = setError('password')
+const setConfirmError = setError('confirm')
+const setUnauthorizedError = setError('unauthorized')
+const clearError = setError()
 
 const automata: AutomataSpec<AutomataState> = {
   email: {
-    SIGNIN: 'error_email',
-    INVALID_EMAIL: 'error_email',
-    VALID_EMAIL: 'password'
-  },
-  error_email: {
-    VALID_EMAIL: 'password'
+    SIGNIN: setEmailError,
+    INVALID_EMAIL: setEmailError,
+    VALID_EMAIL: ['password', clearError]
   },
   password: {
-    SIGNIN: 'error_password',
-    INVALID_EMAIL: 'error_email',
-    INVALID_PASSWORD: 'error_password',
-    VALID_SIGNUP_PASSWORD: 'confirm',
-    VALID_SIGNIN_PASSWORD: 'valid'
-  },
-  error_password: {
-    TOGGLE_SIGNUP: ['password', clearPassword],
-    INVALID_EMAIL: ['error_email', clearPassword],
-    VALID_EMAIL: ['password', clearPassword],
-    VALID_SIGNUP_PASSWORD: 'confirm',
-    VALID_SIGNIN_PASSWORD: 'valid'
-  },
-  unauthorized: {
-    TOGGLE_SIGNUP: 'password',
-    SIGNIN: 'error_password',
-    INVALID_EMAIL: 'error_email',
-    VALID_EMAIL: 'password',
-    VALID_SIGNIN_PASSWORD: 'valid'
-  },
-  created: {
-    SIGNIN: 'error_password',
-    INVALID_EMAIL: 'error_email',
-    INVALID_PASSWORD: 'error_password',
-    VALID_SIGNIN_PASSWORD: 'valid'
+    TOGGLE_SIGNUP: [clearPassword, clearError],
+    CHANGE_PASSWORD: mapPayloadIntoPassword,
+    SIGNIN: setPasswordError,
+    INVALID_EMAIL: ['email', clearPassword, setEmailError],
+    INVALID_PASSWORD: setPasswordError,
+    VALID_EMAIL: [clearPassword, clearError],
+    VALID_SIGNUP_PASSWORD: ['confirm', clearError],
+    VALID_SIGNIN_PASSWORD: ['valid', clearError]
   },
   confirm: {
-    TOGGLE_SIGNUP: ['password', clearPassword],
-    SIGNUP: 'error_confirm',
-    INVALID_EMAIL: ['error_email', clearPassword],
-    INVALID_PASSWORD: 'error_password',
-    INVALID_CONFIRM: 'error_confirm',
-    VALID_EMAIL: ['password', clearPassword],
-    VALID_SIGNUP_PASSWORD: ['confirm', clearConfirm],
-    VALID_CONFIRM: 'valid'
-  },
-  error_confirm: {
-    TOGGLE_SIGNUP: ['password', clearPasswords],
-    INVALID_EMAIL: ['error_email', clearPasswords],
-    INVALID_PASSWORD: ['error_password', clearConfirm],
-    VALID_EMAIL: ['password', clearPasswords],
-    VALID_SIGNUP_PASSWORD: ['confirm', clearConfirm],
-    VALID_CONFIRM: 'valid'
+    TOGGLE_SIGNUP: ['password', clearPassword, clearError],
+    CHANGE_PASSWORD: mapPayloadIntoPassword,
+    CHANGE_CONFIRM: mapPayloadIntoConfirm,
+    SIGNUP: setConfirmError,
+    INVALID_EMAIL: ['email', clearPasswords, setEmailError],
+    INVALID_PASSWORD: ['password', clearConfirm, setPasswordError],
+    INVALID_CONFIRM: [clearConfirm, setConfirmError],
+    VALID_EMAIL: ['password', clearPasswords, clearError],
+    VALID_SIGNUP_PASSWORD: [clearConfirm, clearError],
+    VALID_CONFIRM: ['valid', clearError]
   },
   valid: {
     TOGGLE_SIGNUP: ['password', clearPasswords],
-    INVALID_EMAIL: ['error_email', clearPasswords],
-    INVALID_PASSWORD: ['error_password', clearConfirm],
-    INVALID_CONFIRM: 'error_confirm',
+    CHANGE_PASSWORD: mapPayloadIntoPassword,
+    CHANGE_CONFIRM: mapPayloadIntoConfirm,
+    INVALID_EMAIL: ['email', clearPasswords, setEmailError],
+    INVALID_PASSWORD: ['password', clearConfirm, setPasswordError],
+    INVALID_CONFIRM: [clearConfirm, setConfirmError],
     VALID_EMAIL: ['password', clearPasswords],
     PENDING: 'pending',
     SIGNUP: ['consents', resetConsents]
   },
   consents: {
     CANCEL_CONSENTS: ['confirm', clearConfirm],
-    TOGGLE_CONSENT: propCursor('changes')(toggleConsent),
+    TOGGLE_CONSENT: toggleConsent,
     PENDING: 'pending'
   },
-  pending: { // service call on submit
-    ERROR: ['email', propCursor('changes')(always())],
-    UNAUTHORIZED: ['unauthorized', clearPasswords],
-    SIGNED_IN: ['password', clearPasswords],
-    SIGNED_UP: ['created', clearPasswords, resetConsents]
+  pending: { // service call
+    ERROR: ['email', clearPasswords, resetConsents],
+    UNAUTHORIZED: ['password', clearPasswords, setUnauthorizedError],
+    AUTHENTICATED: ['password', clearPasswords, into('created')(always())],
+    TOGGLE_SIGNUP: [
+      'password',
+      clearPasswords,
+      resetConsents,
+      into('created')(always(true))
+    ]
   }
 }
 
-function toggleConsent (changes, { payload }) {
+function toggleConsent (consents, { payload }: StandardAction<string>) {
   return {
-    ...changes,
-    [payload]: !(changes && changes[payload])
+    ...consents,
+    [payload]: !(consents && consents[payload])
   }
+}
+
+function setError (error?: 'email' | 'password' | 'confirm' | 'unauthorized') {
+  return into('error')(always(error))
 }
 
 export const reducer = compose.into(0)(
   createAutomataReducer(automata, 'email'),
-  forType('CHANGE')(propCursor('changes')(mergePayload())),
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(into('props')(mapPayload()))
 )
