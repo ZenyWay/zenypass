@@ -17,11 +17,10 @@
 import { zenypass } from 'services'
 import { StandardAction, createActionFactory } from 'basic-fsa-factories'
 import {
-  isFunction,
   isInvalidEmail,
   hasEntry,
   not,
-  pluck as select,
+  stateOnEvent,
   ERROR_STATUS
 } from 'utils'
 import {
@@ -35,11 +34,10 @@ import {
   skipWhile,
   startWith,
   switchMap,
-  tap,
-  withLatestFrom
+  tap
 } from 'rxjs/operators'
-import { Observable, of as observable, merge, noop } from 'rxjs'
-const log = label => console.log.bind(console, label)
+import { Observable, of as observable, merge } from 'rxjs'
+// const log = label => console.log.bind(console, label)
 
 const toggleSignupRequest = createActionFactory<void>('TOGGLE_SIGNUP_REQUEST')
 const toggleSignup = createActionFactory<void>('TOGGLE_SIGNUP')
@@ -74,21 +72,6 @@ export function focusInputOnEvent (type: string, input: string) {
       pluck<any,HTMLElement>('inputs', input),
       tap(input => input && input.focus()),
       ignoreElements()
-    )
-  }
-}
-
-export function eventOnStateEntryChange <S = any, P = any> (
-  type: string,
-  key: string[] | string | ((state: S) => any),
-  payload: (state: S) => P = noop as (state: S) => any
-) {
-  const action = createActionFactory(type)
-  const pluckEntry = isFunction(key) ? key : select(key)
-  return function (_: any, state$: Observable<S>) {
-    return state$.pipe(
-      distinctUntilChanged(void 0, pluckEntry),
-      map(state => action(payload(state)))
     )
   }
 }
@@ -196,21 +179,6 @@ function hasValidConfirm (
   { password, confirm } = {} as { password?: string, confirm?: string }
 ) {
   return confirm && confirm === password
-}
-
-type InputField = 'email' | 'password' | 'confirm'
-
-function stateOnEvent (predicate: (event: StandardAction<any>) => boolean) {
-  return function (
-    event$: Observable<StandardAction<any>>,
-    state$: Observable<any>
-  ) {
-    return event$.pipe(
-      filter(predicate),
-      withLatestFrom(state$),
-      pluck<any,any>('1')
-    )
-  }
 }
 
 function validateInput <I extends {} = {}> (

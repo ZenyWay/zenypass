@@ -14,17 +14,19 @@
  * Limitations under the License.
  */
 
-import { StandardAction } from 'basic-fsa-factories'
-import { Observable, Observer, Subject } from 'rxjs'
+import { StandardAction, createActionFactory } from 'basic-fsa-factories'
+import { Observable, Observer, Subject, noop } from 'rxjs'
 import {
+  distinctUntilChanged,
   filter,
   ignoreElements,
   map,
+  pluck,
   tap,
   withLatestFrom
 } from 'rxjs/operators'
 import { isFunction } from './basic'
-import { pluck } from './functional'
+import { pluck as select } from './functional'
 import { mapPayload } from './reducers'
 
 export type StandardActionSpec =
@@ -36,6 +38,34 @@ export type Effect<S = any> = (
   event$: Observable<StandardAction<any>>,
   state$: Observable<S>
 ) => Observable<StandardAction<any>>
+
+export function stateOnEvent (predicate: (event: StandardAction<any>) => boolean) {
+  return function (
+    event$: Observable<StandardAction<any>>,
+    state$: Observable<any>
+  ) {
+    return event$.pipe(
+      filter(predicate),
+      withLatestFrom(state$),
+      pluck<any,any>('1')
+    )
+  }
+}
+
+export function eventOnStateEntryChange <S = any, P = any> (
+  type: string | ((arg: P) => StandardAction<P>),
+  key: string[] | string | ((state: S) => any),
+  payload: (state: S) => P = noop as (state: S) => any
+) {
+  const action = isFunction(type) ? type : createActionFactory(type)
+  const pluckEntry = isFunction(key) ? key : select(key)
+  return function (_: any, state$: Observable<S>) {
+    return state$.pipe(
+      distinctUntilChanged(void 0, pluckEntry),
+      map(state => action(payload(state)))
+    )
+  }
+}
 
 export function callHandlerOnEvent <S = any> (
   type: string,
@@ -55,7 +85,7 @@ export function applyHandlerOnEvent <S = any> (
   payload = mapPayload(v => [v]) as (state: S, event: StandardAction<any>) => any[]
 ) {
   return !isFunction(handler)
-  ? applyHandlerOnEvent(type, pluck(handler), payload)
+  ? applyHandlerOnEvent(type, select(handler), payload)
   : function (
     event$: Observable<StandardAction<any>>,
     state$: Observable<S>
