@@ -32,6 +32,11 @@ export {
   authenticationModal,
   AuthenticationModalProps
 } from './authentication-modal'
+export {
+  authenticationPage,
+  AuthenticationPageProps,
+  AuthenticationPageType
+} from './authentication-page'
 export { connectionModal, ConnectionModalProps } from './connection-modal'
 export { controlledInput, ControlledInputProps } from './controlled-input'
 export { copyButton, CopyButtonProps } from './copy-button'
@@ -44,7 +49,6 @@ export { homePage, HomePageProps } from './home-page'
 // export { pure } from './pure'
 export { recordCard, RecordCardProps } from './record-card'
 export { router, RouterProps } from './router'
-export { authenticationPage, AuthenticationPageProps } from './authentication-page'
 export {
   withAuthentication,
   AuthenticationProviderProps

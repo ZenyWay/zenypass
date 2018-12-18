@@ -15,8 +15,12 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { SigninForm, SigninFormField } from './signin-form'
-import { SignupForm, SignupFormField } from './signup-form'
+import {
+  AuthenticationPageType,
+  AuthenticationForm,
+  SigninFormField,
+  SignupFormField
+} from './authentication-form'
 import { ConsentsModal } from './consents-modal'
 import { SplashCard, SplashFooterCard } from '../splash-card'
 import { Dropdown, DropdownItemSpec } from '../../dropdown'
@@ -25,12 +29,15 @@ import { Button, CardBody, CardTitle, Row } from 'bootstrap'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
+export { AuthenticationPageType }
+
 export interface AuthenticationPageProps {
   locale: string
   locales?: DropdownItemSpec[]
-  signup?: boolean
+  type?: AuthenticationPageType
   consents?: boolean
   created?: boolean
+  cleartext?: boolean
   emails?: DropdownItemSpec[]
   email?: string
   password?: string
@@ -65,10 +72,22 @@ export interface AuthenticationPageProps {
 
 export type UnknownProps = { [prop: string]: unknown }
 
+const TITLES: { [key in AuthenticationPageType]: string } = {
+  signin: 'Login to your ZenyPass account',
+  signup: 'Create your ZenyPass account',
+  authorize: 'Authorize access to your ZenyPass account'
+}
+
+const SUBMIT_ACTIONS: { [key in AuthenticationPageType]: string } = {
+  signin: 'Login',
+  signup: 'Create your account',
+  authorize: 'Authorize this device'
+}
+
 export function AuthenticationPage ({
   locale,
   locales,
-  signup,
+  type = AuthenticationPageType.Signin,
   consents,
   created,
   emails,
@@ -94,22 +113,10 @@ export function AuthenticationPage ({
   onConfirmInputRef,
   ...attrs
 }: AuthenticationPageProps & UnknownProps) {
-  const formProps = {
-    id: 'authentication-form',
-    locale,
-    email,
-    password,
-    cleartext,
-    onChange,
-    onEmailInputRef,
-    onPasswordInputRef
-  }
   const t = l10ns[locale]
-  const title = t(
-    signup ? 'Create your ZenyPass account' : 'Login to your ZenyPass account'
-  )
+  const title = t(TITLES[type])
   const question = t(
-    signup ? 'Already have an account' : 'You don\'t have an account'
+    type === 'signup' ? 'Already have an account' : 'You don\'t have an account'
   )
   return (
     <section className='container bg-light' {...attrs}>
@@ -128,44 +135,23 @@ export function AuthenticationPage ({
             {title}
           </CardTitle>
           <CardBody className='px-0' >
-            {
-              !created ? null : (
-                <div>
-                  <p>
-                    {t('An email was just sent to you')}:<br/>
-                    {t('follow the instructions in that email to validate your account, then login below')}.
-                  </p>
-                  <p className='text-muted'>
-                    <small>
-                      {t('If you haven\'t received the validation email, sent from the address info@zenyway.com, please check your spam folder')}.
-                    </small>
-                  </p>
-                </div>
-              )
-            }
-            {
-              signup
-              ? (
-                <SignupForm
-                  {...formProps}
-                  confirm={confirm}
-                  error={error as SignupFormField | false}
-                  enabled={enabled}
-                  onConfirmInputRef={onConfirmInputRef}
-                  onSignup={onSignup}
-                />
-              )
-              : (
-                <SigninForm
-                  {...formProps}
-                  emails={emails}
-                  error={error as SigninFormField | 'unauthorized' | false}
-                  enabled={enabled as 'email' | boolean}
-                  onSelectEmail={onSelectEmail}
-                  onSignin={onSignin}
-                />
-              )
-            }
+            <AuthenticationForm
+              id='authentication-form'
+              type={type}
+              email={email}
+              password={password}
+              confirm={confirm}
+              cleartext={cleartext}
+              created={created}
+              error={error}
+              enabled={enabled}
+              locale={locale}
+              onChange={onChange}
+              onEmailInputRef={onEmailInputRef}
+              onPasswordInputRef={onPasswordInputRef}
+              onConfirmInputRef={onConfirmInputRef}
+              onSignup={type === 'signin' ? onSignin : onSignup}
+            />
             <Dropdown
               icon={locales[0].icon}
               outline
@@ -179,7 +165,7 @@ export function AuthenticationPage ({
               color='info'
               disabled={
                 !enabled || (enabled === 'email')
-                || (signup && enabled === 'password')
+                || ((type !== 'signin') && (enabled === 'password'))
               }
               className='float-right'
             >
@@ -188,7 +174,7 @@ export function AuthenticationPage ({
                   <FAIcon icon='spinner' animate='spin' className='mr-1'/>
                 )
               }
-              {t(signup ? 'Create your account' : 'Login')}
+              {t(SUBMIT_ACTIONS[type])}
             </Button>
           </CardBody>
         </SplashCard>
@@ -207,7 +193,7 @@ export function AuthenticationPage ({
           <CardBody>
             <p><small>{question} ?</small></p>
             <Button color='info' onClick={onToggleSignup} disabled={pending} >
-              {t(signup ? 'Login' : 'Create your account')}
+              {t(type === 'signup' ? 'Login' : 'Create your account')}
             </Button>
           </CardBody>
         </SplashFooterCard>

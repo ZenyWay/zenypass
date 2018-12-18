@@ -14,13 +14,14 @@
  * Limitations under the License.
  */
 
+import { AuthenticationPageType } from '../authentication-page'
 import {
   createActionFactories,
   createActionFactory,
   StandardAction
 } from 'basic-fsa-factories'
 
-const actions = createActionFactories({
+const MENU_ACTIONS = createActionFactories({
   devices: 'DEVICES',
   storage: 'STORAGE',
   locale: 'LOCALE',
@@ -45,12 +46,12 @@ const MENU_ITEM_REGEX = /^([\w-]+)(?:\/([\w-]+))?$/
 function actionFromNonLinkMenuItem (item: HTMLElement): StandardAction<any> {
   const { id } = item.dataset
   const [_, type, param] = MENU_ITEM_REGEX.exec(id) || [] as string[]
-  const action = type && actions[type]
+  const action = type && MENU_ACTIONS[type]
   return action ? action(param) : selectMenuItem(item)
 }
 
 export function actionFromError (error?: any): StandardAction<any> {
-  const action = isUnauthorizedOrClosed(error) ? actions.logout : fatal
+  const action = isUnauthorizedOrClosed(error) ? MENU_ACTIONS.logout : fatal
   return action(error)
 }
 
@@ -58,4 +59,18 @@ const UNAUTHORIZED_OR_CLOSED_CODES = [401, 403, 499]
 
 function isUnauthorizedOrClosed (error) {
   return error && UNAUTHORIZED_OR_CLOSED_CODES.indexOf(error.status) >= 0
+}
+
+export { AuthenticationPageType }
+
+const AUTHENTICATION_PAGE_ACTIONS = createActionFactories({
+  [AuthenticationPageType.Signin]: 'SIGNIN',
+  [AuthenticationPageType.Signup]: 'SIGNUP',
+  [AuthenticationPageType.Authorize]: 'AUTHORIZED'
+})
+
+export function actionFromAuthenticationPageType (
+  type: AuthenticationPageType = AuthenticationPageType.Signin
+) {
+  return AUTHENTICATION_PAGE_ACTIONS[type]()
 }

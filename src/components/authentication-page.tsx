@@ -18,12 +18,15 @@
 import { createElement } from 'create-element'
 import {
   authenticationPage,
-  AuthenticationPageProps as GenericAuthenticationPageProps
+  AuthenticationPageProps as GenericAuthenticationPageProps,
+  AuthenticationPageType
 } from 'hocs'
 import {
   AuthenticationPage as AuthenticationPageSFC,
   AuthenticationPageProps as AuthenticationPageSFCProps
 } from './sfcs/authentication-page'
+
+export { AuthenticationPageType }
 
 export const AuthenticationPage = authenticationPage<AuthenticationPageSFCProps>(
   (props: AuthenticationPageSFCProps) => <AuthenticationPageSFC {...props} />

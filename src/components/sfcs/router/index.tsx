@@ -16,7 +16,11 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { HomePage, HomePageProps, MenuSpecs, DropdownItemSpec } from '../../home-page'
-import { AuthenticationPage, AuthenticationPageProps } from '../../authentication-page'
+import {
+  AuthenticationPage,
+  AuthenticationPageProps,
+  AuthenticationPageType
+} from '../../authentication-page'
 import { ErrorPage } from '../error-page'
 import { InfoModal } from '../info-modal'
 import { newStatusError } from 'utils'
@@ -37,11 +41,11 @@ export interface CoreRouterProps {
   email?: string
   session?: string
   onAuthenticated?: (session?: string) => void
+  onAuthenticationPageType?: (type?: AuthenticationPageType) => void
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
-  onExit?: (event?: MouseEvent) => void
 }
 
 export function Router ({
@@ -62,6 +66,12 @@ export function Router ({
   )
 }
 
+const AUTHENTICATION_PAGE_TYPES = {
+  '/signin': AuthenticationPageType.Signin,
+  '/signup': AuthenticationPageType.Signup,
+  '/authorize': AuthenticationPageType.Authorize
+}
+
 function CoreRouter ({
   locale,
   email,
@@ -70,11 +80,11 @@ function CoreRouter ({
   menu,
   params,
   onAuthenticated,
+  onAuthenticationPageType,
   onAuthenticationRequest,
   onEmailChange,
   onError,
-  onSelectMenuItem,
-  onExit
+  onSelectMenuItem
 }: CoreRouterProps & { [prop: string]: unknown }) {
   switch (path) {
     case '/':
@@ -89,6 +99,7 @@ function CoreRouter ({
           {...params as HomePageProps}
         />
       )
+    case '/authorize':
     case '/signup':
     case '/signin':
       return (
@@ -96,12 +107,12 @@ function CoreRouter ({
           locale={locale}
           locales={menu as DropdownItemSpec[]}
           email={email}
-          signup={path === '/signup'}
+          type={AUTHENTICATION_PAGE_TYPES[path]}
           onEmailChange={onEmailChange}
           onError={onError}
           onSelectLocale={onSelectMenuItem}
           onAuthenticated={onAuthenticated}
-          onToggleSignup={onExit}
+          onAuthenticationPageType={onAuthenticationPageType}
           {...params as AuthenticationPageProps}
         />
       )

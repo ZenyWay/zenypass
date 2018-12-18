@@ -43,13 +43,13 @@ const password = 'P@ssw0rd!'
 storiesOf('AuthenticationPage (SFC)', module)
   .add('signup', () => (
     <AuthenticationPage
-      signup
+      type='signup'
       {...attrs}
     />
   ))
   .add('signup_enabled-email', () => (
     <AuthenticationPage
-      signup
+      type='signup'
       email={emails[0].label}
       enabled='email'
       {...attrs}
@@ -57,7 +57,7 @@ storiesOf('AuthenticationPage (SFC)', module)
   ))
   .add('signup_error-email', () => (
     <AuthenticationPage
-      signup
+      type='signup'
       email={emails[0].label}
       enabled='email'
       error='email'
@@ -66,7 +66,7 @@ storiesOf('AuthenticationPage (SFC)', module)
   ))
   .add('signup_enabled-password', () => (
     <AuthenticationPage
-      signup
+      type='signup'
       email={emails[0].label}
       enabled='password'
       {...attrs}
@@ -74,7 +74,7 @@ storiesOf('AuthenticationPage (SFC)', module)
   ))
   .add('signup_error-password', () => (
     <AuthenticationPage
-      signup
+      type='signup'
       email={emails[0].label}
       enabled='password'
       error='password'
@@ -83,7 +83,7 @@ storiesOf('AuthenticationPage (SFC)', module)
   ))
   .add('signup_enabled', () => (
     <AuthenticationPage
-      signup
+      type='signup'
       email={emails[0].label}
       password={password}
       enabled
@@ -92,7 +92,7 @@ storiesOf('AuthenticationPage (SFC)', module)
   ))
   .add('signup_error-confirm', () => (
     <AuthenticationPage
-      signup
+      type='signup'
       email={emails[0].label}
       password={password}
       enabled
@@ -102,7 +102,7 @@ storiesOf('AuthenticationPage (SFC)', module)
   ))
   .add('signup_consents', () => (
     <AuthenticationPage
-      signup
+      type='signup'
       consents
       email={emails[0].label}
       password={password}
@@ -110,9 +110,20 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
+  .add('signup_consents-terms-checked', () => (
+    <AuthenticationPage
+      type='signup'
+      consents
+      email={emails[0].label}
+      password={password}
+      confirm={password}
+      terms
+      {...attrs}
+    />
+  ))
   .add('signup_pending', () => (
     <AuthenticationPage
-      signup
+      type='signup'
       email={emails[0].label}
       password={password}
       confirm={password}
@@ -188,3 +199,64 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
+  .add('authorize', () => (
+    <AuthenticationPage
+      type='authorize'
+      email={emails[0].label}
+      {...attrs}
+    />
+  ))
+  .add('authorize_enabled-email', () => (
+    <AuthenticationPage
+      type='authorize'
+      email={emails[0].label}
+      enabled='email'
+      {...attrs}
+    />
+  ))
+  .add('authorize_error-email', () => (
+    <AuthenticationPage
+      type='authorize'
+      email={emails[0].label}
+      enabled='email'
+      error='email'
+      {...attrs}
+    />
+  ))
+  .add('authorize_enabled-password', () => (
+    <AuthenticationPage
+      type='authorize'
+      email={emails[0].label}
+      enabled='password'
+      {...attrs}
+    />
+  ))
+  .add('authorize_error-password', () => (
+    <AuthenticationPage
+      type='authorize'
+      email={emails[0].label}
+      enabled='password'
+      error='password'
+      {...attrs}
+    />
+  ))
+  .add('authorize_enabled', () => (
+    <AuthenticationPage
+      type='authorize'
+      email={emails[0].label}
+      password={password}
+      enabled
+      {...attrs}
+    />
+  ))
+  .add('authorize_error-token', () => (
+    <AuthenticationPage
+      type='authorize'
+      email={emails[0].label}
+      password={password}
+      enabled
+      error='confirm'
+      {...attrs}
+    />
+  ))
+

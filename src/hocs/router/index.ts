@@ -15,7 +15,12 @@
  */
 
 import reducer, { RouteAutomataState, LinkAutomataState } from './reducer'
-import { actionFromMenuItem, actionFromError } from './dispatchers'
+import {
+  AuthenticationPageType,
+  actionFromMenuItem,
+  actionFromError,
+  actionFromAuthenticationPageType
+} from './dispatchers'
 import { injectParamsFromUrl, openLinkOnCloseInfo } from './effects'
 import MENUS, { DEFAULT_LOCALE } from './options'
 import componentFromEvents, {
@@ -46,11 +51,11 @@ export interface RouterSFCProps extends RouterSFCHandlerProps {
 
 export interface RouterSFCHandlerProps {
   onAuthenticated?: (session?: string) => void
+  onAuthenticationPageType?: (type?: AuthenticationPageType) => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
   onCloseInfo?: (event: MouseEvent) => void
   onSelectMenuItem?: (target: HTMLElement) => void
-  onExit?: (event: MouseEvent) => void
 }
 
 interface RouterState {
@@ -85,8 +90,8 @@ const mapDispatchToProps:
 (dispatch: (event: any) => void) => RouterSFCHandlerProps =
 createActionDispatchers({
   onAuthenticated: 'AUTHENTICATED',
+  onAuthenticationPageType: actionFromAuthenticationPageType,
   onEmailChange: 'EMAIL',
-  onExit: 'EXIT',
   onSelectMenuItem: actionFromMenuItem,
   onError: actionFromError,
   onCloseInfo: 'CLOSE_INFO'

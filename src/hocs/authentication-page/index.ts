@@ -44,24 +44,30 @@ const log = label => console.log.bind(console, label)
 export type AuthenticationPageProps<P extends AuthenticationPageSFCProps> =
   AuthenticationPageHocProps & Rest<P, AuthenticationPageSFCProps>
 
+export enum AuthenticationPageType {
+  Signin = 'signin',
+  Signup = 'signup',
+  Authorize = 'authorize'
+}
+
 export interface AuthenticationPageHocProps {
-  signup?: boolean
+  type?: AuthenticationPageType
   email?: string
   onAuthenticated?: (session?: string) => void
+  onAuthenticationPageType?: (type?: AuthenticationPageType) => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
-  onToggleSignup?: (event: Event) => void
 }
 
 export interface AuthenticationPageSFCProps
 extends AuthenticationPageSFCHandlerProps {
-  signup?: boolean
+  type?: AuthenticationPageType
   consents?: boolean
   created?: boolean
   emails?: DropdownItemSpec[]
   email?: string
   password?: string
-  confirm?: string
+  confirm?: string // confirm (signup) or token (authorize)
   terms?: boolean
   news?: boolean
   cleartext?: boolean
@@ -131,14 +137,20 @@ const STATE_TO_ENABLED: Partial<{
 function mapStateToProps (
   { props, state, created, error, inputs, ...changes }: AuthenticationPageState
 ): Rest<AuthenticationPageSFCProps, AuthenticationPageSFCHandlerProps> {
-  const { onAuthenticated, onEmailChange, onError, ...attrs } = props
+  const {
+    onAuthenticated,
+    onAuthenticationPageType: onAuthenticationPageMode,
+    onEmailChange,
+    onError,
+    ...attrs
+  } = props
   const enabled = STATE_TO_ENABLED[state]
   return {
     ...attrs,
     ...changes,
     consents: state === 'consents',
     pending: state === 'pending',
-    enabled: !props.signup && enabled === 'password' ? true : enabled,
+    enabled: (props.type === 'signin') && (enabled === 'password') || enabled,
     created,
     error
   }

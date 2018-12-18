@@ -57,7 +57,7 @@ const automata: AutomataSpec<AutomataState> = {
     VALID_SIGNUP_PASSWORD: ['confirm', clearError],
     VALID_SIGNIN_PASSWORD: ['valid', clearError]
   },
-  confirm: {
+  confirm: { // password confirm or authorization token
     TOGGLE_SIGNUP: ['password', clearPassword, clearError],
     CHANGE_PASSWORD: mapPayloadIntoPassword,
     CHANGE_CONFIRM: mapPayloadIntoConfirm,
