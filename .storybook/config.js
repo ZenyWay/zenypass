@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
+
 import { configure } from '@storybook/react'
 import { initDevTools } from 'react-devtools'
+
 initDevTools()
 
 const stories = require.context('../stories', true, /\.jsx$/)
