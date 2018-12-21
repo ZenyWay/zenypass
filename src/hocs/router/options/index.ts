@@ -34,6 +34,7 @@ export default {
     ),
     excludeCurrentLocale
   ),
+  '/authorize': LOCALE_MENU,
   '/signup': LOCALE_MENU,
   '/signin': LOCALE_MENU
 }

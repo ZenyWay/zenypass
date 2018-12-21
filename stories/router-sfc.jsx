@@ -23,28 +23,16 @@ import { withAuthentication } from 'hocs'
 import { LANG_MENU, MENU } from './helpers/consts'
 
 const attrs = {
-  locale: 'fr'
+  locale: 'fr',
+  onAuthenticated: action('AUTHENTICATED'),
+  onAuthenticationPageType: action('AUTHENTICATION_PAGE_TYPE'),
+  onEmailChange: action('EMAIL_CHANGE'),
+  onError: action('ERROR'),
+  onSelectMenuItem: action('SELECT_MENU_ITEM')
 }
 
 const INTERNAL_ERROR = new Error('fatal error')
 INTERNAL_ERROR.status = 500
-
-const onSelectMenuItem = action('SELECT_MENU_ITEM')
-
-const params = {
-  '/': {
-    onLogout: action('LOGOUT')
-  },
-  '/signup': {
-    onToggleSignup: action('TOGGLE_SIGNUP')
-  },
-  '/signin': {
-    onToggleSignup: action('TOGGLE_SIGNUP')
-  },
-  '/fatal': {
-    error: INTERNAL_ERROR
-  }
-}
 
 const Router =
   withAuthentication(withAuthenticationModal(RouterSFC))
@@ -54,17 +42,20 @@ storiesOf('Router (SFC)', module)
     <Router
       path='/'
       menu={MENU.slice(1) /* remove entry from home-page */}
-      params={params['/']}
       {...attrs}
-      onSelectMenuItem={onSelectMenuItem}
+    />
+  ))
+  .add('/authorize', () => (
+    <Router
+      path='/authorize'
+      menu={LANG_MENU}
+      {...attrs}
     />
   ))
   .add('/signup', () => (
     <Router
       path='/signup'
       menu={LANG_MENU}
-      onSelectMenuItem={onSelectMenuItem}
-      params={params['/signup']}
       {...attrs}
     />
   ))
@@ -72,8 +63,6 @@ storiesOf('Router (SFC)', module)
     <Router
       path='/signin'
       menu={LANG_MENU}
-      onSelectMenuItem={onSelectMenuItem}
-      params={params['/signin']}
       {...attrs}
     />
   ))
@@ -81,7 +70,6 @@ storiesOf('Router (SFC)', module)
     <Router
       path='/fatal'
       error={INTERNAL_ERROR}
-      params={params['/fatal']}
       {...attrs}
     />
   ))

@@ -16,11 +16,13 @@
 
 import { reducer, AutomataState } from './reducer'
 import {
+  AuthenticationPageType,
+  callAuthenticationPageTypeHandlerOnStatePagePending,
   focusEmailInputOnMount,
   focusInputOnEvent,
-  toggleSignupOnSignupPropChange,
-  serviceSigninOnSigninFromValid,
-  serviceSignupOnSignupFromConsentsWhenAccepted,
+  signupOrSigninOrAuthorizeOnTypePropChange,
+  serviceSigninOnSubmitFromSigninSubmitting,
+  serviceSignupOnSubmitFromSignupSubmitting,
   validateEmailOnEmailPropChange,
   validatePasswordOnChangePassword,
   validateConfirmOnChangeConfirm
@@ -44,12 +46,6 @@ const log = label => console.log.bind(console, label)
 export type AuthenticationPageProps<P extends AuthenticationPageSFCProps> =
   AuthenticationPageHocProps & Rest<P, AuthenticationPageSFCProps>
 
-export enum AuthenticationPageType {
-  Signin = 'signin',
-  Signup = 'signup',
-  Authorize = 'authorize'
-}
-
 export interface AuthenticationPageHocProps {
   type?: AuthenticationPageType
   email?: string
@@ -58,6 +54,8 @@ export interface AuthenticationPageHocProps {
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
 }
+
+export { AuthenticationPageType }
 
 export interface AuthenticationPageSFCProps
 extends AuthenticationPageSFCHandlerProps {
@@ -72,9 +70,9 @@ extends AuthenticationPageSFCHandlerProps {
   news?: boolean
   cleartext?: boolean
   /**
-   * email: email field enabled; password, confirm and submit disabled
+   * email: email field enabled; password, confirm/token and submit disabled
    *
-   * password: email and password field enabled; confirm and submit disabled
+   * password: email and password field enabled; confirm/token and submit disabled
    *
    * true: all enabled
    *
@@ -82,10 +80,11 @@ extends AuthenticationPageSFCHandlerProps {
    */
   enabled?: SigninInputs | boolean
   pending?: boolean
-  error?: SignupInputs | 'unauthorized' | false
+  retry?: boolean
+  error?: AuthenticationPageInputs | 'submit' | false
 }
 
-export type SignupInputs = SigninInputs | 'confirm'
+export type AuthenticationPageInputs = SigninInputs | 'confirm' | 'token'
 export type SigninInputs = 'email' | 'password'
 export type ConsentInputs = 'terms' | 'news'
 
@@ -96,13 +95,12 @@ export interface DropdownItemSpec {
 }
 
 export interface AuthenticationPageSFCHandlerProps {
-  onCancelConsents?: (event: Event) => void
+  onCancel?: (event: Event) => void
   onChange?: (value: string, target: HTMLElement) => void
   onSelectEmail?: (item?: HTMLElement) => void
-  onSignin?: (event: Event) => void
-  onSignup?: (event: Event) => void
+  onSubmit?: (event: Event) => void
   onToggleConsent?: (event: Event) => void
-  onToggleSignup?: (event: Event) => void
+  onTogglePageType?: (event: Event) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
   onConfirmInputRef?: (target: HTMLElement) => void
@@ -111,47 +109,63 @@ export interface AuthenticationPageSFCHandlerProps {
 interface AuthenticationPageState {
   props: AuthenticationPageProps<AuthenticationPageSFCProps>
   state: AutomataState
-  inputs?: { [key in SignupInputs]: HTMLElement }
+  inputs?: { [key in AuthenticationPageInputs]: HTMLElement }
   password?: string
   confirm?: string
-  terms?: boolean
+  token?: string
   news?: boolean
   created?: boolean
-  error?: SignupInputs | 'unauthorized' | false
 }
 
-/**
- * signup only
- */
-const STATE_TO_ENABLED: Partial<{
-  [key in AutomataState]: SigninInputs | boolean
-}> = {
-  email: 'email',
-  password: 'password',
-  confirm: true,
-  valid: true,
-  consents: false,
-  pending: false
+const CURRENT_INPUT_TO_ENABLED = {
+  [AuthenticationPageType.Signin]: {
+    email: 'email',
+    password: true,
+    submit: true
+  },
+  [AuthenticationPageType.Signup]: {
+    email: 'email',
+    password: 'password',
+    confirm: true,
+    consents: true,
+    submit: true
+  },
+  [AuthenticationPageType.Authorize]: {
+    email: 'email',
+    password: 'password',
+    token: true,
+    submit: true
+  }
 }
 
 function mapStateToProps (
-  { props, state, created, error, inputs, ...changes }: AuthenticationPageState
+  { props, state, created, inputs, ...changes }: AuthenticationPageState
 ): Rest<AuthenticationPageSFCProps, AuthenticationPageSFCHandlerProps> {
   const {
     onAuthenticated,
-    onAuthenticationPageType: onAuthenticationPageMode,
+    onAuthenticationPageType,
     onEmailChange,
     onError,
+    email,
     ...attrs
   } = props
-  const enabled = STATE_TO_ENABLED[state]
+  const [type, inputState, currentInput, opt] = state.split(':')
+  const pending = inputState === 'submitting'
+  const enabled =
+    (opt !== 'pending') && CURRENT_INPUT_TO_ENABLED[type][currentInput]
+  const error = (inputState === 'error') && currentInput as any
+  const terms =
+    (currentInput === 'submit') && (type === AuthenticationPageType.Signup)
   return {
     ...attrs,
     ...changes,
-    consents: state === 'consents',
-    pending: state === 'pending',
-    enabled: (props.type === 'signin') && (enabled === 'password') || enabled,
+    email,
+    consents: terms || (currentInput === 'terms'),
+    terms,
     created,
+    pending,
+    enabled,
+    retry: (error === 'submit') && (opt === 'retry'),
     error
   }
 }
@@ -159,23 +173,22 @@ function mapStateToProps (
 const change = createActionFactories({
   email: 'CHANGE_EMAIL',
   password: 'CHANGE_PASSWORD',
-  confirm: 'CHANGE_CONFIRM'
+  confirm: 'CHANGE_CONFIRM',
+  token: 'CHANGE_TOKEN',
+  news: 'TOGGLE_NEWS',
+  terms: 'TOGGLE_TERMS'
 })
 
 const mapDispatchToProps:
 (dispatch: (event: any) => void) => AuthenticationPageSFCHandlerProps =
 createActionDispatchers({
-  onCancelConsents: 'CANCEL_CONSENTS',
+  onCancel: 'CANCEL',
   onChange:
     (value: string, input: HTMLElement) => change[input.dataset.id](value),
-  onSelectEmail: 'SELECT_EMAIL',
-  onSignin: ['SIGNIN', preventDefault],
-  onSignup: ['SIGNUP', preventDefault],
-  onToggleSignup: 'TOGGLE_SIGNUP_REQUEST',
-  onToggleConsent: [
-    'TOGGLE_CONSENT',
-    ({ currentTarget }) => currentTarget.dataset.id
-  ],
+  // onSelectEmail: 'SELECT_EMAIL',
+  onSubmit: ['SUBMIT', preventDefault],
+  onTogglePageType: 'TOGGLE_PAGE_TYPE',
+  onToggleConsent: ({ currentTarget }) => change[currentTarget.dataset.id](),
   onEmailInputRef: ['INPUT_REF', inputRef('email')],
   onPasswordInputRef: ['INPUT_REF', inputRef('password')],
   onConfirmInputRef: ['INPUT_REF', inputRef('confirm')]
@@ -195,7 +208,8 @@ export function authenticationPage <P extends AuthenticationPageSFCProps> (
     () => tap(log('authentication-page:event:')),
     redux(
       reducer,
-      toggleSignupOnSignupPropChange,
+      callAuthenticationPageTypeHandlerOnStatePagePending,
+      signupOrSigninOrAuthorizeOnTypePropChange,
       validateEmailOnEmailPropChange,
       validatePasswordOnChangePassword,
       validateConfirmOnChangeConfirm,
@@ -206,9 +220,15 @@ export function authenticationPage <P extends AuthenticationPageSFCProps> (
       focusInputOnEvent('VALID_SIGNUP_PASSWORD', 'confirm'),
       focusInputOnEvent('INVALID_CONFIRM', 'confirm'),
       focusInputOnEvent('UNAUTHORIZED', 'password'),
-      serviceSigninOnSigninFromValid,
-      serviceSignupOnSignupFromConsentsWhenAccepted,
-      callHandlerOnEvent('TOGGLE_SIGNUP_REQUEST', ['props', 'onToggleSignup']),
+      serviceSigninOnSubmitFromSigninSubmitting,
+      serviceSignupOnSubmitFromSignupSubmitting,
+      callHandlerOnEvent(
+        'TOGGLE_PAGE_TYPE',
+        ['props', 'onAuthenticationPageType'],
+        ({ props }) => props.type === AuthenticationPageType.Signup
+          ? AuthenticationPageType.Signin
+          : AuthenticationPageType.Signup
+      ),
       callHandlerOnEvent('AUTHENTICATED', ['props', 'onAuthenticated']),
       callHandlerOnEvent('CHANGE_EMAIL', ['props', 'onEmailChange']),
       callHandlerOnEvent('ERROR', ['props', 'onError'])

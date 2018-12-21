@@ -28,10 +28,10 @@ const attrs = {
   locale: 'fr',
   locales: LANG_MENU,
   onAuthenticated: action('AUTHENTICATED'),
+  onAuthenticationPageType: action('AUTHENTICATION_PAGE_TYPE'),
   onEmailChange: action('EMAIL_CHANGE'),
   onError: action('ERROR'),
-  onSelectLocale: action('SELECT_LOCALE'),
-  onToggleSignup: action('TOGGLE_SIGNUP')
+  onSelectLocale: action('SELECT_LOCALE')
 }
 
 const emails = [ 'jane.doe@example.com', 'rob@hvsc.org' ]
@@ -53,6 +53,13 @@ storiesOf('AuthenticationPage', module)
       {...attrs}
     />
   ))
+  .add('signin-error-email', () => (
+    <AuthenticationPage
+      emails={emails.slice(1)} // TODO remove
+      email={emails[0].label.split('@')[0]}
+      {...attrs}
+    />
+  ))
   .add('signin-email', () => (
     <AuthenticationPage
       emails={emails.slice(1)} // TODO remove
@@ -62,13 +69,20 @@ storiesOf('AuthenticationPage', module)
   ))
   .add('signup', () => (
     <AuthenticationPage
-      signup
+      type='signup'
       {...attrs}
     />
   ))
   .add('signup-email', () => (
     <AuthenticationPage
-      signup
+      type='signup'
+      email={emails[0].label}
+      {...attrs}
+    />
+  ))
+  .add('authorize-email', () => (
+    <AuthenticationPage
+      type='authorize'
       email={emails[0].label}
       {...attrs}
     />

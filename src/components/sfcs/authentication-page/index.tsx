@@ -19,10 +19,11 @@ import {
   AuthenticationPageType,
   AuthenticationForm,
   SigninFormField,
-  SignupFormField
+  AuthenticationFormField
 } from './authentication-form'
 import { ConsentsModal } from './consents-modal'
 import { SplashCard, SplashFooterCard } from '../splash-card'
+import { InfoModal } from '../info-modal'
 import { Dropdown, DropdownItemSpec } from '../../dropdown'
 import { FAIcon } from '../fa-icon'
 import { Button, CardBody, CardTitle, Row } from 'bootstrap'
@@ -42,10 +43,12 @@ export interface AuthenticationPageProps {
   email?: string
   password?: string
   confirm?: string
+  token?: string
   terms?: boolean
   news?: boolean
   pending?: boolean
-  error?: SignupFormField | 'unauthorized' | false
+  retry?: boolean
+  error?: AuthenticationFormField | 'submit' | false
   /**
    * email: email field enabled; password, confirm and submit disabled
    *
@@ -57,17 +60,17 @@ export interface AuthenticationPageProps {
    * false: all disabled
    */
   enabled?: SigninFormField | boolean
-  onCancelConsents: (event: MouseEvent) => void
+  onCancel?: (event: MouseEvent) => void
   onChange?: (value: string, target: HTMLElement) => void
+  onSelectEmail?: (item?: HTMLElement) => void
+  onSelectLocale?: (item?: HTMLElement) => void
+  onSubmit?: (event: Event) => void
+  onToggleConsent?: (event: Event) => void
+  onTogglePageType?: (event: Event) => void
   onConfirmInputRef?: (target: HTMLElement) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
-  onSelectEmail?: (item?: HTMLElement) => void
-  onSelectLocale?: (item?: HTMLElement) => void
-  onSignin?: (event: Event) => void
-  onSignup?: (event: Event) => void
-  onToggleConsent?: (event: Event) => void
-  onToggleSignup?: (event: Event) => void
+  onTokenInputRef?: (target: HTMLElement) => void
 }
 
 export type UnknownProps = { [prop: string]: unknown }
@@ -94,29 +97,32 @@ export function AuthenticationPage ({
   email,
   password,
   confirm,
+  token,
   terms,
   news,
   cleartext,
   pending,
   enabled,
+  retry,
   error,
-  onCancelConsents,
+  onCancel,
   onChange,
   onSelectLocale,
   onSelectEmail,
-  onSignup,
-  onSignin,
+  onSubmit,
   onToggleConsent,
-  onToggleSignup,
+  onTogglePageType,
   onEmailInputRef,
   onPasswordInputRef,
   onConfirmInputRef,
+  onTokenInputRef,
   ...attrs
 }: AuthenticationPageProps & UnknownProps) {
   const t = l10ns[locale]
   const title = t(TITLES[type])
+  const isSignup = type === 'signup'
   const question = t(
-    type === 'signup' ? 'Already have an account' : 'You don\'t have an account'
+    isSignup ? 'Already have an account' : 'You don\'t have an account'
   )
   return (
     <section className='container bg-light' {...attrs}>
@@ -125,10 +131,22 @@ export function AuthenticationPage ({
         display={consents}
         terms={terms}
         news={news}
-        onCancel={onCancelConsents}
-        onSubmit={onSignup}
+        onCancel={onCancel}
+        onSubmit={onSubmit}
         onToggle={onToggleConsent}
       />
+      <InfoModal
+        locale={locale}
+        expanded={retry}
+        onCancel={onCancel}
+        onConfirm={onSubmit}
+      >
+        <p>
+          {t('Typo')} ? {t('Try again')}.<br/>
+          <br/>
+          {t('No typo')} ? {t('Try to authorize this browser to access your account')}.
+        </p>
+      </InfoModal>
       <Row className='justify-content-center' >
         <SplashCard >
           <CardTitle className='mt-3'>
@@ -141,6 +159,7 @@ export function AuthenticationPage ({
               email={email}
               password={password}
               confirm={confirm}
+              token={token}
               cleartext={cleartext}
               created={created}
               error={error}
@@ -150,7 +169,8 @@ export function AuthenticationPage ({
               onEmailInputRef={onEmailInputRef}
               onPasswordInputRef={onPasswordInputRef}
               onConfirmInputRef={onConfirmInputRef}
-              onSignup={type === 'signin' ? onSignin : onSignup}
+              onTokenInputRef={onTokenInputRef}
+              onSubmit={onSubmit}
             />
             <Dropdown
               icon={locales[0].icon}
@@ -192,8 +212,8 @@ export function AuthenticationPage ({
         <SplashFooterCard>
           <CardBody>
             <p><small>{question} ?</small></p>
-            <Button color='info' onClick={onToggleSignup} disabled={pending} >
-              {t(type === 'signup' ? 'Login' : 'Create your account')}
+            <Button color='info' onClick={onTogglePageType} disabled={pending} >
+              {t(isSignup ? 'Login' : 'Create your account')}
             </Button>
           </CardBody>
         </SplashFooterCard>

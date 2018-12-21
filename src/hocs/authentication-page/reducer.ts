@@ -17,100 +17,263 @@
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into, propCursor } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload, mergePayload, StandardAction } from 'utils'
+import { always, forType, mapPayload, mergePayload, not } from 'utils'
 
+/**
+ * AutomataState is a colon-separated list of tokens:
+ * * first token is the current page type: 'signin', 'signup', or 'authorize',
+ * * second token is either one of 'input', 'error', 'submitting':
+ *   * 'input' for the currently required input, specified by the third token,
+ *   * 'error' for an error on the currently required input,
+ * also specified by the third token,
+ *   * 'submitting' during a service call. there are no other following words.
+ * * third word (if present) describes which input is currently required (input)
+ * or incorrect (error), i.e. 'email', 'password', 'confirm', 'token',
+ * 'consents', 'terms', or 'submit'.
+ * * fourth word (if present) is either 'retry' or 'pending':
+ *   * 'retry' indicates that the previous signin attempt has failed,
+ *   * 'pending' disables all inputs
+ */
 export type AutomataState =
-  | 'email' // only email enabled
-  | 'password' // all enabled except confirm (signup only)
-  | 'confirm' // all enabled
-  | 'valid' // all enabled
-  | 'consents' // all disabled
-  | 'pending' // all disabled
+  'signin:input:email:pending' | 'signin:input:email'
+  | 'signin:error:email:pending' | 'signin:error:email'
+  | 'signin:input:password:pending'
+  | 'signin:input:password' | 'signin:input:password:retry'
+  | 'signin:error:password' | 'signin:error:password:retry'
+  | 'signin:input:submit' | 'signin:input:submit:retry'
+  | 'signin:error:submit' | 'signin:error:submit:retry'
+  | 'signin:submitting' | 'signin:submitting:retry'
+  | 'authorize:error:password'
+  | 'authorize:input:token:pending' | 'authorize:input:token'
+  | 'authorize:error:token'
+  | 'authorize:input:submit' | 'authorize:error:submit'
+  | 'authorize:submitting'
+  | 'signup:input:email' | 'signup:error:email'
+  | 'signup:input:password' | 'signup:error:password'
+  | 'signup:input:confirm' | 'signup:error:confirm'
+  | 'signup:input:consents' | 'signup:input:terms'
+  | 'signup:input:submit' | 'signup:error:submit'
+  | 'signup:submitting'
 
-const DEFAULT_CONSENTS = { terms: false, news: false }
-
-const resetConsents = mergePayload(always(DEFAULT_CONSENTS))
-const mapPayloadIntoPassword = into('password')(mapPayload())
-const mapPayloadIntoConfirm = into('confirm')(mapPayload())
+const setCreated = into('created')(always(true))
+const clearCreated = into('created')(always())
+const toggleNews = propCursor('news')(not())
+const clearNews = into('news')(always())
 const clearPassword = propCursor('password')(always(''))
 const clearConfirm = propCursor('confirm')(always(''))
-const clearPasswords = mergePayload(always({ password: '', confirm: '' }))
-const setEmailError = setError('email')
-const setPasswordError = setError('password')
-const setConfirmError = setError('confirm')
-const setUnauthorizedError = setError('unauthorized')
-const clearError = setError()
+const clearToken = propCursor('token')(always(''))
+const clearPasswords =
+  mergePayload(always({ password: '', confirm: '', token: '' }))
 
+/**
+ * only change page type on SIGNUP, SIGNIN, or AUTHORIZE
+ */
 const automata: AutomataSpec<AutomataState> = {
-  email: {
-    SIGNIN: setEmailError,
-    INVALID_EMAIL: setEmailError,
-    VALID_EMAIL: ['password', clearError]
+  'signin:input:email:pending': {
+    SIGNIN: 'signin:input:email'
   },
-  password: {
-    TOGGLE_SIGNUP: [clearPassword, clearError],
-    CHANGE_PASSWORD: mapPayloadIntoPassword,
-    SIGNIN: setPasswordError,
-    INVALID_EMAIL: ['email', clearPassword, setEmailError],
-    INVALID_PASSWORD: setPasswordError,
-    VALID_EMAIL: [clearPassword, clearError],
-    VALID_SIGNUP_PASSWORD: ['confirm', clearError],
-    VALID_SIGNIN_PASSWORD: ['valid', clearError]
+  'signin:input:email': {
+    SIGNUP: 'signup:input:email',
+    SUBMIT: 'signin:error:email',
+    INVALID_EMAIL: 'signin:error:email',
+    VALID_EMAIL: 'signin:input:password'
   },
-  confirm: { // password confirm or authorization token
-    TOGGLE_SIGNUP: ['password', clearPassword, clearError],
-    CHANGE_PASSWORD: mapPayloadIntoPassword,
-    CHANGE_CONFIRM: mapPayloadIntoConfirm,
-    SIGNUP: setConfirmError,
-    INVALID_EMAIL: ['email', clearPasswords, setEmailError],
-    INVALID_PASSWORD: ['password', clearConfirm, setPasswordError],
-    INVALID_CONFIRM: [clearConfirm, setConfirmError],
-    VALID_EMAIL: ['password', clearPasswords, clearError],
-    VALID_SIGNUP_PASSWORD: [clearConfirm, clearError],
-    VALID_CONFIRM: ['valid', clearError]
+  'signin:error:email:pending': {
+    SIGNIN: 'signin:error:email'
   },
-  valid: {
-    TOGGLE_SIGNUP: ['password', clearPasswords],
-    CHANGE_PASSWORD: mapPayloadIntoPassword,
-    CHANGE_CONFIRM: mapPayloadIntoConfirm,
-    INVALID_EMAIL: ['email', clearPasswords, setEmailError],
-    INVALID_PASSWORD: ['password', clearConfirm, setPasswordError],
-    INVALID_CONFIRM: [clearConfirm, setConfirmError],
-    VALID_EMAIL: ['password', clearPasswords],
-    PENDING: 'pending',
-    SIGNUP: ['consents', resetConsents]
+  'signin:error:email': {
+    SIGNUP: 'signup:error:email',
+    VALID_EMAIL: 'signin:input:password'
   },
-  consents: {
-    CANCEL_CONSENTS: ['confirm', clearConfirm],
-    TOGGLE_CONSENT: toggleConsent,
-    PENDING: 'pending'
+  'signin:input:password:pending': {
+    SIGNIN: 'signin:input:password'
   },
-  pending: { // service call
-    ERROR: ['email', clearPasswords, resetConsents],
-    UNAUTHORIZED: ['password', clearPasswords, setUnauthorizedError],
-    AUTHENTICATED: ['password', clearPasswords, into('created')(always())],
-    TOGGLE_SIGNUP: [
-      'password',
-      clearPasswords,
-      resetConsents,
-      into('created')(always(true))
-    ]
+  'signin:input:password': {
+    SIGNUP: 'signup:input:password',
+    SUBMIT: 'signin:error:password',
+    INVALID_EMAIL: 'signin:error:email',
+    INVALID_PASSWORD: 'signin:error:password',
+    VALID_PASSWORD: 'signin:input:submit'
+  },
+  'signin:input:password:retry': {
+    SIGNUP: 'signup:input:password',
+    SUBMIT: 'signin:error:password',
+    INVALID_EMAIL: 'signin:error:email',
+    INVALID_PASSWORD: 'signin:error:password:retry',
+    VALID_PASSWORD: 'signin:input:submit:retry'
+  },
+  'signin:error:password': {
+    SIGNUP: ['signup:input:password', clearPassword],
+    INVALID_EMAIL: ['signin:error:email', clearPassword],
+    VALID_EMAIL: ['signin:input:password', clearPassword],
+    VALID_PASSWORD: 'signin:input:submit'
+  },
+  'signin:error:password:retry': {
+    SIGNUP: ['signup:input:password', clearPassword],
+    INVALID_EMAIL: ['signin:error:email', clearPassword],
+    VALID_EMAIL: ['signin:input:password', clearPassword],
+    VALID_PASSWORD: 'signin:input:submit:retry'
+  },
+  'signin:input:submit': {
+    SIGNUP: ['signup:input:password', clearPassword],
+    INVALID_EMAIL: ['signin:error:email', clearPassword],
+    INVALID_PASSWORD: 'signin:error:password',
+    VALID_EMAIL: ['signin:input:password', clearPassword],
+    SUBMIT: 'signin:submitting'
+  },
+  'signin:input:submit:retry': {
+    SIGNUP: ['signup:input:password', clearPassword],
+    INVALID_EMAIL: ['signin:error:email', clearPassword],
+    INVALID_PASSWORD: 'signin:error:password:retry',
+    VALID_EMAIL: ['signin:input:password', clearPassword],
+    SUBMIT: 'signin:submitting:retry'
+  },
+  'signin:error:submit': {
+    SIGNUP: ['signup:input:password', clearPassword],
+    INVALID_EMAIL: ['signin:error:email', clearPassword],
+    INVALID_PASSWORD: 'signin:error:password:retry',
+    VALID_EMAIL: ['signin:input:password', clearPassword],
+    VALID_PASSWORD: 'signin:input:submit:retry'
+  },
+  'signin:error:submit:retry': {
+    SUBMIT: 'authorize:input:token:pending',
+    CANCEL: ['signin:input:password:retry', clearPassword]
+  },
+  'signin:submitting': {
+    ERROR: ['signin:input:password', clearPassword],
+    UNAUTHORIZED: ['signin:error:submit', clearPassword],
+    AUTHENTICATED: ['signin:input:password', clearPassword, clearCreated]
+  },
+  'signin:submitting:retry': {
+    ERROR: ['signin:input:password', clearPassword],
+    UNAUTHORIZED: 'signin:error:submit:retry',
+    AUTHENTICATED: ['signin:input:password', clearPassword, clearCreated]
+  },
+  'authorize:error:password': {
+    SIGNUP: ['signup:input:password', clearPassword],
+    INVALID_EMAIL: ['signin:error:email:pending', clearPassword],
+    VALID_EMAIL: ['signin:input:email:pending', clearPassword],
+    VALID_PASSWORD: 'authorize:input:token'
+  },
+  'authorize:input:token:pending': {
+    AUTHORIZE: 'authorize:input:token'
+  },
+  'authorize:input:token': {
+    SIGNUP: ['signup:input:password', clearPassword],
+    INVALID_EMAIL: ['signin:error:email:pending', clearPassword],
+    INVALID_PASSWORD: 'authorize:error:password',
+    INVALID_TOKEN: 'authorize:error:token',
+    VALID_EMAIL: ['signin:input:email:pending', clearPassword],
+    VALID_TOKEN: 'authorize:input:submit'
+  },
+  'authorize:error:token': {
+    SIGNUP: ['signup:input:password', clearPasswords],
+    INVALID_EMAIL: ['signin:error:email:pending', clearPasswords],
+    INVALID_PASSWORD: ['authorize:error:password', clearToken],
+    VALID_EMAIL: ['signin:input:email:pending', clearPasswords],
+    VALID_PASSWORD: ['authorize:input:token', clearToken],
+    VALID_TOKEN: 'authorize:input:submit'
+  },
+  'authorize:input:submit': {
+    SIGNUP: ['signup:input:password', clearPasswords],
+    INVALID_EMAIL: ['signin:error:email:pending', clearPasswords],
+    INVALID_PASSWORD: ['authorize:error:password', clearToken],
+    VALID_EMAIL: ['signin:input:email:pending', clearPasswords],
+    VALID_PASSWORD: clearToken,
+    SUBMIT: 'authorize:submitting'
+  },
+  'authorize:error:submit': {
+    SIGNUP: ['signup:input:password', clearPassword],
+    INVALID_EMAIL: ['signin:error:email:pending', clearPassword],
+    INVALID_PASSWORD: 'authorize:error:password',
+    VALID_EMAIL: ['signin:input:email:pending', clearPassword],
+    VALID_PASSWORD: 'authorize:input:token',
+    VALID_TOKEN: 'authorize:input:submit'
+  },
+  'authorize:submitting': {
+    ERROR: ['signin:input:password:pending', clearPasswords],
+    REQUEST_TIMEOUT: ['authorize:error:submit', clearConfirm],
+    SIGNIN: ['signin:input:password', clearPasswords]
+  },
+  'signup:input:email': {
+    SIGNIN: 'signin:input:email',
+    SUBMIT: 'signup:error:email',
+    INVALID_EMAIL: 'signup:error:email',
+    VALID_EMAIL: 'signup:input:password'
+  },
+  'signup:error:email': {
+    SIGNIN: 'signin:error:email',
+    VALID_EMAIL: 'signup:input:password'
+  },
+  'signup:input:password': {
+    SIGNIN: 'signin:input:password',
+    SUBMIT: 'signup:error:password',
+    INVALID_EMAIL: 'signup:error:email',
+    INVALID_PASSWORD: 'signup:error:password',
+    VALID_PASSWORD: 'signup:input:confirm'
+  },
+  'signup:error:password': {
+    SIGNIN: ['signin:input:password', clearPassword],
+    INVALID_EMAIL: ['signup:error:email', clearPassword],
+    VALID_EMAIL: ['signup:input:password', clearPassword],
+    VALID_PASSWORD: 'signup:input:confirm'
+  },
+  'signup:input:confirm': {
+    SIGNIN: ['signin:input:password', clearPassword],
+    INVALID_EMAIL: ['signup:error:email', clearPassword],
+    INVALID_PASSWORD: 'signup:error:password',
+    INVALID_CONFIRM: 'signup:error:confirm',
+    VALID_EMAIL: ['signup:input:password', clearPassword],
+    VALID_CONFIRM: 'signup:input:consents'
+  },
+  'signup:error:confirm': {
+    SIGNIN: ['signin:input:password', clearPasswords],
+    INVALID_EMAIL: ['signup:error:email', clearPasswords],
+    INVALID_PASSWORD: ['signup:error:password', clearConfirm],
+    VALID_EMAIL: ['signup:input:password', clearPasswords],
+    VALID_PASSWORD: ['signup:input:confirm', clearConfirm],
+    VALID_CONFIRM: 'signup:input:consents'
+  },
+  'signup:input:consents': {
+    SIGNIN: ['signin:input:password', clearPasswords],
+    INVALID_EMAIL: ['signup:error:email', clearPasswords],
+    INVALID_PASSWORD: ['signup:error:password', clearConfirm],
+    INVALID_CONFIRM: 'signup:error:confirm',
+    VALID_EMAIL: ['signup:input:password', clearPasswords],
+    VALID_PASSWORD: ['signup:input:confirm', clearConfirm],
+    SUBMIT: ['signup:input:terms', clearNews]
+  },
+  'signup:input:terms': {
+    CANCEL: ['signup:input:password', clearPasswords],
+    TOGGLE_NEWS: toggleNews,
+    TOGGLE_TERMS: 'signup:input:submit'
+  },
+  'signup:input:submit': {
+    CANCEL: ['signup:input:password', clearPasswords],
+    TOGGLE_NEWS: toggleNews,
+    TOGGLE_TERMS: 'signup:input:terms',
+    SUBMIT: 'signup:submitting'
+  },
+  'signup:error:submit': {
+    SIGNIN: ['signin:input:password', clearPassword],
+    INVALID_EMAIL: ['signup:error:email', clearPassword],
+    INVALID_PASSWORD: 'signup:error:password',
+    VALID_EMAIL: ['signup:input:password', clearPassword],
+    VALID_PASSWORD: 'signup:input:confirm',
+    VALID_TOKEN: 'signup:input:consents'
+  },
+  'signup:submitting': {
+    ERROR: ['signin:input:password:pending', clearPasswords],
+    REQUEST_TIMEOUT: ['signup:error:submit', clearConfirm],
+    SIGNIN: ['signin:input:password', clearPasswords, setCreated]
   }
-}
-
-function toggleConsent (consents, { payload }: StandardAction<string>) {
-  return {
-    ...consents,
-    [payload]: !(consents && consents[payload])
-  }
-}
-
-function setError (error?: 'email' | 'password' | 'confirm' | 'unauthorized') {
-  return into('error')(always(error))
 }
 
 export const reducer = compose.into(0)(
-  createAutomataReducer(automata, 'email'),
+  createAutomataReducer(automata, 'signin:input:email'),
+  forType('CHANGE_TOKEN')(into('token')(mapPayload())),
+  forType('CHANGE_CONFIRM')(into('confirm')(mapPayload())),
+  forType('CHANGE_PASSWORD')(into('password')(mapPayload())),
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(into('props')(mapPayload()))
 )

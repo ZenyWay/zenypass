@@ -15,40 +15,52 @@
  */
 
 import { zenypass } from 'services'
-import { StandardAction, createActionFactory } from 'basic-fsa-factories'
+import {
+  StandardAction,
+  createActionFactory,
+  createActionFactories
+} from 'basic-fsa-factories'
 import {
   isInvalidEmail,
+  isFunction,
   hasEntry,
-  not,
+  pluck as select,
   stateOnEvent,
   ERROR_STATUS
 } from 'utils'
 import {
   catchError,
   distinctUntilChanged,
+  distinctUntilKeyChanged,
   filter,
   ignoreElements,
   map,
-  partition,
   pluck,
   skipWhile,
-  startWith,
   switchMap,
   tap
 } from 'rxjs/operators'
 import { Observable, of as observable, merge } from 'rxjs'
 // const log = label => console.log.bind(console, label)
 
-const toggleSignupRequest = createActionFactory<void>('TOGGLE_SIGNUP_REQUEST')
-const toggleSignup = createActionFactory<void>('TOGGLE_SIGNUP')
+export enum AuthenticationPageType {
+  Signin = 'signin',
+  Signup = 'signup',
+  Authorize = 'authorize'
+}
+
+const changePageType = createActionFactories({
+  [AuthenticationPageType.Signin]: 'SIGNIN',
+  [AuthenticationPageType.Signup]: 'SIGNUP',
+  [AuthenticationPageType.Authorize]: 'AUTHORIZE'
+})
+
 const invalidEmail = createActionFactory<void>('INVALID_EMAIL')
 const validEmail = createActionFactory<void>('VALID_EMAIL')
 const invalidPassword = createActionFactory<void>('INVALID_PASSWORD')
-const validSignupPassword = createActionFactory<void>('VALID_SIGNUP_PASSWORD')
-const validSigninPassword = createActionFactory<void>('VALID_SIGNIN_PASSWORD')
+const validPassword = createActionFactory<void>('VALID_PASSWORD')
 const invalidConfirm = createActionFactory<void>('INVALID_CONFIRM')
 const validConfirm = createActionFactory<void>('VALID_CONFIRM')
-const pending = createActionFactory<void>('PENDING')
 const authenticated = createActionFactory<void>('AUTHENTICATED')
 const unauthorized = createActionFactory<void>('UNAUTHORIZED')
 const error = createActionFactory<any>('ERROR')
@@ -76,24 +88,46 @@ export function focusInputOnEvent (type: string, input: string) {
   }
 }
 
-export function toggleSignupOnSignupPropChange (
+export function callAuthenticationPageTypeHandlerOnStatePagePending (
   _: any,
   state$: Observable<any>
 ) {
   return state$.pipe(
-    pluck('props', 'signup'),
-    skipWhile(signup => !signup), // ignore initial signin = automata init
-    distinctUntilChanged(),
-    map(() => toggleSignup())
+    distinctUntilKeyChanged('state'),
+    map(({ props, state }) => ({
+      handler: props.onAuthenticationPageType,
+      state: state.split(':')
+    })),
+    distinctUntilChanged(
+      (a, b) => (a[0] === b[0]) && (a[3] === b[3]), // compare type and option
+      select('state')
+    ),
+    filter(({ handler, state }) => (state[3] === 'pending') && isFunction(handler)),
+    tap(({ handler, state }) => Promise.resolve().then(() => handler(state[0]))),
+    ignoreElements()
   )
 }
 
-export function validateEmailOnEmailPropChange (_: any, state$: Observable<any>) {
+export function signupOrSigninOrAuthorizeOnTypePropChange (
+  _: any,
+  state$: Observable<any>
+) {
   return state$.pipe(
-    pluck('props', 'email'),
-    skipWhile(email => !email), // ignore initial undefined (if any)
+    pluck<any,AuthenticationPageType>('props', 'type'),
     distinctUntilChanged(),
-    validateInput(not(isInvalidEmail), validEmail, invalidEmail)
+    map((type = AuthenticationPageType.Signin) => changePageType[type]())
+  )
+}
+
+export function validateEmailOnEmailPropChange (
+  _: any,
+  state$: Observable<any>
+) {
+  return state$.pipe(
+    pluck<any,string>('props', 'email'),
+    skipWhile(email => !email), // ignore initial undefined, if any
+    distinctUntilChanged(),
+    map(email => isInvalidEmail(email) ? invalidEmail() : validEmail())
   )
 }
 
@@ -101,17 +135,8 @@ export function validatePasswordOnChangePassword (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  const stateOnChangePassword$ =
-    stateOnEvent(hasEntry('type', 'CHANGE_PASSWORD'))(event$, state$)
-  const [signup$, signin$] = partition(isSignup)(stateOnChangePassword$)
-
-  return merge(
-    signup$.pipe(
-      validateInput(hasValidSignupPassword, validSignupPassword, invalidPassword)
-    ),
-    signin$.pipe(
-      validateInput(hasValidSigninPassword, validSigninPassword, invalidPassword)
-    )
+  return stateOnEvent(hasEntry('type', 'CHANGE_PASSWORD'))(event$, state$).pipe(
+    map(state => hasValidPassword(state) ? validPassword() : invalidPassword())
   )
 }
 
@@ -120,79 +145,64 @@ export function validateConfirmOnChangeConfirm (
   state$: Observable<any>
 ) {
   return stateOnEvent(hasEntry('type', 'CHANGE_CONFIRM'))(event$, state$).pipe(
-    validateInput(hasValidConfirm, validConfirm, invalidConfirm)
+    map(state => hasValidConfirm(state) ? validConfirm() : invalidConfirm())
   )
 }
 
-export function serviceSigninOnSigninFromValid (
+export function serviceSigninOnSubmitFromSigninSubmitting (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  return stateOnEvent(({ type }) => type === 'SIGNIN')(event$, state$).pipe(
-    filter<any>(({ state }) => state === 'valid'),
+  return stateOnEvent(({ type }) => type === 'SUBMIT')(event$, state$).pipe(
+    filter<any>(({ state }) => /^signin:submitting/.test(state)),
     switchMap(
       ({ props, password }) => zenypass.signin({
         username: props.email,
         passphrase: password
       }).pipe(
         map(session => authenticated(session)),
-        startWith(pending()),
         catchError(err => observable(unauthorizedOrError(err)))
       )
     )
   )
 }
 
-export function serviceSignupOnSignupFromConsentsWhenAccepted (
+export function serviceSignupOnSubmitFromSignupSubmitting (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  return stateOnEvent(({ type }) => type === 'SIGNUP')(event$, state$).pipe(
-    filter<any>(({ state, terms }) => (state === 'consents') && !!terms),
+  return stateOnEvent(({ type }) => type === 'SUBMIT')(event$, state$).pipe(
+    filter<any>(({ state }) => state === 'signup:submitting'),
     switchMap(
       ({ props, password }) => zenypass.signup({
         username: props.email,
         passphrase: password
       }).pipe(
-        map(() => toggleSignupRequest()),
-        startWith(pending()),
+        filter(() => isFunction(props.onAuthenticationPageType)),
+        tap(() => props.onAuthenticationPageType(AuthenticationPageType.Signin)),
         catchError(err => observable(error(err)))
       )
     )
   )
 }
 
+const MIN_SIGNUP_PASSWORD_LENGTH = 4
+const MIN_SIGNIN_PASSWORD_LENGTH = 1
+function hasValidPassword (state: { props?: any, password?: string } = {}) {
+  const min =
+    isSignup(state) ? MIN_SIGNUP_PASSWORD_LENGTH : MIN_SIGNIN_PASSWORD_LENGTH
+  const { password } = state
+  return password && password.length >= min
+}
+
 function isSignup ({ props } = {} as any) {
-  return props && !!props.signup
-}
-
-const MIN_PASSWORD_LENGTH = 4
-function hasValidSignupPassword ({ password } = {} as { password?: string }) {
-  return password && password.length >= MIN_PASSWORD_LENGTH
-}
-
-function hasValidSigninPassword ({ password } = {} as { password?: string }) {
-  return password && password.length > 0
+  return props && props.type === AuthenticationPageType.Signup
 }
 
 function hasValidConfirm (
   { password, confirm } = {} as { password?: string, confirm?: string }
 ) {
   return confirm && confirm === password
-}
-
-function validateInput <I extends {} = {}> (
-  hasValidInput: (inputs?: I) => boolean,
-  validInputAction: () => StandardAction<void>,
-  invalidInputAction: () => StandardAction<void>
-) {
-  return function (inputs$: Observable<I>) {
-    const [valid$, invalid$] = partition(hasValidInput)(inputs$)
-    return merge(
-      valid$.pipe(map(() => validInputAction())),
-      invalid$.pipe(map(() => invalidInputAction()))
-    )
-  }
 }
 
 function unauthorizedOrError (err: any) {

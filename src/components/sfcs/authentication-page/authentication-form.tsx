@@ -33,6 +33,7 @@ export interface AuthenticationFormProps {
   email?: string
   password?: string
   confirm?: string
+  token?: string
   /**
    * email: email field enabled; password, confirm and submit disabled
    *
@@ -45,22 +46,22 @@ export interface AuthenticationFormProps {
   enabled?: SigninFormField | boolean
   created?: boolean
   cleartext?: boolean
-  error?: SignupFormField | 'unauthorized' | false
+  error?: AuthenticationFormField | 'submit' | false
   onChange?: (value: string, target: HTMLElement) => void
   onConfirmInputRef?: (target: HTMLElement) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
-  onSignup?: (event: Event) => void
+  onTokenInputRef?: (target: HTMLElement) => void
+  onSubmit?: (event: Event) => void
 }
 
-export type SignupFormField = SigninFormField | 'confirm'
+export type AuthenticationFormField = SigninFormField | 'confirm' | 'token'
 export type SigninFormField = 'email' | 'password'
 
 export type UnknownProps = { [prop: string]: unknown }
 
 const ERRORS = {
   email: {
-    [AuthenticationPageType.Authorize]: 'Please enter a valid email address',
     [AuthenticationPageType.Signup]: 'Please enter a valid email address',
     [AuthenticationPageType.Signin]: 'Please enter a valid email address'
   },
@@ -70,8 +71,10 @@ const ERRORS = {
     [AuthenticationPageType.Signin]: 'Please enter your password'
   },
   confirm: {
-    [AuthenticationPageType.Authorize]: 'Please enter the authorization code as displayed on the authorizing device',
     [AuthenticationPageType.Signup]: 'Please enter the exact same password'
+  },
+  token: {
+    [AuthenticationPageType.Authorize]: 'Please enter the authorization code as displayed on the authorizing device'
   }
 }
 
@@ -93,16 +96,18 @@ export function AuthenticationForm ({
   email,
   password,
   confirm,
+  token,
   cleartext,
   enabled,
   created,
   error,
   onChange,
-  onSignup,
+  onSubmit,
   onToggleFocus,
   onEmailInputRef,
   onPasswordInputRef,
   onConfirmInputRef,
+  onTokenInputRef,
   ...attrs
 }: AuthenticationFormProps & UnknownProps) {
   const t = l10ns[locale]
@@ -110,10 +115,10 @@ export function AuthenticationForm ({
   const dropdown = emails && emails.length
   const passwordEnabled = enabled && (enabled !== 'email')
   const confirmEnabled = enabled === true
-  const unauthorized = error === 'unauthorized'
+  const unauthorized = error === 'submit'
   const info = INFO[type]
   return (
-    <form {...attrs} onSubmit={onSignup}>
+    <form {...attrs} onSubmit={onSubmit}>
       {
         !created ? null : (
           <div>
@@ -161,34 +166,52 @@ export function AuthenticationForm ({
         innerRef={onPasswordInputRef}
       />
       {
-        type === 'signin' ? null : (
-          <PassiveRecordField
-            type={authorize || cleartext ? 'text' : 'password'}
-            id='confirm'
-            blurOnEnterKey
-            className='mb-2'
-            icon={authorize ? 'key' : 'lock'}
-            flip='vertical'
-            placeholder={
-              confirmEnabled
-              ? t(
-                authorize ? 'Enter the authorization code' : 'Confirm your password'
-              )
-              : !authorize ? null : `${t('Authorization code')}...`
-            }
-            value={confirm}
-            error={(error === 'confirm') && t(ERRORS.confirm[type])}
-            data-id='confirm'
-            onChange={onChange}
-            locale={locale}
-            disabled={!confirmEnabled}
-            innerRef={onConfirmInputRef}
-          />
-        )
+        type === 'signin'
+        ? null
+        : authorize
+          ? (
+            <PassiveRecordField
+              type='text'
+              id='token'
+              blurOnEnterKey
+              className='mb-2'
+              icon='key'
+              flip='vertical'
+              placeholder={
+                confirmEnabled
+                ? t('Enter the authorization code')
+                : `${t('Authorization code')}...`
+              }
+              value={token}
+              error={(error === 'token') && t(ERRORS.token[type])}
+              data-id='token'
+              onChange={onChange}
+              locale={locale}
+              disabled={!confirmEnabled}
+              innerRef={onTokenInputRef}
+            />
+          )
+          : (
+            <PassiveRecordField
+              type={cleartext ? 'text' : 'password'}
+              id='confirm'
+              blurOnEnterKey
+              className='mb-2'
+              icon='lock'
+              placeholder={!confirmEnabled ? null : t('Confirm your password')}
+              value={confirm}
+              error={(error === 'confirm') && t(ERRORS.confirm[type])}
+              data-id='confirm'
+              onChange={onChange}
+              locale={locale}
+              disabled={!confirmEnabled}
+              innerRef={onConfirmInputRef}
+            />
+          )
       }
       <p>
         {!unauthorized ? null : (
-            <small className='unauthorized'>
+            <small className='text-danger'>
               {t('Unauthorized access')}:<br/>
               {t('Please verify your email address and enter your password again')}.
             </small>

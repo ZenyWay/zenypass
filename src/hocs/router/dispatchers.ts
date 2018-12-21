@@ -66,7 +66,7 @@ export { AuthenticationPageType }
 const AUTHENTICATION_PAGE_ACTIONS = createActionFactories({
   [AuthenticationPageType.Signin]: 'SIGNIN',
   [AuthenticationPageType.Signup]: 'SIGNUP',
-  [AuthenticationPageType.Authorize]: 'AUTHORIZED'
+  [AuthenticationPageType.Authorize]: 'AUTHORIZE'
 })
 
 export function actionFromAuthenticationPageType (

@@ -20,9 +20,9 @@ import createL10ns from 'basic-l10n'
 import { newStatusError, StatusError } from 'utils'
 const l10ns = createL10ns(require('./locales.json'))
 
-export interface ErrorPageProps<E extends Error> {
+export interface ErrorPageProps {
   locale: string
-  error?: E
+  error?: any
   children?: any
 }
 
@@ -39,19 +39,16 @@ const ERROR_TYPES = {
 
 const INTERNAL_SERVER_ERROR = newStatusError(500)
 
-export function ErrorPage <E extends Error> (
+export function ErrorPage (
   {
     locale,
-    error,
+    error = INTERNAL_SERVER_ERROR,
     children,
     ...attrs
-  }: ErrorPageProps<E> & { [prop: string]: unknown }
+  }: ErrorPageProps & { [prop: string]: unknown }
 ) {
   const t = l10ns[locale]
-  const { status = 500, message = null }: {
-    status?: number,
-    message?: string
-  } = error as any || INTERNAL_SERVER_ERROR
+  const { status = INTERNAL_SERVER_ERROR.status, message = null } = error
   const type = ERROR_TYPES[status] || null
   return (
     <section {...attrs}>

@@ -13,17 +13,17 @@ delete locales[0].label // remove label of dropdown toggle
 const attrs = {
   locale: 'fr',
   locales: LANG_MENU,
-  onCancelConsents: action('CANCEL_CONSENTS'),
+  onCancel: action('CANCEL'),
   onChange: action('CHANGE'),
   onConfirmInputRef: action('CONFIRM_INPUT_REF'),
   onEmailInputRef: action('EMAIL_INPUT_REF'),
   onPasswordInputRef: action('PASSWORD_INPUT_REF'),
+  onTokenInputRef: action('TOKEN_INPUT_REF'),
   onSelectEmail: action('SELECT_EMAIL'),
   onSelectLocale: action('SELECT_LOCALE'),
-  onSignup: preventDefaultAction('SIGNUP'),
-  onSignin: preventDefaultAction('SIGNIN'),
+  onSubmit: action('SUBMIT'),
   onToggleConsent: action('TOGGLE_CONSENT'),
-  onToggleSignup: action('TOGGLE_SIGNUP')
+  onTogglePageType: action('TOGGLE_PAGE_TYPE')
 }
 
 const emails = [ 'jane.doe@example.com', 'rob@hvsc.org' ]
@@ -144,6 +144,7 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
+  /*
   .add('signin_enabled-emails', () => (
     <AuthenticationPage
       email={emails[0].label}
@@ -152,6 +153,7 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
+  */
   .add('signin_error-email', () => (
     <AuthenticationPage
       email={emails[0].label}
@@ -183,11 +185,19 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('signin_error-unauthorized', () => (
+  .add('signin_error-submit', () => (
     <AuthenticationPage
       email={emails[0].label}
       enabled
-      error='unauthorized'
+      error='submit'
+      {...attrs}
+    />
+  ))
+  .add('signin_error-submit-retry', () => (
+    <AuthenticationPage
+      email={emails[0].label}
+      retry
+      error='submit'
       {...attrs}
     />
   ))
@@ -211,15 +221,6 @@ storiesOf('AuthenticationPage (SFC)', module)
       type='authorize'
       email={emails[0].label}
       enabled='email'
-      {...attrs}
-    />
-  ))
-  .add('authorize_error-email', () => (
-    <AuthenticationPage
-      type='authorize'
-      email={emails[0].label}
-      enabled='email'
-      error='email'
       {...attrs}
     />
   ))
@@ -255,7 +256,7 @@ storiesOf('AuthenticationPage (SFC)', module)
       email={emails[0].label}
       password={password}
       enabled
-      error='confirm'
+      error='token'
       {...attrs}
     />
   ))

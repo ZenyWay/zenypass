@@ -47,7 +47,7 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/authorize': {
-    SIGNIN: '/signin',
+    SIGNUP: '/signup',
     EMAIL: mapPayloadIntoEmail,
     FATAL: ['/fatal', mapPayloadIntoError]
   },

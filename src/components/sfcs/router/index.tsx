@@ -15,10 +15,9 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { HomePage, HomePageProps, MenuSpecs, DropdownItemSpec } from '../../home-page'
+import { HomePage, MenuSpecs, DropdownItemSpec } from '../../home-page'
 import {
   AuthenticationPage,
-  AuthenticationPageProps,
   AuthenticationPageType
 } from '../../authentication-page'
 import { ErrorPage } from '../error-page'
@@ -37,9 +36,10 @@ export interface CoreRouterProps {
   locale: string
   path?: string
   menu?: MenuSpecs
-  params?: { [prop: string]: unknown }
   email?: string
   session?: string
+  error?: any
+  children?: any
   onAuthenticated?: (session?: string) => void
   onAuthenticationPageType?: (type?: AuthenticationPageType) => void
   onAuthenticationRequest?: (res$: Observer<string>) => void
@@ -78,13 +78,15 @@ function CoreRouter ({
   session,
   path,
   menu,
-  params,
+  error,
+  children = null,
   onAuthenticated,
   onAuthenticationPageType,
   onAuthenticationRequest,
   onEmailChange,
   onError,
-  onSelectMenuItem
+  onSelectMenuItem,
+  attrs
 }: CoreRouterProps & { [prop: string]: unknown }) {
   switch (path) {
     case '/':
@@ -96,7 +98,6 @@ function CoreRouter ({
           onAuthenticationRequest={onAuthenticationRequest}
           onError={onError}
           onSelectMenuItem={onSelectMenuItem}
-          {...params as HomePageProps}
         />
       )
     case '/authorize':
@@ -113,18 +114,16 @@ function CoreRouter ({
           onSelectLocale={onSelectMenuItem}
           onAuthenticated={onAuthenticated}
           onAuthenticationPageType={onAuthenticationPageType}
-          {...params as AuthenticationPageProps}
         />
       )
     case '/fatal':
     default:
-      const {
-        error = newStatusError(404),
-        children = null,
-        ...attrs
-      } = params as any || {}
       return (
-        <ErrorPage locale={locale} error={error} {...attrs} >
+        <ErrorPage
+          locale={locale}
+          error={error || newStatusError(404)}
+          {...attrs as any}
+        >
           {path === '/fatal' ? null : <p>path: {path}</p>}
           {children}
         </ErrorPage>
