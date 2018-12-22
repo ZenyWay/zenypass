@@ -14,7 +14,10 @@
  */
 //
 import reducer, { AutomataState } from './reducer'
-import { callChangeHandlerOnBlurWhenIsChange } from './effects'
+import {
+  callChangeHandlerOnDebounceOrBlurWhenIsChange,
+  debounceInputWhenDebounce
+} from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -23,17 +26,19 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
+import { callHandlerOnEvent /*, shallowEqual */ } from 'utils'
 // import { /* distinctUntilChanged,*/ tap } from 'rxjs/operators'
-// import { shallowEqual } from 'utils'
+// const log = label => console.log.bind(console, label)
 
 export type ControlledInputProps<P extends InputProps> =
 ControlledInputControllerProps & Rest<P, InputProps>
 
 export interface ControlledInputControllerProps {
-  value?: string,
+  value?: string
+  debounce?: string | number
   autocorrect?: 'off' | 'on' | '' | false
   autocomplete?: 'off' | 'on' | '' | false
-  onChange?: (value: string) => void
+  onChange?: (value: string, item?: HTMLElement) => void
 }
 
 export interface InputProps extends InputHandlerProps {
@@ -65,7 +70,7 @@ function mapStateToProps (
     value
   }: ControlledInputState
 ): Rest<InputProps, InputHandlerProps> {
-  const { onChange, ...attrs } = props
+  const { debounce, onChange, ...attrs } = props
   return { ...attrs, value }
 }
 
@@ -81,15 +86,20 @@ export function controlledInput <P extends InputProps> (
 ): ComponentConstructor<ControlledInputProps<P>> {
   const ControlledInput = componentFromEvents<ControlledInputProps<P>,P>(
     Input,
-    // () => tap(console.log.bind(console, 'controlled-input:EVENT:')),
-    redux(reducer, callChangeHandlerOnBlurWhenIsChange),
-    // () => tap(console.log.bind(console, 'controlled-input:STATE:')),
+    // () => tap(log('controlled-input:EVENT:')),
+    redux(
+      reducer,
+      callHandlerOnEvent('BLUR', ['props', 'onBlur']),
+      debounceInputWhenDebounce,
+      callChangeHandlerOnDebounceOrBlurWhenIsChange
+    ),
+    // () => tap(log('controlled-input:STATE:')),
     connect<ControlledInputState,InputProps>(
       mapStateToProps,
       mapDispatchToProps
     )
     // () => distinctUntilChanged(shallowEqual),
-    // () => tap(console.log.bind(console, 'controlled-input:PROPS:'))
+    // () => tap(log('controlled-input:PROPS:'))
   )
 
   ;(ControlledInput as any).defaultProps =

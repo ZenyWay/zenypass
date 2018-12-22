@@ -1,7 +1,12 @@
 {
-    "fr":{
-        "Authorize a new access": "Autoriser un nouvel accès",
-        "Cancel": "Annuler",
-        "Access authorization token:": "Jeton d'autorisation d'accès :"
-    }
+  "fr":{
+      "Authorize a new access": "Autoriser un nouvel accès",
+      "Cancel": "Annuler",
+      "Access authorization token:": "Jeton d'autorisation d'accès :"
+  },
+  "en":{
+      "Authorize a new access": "Authorize a new access",
+      "Cancel": "Cancel",
+      "Access authorization token:": "Access authorization token:"
+  }
 }

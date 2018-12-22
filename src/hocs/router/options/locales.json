@@ -1,0 +1,28 @@
+{
+  "fr": {
+    "devices": "Appareils",
+    "new-entry": "Ajouter un site",
+    "locale": "Langue",
+    "fr": "Français",
+    "en": "English",
+    "help": "Aide",
+    "online-help": "Aide en ligne",
+    "first-steps": "Premiers Pas",
+    "help-link": "https://medium.com/zenypass-fr/tagged/aide-zenypass",
+    "storage": "Stockage",
+    "sign-out": "Déconnexion"
+  },
+  "en": {
+    "devices": "Devices",
+    "new-entry": "Add a website",
+    "locale": "Language",
+    "fr": "Français",
+    "en": "English",
+    "help": "Help",
+    "online-help": "Online help",
+    "first-steps": "First Steps",
+    "help-link": "https://medium.com/zenypass-en/tagged/zenypass-help",
+    "storage": "Storage",
+    "sign-out": "Sign out"
+  }
+}

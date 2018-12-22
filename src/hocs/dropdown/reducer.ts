@@ -17,7 +17,7 @@
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload } from 'utils'
+import { forType, mapPayload } from 'utils'
 
 export type AutomataState = 'collapsed' | 'expanded'
 

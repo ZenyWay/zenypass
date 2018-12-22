@@ -51,11 +51,11 @@ export default function <P, Q>(
   render: SFC<Q>,
   factory: OperatorFactory<StandardAction<P>, any, any>,
   ...factories: OperatorFactory<StandardAction<P>, any, any>[]
-) {
+): ComponentConstructor<P> {
   return componentFromStream(
     render,
     createActionFactory('PROPS'),
     factory,
     ...factories
-  ) as ComponentConstructor<P>
+  )
 }

@@ -20,8 +20,6 @@ export {
   SFC
 } from 'component-from-events'
 export { autoformatInput, AutoformatInputProps } from './autoformat-input'
-export { controlledInput, ControlledInputProps } from './controlled-input'
-export { copyButton, CopyButtonProps } from './copy-button'
 export {
   agentAuthorizationCard,
   AgentAuthorizationCardProps
@@ -34,10 +32,23 @@ export {
   authenticationModal,
   AuthenticationModalProps
 } from './authentication-modal'
+export {
+  authenticationPage,
+  AuthenticationPageProps,
+  AuthenticationPageType
+} from './authentication-page'
 export { connectionModal, ConnectionModalProps } from './connection-modal'
+export { controlledInput, ControlledInputProps } from './controlled-input'
+export { copyButton, CopyButtonProps } from './copy-button'
 export { dropdown, DropdownProps } from './dropdown'
+export {
+  filteredRecordCards,
+  FilteredRecordCardsProps
+} from './filtered-record-cards'
+export { homePage, HomePageProps } from './home-page'
 // export { pure } from './pure'
 export { recordCard, RecordCardProps } from './record-card'
+export { router, RouterProps } from './router'
 export {
   withAuthentication,
   AuthenticationProviderProps

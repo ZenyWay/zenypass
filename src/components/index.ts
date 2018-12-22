@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
+
 export {
   AgentAuthorizationCard,
   AgentAuthorizationCardProps
@@ -39,6 +39,10 @@ export {
   AuthenticationModalProps as AuthenticationModalSFCProps
 } from './sfcs/authentication-modal'
 export {
+  AuthenticationPage as AuthenticationPageSFC,
+  AuthenticationPageProps as AuthenticationPageSFCProps
+} from './sfcs/authentication-page'
+export {
   AuthorizedAgentCard,
   AuthorizedAgentCardProps
 } from './sfcs/authorized-agent-card'
@@ -48,9 +52,9 @@ export {
   AutoformatRecordFieldProps
 } from './autoformat-record-field'
 export {
-  ConfirmationModal as ConfirmationModalSFC,
-  ConfirmationModalProps as ConfirmationModalSFCProps
-} from './sfcs/confirmation-modal'
+  InfoModal as InfoModalSFC,
+  InfoModalProps as InfoModalSFCProps
+} from './sfcs/info-modal'
 export { ConnectionModal, ConnectionModalProps } from './connection-modal'
 export {
   ConnectionModal as ConnectionModalSFC,
@@ -63,11 +67,18 @@ export {
   DropdownProps as DropdownSFCProps
 } from './sfcs/dropdown'
 export { Dropdown, DropdownProps } from './dropdown'
+export { ErrorPage, ErrorPageProps } from './sfcs/error-page'
+export {
+  FAIcon,
+  FAIconProps,
+  FAIconButton,
+  FAIconButtonProps
+} from './sfcs/fa-icon'
 export {
   HomePage as HomePageSFC,
   HomePageProps as HomePageSFCProps
 } from './sfcs/home-page'
-export { Icon, IconProps, IconButton, IconButtonProps } from './sfcs/icon'
+export { HomePage, HomePageProps } from './home-page'
 export {
   IconLabelInputGroup,
   IconLabelInputGroupProps
@@ -85,4 +96,12 @@ export {
 export {
   RecordCard, RecordCardProps
 } from './record-card'
+export {
+  Router as RouterSFC,
+  RouterProps as RouterSFCProps
+} from './sfcs/router'
+export { Router, RouterProps } from './router'
+export { SearchField, SearchFieldProps } from './sfcs/search-field'
+export { AuthenticationPage, AuthenticationPageProps } from './authentication-page'
+export { SplashCard, SplashCardProps } from './sfcs/splash-card'
 export { withAuthenticationModal } from './sfcs/with-authentication'

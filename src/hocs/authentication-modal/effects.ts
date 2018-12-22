@@ -15,7 +15,7 @@
  * Limitations under the License.
  */
 //
-import { authenticate } from 'services'
+import { zenypass } from 'services'
 import { createActionFactory } from 'basic-fsa-factories'
 import {
   catchError,
@@ -38,9 +38,9 @@ export function authenticateOnTransitionToAuthenticating (
 ) {
   return state$.pipe(
     distinctUntilKeyChanged('state'),
-    filter(({ state }) => state === 'authenticating'),
-    switchMap(({ value }) => authenticate(value)),
-    map((sessionId: string) => authenticationResolved(sessionId)),
+    filter<any>(({ state }) => state === 'authenticating'),
+    switchMap(({ value, session }) => zenypass.getService(session).unlock(value)),
+    map((session: string) => authenticationResolved(session)),
     catchError(
       (err: any, caught$: Observable<any>) => caught$.pipe(
         startWith(authenticationRejected(err))

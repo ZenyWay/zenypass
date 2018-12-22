@@ -19,10 +19,10 @@ import { createElement } from 'create-element'
 import { NavbarMenu } from 'components'
 import { storiesOf } from '@storybook/react'
 import preventDefaultAction from './helpers/prevent-default'
-import { menu } from './navbar-menu-sfc'
+import { MENU } from './helpers/consts'
 
 const attr = {
-  menu,
+  menu: MENU,
   onClickItem: preventDefaultAction('CLICK_ITEM')
 }
 

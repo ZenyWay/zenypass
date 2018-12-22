@@ -22,20 +22,12 @@ import {
   withAuthenticationModal
 } from 'components'
 import { withAuthentication } from 'hocs'
-
-const publicRecord = {
-  _id: '123456',
-  name: 'Example',
-  url: 'https://example.com',
-  username: 'john.doe@example.com',
-  keywords: ['comma', 'separated', 'values'],
-  comments: '42 is *'
-}
+import { RECORD } from './helpers/consts'
 
 const RecordCard =
   withAuthentication(withAuthenticationModal(PrivilegedRecordCard))
 
 storiesOf('RecordCard', module)
   .add('default', () => (
-    <RecordCard record={publicRecord} locale='fr' />
+    <RecordCard record={RECORD} locale='fr' />
   ))

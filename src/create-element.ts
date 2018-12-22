@@ -14,24 +14,18 @@
  * Limitations under the License.
  */
 //
-import { IComponentConstructor, Refs } from 'inferno'
-
 export {
   render,
   Component,
+  ComponentType,
   Fragment,
   IComponentConstructor as ComponentConstructor,
-  InfernoNode as Node
+  InfernoNode as Node,
+  SFC
 } from 'inferno'
 
 // temporary work-around for
 // https://github.com/infernojs/inferno-typescript-example/issues/13
-export type ComponentType<P extends {} = {}> = SFC<P> | IComponentConstructor<P>
-
-export interface SFC<P extends {} = {}> {
-  (props: P & Refs<P>, context?: any): JSX.Element | null
-  defaultProps?: Partial<P>
-  defaultHooks?: Refs<P>
-}
+// export type ComponentType<P extends {} = {}> = SFC<P> | IComponentConstructor<P>
 
 export { createElement } from 'inferno-create-element'

@@ -15,19 +15,18 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Input as PassiveInput, InputProps } from 'bootstrap'
+import { InputProps, InputGroupText } from 'bootstrap'
 import { IconLabelInputGroup } from '../icon-label-input-group'
+import { Dropdown, DropdownItemSpec } from '../../dropdown'
 import { ControlledInput } from '../../controlled-input'
 import createL10ns, { L10nTag } from 'basic-l10n'
-
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:record-field:')
-const l10ns = createL10ns(require('./locales.json'), { debug })
+const l10ns = createL10ns(require('./locales.json'))
 
 export const DEFAULT_ICONS = {
-  email: 'fa-envelope',
-  password: 'fa-key fa-flip-vertical',
-  textarea: 'fa-sticky-note',
-  url: 'fa-bookmark'
+  email: 'envelope',
+  password: 'key fa-flip-vertical',
+  textarea: 'sticky-note',
+  url: 'bookmark'
 }
 
 export const DEFAULT_PLACEHOLDERS = {
@@ -41,18 +40,23 @@ export interface RecordFieldProps extends InputProps {
   id: string
   locale: string
   type?: string
+  options?: DropdownItemSpec[]
   value?: string
   error?: string
   placeholder?: string
   buttonTitle?: string
   icon?: string
+  rotate?: '90' | '180' | '270' | '' | false
+  flip?: 'horizontal' | 'vertical' | '' | false
+  animate?: 'spin' | 'pulse' | '' | false
+  pending?: boolean
   className?: string
   size?: 'sm' | 'lg' | '' | false
   autocomplete?: 'off' | 'on' | '' | false
   autocorrect?: 'off' | 'on' | '' | false
   disabled?: boolean
   children?: any
-  onChange?: (value: string) => void
+  onChange?: (value: string, target?: HTMLElement) => void
   onIconClick?: (event: MouseEvent) => void
 }
 
@@ -60,10 +64,15 @@ export function RecordField ({
   id,
   locale,
   type,
+  options,
   value,
   error,
   placeholder,
   icon,
+  rotate,
+  flip,
+  animate,
+  pending,
   className,
   size,
   autocomplete = 'off',
@@ -76,21 +85,25 @@ export function RecordField ({
   ...attrs
 }: RecordFieldProps) {
   const t = l10ns[locale]
-  const _icon = error ? 'fa-times' : icon || DEFAULT_ICONS[type]
-  const Input = disabled ? PassiveInput : ControlledInput
   return (
     <IconLabelInputGroup
       id={id}
       className={className}
       size={size}
-      icon={_icon}
+      options={options}
+      icon={icon || DEFAULT_ICONS[type]}
+      rotate={rotate}
+      flip={flip}
+      animate={animate}
+      pending={pending}
+      invalid={!!error}
       onIconClick={onIconClick}
       buttonTitle={buttonTitle}
     >
-      <Input
+      <ControlledInput
         type={type}
         id={`${id}${type ? `_${type}` : ''}_input`}
-        className={'form-control'}
+        className='form-control'
         invalid={!!error}
         value={value}
         placeholder={

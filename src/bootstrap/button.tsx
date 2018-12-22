@@ -41,11 +41,10 @@ export function Button ({
   size,
   href,
   disabled,
-  children,
   onClick,
   ...attrs
 }: ButtonProps) {
-  const Tag = href ? 'a' : 'button'
+  const Tag: any = (href ? 'a' : 'button')
 
   return (
     <Tag
@@ -63,8 +62,6 @@ export function Button ({
       onClick={onClick}
       disabled={disabled}
       {...attrs}
-    >
-      {children}
-    </Tag>
+    />
   )
 }

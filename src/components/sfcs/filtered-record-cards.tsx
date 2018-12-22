@@ -15,41 +15,49 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { NavbarMenu, MenuSpecs } from '../navbar-menu'
-import { RecordCards, Record } from './record-cards'
-import { Observer } from 'rxjs'
+import { RecordCard, Record } from '../record-card'
+import { classes } from 'utils'
+import { Observer } from 'component-from-props'
 
-export interface HomePageProps {
+export { Record }
+
+export interface FilteredRecordCardsProps {
   locale: string
-  menu: MenuSpecs
-  records: Record[]
-  session?: string
-  children?: JSX.Element[] | JSX.Element
+  session: string
+  records?: Record[]
+  filter?: boolean[]
+  className?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
-  onSelectMenuItem?: (event: MouseEvent) => void
 }
 
-export function HomePage ({
+export function FilteredRecordCards ({
   locale,
-  menu,
-  records,
   session,
+  records = [],
+  filter,
+  className,
   onAuthenticationRequest,
-  onSelectMenuItem,
   ...attrs
-}: HomePageProps) {
-  return (
-    <section {...attrs}>
-      <NavbarMenu
-        menu={menu}
-        onClickItem={onSelectMenuItem}
-      />
-      <RecordCards
+}: FilteredRecordCardsProps & { [prop: string]: unknown }) {
+  let i = records.length
+  if (!i) return null
+  const cards = new Array<JSX.Element>(i)
+  const classNames = classes(
+    'pl-0',
+    className
+  )
+  while (i--) {
+    const record = records[i]
+    cards[i] = (
+      <RecordCard
+        key={record._id}
+        className={filter && filter[i] ? 'd-none' : ''}
         locale={locale}
-        records={records}
         session={session}
+        record={records[i]}
         onAuthenticationRequest={onAuthenticationRequest}
       />
-    </section>
-  )
+    )
+  }
+  return <ul {...attrs} className={classNames} >{cards}</ul>
 }

@@ -1,3 +1,5 @@
+import { from } from 'rxjs';
+
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
@@ -14,7 +16,17 @@
  * Limitations under the License.
  */
 export { Button, ButtonProps } from './button'
-export { Card, CardHeader, CardBody, CardFooter, CardProps } from './card'
+export {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  CardImg,
+  CardLink,
+  CardSubtitle,
+  CardTitle,
+  CardProps
+} from './card'
 export { Collapse, CollapseProps } from './collapse'
 export {
   Dropdown, DropdownProps,
@@ -35,6 +47,7 @@ export {
   InputGroupAddonProps
 } from './input-group'
 export { Label, LabelProps } from './label'
+export { Row } from './layout'
 export {
   Nav, NavProps,
   Navbar, NavbarProps,
@@ -43,3 +56,4 @@ export {
   NavLink, NavLinkProps,
   NavbarToggler, NavbarTogglerProps
 } from './nav'
+export { ProgressBar, ProgressBarProps } from './progress'

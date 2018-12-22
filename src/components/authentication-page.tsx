@@ -13,42 +13,24 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
+//
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Button, ButtonProps } from 'bootstrap'
-import { classes } from 'utils'
+import {
+  authenticationPage,
+  AuthenticationPageProps as GenericAuthenticationPageProps,
+  AuthenticationPageType
+} from 'hocs'
+import {
+  AuthenticationPage as AuthenticationPageSFC,
+  AuthenticationPageProps as AuthenticationPageSFCProps
+} from './sfcs/authentication-page'
 
-export interface IconProps {
-  icon: string
-  fw?: boolean
-  className?: string
-  [prop: string]: unknown
-}
+export { AuthenticationPageType }
 
-export function Icon ({
-  icon,
-  fw,
-  className,
-  ...attrs
-}: IconProps) {
-  return (
-    <i className={classes('fa', fw && `fa-fw`, icon, className)} {...attrs} />
-  )
-}
+export const AuthenticationPage = authenticationPage<AuthenticationPageSFCProps>(
+  (props: AuthenticationPageSFCProps) => <AuthenticationPageSFC {...props} />
+)
 
-export interface IconButtonProps extends ButtonProps {
-  icon?: string
-}
-
-export function IconButton ({
-  icon,
-  children,
-  ...attrs
-}: IconButtonProps) {
-  return (
-    <Button {...attrs}>
-      {icon ? <Icon icon={icon} fw/> : null}
-      {children}
-    </Button>
-  )
-}
+export type AuthenticationPageProps =
+  GenericAuthenticationPageProps<AuthenticationPageSFCProps>

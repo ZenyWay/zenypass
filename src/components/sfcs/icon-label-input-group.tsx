@@ -16,60 +16,92 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import {
-  Button,
   InputGroup,
   InputGroupText,
   InputGroupPrepend
 } from 'bootstrap'
-import { Icon } from './icon'
+import { FAIcon, FAIconButton } from './fa-icon'
+import { Dropdown, DropdownItemSpec } from '../dropdown'
 import { classes } from 'utils'
 
 export interface IconLabelInputGroupProps {
   id?: string
+  options?: DropdownItemSpec[]
+  /**
+   * TODO implement support for rotate, flip & animate in Dropdown
+   */
   icon?: string
+  rotate?: '90' | '180' | '270' | '' | false
+  flip?: 'horizontal' | 'vertical' | '' | false
+  animate?: 'spin' | 'pulse' | '' | false
+  pending?: boolean
   invalid?: boolean
   size?: 'sm' | 'lg' | '' | false
   buttonTitle?: string
   disabled?: boolean
+  className?: string
   children?: any
   onIconClick?: (event: MouseEvent) => void
+  onSelectItem?: (item?: HTMLElement) => void
   [prop: string]: unknown
 }
 
 export function IconLabelInputGroup ({
   id,
+  options,
   icon,
+  rotate,
+  flip,
+  animate,
+  pending,
   invalid,
   size,
   onIconClick,
+  onSelectItem,
   disabled,
   children,
   buttonTitle,
   ...attrs
 }: IconLabelInputGroupProps) {
-  const _icon = invalid ? 'fa-times' : icon
+  const iconProps = {
+    icon: invalid ? 'times' : icon,
+    rotate: !invalid && rotate,
+    flip: !invalid && flip,
+    animate: !invalid && animate
+  }
   return (
     <InputGroup id={id} size={size} {...attrs}>
-      {!_icon ? null : (
-        <InputGroupPrepend>
-          {!onIconClick ? (
-            <InputGroupText
-              className={classes(invalid && 'border-danger text-danger')}
-            >
-              <Icon icon={_icon} fw />
-            </InputGroupText>
-          ) : (
-            <Button
-              id={`${id}_toggle-button`}
-              outline
-              onClick={onIconClick}
-              disabled={disabled}
-              title={buttonTitle}
-            >
-              <Icon icon={_icon} fw />
-            </Button>
-          )}
-        </InputGroupPrepend>
+      {!icon ? null : (
+        options && options.length
+        ? (
+          <Dropdown
+            {...iconProps}
+            inputGroup='prepend'
+            outline
+            items={options}
+            onSelectItem={onSelectItem}
+          />
+        ) : (
+          <InputGroupPrepend>
+            {!onIconClick ? (
+              <InputGroupText
+                className={classes(invalid && 'border-danger text-danger')}
+              >
+                <FAIcon {...iconProps} fw />
+              </InputGroupText>
+            ) : (
+              <FAIconButton
+                id={`${id}_toggle-button`}
+                {...iconProps}
+                pending={pending}
+                outline
+                onClick={onIconClick}
+                disabled={disabled}
+                title={buttonTitle}
+              />
+            )}
+          </InputGroupPrepend>
+        )
       )}
       {children}
     </InputGroup>

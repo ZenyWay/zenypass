@@ -15,46 +15,36 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { RecordCard } from '../record-card'
-import { Record } from './record-card'
-import { Observer } from 'rxjs'
 import { classes } from 'utils'
 
-export { Record }
-export interface RecordCardsProps {
-  locale: string
-  session: string
-  records?: Record[]
+export interface ProgressBarProps {
+  ratio?: '25' | '50' | '75' | '100' | 'auto' | '' | false
+  bg?: 'success' | 'info' | 'warning' | 'danger' | '' | false
+  striped?: boolean
+  animated?: boolean
   className?: string
-  onAuthenticationRequest?: (res$: Observer<string>) => void
-  [prop: string]: unknown
+  children?: any
 }
 
-export function RecordCards ({
-  locale,
-  session,
-  records,
+export function ProgressBar ({
+  ratio,
+  bg,
+  striped,
+  animated,
   className,
-  onAuthenticationRequest,
   ...attrs
-}: RecordCardsProps) {
-  let i = records.length
-  const cards = new Array(i)
+}: ProgressBarProps & { [prop: string]: unknown }) {
   const classNames = classes(
-    'pl-0',
+    'progress-bar',
+    ratio && `w-${ratio}`,
+    bg && `bg-${bg}`,
+    (striped || animated) && 'progress-bar-striped',
+    animated && 'progress-bar-animated',
     className
   )
-  while (i--) {
-    const record = records[i]
-    cards[i] = (
-      <RecordCard
-        key={record._id}
-        locale={locale}
-        session={session}
-        record={records[i]}
-        onAuthenticationRequest={onAuthenticationRequest}
-      />
-    )
-  }
-  return <ul {...attrs} className={classNames} >{cards}</ul>
+  return (
+    <div class='progress'>
+      <div className={classNames} {...attrs}/>
+    </div>
+  )
 }

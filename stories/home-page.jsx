@@ -18,47 +18,24 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
-import preventDefaultAction from './helpers/prevent-default'
 import {
-  HomePageSFC,
+  HomePage as PrivilegedHomePage,
   withAuthenticationModal
 } from 'components'
 import { withAuthentication } from 'hocs'
-import { menu } from './navbar-menu-sfc'
-
-const records = [
-  {
-    _id: '1',
-    name: 'Example',
-    url: 'https://example.com',
-    username: 'john.doe@example.com',
-    keywords: ['comma', 'separated', 'values'],
-    comments: '42 is *'
-  },
-  {
-    _id: '2',
-    name: 'ZenyWay',
-    url: 'https://zenyway.com',
-    username: 'me@zenyway.com',
-    keywords: [],
-    comments: ''
-  }
-]
+import { MENU } from './helpers/consts'
 
 const attrs = {
   locale: 'fr',
-  menu,
-  onSelectMenuItem: preventDefaultAction('MENU_ITEM_SELECTED'),
-  onAuthenticationRequest: action('AUTHENTICATION_REQUESTED')
+  menu: MENU.slice(1), // remove entry from home-page
+  onLogout: action('LOGOUT'),
+  onSelectMenuItem: action('SELECT_MENU_ITEM')
 }
 
 const HomePage =
-  withAuthentication(withAuthenticationModal(HomePageSFC))
+  withAuthentication(withAuthenticationModal(PrivilegedHomePage))
 
-storiesOf('HomePage (SFC)', module)
+storiesOf('HomePage', module)
   .add('default', () => (
-    <HomePage
-      records={records}
-      {...attrs}
-    />
+    <HomePage {...attrs} />
   ))

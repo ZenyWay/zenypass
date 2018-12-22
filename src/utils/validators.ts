@@ -1,7 +1,6 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
- * @author Hadrien Boulanger
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-/** @jsx createElement */
-import { createElement } from 'create-element'
-import { ConfirmationModalSFC as ConfirmationModal } from 'components'
-import { storiesOf } from '@storybook/react'
-import { action } from '@storybook/addon-actions'
 
-const attr = {
-  locale: 'fr',
-  onCancel: action('CANCEL'),
-  onConfirm: action('CONFIRM')
+const INVALID_EMAIL =
+  /^(?:[^@]*|@.*|.*@|[^@]+@[^@]*@.*|.*\.|.*@\.[^@]+|.*@[^@.]+|.*[\n(){}\/\\<>]+.*)$/m
+
+/**
+ * an email is considered invalid when at least one of the following applies:
+ * - it does not include a `@` character
+ * - it starts or ends with a `@`
+ * - it includes more than one `@`
+ * - it ends with a dot
+ * - a dot immediately follows the last `@`
+ * - no dot follows the last `@`
+ * note that if none of the above apply,
+ * the email might still be invalid...
+ */
+export function isInvalidEmail (email: string) {
+  return INVALID_EMAIL.test(email)
 }
-
-storiesOf('ConfirmationModal (SFC)', module)
-  .add('default', () => (
-    <ConfirmationModal expanded {...attr}>
-      <p>Voulez-vous annuler vos modifications ?</p>
-    </ConfirmationModal>
-  ))

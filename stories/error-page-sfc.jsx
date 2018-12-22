@@ -1,6 +1,7 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
+ * @author Hadrien Boulanger
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,23 +14,17 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
-/*
-import { accessControl, AccessControlProps } from 'hocs'
-import {
-  AccessControl as AccessControlSFC,
-  AccessControlProps as AccessControlSFCProps,
-  RestrictedAccessProps
-} from './sfcs/access-control'
-import { SFC, ComponentClass } from 'create-element'
+/** @jsx createElement */
+import { createElement } from 'create-element'
+import { ErrorPage } from 'components'
+import { storiesOf } from '@storybook/react'
 
-export function withAccessControl <R extends RestrictedAccessProps> (
-  RestrictedAccessComponent: SFC<R> | ComponentClass<R, any>
-) {
-  return accessControl <AccessControlSFCProps>(
-    AccessControlSFC(RestrictedAccessComponent)
-  )
-}
+const error = new Error('error message')
+error.status = 403
 
-export { AccessControlProps, RestrictedAccessProps }
-*/
+storiesOf('ErrorPage (SFC)', module)
+  .add('403', () => (
+    <ErrorPage locale='en' error={error} >
+      <p>more details...</p>
+    </ErrorPage>
+  ))

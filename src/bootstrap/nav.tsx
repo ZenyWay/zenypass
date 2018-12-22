@@ -29,6 +29,7 @@ export interface NavProps {
   card?: boolean
   className?: string
   tag?: string
+  children?: any
   [prop: string]: unknown
 }
 
@@ -75,6 +76,7 @@ export interface NavbarProps {
   className?: string
   tag?: string
   innerRef?: (element?: HTMLElement | null) => void
+  children?: any
   [prop: string]: unknown
 }
 
@@ -112,6 +114,7 @@ export interface NavbarBrandProps {
   href?: string
   className?: string
   tag?: string
+  children?: any
   [prop: string]: unknown
 }
 
@@ -121,7 +124,7 @@ export function NavbarBrand ({
   tag,
   ...attrs
 }: NavbarBrandProps) {
-  const Tag = tag || 'a'
+  const Tag: 'a' = tag || 'a' as any
   const classNames = classes('navbar-brand', className)
 
   return (
@@ -132,6 +135,7 @@ export function NavbarBrand ({
 export interface NavbarTogglerProps {
   className?: string
   tag?: string
+  children?: any
   [prop: string]: unknown
 }
 
@@ -156,6 +160,7 @@ export interface NavItemProps {
   disabled?: boolean
   className?: string
   tag?: string
+  children?: any
   [prop: string]: unknown
 }
 
@@ -186,6 +191,7 @@ export interface NavLinkProps {
   className?: string
   onClick? (event: MouseEvent): void
   tag?: string
+  children?: any
   [prop: string]: unknown
 }
 
@@ -198,7 +204,7 @@ export function NavLink ({
   tag,
   ...attrs
 }: NavLinkProps) {
-  const Tag = tag || 'a'
+  const Tag: 'a' = tag || 'a' as any
   const classNames = classes(
     'nav-link',
     toggle && 'dropdown-toggle',
@@ -207,6 +213,10 @@ export function NavLink ({
     className
   )
   return (
-    <Tag className={classNames} href={orDefaultHref(Tag, href)} {...attrs} />
+    <Tag
+      className={classNames}
+      href={orDefaultHref(Tag, href)}
+      {...attrs}
+    />
   )
 }

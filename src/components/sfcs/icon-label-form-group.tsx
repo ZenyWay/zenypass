@@ -17,11 +17,14 @@
 import { createElement } from 'create-element'
 import { FormGroup, FormGroupProps, Input, Label } from 'bootstrap'
 import { classes } from 'utils'
-import { Icon } from './icon'
+import { FAIcon } from './fa-icon'
 
 export interface IconLabelInputFormGroupProps extends FormGroupProps {
   value?: string
   icon?: string
+  rotate?: '90' | '180' | '270' | '' | false
+  flip?: 'horizontal' | 'vertical' | '' | false
+  animate?: 'spin' | 'pulse' | '' | false
   size?: 'sm' | 'lg' | '' | false
   plaintext?: boolean
   readonly?: boolean
@@ -30,6 +33,9 @@ export interface IconLabelInputFormGroupProps extends FormGroupProps {
 
 export function IconLabelInputFormGroup ({
   icon,
+  rotate,
+  flip,
+  animate,
   value,
   size,
   plaintext,
@@ -44,7 +50,17 @@ export function IconLabelInputFormGroup ({
   )
   return (
     <FormGroup inline {...attrs}>
-      {icon && <Label size={size}><Icon icon={icon} fw /></Label>}
+      {icon && (
+        <Label size={size}>
+          <FAIcon
+            icon={icon}
+            rotate={rotate}
+            flip={flip}
+            animate={animate}
+            fw
+          />
+        </Label>
+      )}
       {
         plaintext
         ? <span className={classNames}>{value}</span>

@@ -15,20 +15,22 @@
  */
 import { identity } from './basic'
 
-export function pluck <T> (...keys) {
-  return function (obj: object): T {
-    let res: any = obj
+export function pluck <T> (...keys: string[])
+export function pluck <T> (keys: string[] | string)
+export function pluck <T> (keys: string[] | string, ...rest: string[]) {
+  return !Array.isArray(keys)
+  ? pluck([keys].concat(rest))
+  : function (obj: any): T {
+    let res = obj
     for (const key of keys) {
-      if (!res) {
-        return
-      }
+      if (!res) return
       res = res[key]
     }
     return res
   }
 }
 
-export function always <T> (value) {
+export function always <T> (value?: T) {
   return function (): T {
     return value
   }
@@ -37,6 +39,21 @@ export function always <T> (value) {
 export function not (fn = identity) {
   return function (val) {
     return !fn(val)
+  }
+}
+
+export function when <A extends any[], T = A[0]> (
+  predicate: (...args: A) => boolean
+) {
+  return function (
+    ontrue: (...args: A) => T,
+    onfalse: (...args: A) => T = identity as any
+  ) {
+    return function (...args: A): T {
+      return predicate(...args)
+      ? ontrue(...args)
+      : onfalse(...args)
+    }
   }
 }
 

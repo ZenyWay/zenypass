@@ -20,68 +20,10 @@ import { NavbarMenuSFC } from 'components'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import preventDefaultAction from './helpers/prevent-default'
-
-export const menu = [
-  {
-    'data-id': 'new-bookmark',
-    label: 'new-bookmark',
-    href: 'https://zenyway.com/password-manager/home/fr/index.html',
-    icon: 'fa fa-plus'
-  },
-  {
-    'data-id': 'authorizations',
-    label: 'authorizations',
-    icon: 'fa fa-mobile fa-lg'
-  },
-  {
-    'data-id': 'storage',
-    label: 'storage',
-    icon: 'fa fa-database'
-  },
-  [
-    {
-      'data-id': 'lang',
-      label: 'lang',
-      icon: 'fa fa-globe'
-    },
-    {
-      'data-id': 'lang/fr',
-      label: 'fr',
-      icon: 'flag-icon flag-icon-fr'
-    },
-    {
-      'data-id': 'lang/en',
-      label: 'en',
-      icon: ['flag-icon flag-icon-gb', 'flag-icon flag-icon-us']
-    }
-  ],
-  [
-    {
-      'data-id': 'help',
-      label: 'help',
-      icon: 'fa fa-question-circle'
-    },
-    {
-      'data-id': 'help/first-steps',
-      label: 'first-steps',
-      icon: 'fa fa-fast-forward'
-    },
-    {
-      'data-id': 'help/online-help',
-      label: 'online-help',
-      icon: 'fa fa-question-circle',
-      href: 'help-link'
-    }
-  ],
-  {
-    'data-id': 'sign-out',
-    label: 'sign-out',
-    icon: 'fa fa-power-off'
-  }
-]
+import { MENU } from './helpers/consts'
 
 const attr = {
-  menu,
+  menu: MENU,
   onClickItem: preventDefaultAction('CLICK_ITEM'),
   onClickToggle: preventDefaultAction('CLICK_TOGGLE'),
   innerRef: action('INNER_REF')

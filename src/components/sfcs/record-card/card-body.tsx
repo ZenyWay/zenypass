@@ -14,20 +14,20 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement } from 'create-element'
+import { createElement, ComponentConstructor } from 'create-element'
 import { InputGroupAppend } from 'bootstrap'
-import { RecordField as PassiveRecordField } from '../record-field'
+import { RecordField as PassiveRecordField, RecordFieldProps } from '../record-field'
 import { AutoformatRecordField } from '../../autoformat-record-field'
 import { CopyButton } from '../../copy-button'
-import { IconButton } from '../icon'
+import { FAIconButton } from '../fa-icon'
 import createL10ns, { L10nTag } from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
 export const DEFAULT_ICONS: Partial<RecordCardBodyIcons> = {
-  cleartext: 'fa-eye-slash',
-  keywords: 'fa-tags',
-  password: 'fa-eye',
-  username: 'fa-user'
+  cleartext: 'eye-slash',
+  keywords: 'tags',
+  password: 'eye',
+  username: 'user'
 }
 
 export const DEFAULT_PLACEHOLDERS: Partial<RecordCardBodyPlaceholders> = {
@@ -45,7 +45,7 @@ export interface RecordCardBodyProps {
   pending?: string
   icons?: Partial<RecordCardBodyIcons>
   placeholders?: Partial<RecordCardBodyPlaceholders>
-  onChange?: (id: string, field: keyof Record, value: string[] | string) => void
+  onChange?: (value: string[] | string, target?: HTMLElement) => void
   onConnectRequest?: (event: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
   [prop: string]: unknown
@@ -95,7 +95,8 @@ export function RecordCardBody ({
     unrestricted
   } = record
   const t = l10ns[locale]
-  const RecordField = disabled ? PassiveRecordField : AutoformatRecordField
+  const RecordField =
+    (disabled ? PassiveRecordField : AutoformatRecordField) as ComponentConstructor<RecordFieldProps>
 
   return (
     <form key={_id} id={_id} {...attrs}>
@@ -108,7 +109,8 @@ export function RecordCardBody ({
             size='lg'
             placeholder={getPlaceholder(t, placeholders, 'name')}
             value={name}
-            onChange={!disabled && onChange.bind(void 0, 'name')}
+            data-id='name'
+            onChange={onChange}
             locale={locale}
           />
         )
@@ -120,7 +122,8 @@ export function RecordCardBody ({
         icon={getIcon(icons, 'url')}
         placeholder={getPlaceholder(t, placeholders, 'url')}
         value={url}
-        onChange={!disabled && onChange.bind(void 0, 'url')}
+        data-id='url'
+        onChange={onChange}
         disabled={disabled}
         locale={locale}
       />
@@ -131,7 +134,8 @@ export function RecordCardBody ({
         icon={getIcon(icons, 'username')}
         placeholder={getPlaceholder(t, placeholders, 'username')}
         value={username}
-        onChange={!disabled && onChange.bind(void 0, 'username')}
+        data-id='username'
+        onChange={onChange}
         disabled={disabled}
         locale={locale}
       >
@@ -143,27 +147,22 @@ export function RecordCardBody ({
         type={cleartext ? 'text' : 'password'}
         id={`${_id}_password`}
         className='mb-2'
-        icon={
-          pending === 'cleartext'
-          ? 'fa-spin fa-spinner'
-          : getIcon(icons, cleartext ? 'cleartext' : 'password')
-        }
+        icon={getIcon(icons, cleartext ? 'cleartext' : 'password')}
+        pending={pending === 'cleartext'}
         placeholder={cleartext && getPlaceholder(t, placeholders, 'password')}
         value={cleartext ? password : '*****'}
-        onChange={!disabled && onChange.bind(void 0, 'password')}
+        data-id='password'
+        onChange={onChange}
         onIconClick={onToggleCleartext}
         disabled={disabled || !cleartext}
         locale={locale}
       >
         <InputGroupAppend>
           {!cleartext ? (
-            <IconButton
+            <FAIconButton
               id={`${_id}_connexion-button`}
-              icon={
-                pending === 'connect'
-                ? 'fa-spin fa-spinner'
-                : 'fa-external-link fa-fw'
-              }
+              icon='external-link'
+              pending={pending === 'connect'}
               outline
               onClick={onConnectRequest}
             />
@@ -176,14 +175,15 @@ export function RecordCardBody ({
           )}
         </InputGroupAppend>
       </PassiveRecordField>
-      <RecordField
+      <AutoformatRecordField
         type='csv'
         id={`${_id}_keywords`}
         className='mb-2'
         icon={getIcon(icons, 'keywords')}
         placeholder={getPlaceholder(t, placeholders, 'keywords')}
         value={keywords}
-        onChange={!disabled && onChange.bind(void 0, 'keywords')}
+        data-id='keywords'
+        onChange={onChange}
         disabled={disabled}
         locale={locale}
       />
@@ -195,16 +195,18 @@ export function RecordCardBody ({
         placeholder={getPlaceholder(t, placeholders, 'comments')}
         value={comments}
         rows='3'
-        onChange={!disabled && onChange.bind(void 0, 'comments')}
+        data-id='comments'
+        onChange={onChange}
         disabled={disabled}
         locale={locale}
       />
       <InputGroupAppend>
-        <IconButton
+        <FAIconButton
           color='light'
           className='border-secondary mb-2'
-          icon = {'fa-lock fa-fw'}
-          onChange={!disabled && onChange.bind(void 0, 'lock')}
+          icon='lock'
+          data-id='unrestricted'
+          onChange={onChange}
           disabled={disabled}
         />
         <p className='form-control-static pl-3'>{t(

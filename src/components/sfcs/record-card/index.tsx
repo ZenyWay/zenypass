@@ -17,9 +17,9 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { Button, Card, CardHeader, CardBody, CardFooter } from 'bootstrap'
-import { IconButton } from '../icon'
+import { FAIconButton, FAIcon } from '../fa-icon'
 import { IconLabelInputFormGroup } from '../icon-label-form-group'
-import { ConfirmationModal } from '../confirmation-modal'
+import { InfoModal } from '../info-modal'
 import { ConnectionModal } from '../../connection-modal'
 import { Record, RecordCardBody } from './card-body'
 import { classes } from 'utils'
@@ -42,7 +42,7 @@ export interface RecordCardProps {
   onToggleCleartext?: (event: MouseEvent) => void
   onToggleExpanded?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
-  onChange?: (field: keyof Record, value: string[] | string) => void
+  onChange?: (value: string[] | string, target?: HTMLElement) => void
   onUpdateRecordRequest?: (event: MouseEvent) => void
   onDeleteRecordRequest?: (event: MouseEvent) => void
   [prop: string]: unknown
@@ -112,7 +112,7 @@ export function RecordCard ({
             <IconLabelInputFormGroup
               id={`collapsed-record-card:${_id}:username`}
               value={username}
-              icon='fa-user'
+              icon='user'
               plaintext
               className='mb-0'
             />
@@ -141,21 +141,21 @@ export function RecordCard ({
             }) as any
           )
         }
-        <IconButton
+        <FAIconButton
           id={`collapsed-record-card:${_id}:toggle-expand`}
-          icon={!expanded ? 'fa-caret-down' : disabled ? 'fa-caret-up' : 'fa-close'}
+          icon={!expanded ? 'caret-down' : disabled ? 'caret-up' : 'close'}
           className='close'
           onClick={onToggleExpanded}
         />
       </CardFooter>
-      <ConfirmationModal
+      <InfoModal
         expanded={pending === 'cancel'}
         onConfirm={onToggleExpanded}
         onCancel={onEditRecordRequest}
         locale={locale}
       >
         <p>{t('Do you want to cancel your changes')} ?</p>
-      </ConfirmationModal>
+      </InfoModal>
       <ConnectionModal
         open={connect}
         onDone={onToggleConnect}
@@ -177,14 +177,17 @@ interface CollapsedCardFooterProps {
 
 function CollapsedCardFooter ({
   _id,
-  pending, // TODO
+  pending,
   onConnectRequest
 }: CollapsedCardFooterProps) {
   return [ // TODO replace with Fragment when inferno@6
-    <span className='py-2 pr-2'><i className='fa fa-fw fa-lock'></i></span>,
-    <IconButton
+    <span className='py-2 pr-2'>
+      <FAIcon icon='lock' fw />
+    </span>,
+    <FAIconButton
       id={`collapsed-record-card:${_id}:connect`}
-      icon={pending ? 'fa-spinner fa-spin' : 'fa-external-link'}
+      icon='external-link'
+      pending={pending}
       outline
       onClick={onConnectRequest}
     />
@@ -214,29 +217,32 @@ function ExpandedCardFooter ({
   const edit = !disabled || (pending === 'save') || (pending === 'delete')
   return !edit
   ? [
-    <IconButton
+    <FAIconButton
       id={`expanded-record-card:${_id}:edit`}
-      icon={pending === 'edit' ? 'fa-spinner fa-spin' : 'fa-edit'}
+      icon='edit'
+      pending={pending === 'edit'}
       outline
       className='border-secondary'
       onClick={onEditRecordRequest}
     >
       &nbsp;{t('Edit')}
-    </IconButton>
+    </FAIconButton>
   ]
   : [
-    <IconButton
+    <FAIconButton
       id={`expanded-record-card:${_id}:save`}
-      icon={pending === 'save' ? 'fa-spinner fa-spin' : 'fa-download'}
+      icon='download'
+      pending={pending === 'save'}
       outline
       className='border-secondary mr-2'
       onClick={onUpdateRecordRequest}
     >
       &nbsp;{t('Save')}
-    </IconButton>,
-    <IconButton
+    </FAIconButton>,
+    <FAIconButton
       id={`expanded-record-card:${_id}:delete`}
-      icon={pending === 'delete' ? 'fa-spinner fa-spin' : 'fa-trash'}
+      icon='trash'
+      pending={pending === 'delete'}
       outline
       color='danger'
       className='border-secondary'

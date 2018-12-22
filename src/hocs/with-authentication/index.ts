@@ -26,10 +26,15 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
-import { tap } from 'rxjs/operators'
+// import { tap } from 'rxjs/operators'
+// const log = label => console.log.bind(console, label)
 
 export type AuthenticationProviderProps<P extends AuthenticationProviderSFCProps> =
-  Rest<P, AuthenticationProviderSFCProps>
+  AuthenticationProviderHocProps & Rest<P, AuthenticationProviderSFCProps>
+
+export interface AuthenticationProviderHocProps {
+  session?: string
+}
 
 export interface AuthenticationProviderSFCProps extends AuthenticationProviderSFCHandlerProps {
   authenticate?: boolean
@@ -43,7 +48,7 @@ export interface AuthenticationProviderSFCHandlerProps {
 }
 
 interface AuthenticationProviderState {
-  props: { [prop: string]: unknown }
+  props: AuthenticationProviderHocProps & { [prop: string]: unknown }
   authenticate: boolean
   session: string
 }
@@ -51,7 +56,7 @@ interface AuthenticationProviderState {
 function mapStateToProps (
   { props, authenticate, session }: AuthenticationProviderState
 ): Rest<AuthenticationProviderSFCProps, AuthenticationProviderSFCHandlerProps> {
-  return { ...props, authenticate, session }
+  return { ...props, authenticate, session: session || props.session }
 }
 
 const mapDispatchToProps:
@@ -67,16 +72,16 @@ export function withAuthentication <P extends AuthenticationProviderSFCProps> (
 ): ComponentConstructor<AuthenticationProviderProps<P>> {
   return componentFromEvents<AuthenticationProviderProps<P>, P>(
     AuthenticationProviderSFC,
-    // () => tap(console.log.bind(console, 'authentication-provider:event:')),
+    // () => tap(log('authentication-provider:event:')),
     redux(
       reducer,
       plugResponse
     ),
-    () => tap(console.log.bind(console, 'authentication-provider:state:')),
+    // () => tap(log('authentication-provider:state:')),
     connect<AuthenticationProviderState, AuthenticationProviderSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    ),
-    () => tap(console.log.bind(console, 'authentication-provider:view-props:'))
+    )
+    // () => tap(log('authentication-provider:view-props:'))
   )
 }

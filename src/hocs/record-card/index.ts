@@ -25,10 +25,9 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-// import { /*, preventDefault */ } from 'utils'
 import { Observer } from 'rxjs'
 // import { tap } from 'rxjs/operators'
-const log = (label: string) => console.log.bind(console, label)
+// const log = (label: string) => console.log.bind(console, label)
 
 export type RecordCardProps<P extends RecordCardSFCProps> =
 RecordCardHocProps & Rest<P, RecordCardSFCProps>
@@ -57,10 +56,7 @@ export interface RecordCardSFCHandlerProps {
   onToggleConnect?: (event: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
-  onChange?: (
-    field: keyof ZenypassRecord,
-    value: string[] | string
-  ) => void
+  onChange?: (value: string[] | string, target: HTMLElement) => void
   onUpdateRecordRequest?: (event: MouseEvent) => void
   onDeleteRecordRequest?: (event: MouseEvent) => void
 }
@@ -118,12 +114,9 @@ createActionDispatchers({
   onEditRecordRequest: 'EDIT_RECORD_REQUESTED',
   onChange: [
     'CHANGE',
-    function (
-      field: keyof ZenypassRecord,
-      value: string[] | string
-    ): Partial<ZenypassRecord> {
-      return { [field]: value }
-    }
+    (value: string[] | string, input: HTMLElement) => ({
+      [input.dataset.id]: value
+    })
   ],
   onUpdateRecordRequest: 'UPDATE_RECORD_REQUESTED',
   onDeleteRecordRequest: 'DELETE_RECORD_REQUESTED'

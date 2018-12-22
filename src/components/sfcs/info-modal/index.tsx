@@ -16,37 +16,60 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
-import { Button } from 'bootstrap'
+import { Button, ProgressBar } from 'bootstrap'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
-export interface ConfirmationModalProps {
-  expanded?: boolean
+export interface InfoModalProps {
   locale: string
+  expanded?: boolean
+  progress?: '25' | '50' | '75' | '100' | 'auto' | '' | false
+  children?: any
   onCancel?: (event: MouseEvent) => void
   onConfirm?: (event: MouseEvent) => void
   [prop: string]: unknown
 }
 
-export function ConfirmationModal ({
-  expanded,
+export function InfoModal ({
   locale,
+  expanded,
+  progress,
+  children,
   onCancel,
   onConfirm,
   ...attrs
-}: ConfirmationModalProps) {
+}: InfoModalProps) {
   const t = l10ns[locale]
 
   return (
     <Modal isOpen={expanded} toggle={onCancel} >
       <ModalHeader toggle={onCancel} className='bg-info text-white' >
-        {t('Confirmation')}
+        {t(onConfirm ? 'Please confirm' : progress ? 'Please wait' : 'Info')}...
       </ModalHeader>
-      <ModalBody {...attrs} />
-      <ModalFooter className='bg-light'>
-        <Button color='info' outline onClick={onConfirm}>{t('Yes')}</Button>
-        <Button color='info' onClick={onCancel}>{t('No')}</Button>
-      </ModalFooter>
+      <ModalBody {...attrs} >
+        {children}
+        {
+          !progress ? null : (
+            <ProgressBar ratio={progress} animated striped bg='info' />
+          )
+        }
+      </ModalBody>
+      {
+        !onConfirm && !onCancel ? null : (
+          <ModalFooter className='bg-light'>
+            {
+              !onConfirm ? null : (
+                <Button color='info' outline onClick={onConfirm}>
+                  {t('Yes')}
+                </Button>
+              )
+            }
+            <Button color='info' onClick={onCancel}>
+              {t(!onConfirm ? 'Ok' : 'No')}
+            </Button>
+          </ModalFooter>
+        )
+      }
     </Modal>
   )
 }

@@ -14,9 +14,14 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement, ComponentType, Fragment, SFC } from 'create-element'
+import {
+  createElement,
+  ComponentConstructor,
+  Fragment,
+  SFC
+} from 'create-element'
 import { AuthenticationModal } from '../authentication-modal'
-import { Observer } from 'rxjs'
+import { Observer } from 'component-from-props'
 
 export interface AuthenticationProviderProps {
   locale: string
@@ -34,16 +39,22 @@ export interface AuthenticationConsumerProps {
   [prop: string]: unknown
 }
 
+export type Rest<T extends U,U extends {} = {}> = Pick<T,Exclude<keyof T, keyof U>>
+
 export function withAuthenticationModal <
-  P extends {} = {}
+  P extends AuthenticationConsumerProps = AuthenticationConsumerProps
 > (
-  PrivilegedComponent: ComponentType<P & AuthenticationConsumerProps>
-): SFC<AuthenticationProviderProps & P> {
+  GenericPrivilegedComponent: ComponentConstructor<P> | SFC<P>
+): SFC<AuthenticationProviderProps & Rest<P, AuthenticationConsumerProps>> {
+  const PrivilegedComponent =
+    GenericPrivilegedComponent as ComponentConstructor<AuthenticationConsumerProps>
   return function ({
       locale,
       authenticate,
+      session,
       onAuthenticationResolved,
       onAuthenticationRejected,
+      onAuthenticationRequest,
       ...attrs
     }: AuthenticationProviderProps) {
     return (
@@ -51,10 +62,16 @@ export function withAuthenticationModal <
         <AuthenticationModal
           locale={locale}
           authenticate={authenticate}
+          session={session}
           onCancelled={onAuthenticationRejected}
           onAuthenticated={onAuthenticationResolved}
         />
-        <PrivilegedComponent locale={locale} {...attrs} />
+        <PrivilegedComponent
+          locale={locale}
+          session={session}
+          onAuthenticationRequest={onAuthenticationRequest}
+          {...attrs}
+        />
       </Fragment>
     )
   }

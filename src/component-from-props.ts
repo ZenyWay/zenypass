@@ -26,7 +26,7 @@ import {
   Node,
   SFC
 } from 'create-element'
-import { Observable, from } from 'rxjs'
+import { Observable, Observer, from } from 'rxjs'
 
 export {
   Component,
@@ -35,6 +35,8 @@ export {
   ComponentFromStreamFactory,
   ComponentType,
   Node,
+  Observable,
+  Observer,
   SFC
 }
 export type Operator<I= {},O= I> = GenericOperator<I,O,Observable<I>,Observable<O>>

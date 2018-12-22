@@ -18,12 +18,14 @@ import { dropdown, DropdownProps } from 'hocs'
 import {
   NavbarMenu as NavbarMenuSFC,
   NavbarMenuProps as NavbarMenuSFCProps,
-  MenuSpecs
+  MenuSpecs,
+  DropdownItemSpec
 } from './sfcs/navbar-menu'
+
+export { MenuSpecs, DropdownItemSpec }
 
 export const NavbarMenu = dropdown<NavbarMenuSFCProps>(
   NavbarMenuSFC
 )
 
 export type NavBarMenuProps = DropdownProps<NavbarMenuSFCProps>
-export { MenuSpecs }

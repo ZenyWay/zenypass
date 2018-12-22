@@ -14,20 +14,53 @@
  */
 //
 import {
+  debounceTime,
+  distinctUntilChanged,
+  filter,
   ignoreElements,
+  map,
   pluck,
+  switchMap,
   tap,
-  withLatestFrom,
-  filter
+  withLatestFrom
 } from 'rxjs/operators'
+import { Observable } from 'rxjs'
+import { StandardAction, createActionFactory } from 'basic-fsa-factories'
+import { isString } from 'utils'
 
-export function callChangeHandlerOnBlurWhenIsChange (event$, state$) {
+const debounce = createActionFactory('DEBOUNCE')
+
+export function debounceInputWhenDebounce (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return state$.pipe(
+    pluck('props', 'debounce'),
+    filter(Boolean),
+    distinctUntilChanged(),
+    map(
+      (delay: number | string) => isString(delay)
+        ? Number.parseInt(delay, 10)
+        : delay
+    ),
+    switchMap(
+      delay => event$.pipe(
+        filter(({ type }) => type === 'INPUT'),
+        debounceTime(delay)
+      )
+    ),
+    map(({ payload }) => debounce(payload))
+  )
+}
+
+export function callChangeHandlerOnDebounceOrBlurWhenIsChange (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
   return event$.pipe(
-    filter(ofType('BLUR')),
+    filter(({ type }) => (type === 'BLUR') || (type === 'DEBOUNCE')),
     withLatestFrom(state$),
-    pluck('1'),
-    filter(hasOnChangeHandler),
-    filter(isChange),
+    filter(([_, state]) => hasOnChangeHandler(state) && isChange(state)),
     tap(callChangeHandler),
     ignoreElements()
   )
@@ -41,12 +74,6 @@ function isChange ({ props, value }) {
   return props.value !== value
 }
 
-function ofType (type) {
-  return function (event) {
-    return event.type === type
-  }
-}
-
-function callChangeHandler ({ props, value }) {
-  props.onChange(value)
+function callChangeHandler ([ { payload: event }, { props, value } ]) {
+  props.onChange(value, event.currentTarget)
 }

@@ -23,7 +23,8 @@ import { action } from '@storybook/addon-actions'
 import { RECORD } from './helpers/consts'
 import preventDefaultAction from './helpers/prevent-default'
 
-const { name, username, password } = RECORD
+const { name, username } = RECORD
+const password = 'P@ssw0rd!'
 
 const attrs = {
   open: true,

@@ -25,28 +25,34 @@ import {
   NavLink,
   NavbarToggler
 } from 'bootstrap'
-import { DropdownItemsProps } from './dropdown'
+import { MenuItemIcon, DropdownItemSpec } from './dropdown'
 import { Dropdown } from '../dropdown'
-import { Icon } from './icon'
-import { ZENYPASS_LOGO_SVG } from 'static'
+import { ZENYPASS_LOGO_WHITE_SVG } from 'static'
 
 export interface NavbarMenuProps {
   menu?: MenuSpecs
   expanded?: boolean
+  children?: any
   onClickItem?: (event: MouseEvent) => void
+  onSelectItem?: (target: HTMLElement) => void
   onClickToggle?: (event: MouseEvent) => void
   innerRef?: (element?: HTMLElement | null) => void
   [prop: string]: unknown
 }
 
-export interface MenuSpecs extends Array<DropdownItemsProps[] | DropdownItemsProps> {}
+export interface MenuSpecs
+extends Array<DropdownItemSpec[] | DropdownItemSpec> {}
+
+export { DropdownItemSpec }
 
 export function NavbarMenu ({
   menu = [],
   expanded,
   onClickItem,
+  onSelectItem,
   onClickToggle,
   innerRef,
+  children,
   ...attrs
 }: NavbarMenuProps) {
   return (
@@ -57,14 +63,16 @@ export function NavbarMenu ({
       innerRef={innerRef}
     >
       <NavbarBrand>
-        <img height='32' src={ZENYPASS_LOGO_SVG}/>
+        <img height='32' src={ZENYPASS_LOGO_WHITE_SVG}/>
         <small>&nbsp;ZenyPass</small>
       </NavbarBrand>
-      <span {...attrs} />
+      <span class='flex-fill text-light'>
+        { children }
+      </span>
       <NavbarToggler onClick={onClickToggle} />
       <Collapse navbar isOpen={expanded} >
         <Nav className='ml-auto' navbar>
-          {navMenuItems({ menu, onClickItem })}
+          {navMenuItems({ menu, onClickItem, onSelectItem })}
         </Nav>
       </Collapse>
     </Navbar>
@@ -74,33 +82,46 @@ export function NavbarMenu ({
 interface NavMenuItemsProps {
   menu?: MenuSpecs
   onClickItem?: (event: MouseEvent) => void
+  onSelectItem?: (target: HTMLElement) => void
 }
 
 // TODO convert this to a Fragment component with Inferno@6
-function navMenuItems ({ menu = [], onClickItem }: NavMenuItemsProps) {
+function navMenuItems (
+  { menu = [], onClickItem, onSelectItem }: NavMenuItemsProps
+) {
   let key = menu.length
   const entries = new Array<JSX.Element>(key)
   while (key--) {
     const item = menu[key]
-    entries[key] = <NavMenuItem item={item} onClickItem={onClickItem} />
+    entries[key] = (
+      <NavMenuItem
+        item={item}
+        onClickItem={onClickItem}
+        onSelectItem={onSelectItem}
+      />
+    )
   }
   return entries
 }
 
 interface NavMenuItemProps {
-  item?: DropdownItemsProps[] | DropdownItemsProps
+  item?: DropdownItemSpec[] | DropdownItemSpec
   onClickItem?: (event: MouseEvent) => void
+  onSelectItem?: (target: HTMLElement) => void
 }
 
-function NavMenuItem ({ item = {}, onClickItem }: NavMenuItemProps) {
+function NavMenuItem (
+  { item = {}, onClickItem, onSelectItem }: NavMenuItemProps
+) {
   return Array.isArray(item)
   ? (
     <Dropdown
       className='text-light'
+      right
       navItem
       {...item[0]}
       items={item.slice(1)}
-      onSelect={onClickItem}
+      onSelectItem={onSelectItem}
     />
   )
   : (
@@ -116,7 +137,7 @@ function NavMenuItem ({ item = {}, onClickItem }: NavMenuItemProps) {
 
 interface NavMenuLinkProps {
   className?: string
-  item?: DropdownItemsProps
+  item?: DropdownItemSpec
   onClickItem?: (event: MouseEvent) => void
 }
 
@@ -124,12 +145,8 @@ function NavMenuLink ({ className, item, onClickItem }: NavMenuLinkProps) {
   const { label, icon, ...attrs } = item
   return (
     <NavLink className={className} onClick={onClickItem} {...attrs}>
-      {!icon ? null : <Icon
-        icon={
-          Array.isArray(icon) ? icon[0] /* TODO handle icon list */ : icon
-        }
-      />}
-      {!label ? null : ` ${label}`}
+      <MenuItemIcon icon={icon} />
+      {label}
     </NavLink>
   )
 }

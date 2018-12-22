@@ -13,18 +13,29 @@
  * Limitations under the License.
  */
 import { interval, NEVER, of as observable, Observable, throwError } from 'rxjs'
-import { concat, switchMap, takeUntil, delay, take } from 'rxjs/operators'
-import { AuthorizationDoc, KVMap, ZenypassRecord, PouchDoc } from '../src/services/zenypass'
+import { concat, delay, switchMap, take, takeUntil } from 'rxjs/operators'
+import {
+  AuthorizationDoc,
+  Credentials,
+  KVMap,
+  ZenypassRecord,
+  PouchDoc,
+  ZenypassService,
+  ZenypassRecordService
+} from '../src/services/zenypass'
 export * from '../src/services/zenypass'
 
 const AUTHENTICATION_DELAY = 1500 // ms
 const AUTHORIZATION_DELAY = 10000 // ms
 const TOKEN_DELAY = 500 // ms
 const RECORD_SERVICE_DELAY = 500 // ms
+const USERNAME = 'me@zw.fr'
 const PASSWORD = '!!!'
+const MIN_PASSWORD_LENGTH = 4
 const SESSION_ID = '42'
 const TOKEN = 'BCDE FGHI JKLN'
 const UNAUTHORIZED = newStatusError(401, 'UNAUTHORIZED')
+const FORBIDDEN = newStatusError(403, 'FORBIDDEN')
 const MAX_CERTIFIED_MS = 90 * 24 * 60 * 60 * 1000 // 90 days in ms
 const AUTHORIZATIONS = [
   'Ubuntu Opera', 'MacOS Safari', 'Windows Chrome'
@@ -38,13 +49,78 @@ const AUTHORIZATIONS = [
   {} as KVMap<AuthorizationDoc>
 )
 const RECORD_PASSWORD = 'p@ssW0rd!'
+const RECORDS = [
+  {
+    _id: '1',
+    name: 'Example',
+    url: 'https://example.com',
+    username: 'john.doe@example.com',
+    keywords: ['comma', 'separated', 'values'],
+    comments: '42 is *'
+  },
+  {
+    _id: '2',
+    name: 'ZenyWay',
+    url: 'https://zenyway.com',
+    username: 'me@zenyway.com',
+    keywords: [],
+    comments: ''
+  },
+  {
+    _id: '3',
+    name: 'HSVC',
+    url: 'https://hvsc.c64.org/',
+    username: 'rob.hubbard@hsvc.org',
+    keywords: ['sid', 'music', 'collection'],
+    comments: 'Rob says wow !'
+  }
+].reduce(
+  function (records, record) {
+    records[record._id] = record
+    return records
+  },
+  {} as KVMap<Partial<ZenypassRecord>>
+)
 
-export function authenticate (password: string): Observable<string> {
-  return interval(AUTHENTICATION_DELAY).pipe(
-      take(1),
-      switchMap(() => password === PASSWORD
-        ? observable(SESSION_ID)
-        : throwError(UNAUTHORIZED))
+export const zenypass = {
+  signup,
+  signin,
+  getService
+}
+
+function signup (creds: Credentials, opts?: any): Observable<string> {
+  const { username, passphrase } = creds
+  return stall(AUTHENTICATION_DELAY)(
+    () => (username !== USERNAME)
+    && (passphrase && passphrase.length >= MIN_PASSWORD_LENGTH)
+      ? observable(SESSION_ID)
+      : throwError(FORBIDDEN)
+    )
+}
+
+function signin (creds: Credentials, opts?: any): Observable<string> {
+  const { username, passphrase } = creds
+  return stall(AUTHENTICATION_DELAY)(
+    () => username === USERNAME && passphrase === PASSWORD
+      ? observable(SESSION_ID)
+      : throwError(UNAUTHORIZED)
+    )
+}
+
+function getService (session: string) {
+  const records = {
+    records$: getRecords$(session),
+    getRecord: getRecord.bind(void 0, session),
+    putRecord: putRecord.bind(void 0, session)
+  }
+  return { unlock, records }
+}
+
+function unlock (password: string): Observable<string> {
+  return stall(AUTHENTICATION_DELAY)(
+    () => password === PASSWORD
+      ? observable(SESSION_ID)
+      : throwError(UNAUTHORIZED)
     )
 }
 
@@ -68,6 +144,14 @@ export function getAuthorizations$ (sessionId: string): Observable<KVMap<Authori
   )
   return sessionId === SESSION_ID
   ? observable(authorizations).pipe(concat(NEVER))
+  : throwError(UNAUTHORIZED)
+}
+
+function getRecords$ (
+  sessionId: string
+): Observable<KVMap<Partial<ZenypassRecord>>> {
+  return sessionId === SESSION_ID
+  ? observable(RECORDS).pipe(concat(NEVER))
   : throwError(UNAUTHORIZED)
 }
 
@@ -95,6 +179,12 @@ function accessRecordService <T> (result: Function) {
   }
 }
 
+function stall (ms: number) {
+  return function <T> (fn: () => Observable<T>) {
+    return interval(ms).pipe(take(1), switchMap(fn))
+  }
+}
+
 interface StatusError extends Error {
   status: number
 }
@@ -103,8 +193,4 @@ function newStatusError (status = 501, message = '') {
   const err = new Error(message) as StatusError
   err.status = status
   return err
-}
-
-function errorPassword (status: StatusError) {
-  return status
 }

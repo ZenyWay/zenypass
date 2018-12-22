@@ -27,12 +27,14 @@ import componentFromEvents, {
 import { callHandlerOnEvent, preventDefault } from 'utils'
 import { createActionDispatchers } from 'basic-fsa-factories'
 // import { tap } from 'rxjs/operators'
+// const log = label => console.log.bind(console, label)
 
 export type AuthenticationModalProps<P extends AuthenticationModalSFCProps> =
   AuthenticationModalHocProps & Rest<P, AuthenticationModalSFCProps>
 
 export interface AuthenticationModalHocProps {
   authenticate?: boolean
+  session?: string
   onCancelled?: () => void
   onAuthenticated?: (sessionId: string) => void
 }
@@ -53,6 +55,7 @@ export interface AuthenticationModalSFCHandlerProps {
 interface AuthenticationModalState {
   props: AuthenticationModalHocProps & { [prop: string]: unknown }
   state: AutomataState
+  session?: string
   value?: string
   error?: string
 }
@@ -83,18 +86,18 @@ export function authenticationModal <P extends AuthenticationModalSFCProps> (
 ): ComponentConstructor<AuthenticationModalProps<P>> {
   return componentFromEvents<AuthenticationModalProps<P>, P>(
     Modal,
-    // () => tap(console.log.bind(console, 'authentication-modal:event:')),
+    // () => tap(log('authentication-modal:event:')),
     redux(
       reducer,
       authenticateOnTransitionToAuthenticating,
-      callHandlerOnEvent('onCancelled', 'CANCEL'),
-      callHandlerOnEvent('onAuthenticated', 'AUTHENTICATION_RESOLVED')
+      callHandlerOnEvent('CANCEL', ['props', 'onCancelled']),
+      callHandlerOnEvent('AUTHENTICATION_RESOLVED', ['props', 'onAuthenticated'])
     ),
-    // () => tap(console.log.bind(console, 'authentication-modal:state:')),
+    // () => tap(log('authentication-modal:state:')),
     connect<AuthenticationModalState, AuthenticationModalSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     )
-    // () => tap(console.log.bind(console, 'authentication-modal:view-props:'))
+    // () => tap(log('authentication-modal:view-props:'))
   )
 }
