@@ -14,10 +14,14 @@
  * Limitations under the License.
  */
 
-import { configure } from '@storybook/react'
+import { addDecorator, configure } from '@storybook/react'
+import { withOptions } from '@storybook/addon-options'
+import { dark } from '@storybook/components/dist/theme'
 import { initDevTools } from 'react-devtools'
 
 initDevTools()
+
+addDecorator(withOptions({ theme: dark }))
 
 const stories = require.context('../stories', true, /\.jsx$/)
 
