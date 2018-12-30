@@ -125,7 +125,7 @@ export function AuthenticationPage ({
     isSignup ? 'Already have an account' : 'You don\'t have an account'
   )
   return (
-    <section className='container bg-light' {...attrs}>
+    <section className='container' {...attrs}>
       <ConsentsModal
         locale={locale}
         display={consents}
