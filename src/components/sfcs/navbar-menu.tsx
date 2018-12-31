@@ -15,7 +15,7 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement } from 'create-element'
+import { createElement, Fragment } from 'create-element'
 import {
   Collapse,
   Nav,
@@ -72,7 +72,11 @@ export function NavbarMenu ({
       <NavbarToggler onClick={onClickToggle} />
       <Collapse navbar isOpen={expanded} >
         <Nav className='ml-auto' navbar>
-          {navMenuItems({ menu, onClickItem, onSelectItem })}
+          <NavMenuItems
+            menu={menu}
+            onClickItem={onClickItem}
+            onSelectItem={onSelectItem}
+          />
         </Nav>
       </Collapse>
     </Navbar>
@@ -85,8 +89,7 @@ interface NavMenuItemsProps {
   onSelectItem?: (target: HTMLElement) => void
 }
 
-// TODO convert this to a Fragment component with Inferno@6
-function navMenuItems (
+function NavMenuItems (
   { menu = [], onClickItem, onSelectItem }: NavMenuItemsProps
 ) {
   let key = menu.length
@@ -101,7 +104,7 @@ function navMenuItems (
       />
     )
   }
-  return entries
+  return <Fragment>{entries}</Fragment>
 }
 
 interface NavMenuItemProps {

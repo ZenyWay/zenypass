@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement } from 'create-element'
+import { createElement, Fragment } from 'create-element'
 import {
   Dropdown as BSDropdown,
   DropdownItem,
@@ -76,7 +76,11 @@ export function Dropdown ({
         right={right}
         className={navItem && 'bg-info border-info'}
       >
-        {dropdownMenuItems({ items, onClickItem, className: navItem && 'text-light' })}
+        <DropdownMenuItems
+          items={items}
+          className={navItem && 'text-light'}
+          onClickItem={onClickItem}
+        />
       </DropdownMenu>
     </BSDropdown>
   )
@@ -88,8 +92,7 @@ export interface DropdownMenuItemsProps {
   onClickItem?: (event: MouseEvent) => void
 }
 
-// TODO convert this to a Fragment component with Inferno@6
-function dropdownMenuItems ({
+function DropdownMenuItems ({
   items,
   className,
   onClickItem
@@ -111,7 +114,7 @@ function dropdownMenuItems ({
       </DropdownItem>
     )
   }
-  return entries
+  return <Fragment>{entries}</Fragment>
 }
 
 export interface MenuItemIconProps {

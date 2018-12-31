@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement } from 'create-element'
+import { createElement, Fragment } from 'create-element'
 import { RecordField as PassiveRecordField } from '../record-field'
 import { DropdownItemSpec } from '../../dropdown'
 import createL10ns from 'basic-l10n'
@@ -121,7 +121,7 @@ export function AuthenticationForm ({
     <form {...attrs} onSubmit={onSubmit}>
       {
         !created ? null : (
-          <div>
+          <Fragment>
             <p>
               {t('An email was just sent to you')}:<br/>
               {t('follow the instructions in that email to validate your account, then login below')}.
@@ -131,7 +131,7 @@ export function AuthenticationForm ({
                 {t('If you haven\'t received the validation email, sent from the address info@zenyway.com, please check your spam folder')}.
               </small>
             </p>
-          </div>
+          </Fragment>
         )
       }
       <PassiveRecordField
