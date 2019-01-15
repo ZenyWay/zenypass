@@ -17,7 +17,7 @@
 //
 import reducer, { AutomataState } from './reducer'
 import { getTokenOnAuthenticated } from './effects'
-import { authorize } from 'services'
+// import { authorize } from 'zenypass-service'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -83,7 +83,7 @@ export function agentAuthorizationCard <P extends AgentAuthorizationCardSFCProps
   return componentFromEvents<AgentAuthorizationCardProps<P>,P>(
     AgentAuthorizationCard,
     // () => tap(console.log.bind(console,'controlled-authorization-card:event:')),
-    redux(reducer, getTokenOnAuthenticated({ authorize })),
+    redux(reducer /*, getTokenOnAuthenticated({ authorize }) */),
     // () => tap(console.log.bind(console,'controlled-authorization-card:state:')),
     connect<AgentAuthorizationCardState,AgentAuthorizationCardSFCProps>(
       mapStateToProps,

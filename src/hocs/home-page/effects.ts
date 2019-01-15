@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 //
-import { zenypass } from 'services'
+import zenypass from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   createPrivilegedRequest,
@@ -22,26 +22,14 @@ import {
   isFunction
 } from 'utils'
 import {
-  catchError,
   delay,
-  distinctUntilChanged,
-  ignoreElements,
   filter,
-  first,
-  last,
-  map,
-  mapTo,
-  merge,
   pluck,
-  share,
   switchMap,
   startWith,
-  takeUntil,
-  tap,
-  withLatestFrom,
   distinctUntilKeyChanged
 } from 'rxjs/operators'
-import { Observable, of as observable } from 'rxjs'
+import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
 // const log = (label: string) => console.log.bind(console, label)
 
@@ -62,7 +50,7 @@ export function createRecordOnSelectNewRecordMenuItem (
 }
 
 function createRecord (): Observable<StandardAction<any>> {
-  return observable(createRecordResolved()).pipe(
+  return observableOf(createRecordResolved()).pipe(
     delay(1500), // TODO
     startWith(createRecordRequested())
   )
@@ -72,7 +60,10 @@ const updateRecords = createActionFactory('UPDATE_RECORDS')
 const error = createActionFactory('ERROR')
 
 const getRecordsUpdates = createPrivilegedRequest(
-  (session: string) => zenypass.getService(session).records.records$,
+  (username: string) =>
+    observableFrom(zenypass.then(({ getService }) => getService(username)))
+    .pipe(switchMap(({ records }) => records.records$))
+  ,
   updateRecords,
   error
 )
@@ -85,9 +76,10 @@ export function injectRecordsFromService (
     pluck<any, any>('props'),
     distinctUntilKeyChanged('onAuthenticationRequest'),
     filter(({ onAuthenticationRequest }) => isFunction(onAuthenticationRequest)),
-    switchMap(({ onAuthenticationRequest, session }) => getRecordsUpdates(
+    switchMap(({ onAuthenticationRequest, session: username }) => getRecordsUpdates(
       toProjection(onAuthenticationRequest),
-      session
+      username,
+      true // unrestricted
     ))
   )
 }

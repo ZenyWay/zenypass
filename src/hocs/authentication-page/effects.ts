@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 
-import { zenypass } from 'services'
+import zenypass from 'zenypass-service'
 import {
   StandardAction,
   createActionFactory,
@@ -29,7 +29,6 @@ import {
   ERROR_STATUS
 } from 'utils'
 import {
-  catchError,
   distinctUntilChanged,
   distinctUntilKeyChanged,
   filter,
@@ -40,7 +39,7 @@ import {
   switchMap,
   tap
 } from 'rxjs/operators'
-import { Observable, of as observable, merge } from 'rxjs'
+import { Observable } from 'rxjs'
 // const log = label => console.log.bind(console, label)
 
 export enum AuthenticationPageType {
@@ -61,6 +60,7 @@ const invalidPassword = createActionFactory<void>('INVALID_PASSWORD')
 const validPassword = createActionFactory<void>('VALID_PASSWORD')
 const invalidConfirm = createActionFactory<void>('INVALID_CONFIRM')
 const validConfirm = createActionFactory<void>('VALID_CONFIRM')
+const togglePageType = createActionFactory<void>('TOGGLE_PAGE_TYPE')
 const authenticated = createActionFactory<void>('AUTHENTICATED')
 const unauthorized = createActionFactory<void>('UNAUTHORIZED')
 const error = createActionFactory<any>('ERROR')
@@ -156,13 +156,10 @@ export function serviceSigninOnSubmitFromSigninSubmitting (
   return stateOnEvent(({ type }) => type === 'SUBMIT')(event$, state$).pipe(
     filter<any>(({ state }) => /^signin:submitting/.test(state)),
     switchMap(
-      ({ props, password }) => zenypass.signin({
-        username: props.email,
-        passphrase: password
-      }).pipe(
-        map(session => authenticated(session)),
-        catchError(err => observable(unauthorizedOrError(err)))
-      )
+      ({ props: { email }, password }) => zenypass
+        .then(({ signin }) => signin(email, password))
+        .then(() => authenticated(email))
+        .catch(err => unauthorizedOrError(err))
     )
   )
 }
@@ -174,14 +171,10 @@ export function serviceSignupOnSubmitFromSignupSubmitting (
   return stateOnEvent(({ type }) => type === 'SUBMIT')(event$, state$).pipe(
     filter<any>(({ state }) => state === 'signup:submitting'),
     switchMap(
-      ({ props, password }) => zenypass.signup({
-        username: props.email,
-        passphrase: password
-      }).pipe(
-        filter(() => isFunction(props.onAuthenticationPageType)),
-        tap(() => props.onAuthenticationPageType(AuthenticationPageType.Signin)),
-        catchError(err => observable(error(err)))
-      )
+      ({ props, password }) => zenypass
+        .then(({ signup }) => signup(props.email, password))
+        .then(() => togglePageType())
+        .catch(err => error(err))
     )
   )
 }

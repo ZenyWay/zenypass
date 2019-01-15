@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 //
-import { getRecord, ZenypassRecord } from 'services'
+import zenypass, { PouchDoc, ZenypassRecord } from 'zenypass-service'
 import { createActionFactory } from 'basic-fsa-factories'
 import { Observable, merge } from 'rxjs'
 import {
@@ -33,7 +33,9 @@ import {
 const cleartextResolved = createActionFactory('CLEARTEXT_RESOLVED')
 const cleartextRejected = createActionFactory('CLEARTEXT_REJECTED')
 const cleartext = createPrivilegedRequest(
-  getRecord,
+  (username: string, ref: PouchDoc) => zenypass
+    .then(({ getService }) => getService(username))
+    .then(zenypass => zenypass.records.getRecord(ref)),
   ({ password }: ZenypassRecord) => cleartextResolved(password),
   (error: any) => cleartextRejected(
     error && error.status !== 499 // request cancelled
@@ -63,8 +65,9 @@ export function cleartextOnPendingCleartextOrConnect (
     switchMap(
       ({ props: { onAuthenticationRequest, session, record } }) => cleartext(
         toProjection(onAuthenticationRequest),
-        record.unrestricted && session,
-        record._id
+        session,
+        record.unrestricted,
+        record
       )
     )
   )

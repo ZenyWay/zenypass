@@ -14,7 +14,12 @@
  */
 //
 import { StandardAction } from 'basic-fsa-factories'
-import { Observable, of as observable, throwError } from 'rxjs'
+import {
+  Observable,
+  from as observableFrom,
+  of as observableOf,
+  throwError
+} from 'rxjs'
 import {
   catchError,
   map,
@@ -23,36 +28,48 @@ import {
 // const log = (label: string) => console.log.bind(console, label)
 
 export function createPrivilegedRequest <T> (
-  request: (session: string, ...args: any[]) => Observable<T> | Promise<T>,
+  request: (username: string, ...args: any[]) => Observable<T> | Promise<T>,
   resolve: (val: T) => StandardAction<any>,
   reject: (err: any) => StandardAction<any>
 ) {
   return function (
-    authenticate: () => Observable<string>,
-    session: string,
+    authenticate: (username: string) => Observable<string> | Promise<string>,
+    username: string,
+    unrestricted: boolean,
     ...args: any[]
   ) {
-    return doPrivilegedRequest(authenticate, request, session, ...args)
+    return doPrivilegedRequest(
+      authenticate,
+      request,
+      username,
+      unrestricted,
+      ...args
+    )
     .pipe(
       map(resolve),
-      catchError((error: any) => observable(reject(error)))
+      catchError((error: any) => observableOf(reject(error)))
     )
   }
 }
 
 function doPrivilegedRequest <T> (
-  authenticate: () => Observable<string>,
-  request: (session: string, ...args: any[]) => Observable<T> | Promise<T>,
-  session?: string,
+  authenticate: (username: string) => Observable<string> | Promise<string>,
+  request: (username: string, ...args: any[]) => Observable<T> | Promise<T>,
+  username: string,
+  unrestricted: boolean,
   ...args: any[]
 ) {
-  return (!session ? authenticate() : observable(session))
+  return (
+    !unrestricted
+    ? observableFrom(authenticate(username))
+    : observableOf(username)
+  )
   .pipe(
-    switchMap(session => request(session, ...args)),
+    switchMap(username => request(username, ...args)),
     catchError(
       error => error && error.status !== 401 // unauthorized
         ? throwError(error)
-        : doPrivilegedRequest(authenticate, request, void 0, ...args)
+        : doPrivilegedRequest(authenticate, request, username, false, ...args)
     )
   )
 }

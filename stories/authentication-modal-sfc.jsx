@@ -21,7 +21,7 @@ import { storiesOf } from '@storybook/react'
 import { AuthenticationModalSFC as AuthenticationModal } from 'components'
 import { action } from '@storybook/addon-actions'
 import preventDefaultAction from './helpers/prevent-default'
-import { Button, Modal, ModalBody, ModalHeader, ModalFooter } from 'reactstrap'
+import { Button, Modal, ModalBody, ModalHeader, ModalFooter } from 'bootstrap'
 
 const attrs = {
   open: true,

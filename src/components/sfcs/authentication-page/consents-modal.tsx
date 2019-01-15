@@ -15,14 +15,17 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 import {
   Button,
   FormGroup,
   Input,
   InputGroup,
   InputGroupPrepend,
-  InputGroupText
+  InputGroupText,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader
 } from 'bootstrap'
 import { classes } from 'utils'
 import { style } from 'typestyle'

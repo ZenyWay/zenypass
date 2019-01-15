@@ -1,4 +1,4 @@
-import { Col, Container, Row } from 'reactstrap'
+import { Col, Container, Row } from 'bootstrap'
 
 export default function Wrapper ({ children, ...attrs }) {
   return (

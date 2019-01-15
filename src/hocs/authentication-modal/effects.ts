@@ -15,17 +15,16 @@
  * Limitations under the License.
  */
 //
-import { zenypass } from 'services'
+import zenypass from 'zenypass-service'
 import { createActionFactory } from 'basic-fsa-factories'
 import {
   catchError,
   distinctUntilKeyChanged,
   filter,
-  map,
   startWith,
   switchMap
 } from 'rxjs/operators'
-import { Observable, of as observable } from 'rxjs'
+import { Observable } from 'rxjs'
 
 const log = (label: string) => console.log.bind(console, label)
 
@@ -39,8 +38,12 @@ export function authenticateOnTransitionToAuthenticating (
   return state$.pipe(
     distinctUntilKeyChanged('state'),
     filter<any>(({ state }) => state === 'authenticating'),
-    switchMap(({ value, session }) => zenypass.getService(session).unlock(value)),
-    map((session: string) => authenticationResolved(session)),
+    switchMap(({ value, props: { session } }) =>
+      zenypass
+        .then(({ getService }) => getService(session))
+        .then(zenypass => zenypass.unlock(value))
+        .then(() => authenticationResolved(session))
+    ),
     catchError(
       (err: any, caught$: Observable<any>) => caught$.pipe(
         startWith(authenticationRejected(err))

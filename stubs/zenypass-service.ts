@@ -16,14 +16,20 @@ import { interval, NEVER, of as observable, Observable, throwError } from 'rxjs'
 import { concat, delay, switchMap, take, takeUntil } from 'rxjs/operators'
 import {
   AuthorizationDoc,
-  Credentials,
-  KVMap,
   ZenypassRecord,
   PouchDoc,
   ZenypassService,
   ZenypassRecordService
-} from '../src/services/zenypass'
-export * from '../src/services/zenypass'
+} from '@zenyway/zenypass-service'
+
+export { AuthorizationDoc, ZenypassRecord }
+
+export type KVMap<V> = { [key: string]: V }
+
+interface Credentials {
+  username: string
+  passphrase: string
+}
 
 const AUTHENTICATION_DELAY = 1500 // ms
 const AUTHORIZATION_DELAY = 10000 // ms

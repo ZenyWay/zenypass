@@ -17,7 +17,7 @@
 /** @jsx createElement */
 //
 import { createElement } from 'create-element'
-import { Col, Container, Row } from 'reactstrap' // TODO replace
+import { Col, Container, Row } from 'bootstrap'
 import { UnknownProps } from 'bootstrap/types'
 import { AuthorizedAgentCard } from './authorized-agent-card'
 import { AgentAuthorizationCard } from '../agent-authorization-card'

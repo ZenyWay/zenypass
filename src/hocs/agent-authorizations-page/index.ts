@@ -17,7 +17,7 @@
 //
 import reducer, { AutomataState } from './reducer'
 import { getAgentsOnAuthenticated } from './effects'
-import { getAuthorizations$, AuthorizationDoc } from 'services'
+import { /* getAuthorizations$, */ AuthorizationDoc } from 'zenypass-service'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -92,7 +92,7 @@ export function agentAuthorizationsPage <P extends AgentAuthorizationsPageSFCPro
   return componentFromEvents<AgentAuthorizationsPageProps<P>,P>(
     AgentAuthorizationsPage,
     // () => tap(console.log.bind(console,'controlled-authorization-page-event:')),
-    redux(reducer, getAgentsOnAuthenticated({ getAuthorizations$ })),
+    redux(reducer /*, getAgentsOnAuthenticated({ getAuthorizations$ }) */),
     // () => tap(console.log.bind(console,'controlled-authorization-page-state:')),
     connect<AgentAuthorizationsPageState,AgentAuthorizationsPageSFCProps>(
       mapStateToProps,

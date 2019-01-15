@@ -16,7 +16,14 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Form, Label, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
+import {
+  Form,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader
+} from 'bootstrap'
 import { FAIconButton } from '../fa-icon'
 import { ControlledInput } from '../../controlled-input'
 import createL10ns from 'basic-l10n'

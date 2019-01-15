@@ -15,6 +15,15 @@ import { from } from 'rxjs';
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
+export {
+  Col,
+  Container,
+  Form,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader
+} from 'inferno-bootstrap'
 export { Button, ButtonProps } from './button'
 export {
   Card,
@@ -47,7 +56,6 @@ export {
   InputGroupAddonProps
 } from './input-group'
 export { Label, LabelProps } from './label'
-export { Row } from './layout'
 export {
   Nav, NavProps,
   Navbar, NavbarProps,
@@ -57,3 +65,4 @@ export {
   NavbarToggler, NavbarTogglerProps
 } from './nav'
 export { ProgressBar, ProgressBarProps } from './progress'
+export { Row } from './layout'

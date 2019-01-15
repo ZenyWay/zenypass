@@ -10,18 +10,7 @@
       "inferno", "node"
     ],
     "baseUrl": ".",
-    "paths": {
-      "bootstrap": ["bootstrap"],
-      "clipboard-copy": ["clipboard-copy"],
-      "component-from-events": ["component-from-events"],
-      "component-from-props": ["component-from-props"],
-      "components": ["components"],
-      "create-element": ["create-element"],
-      "hocs": ["hocs"],
-      "reactstrap": ["../node_modules/inferno-bootstrap"],
-      "services": ["../stubs"],
-      "utils": ["utils"]
-    },
+    "paths": {},
     "jsx": "react",
     "declaration": true,
     "noEmitHelpers": false,

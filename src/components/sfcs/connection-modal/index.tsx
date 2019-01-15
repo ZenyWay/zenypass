@@ -16,8 +16,17 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
-import { Button, FormGroup, Input, InputGroupAppend, Label } from 'bootstrap'
+import {
+  Button,
+  FormGroup,
+  Input,
+  InputGroupAppend,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader
+} from 'bootstrap'
 import { CopyButton } from '../../copy-button'
 import { IconLabelInputFormGroup } from '../icon-label-form-group'
 import { RecordField } from '../record-field'

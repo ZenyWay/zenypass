@@ -26,13 +26,13 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { ZenypassRecord } from 'services'
+import { ZenypassRecord } from 'zenypass-service'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { callHandlerOnEvent, MenuSpec } from 'utils'
 import { Observer } from 'rxjs'
-// import { tap } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
-
+import { tap } from 'rxjs/operators'
+const log = label => console.log.bind(console, label)
+//
 export type HomePageProps<P extends HomePageSFCProps> =
   HomePageHocProps & Rest<P, HomePageSFCProps>
 
@@ -91,7 +91,7 @@ export function homePage <P extends HomePageSFCProps> (
 ): ComponentConstructor<HomePageProps<P>> {
   return componentFromEvents<HomePageProps<P>, P>(
     HomePageSFC,
-    // () => tap(log('home-page:event:')),
+    () => tap(log('home-page:event:')),
     redux(
       reducer,
       injectRecordsFromService,
@@ -99,11 +99,11 @@ export function homePage <P extends HomePageSFCProps> (
       callHandlerOnEvent('SELECT_MENU_ITEM', ['props', 'onSelectMenuItem']),
       callHandlerOnEvent('ERROR', ['props', 'onError'])
     ),
-    // () => tap(log('home-page:state:')),
+    () => tap(log('home-page:state:')),
     connect<HomePageState, HomePageSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // () => tap(log('home-page:view-props:'))
+    ),
+    () => tap(log('home-page:view-props:'))
   )
 }

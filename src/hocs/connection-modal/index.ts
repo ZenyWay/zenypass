@@ -30,8 +30,8 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { createActionDispatchers, createActionFactory, createActionFactories } from 'basic-fsa-factories'
 import { preventDefault, shallowEqual } from 'utils'
-import { distinctUntilChanged /*, tap */ } from 'rxjs/operators'
-// const log = (label: string) => console.log.bind(console, label)
+import { distinctUntilChanged, tap } from 'rxjs/operators'
+const log = (label: string) => console.log.bind(console, label)
 
 export type ConnectionModalProps<P extends ConnectionModalSFCProps> =
 ConnectionModalControllerProps & Rest<P,ConnectionModalSFCProps>
@@ -118,19 +118,19 @@ export function connectionModal <P extends ConnectionModalSFCProps> (
 ): ComponentConstructor<ConnectionModalProps<P>> {
   return componentFromEvents<ConnectionModalProps<P>,P>(
     ConnectionModal,
-    // () => tap(log('controlled-connection-modal:event:')),
+    () => tap(log('controlled-connection-modal:event:')),
     redux(
       reducer,
       callOnDoneOnCancelling,
       clearClipboardOnClearingClipboard,
       openWindowOnClickCopyWhenNotManual
     ),
-    // () => tap(log('controlled-connection-modal:state:')),
+    () => tap(log('controlled-connection-modal:state:')),
     connect<ConnectionModalState,ConnectionModalSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
-    () => distinctUntilChanged(shallowEqual)
-    // () => tap(log('controlled-connection-modal:view-props:'))
+    () => distinctUntilChanged(shallowEqual),
+    () => tap(log('controlled-connection-modal:view-props:'))
   )
 }

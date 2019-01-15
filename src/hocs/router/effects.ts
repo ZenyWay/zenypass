@@ -22,13 +22,15 @@ import {
   filter,
   pluck,
   map,
+  share,
+  startWith,
   tap,
   withLatestFrom
 } from 'rxjs/operators'
 import { Observable, fromEvent, merge } from 'rxjs'
 import { isBoolean, isString } from 'utils'
 
-const log = (label: string) => console.log.bind(console, label)
+// const log = (label: string) => console.log.bind(console, label)
 
 export function openLinkOnCloseInfo (
   event$: Observable<StandardAction<any>>,
@@ -56,7 +58,9 @@ export function injectParamsFromUrl () {
   // support url hash in storybook (iframe in development mode)
   const win = process.env.NODE_ENV === 'development' ? window.top : window
   const hash$ = fromEvent(win, 'hashchange').pipe(
-    map(() => qs.parse(win.location.hash))
+    map(() => parseQsParamsFromLocationHash(win)),
+    share(),
+    startWith(parseQsParamsFromLocationHash(win))
   )
   const email$ = hash$.pipe(
     pluck('email'),
@@ -96,4 +100,15 @@ function sanitizeSignup (signup: unknown) {
   return isString(signup)
   ? signup.trim().toLowerCase() === 'true'
   : isBoolean(signup) ? signup : void 0
+}
+
+function parseQsParamsFromLocationHash (win: Window) {
+  const { hash } = win.location
+  return qs.parse(getQueryString(hash))
+}
+
+const QS_REGEXP = /\?(.*)$/
+function getQueryString (url: string) {
+  const qs = QS_REGEXP.exec(url)
+  return qs && qs[1] || ''
 }

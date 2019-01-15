@@ -16,34 +16,12 @@
 /** @jsx createElement */
 import 'symbol-observable' // polyfill
 import { createElement, render } from 'create-element'
-import { RecordCardSFC as RecordCard } from 'components'
-import createL10ns from 'basic-l10n'
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:app:')
-const l10ns = createL10ns(require('./locales.json'), { debug })
+import { Router as App } from 'components'
 
-const RECORD = {
-  _id: '123456',
-  name: 'Example',
-  url: 'https://news.ycombinator.com/',
-  username: 'john.doe@example.com',
-  password: 'P@ssw0rd!',
-  keywords: ['comma', 'separated', 'values'],
-  comments: '42 is *'
+const app = document.getElementById('app')
+render(<App />, removeChildNodes(app)) // Inferno expects empty node
+
+function removeChildNodes (node: HTMLElement): HTMLElement {
+  Array.from(app.childNodes).forEach(el => el.remove())
+  return node
 }
-
-const attrs = {
-  record: { ...RECORD, password: void 0 },
-  locale: 'fr',
-  onCancel: console.log.bind(console, 'CANCEL:')
-}
-
-function App () {
-  return (
-    <div>
-      <h1>{l10ns.fr`Welcome to ZenyPass!`}</h1>
-      <RecordCard {...attrs} />
-    </div>
-  )
-}
-
-render(<App />, document.getElementById('app'))

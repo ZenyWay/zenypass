@@ -26,8 +26,8 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { callHandlerOnEvent, preventDefault } from 'utils'
 import { createActionDispatchers } from 'basic-fsa-factories'
-// import { tap } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import { tap } from 'rxjs/operators'
+const log = label => console.log.bind(console, label)
 
 export type AuthenticationModalProps<P extends AuthenticationModalSFCProps> =
   AuthenticationModalHocProps & Rest<P, AuthenticationModalSFCProps>
@@ -55,7 +55,6 @@ export interface AuthenticationModalSFCHandlerProps {
 interface AuthenticationModalState {
   props: AuthenticationModalHocProps & { [prop: string]: unknown }
   state: AutomataState
-  session?: string
   value?: string
   error?: string
 }
@@ -63,7 +62,7 @@ interface AuthenticationModalState {
 function mapStateToProps (
   { props, value, error, state }: AuthenticationModalState
 ): Rest<AuthenticationModalSFCProps, AuthenticationModalSFCHandlerProps> {
-  const { authenticate: open, onCancelled, onAuthenticated, ...attrs } = props
+  const { authenticate: open, onCancelled, onAuthenticated, session, ...attrs } = props
   return {
     ...attrs,
     open,
@@ -86,18 +85,18 @@ export function authenticationModal <P extends AuthenticationModalSFCProps> (
 ): ComponentConstructor<AuthenticationModalProps<P>> {
   return componentFromEvents<AuthenticationModalProps<P>, P>(
     Modal,
-    // () => tap(log('authentication-modal:event:')),
+    () => tap(log('authentication-modal:event:')),
     redux(
       reducer,
       authenticateOnTransitionToAuthenticating,
       callHandlerOnEvent('CANCEL', ['props', 'onCancelled']),
       callHandlerOnEvent('AUTHENTICATION_RESOLVED', ['props', 'onAuthenticated'])
     ),
-    // () => tap(log('authentication-modal:state:')),
+    () => tap(log('authentication-modal:state:')),
     connect<AuthenticationModalState, AuthenticationModalSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // () => tap(log('authentication-modal:view-props:'))
+    ),
+    () => tap(log('authentication-modal:view-props:'))
   )
 }

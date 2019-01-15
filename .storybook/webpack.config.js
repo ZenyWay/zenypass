@@ -9,8 +9,6 @@ module.exports = (baseConfig, env, config) => {
   })
 
   // typescript
-  const tsconfig = path.resolve(__dirname, '../src/tsconfig.json')
-
   config.resolve.extensions = (config.resolve.extensions || []).concat(
     '.ts', '.tsx'
   )
@@ -23,10 +21,13 @@ module.exports = (baseConfig, env, config) => {
     ],
     loader: 'ts-loader',
     options: {
-      configFile: tsconfig,
+      configFile: path.resolve(__dirname, '../src/tsconfig.json'),
       logLevel: 'info',
       compilerOptions: {
-        "sourceMap": true // https://github.com/TypeStrong/ts-loader#devtool--sourcemaps
+        paths: {
+          "zenypass-service": ["../stubs/zenypass-service"]
+        },
+        sourceMap: true // https://github.com/TypeStrong/ts-loader#devtool--sourcemaps
       }
     }
   })
@@ -41,9 +42,14 @@ module.exports = (baseConfig, env, config) => {
   // replace react with inferno
   config.resolve.alias = Object.assign({}, config.resolve.alias, {
     'react': 'inferno-compat',
-    "react-devtools": "inferno-devtools",
-    'react-dom': 'inferno-compat'
+    'react-devtools': 'inferno-devtools',
+    'react-dom': 'inferno-compat',
+    'zenypass-service': path.resolve(__dirname, '../stubs/zenypass-service')
   })
+
+  config.resolve.aliasFields = (config.resolve.aliasFields || []).concat(
+    'browser'
+  )
 
   return config
 }

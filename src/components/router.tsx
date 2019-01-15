@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement } from 'create-element'
+import { createElement, ComponentConstructor } from 'create-element'
 import {
   router,
   RouterProps as GenericRouterProps,
@@ -33,8 +33,9 @@ const AuthenticatedRouter = withAuthentication<PrivilegedRouterProps>(
 
 type AuthenticatedRouterProps = AuthenticationProviderProps<PrivilegedRouterProps>
 
-export const Router = router<AuthenticatedRouterProps>(
-  (props: AuthenticatedRouterProps) => <AuthenticatedRouter {...props} />
-)
+export const Router: ComponentConstructor<RouterProps> =
+  router<AuthenticatedRouterProps>(
+    (props: AuthenticatedRouterProps) => <AuthenticatedRouter {...props} />
+  )
 
 export type RouterProps = GenericRouterProps<AuthenticatedRouterProps>

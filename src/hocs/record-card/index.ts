@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 //
-import { ZenypassRecord } from 'services'
+import { ZenypassRecord } from 'zenypass-service'
 import reducer, { ConnectAutomataState, RecordAutomataState } from './reducer'
 import { cleartextOnPendingCleartextOrConnect } from './effects'
 import componentFromEvents, {
@@ -26,8 +26,8 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
-// import { tap } from 'rxjs/operators'
-// const log = (label: string) => console.log.bind(console, label)
+import { tap } from 'rxjs/operators'
+const log = (label: string) => console.log.bind(console, label)
 
 export type RecordCardProps<P extends RecordCardSFCProps> =
 RecordCardHocProps & Rest<P, RecordCardSFCProps>
@@ -127,16 +127,16 @@ export function recordCard <P extends RecordCardSFCProps> (
 ): ComponentConstructor<RecordCardProps<P>> {
   return componentFromEvents<RecordCardProps<P>,P>(
     RecordCardSFC,
-    // () => tap(log('record-card:event:')),
+    () => tap(log('record-card:event:')),
     redux(
       reducer,
       cleartextOnPendingCleartextOrConnect // TODO: effects using `onAuthenticate`
     ),
-    // () => tap(log('record-card:state:')),
+    () => tap(log('record-card:state:')),
     connect<RecordCardState,RecordCardSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // () => tap(log('record-card:view-props:'))
+    ),
+    () => tap(log('record-card:view-props:'))
   )
 }

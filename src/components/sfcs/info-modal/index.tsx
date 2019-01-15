@@ -15,8 +15,14 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
-import { Button, ProgressBar } from 'bootstrap'
+import {
+  Button,
+  ProgressBar,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader
+} from 'bootstrap'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 

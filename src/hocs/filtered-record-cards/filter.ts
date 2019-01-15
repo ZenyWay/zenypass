@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 
-import { ZenypassRecord } from 'services'
+import { ZenypassRecord } from 'zenypass-service'
 
 export { ZenypassRecord }
 

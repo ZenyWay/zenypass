@@ -16,10 +16,10 @@
 
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
-import { always, forType, localizeMenu, mapPayload, MenuSpec, values } from 'utils'
+import { always, forType, localizeMenu, mapPayload, values } from 'utils'
 import compose from 'basic-compose'
 import createL10ns from 'basic-l10n'
-import { KVMap, ZenypassRecord } from 'services'
+import { ZenypassRecord } from 'zenypass-service'
 
 export type AutomataState = 'idle' | 'busy' | 'error'
 
@@ -48,7 +48,7 @@ const newRecordAutomata: AutomataSpec<AutomataState> = {
 
 export default compose.into(0)(
   createAutomataReducer(newRecordAutomata, 'idle'),
-  forType('UPDATE_RECORDS')(into('records')(mapPayload(sortRecords))),
+  forType('UPDATE_RECORDS')(into('records')(mapPayload(sortRecordsByName))),
   forType('PROPS')(
     compose.into(0)(
       into('menu')(({ props }) => homemenu[props.locale].concat(props.menu)),
@@ -57,9 +57,15 @@ export default compose.into(0)(
   )
 )
 
-function sortRecords (
-  records: KVMap<Partial<ZenypassRecord>>
+function sortRecordsByName (
+  records: { [id: string]: Partial<ZenypassRecord> }
 ): Partial<ZenypassRecord>[] {
-  return values(records)
-  .sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0)
+  return values(records).sort(compareRecordNames)
+}
+
+function compareRecordNames (
+  a: Partial<ZenypassRecord>,
+  b: Partial<ZenypassRecord>
+) {
+  return a.name === b.name ? 0 : a.name > b.name ? 1 : -1
 }

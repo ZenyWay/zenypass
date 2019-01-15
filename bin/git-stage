@@ -23,7 +23,7 @@ fi
 # set working directory to package root
 pushd $($(npm bin)/pkg-dir)
 
-# REMOTE="git.zenyway.com:staging.zenypass.git"
+# REMOTE="git.zenyway.com:staging-v2.zenypass.git"
 USER_NAME="$(git config user.name)"
 USER_EMAIL="$(git config user.email)"
 USER_KEY=$(git config user.signingkey)
