@@ -2,11 +2,18 @@
 bin/
 build/
 bower_components/
+draft/
 node_modules/
 # only export the dist folder to npm (src is in git)
 spec/
 src/
+stories/
+stubs/
+template/
 tmp/
+tslint.json
+.storybook/
+.vs/
 .vscode/
 **/*.log
 **/*.tgz
