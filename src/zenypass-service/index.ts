@@ -22,20 +22,19 @@ import getZenypassServiceAccess, {
   ZenypassServiceAccess
 } from '@zenyway/zenypass-service'
 import { newStatusError, ERROR_STATUS } from 'utils'
-import { from as observableFrom, of as observableOf, throwError } from 'rxjs'
-import { map, share, tap } from 'rxjs/operators'
 
 export { AuthorizationDoc, PouchDoc, ZenypassRecord }
 
 export interface ZenypassServiceFactory {
   signup (username: string, passphrase: string): Promise<string>
   signin (username: string, passphrase: string): Promise<ZenypassService>
+  signout (username: string): void
   requestAccess (
     username: string,
     passphrase: string,
     secret: string
   ): Promise<string>
-  getService (username: string): Promise<ZenypassService>
+  getService (username: string): ZenypassService
 }
 
 // tslint:disable-next-line:class-name
@@ -49,15 +48,15 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
   }
 
   signin (username: string, passphrase: string): Promise<ZenypassService> {
-    return (
-      this._services[username]
-      ? throwError(newStatusError(ERROR_STATUS.CONFLICT)) // max one session per username
-      : observableFrom(this._access.signin({ username, passphrase }))
-    )
-    .pipe(
-      tap(service => this._services[username] = service)
-    )
-    .toPromise()
+    if (this._services[username]) {
+      return Promise.reject(newStatusError(ERROR_STATUS.CONFLICT)) // max one session per username
+    }
+    return this._access.signin({ username, passphrase })
+    .then(service => this._services[username] = service)
+  }
+
+  signout (username: string): void {
+    delete this._services[username]
   }
 
   requestAccess (
@@ -68,13 +67,8 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
     return this._access.requestAccess({ username, passphrase }, secret)
   }
 
-  getService (username: string): Promise<ZenypassService> {
-    const service = this._services[username]
-    return (
-      service
-      ? observableOf(service)
-      : throwError(newStatusError(ERROR_STATUS.NOT_FOUND))
-    ).toPromise()
+  getService (username: string): ZenypassService {
+    return this._services[username]
   }
 
   private constructor (
@@ -83,6 +77,7 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
   ) {
     this.signup = this.signup.bind(this)
     this.signin = this.signin.bind(this)
+    this.signout = this.signout.bind(this)
     this.requestAccess = this.requestAccess.bind(this)
     this.getService = this.getService.bind(this)
   }

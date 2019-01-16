@@ -27,7 +27,8 @@ import {
   pluck,
   switchMap,
   startWith,
-  distinctUntilKeyChanged
+  distinctUntilKeyChanged,
+  catchError
 } from 'rxjs/operators'
 import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
@@ -36,6 +37,8 @@ import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 const createRecordRequested = createActionFactory('CREATE_RECORD_REQUESTED')
 const createRecordResolved = createActionFactory('CREATE_RECORD_RESOLVED')
 const createRecordRejected = createActionFactory('CREATE_RECORD_REJECTED')
+const updateRecords = createActionFactory('UPDATE_RECORDS')
+const error = createActionFactory('ERROR')
 
 export function createRecordOnSelectNewRecordMenuItem (
   event$: Observable<StandardAction<any>>,
@@ -56,10 +59,7 @@ function createRecord (): Observable<StandardAction<any>> {
   )
 }
 
-const updateRecords = createActionFactory('UPDATE_RECORDS')
-const error = createActionFactory('ERROR')
-
-const getRecordsUpdates = createPrivilegedRequest(
+const getRecords$ = createPrivilegedRequest(
   (username: string) =>
     observableFrom(zenypass.then(({ getService }) => getService(username)))
     .pipe(switchMap(({ records }) => records.records$))
@@ -76,10 +76,11 @@ export function injectRecordsFromService (
     pluck<any, any>('props'),
     distinctUntilKeyChanged('onAuthenticationRequest'),
     filter(({ onAuthenticationRequest }) => isFunction(onAuthenticationRequest)),
-    switchMap(({ onAuthenticationRequest, session: username }) => getRecordsUpdates(
+    switchMap(({ onAuthenticationRequest, session: username }) => getRecords$(
       toProjection(onAuthenticationRequest),
       username,
       true // unrestricted
-    ))
+    )),
+    catchError(err => observableOf(error(err)))
   )
 }

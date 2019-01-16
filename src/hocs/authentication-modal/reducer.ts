@@ -33,11 +33,11 @@ const automata: AutomataSpec<AutomataState> = {
   dirty: {
     CANCEL: ['pristine', clearValue, clearError],
     CHANGE: [clearError, mapPayloadIntoValue],
-    AUTHENTICATION_REQUESTED: 'authenticating'
+    SUBMIT: 'authenticating'
   },
   authenticating: {
-    AUTHENTICATION_REJECTED: ['dirty', into('error')(mapPayload())],
-    AUTHENTICATION_RESOLVED: [ 'pristine', clearValue, clearError ]
+    UNAUTHORIZED: ['dirty', into('error')(mapPayload())],
+    AUTHENTICATED: [ 'pristine', clearValue, clearError ]
   }
 }
 

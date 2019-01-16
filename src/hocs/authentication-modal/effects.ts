@@ -16,38 +16,42 @@
  */
 //
 import zenypass from 'zenypass-service'
-import { createActionFactory } from 'basic-fsa-factories'
+import { createActionFactory, StandardAction } from 'basic-fsa-factories'
+import { ERROR_STATUS } from 'utils'
 import {
   catchError,
   distinctUntilKeyChanged,
   filter,
-  startWith,
   switchMap
 } from 'rxjs/operators'
-import { Observable } from 'rxjs'
+import { Observable, of as observableOf } from 'rxjs'
 
 const log = (label: string) => console.log.bind(console, label)
 
-const authenticationResolved = createActionFactory('AUTHENTICATION_RESOLVED')
-const authenticationRejected = createActionFactory('AUTHENTICATION_REJECTED')
+const authenticated = createActionFactory('AUTHENTICATED')
+const unauthorized = createActionFactory('UNAUTHORIZED')
+const error = createActionFactory<any>('ERROR')
 
-export function authenticateOnTransitionToAuthenticating (
+export function authenticateOnAuthenticating (
   _: any,
-  state$: Observable<{ state: string, value: string }>
+  state$: Observable<{ state: string, value: string, props: { session: string } }>
 ) {
   return state$.pipe(
     distinctUntilKeyChanged('state'),
-    filter<any>(({ state }) => state === 'authenticating'),
-    switchMap(({ value, props: { session } }) =>
-      zenypass
-        .then(({ getService }) => getService(session))
-        .then(zenypass => zenypass.unlock(value))
-        .then(() => authenticationResolved(session))
-    ),
-    catchError(
-      (err: any, caught$: Observable<any>) => caught$.pipe(
-        startWith(authenticationRejected(err))
-      )
-    )
+    filter(({ state }) => state === 'authenticating'),
+    switchMap(authenticate),
+    catchError(err => observableOf(error(err)))
   )
+}
+
+function authenticate (
+  { value, props: { session } }
+): Promise<StandardAction<any>> {
+  return zenypass
+    .then(({ getService }) => getService(session).unlock(value))
+    .then(() => authenticated(session))
+    .catch(err => err && err.status === ERROR_STATUS.UNAUTHORIZED
+      ? unauthorized(err)
+      : error(err)
+    )
 }

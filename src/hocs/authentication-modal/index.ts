@@ -16,7 +16,7 @@
  */
 //
 import reducer, { AutomataState } from './reducer'
-import { authenticateOnTransitionToAuthenticating } from './effects'
+import { authenticateOnAuthenticating } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -35,6 +35,7 @@ export type AuthenticationModalProps<P extends AuthenticationModalSFCProps> =
 export interface AuthenticationModalHocProps {
   authenticate?: boolean
   session?: string
+  onError?: (error: any) => void
   onCancelled?: () => void
   onAuthenticated?: (sessionId: string) => void
 }
@@ -77,7 +78,7 @@ const mapDispatchToProps:
 createActionDispatchers({
   onChange: 'CHANGE',
   onCancel: 'CANCEL',
-  onSubmit: ['AUTHENTICATION_REQUESTED', preventDefault]
+  onSubmit: ['SUBMIT', preventDefault]
 })
 
 export function authenticationModal <P extends AuthenticationModalSFCProps> (
@@ -88,9 +89,10 @@ export function authenticationModal <P extends AuthenticationModalSFCProps> (
     () => tap(log('authentication-modal:event:')),
     redux(
       reducer,
-      authenticateOnTransitionToAuthenticating,
+      authenticateOnAuthenticating,
+      callHandlerOnEvent('ERROR', ['props', 'onError']),
       callHandlerOnEvent('CANCEL', ['props', 'onCancelled']),
-      callHandlerOnEvent('AUTHENTICATION_RESOLVED', ['props', 'onAuthenticated'])
+      callHandlerOnEvent('AUTHENTICATED', ['props', 'onAuthenticated'])
     ),
     () => tap(log('authentication-modal:state:')),
     connect<AuthenticationModalState, AuthenticationModalSFCProps>(

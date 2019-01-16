@@ -16,13 +16,15 @@
 //
 import zenypass, { PouchDoc, ZenypassRecord } from 'zenypass-service'
 import { createActionFactory } from 'basic-fsa-factories'
-import { Observable, merge } from 'rxjs'
+import { Observable, of as observableOf, merge } from 'rxjs'
 import {
+  catchError,
   distinctUntilKeyChanged,
   filter,
   switchMap
 } from 'rxjs/operators'
 import {
+  ERROR_STATUS,
   createPrivilegedRequest,
   hasEntry,
   hasHandlerProp,
@@ -32,16 +34,15 @@ import {
 
 const cleartextResolved = createActionFactory('CLEARTEXT_RESOLVED')
 const cleartextRejected = createActionFactory('CLEARTEXT_REJECTED')
+const error = createActionFactory('ERROR')
+
 const cleartext = createPrivilegedRequest(
   (username: string, ref: PouchDoc) => zenypass
-    .then(({ getService }) => getService(username))
-    .then(zenypass => zenypass.records.getRecord(ref)),
+    .then(({ getService }) => getService(username).records.getRecord(ref)),
   ({ password }: ZenypassRecord) => cleartextResolved(password),
-  (error: any) => cleartextRejected(
-    error && error.status !== 499 // request cancelled
-    ? error && error.message || 'unknown error'
-    : void 0
-  )
+  (err: any) => err && err.status !== ERROR_STATUS.CLIENT_CLOSED_REQUEST
+    ? error(err)
+    : cleartextRejected()
 )
 
 export function cleartextOnPendingCleartextOrConnect (
@@ -69,6 +70,7 @@ export function cleartextOnPendingCleartextOrConnect (
         record.unrestricted,
         record
       )
-    )
+    ),
+    catchError(err => observableOf(error(err)))
   )
 }

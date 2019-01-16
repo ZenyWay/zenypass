@@ -24,6 +24,7 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
+import { callHandlerOnEvent } from 'utils'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
 import { tap } from 'rxjs/operators'
@@ -36,6 +37,7 @@ export interface RecordCardHocProps {
   record: Partial<ZenypassRecord>
   session: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
+  onError?: (error: any) => void
 }
 
 export interface RecordCardSFCProps
@@ -130,6 +132,7 @@ export function recordCard <P extends RecordCardSFCProps> (
     () => tap(log('record-card:event:')),
     redux(
       reducer,
+      callHandlerOnEvent('ERROR', ['props', 'onError']),
       cleartextOnPendingCleartextOrConnect // TODO: effects using `onAuthenticate`
     ),
     () => tap(log('record-card:state:')),
