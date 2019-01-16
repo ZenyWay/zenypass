@@ -14,6 +14,7 @@
  * Limitations under the License.
  */
 //
+import zenypass from 'zenypass-service'
 import { LOCALES } from './options'
 import { StandardAction, createActionFactory } from 'basic-fsa-factories'
 import * as qs from 'query-string'
@@ -29,8 +30,30 @@ import {
 } from 'rxjs/operators'
 import { Observable, fromEvent, merge } from 'rxjs'
 import { isBoolean, isString } from 'utils'
-
 // const log = (label: string) => console.log.bind(console, label)
+
+const signedOut = createActionFactory('SIGNED_OUT')
+const email = createActionFactory('EMAIL')
+const locale = createActionFactory('LOCALE')
+const signup = createActionFactory('SIGNUP')
+const signin = createActionFactory('SIGNIN')
+
+export function signoutOnLogout (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return event$.pipe(
+    filter(({ type }) => type === 'LOGOUT'),
+    withLatestFrom(state$),
+    pluck('1', 'session'),
+    tap(signout),
+    map(() => signedOut())
+  )
+}
+
+function signout (username: string): Promise<void> {
+  return zenypass.then(({ getService }) => getService(username).signout())
+}
 
 export function openLinkOnCloseInfo (
   event$: Observable<StandardAction<any>>,
@@ -48,11 +71,6 @@ export function openLinkOnCloseInfo (
 function openItemLink ({ target, href }: HTMLLinkElement) {
   window.open(href, target)
 }
-
-const email = createActionFactory('EMAIL')
-const locale = createActionFactory('LOCALE')
-const signup = createActionFactory('SIGNUP')
-const signin = createActionFactory('SIGNIN')
 
 export function injectParamsFromUrl () {
   // support url hash in storybook (iframe in development mode)

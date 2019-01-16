@@ -21,7 +21,11 @@ import {
   actionFromError,
   actionFromAuthenticationPageType
 } from './dispatchers'
-import { injectParamsFromUrl, openLinkOnCloseInfo } from './effects'
+import {
+  injectParamsFromUrl,
+  openLinkOnCloseInfo,
+  signoutOnLogout
+} from './effects'
 import MENUS, { DEFAULT_LOCALE } from './options'
 import componentFromEvents, {
   ComponentConstructor,
@@ -106,7 +110,8 @@ export function router <P extends RouterSFCProps> (
     redux(
       reducer,
       injectParamsFromUrl,
-      openLinkOnCloseInfo
+      openLinkOnCloseInfo,
+      signoutOnLogout
     ),
     () => tap(log('router:state:')),
     connect<RouterState, RouterSFCProps>(

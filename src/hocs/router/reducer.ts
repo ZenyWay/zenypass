@@ -31,7 +31,7 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     // TODO remove comments when corresponding pages are available
     // DEVICES: '/devices',
     // STORAGE: '/storage',
-    LOGOUT: ['/signin', into('session')(always())],
+    SIGNED_OUT: ['/signin', into('session')(always())],
     FATAL: ['/fatal', mapPayloadIntoError]
   },
   '/signup': {

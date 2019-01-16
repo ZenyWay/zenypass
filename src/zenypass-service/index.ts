@@ -18,7 +18,7 @@ import getZenypassServiceAccess, {
   AuthorizationDoc,
   PouchDoc,
   ZenypassRecord,
-  ZenypassService,
+  ZenypassService as CoreZenypassService,
   ZenypassServiceAccess
 } from '@zenyway/zenypass-service'
 import { newStatusError, ERROR_STATUS } from 'utils'
@@ -28,13 +28,16 @@ export { AuthorizationDoc, PouchDoc, ZenypassRecord }
 export interface ZenypassServiceFactory {
   signup (username: string, passphrase: string): Promise<string>
   signin (username: string, passphrase: string): Promise<ZenypassService>
-  signout (username: string): void
   requestAccess (
     username: string,
     passphrase: string,
     secret: string
   ): Promise<string>
   getService (username: string): ZenypassService
+}
+
+export interface ZenypassService extends CoreZenypassService {
+  signout (): void
 }
 
 // tslint:disable-next-line:class-name
@@ -52,11 +55,9 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
       return Promise.reject(newStatusError(ERROR_STATUS.CONFLICT)) // max one session per username
     }
     return this._access.signin({ username, passphrase })
-    .then(service => this._services[username] = service)
-  }
-
-  signout (username: string): void {
-    delete this._services[username]
+    .then(service =>
+      this._services[username] = this._withSignout(username, service)
+    )
   }
 
   requestAccess (
@@ -77,9 +78,17 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
   ) {
     this.signup = this.signup.bind(this)
     this.signin = this.signin.bind(this)
-    this.signout = this.signout.bind(this)
     this.requestAccess = this.requestAccess.bind(this)
     this.getService = this.getService.bind(this)
+  }
+
+  private _withSignout (
+    username: string,
+    service: CoreZenypassService
+  ): ZenypassService {
+    const wrapped: ZenypassService = Object.create(service)
+    wrapped.signout = () => delete this._services[username]
+    return wrapped
   }
 }
 
