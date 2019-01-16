@@ -37,8 +37,15 @@ export function actionFromMenuItem (item: HTMLElement) {
 }
 
 function isExternalLinkItem (item: any): item is HTMLLinkElement {
-  const { origin, href } = item || {} as HTMLLinkElement
-  return !!href && !!href.indexOf(origin)
+  const { baseURI, href } = item || {} as HTMLLinkElement
+  return domain(href) !== domain(baseURI)
+}
+
+const DOMAIN_REGEXP = /(?:https?:\/\/)?([^/]+)\//i
+
+function domain (url?: string): string {
+  const match = url && DOMAIN_REGEXP.exec(url)
+  return match && match[1].toLowerCase()
 }
 
 const MENU_ITEM_REGEX = /^([\w-]+)(?:\/([\w-]+))?$/
