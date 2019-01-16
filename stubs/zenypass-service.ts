@@ -16,13 +16,13 @@ import { interval, NEVER, of as observable, Observable, throwError } from 'rxjs'
 import { concat, delay, switchMap, take, takeUntil } from 'rxjs/operators'
 import {
   AuthorizationDoc,
-  ZenypassRecord,
   PouchDoc,
+  ZenypassRecord,
   ZenypassService,
-  ZenypassRecordService
+  ZenypassServiceAccess
 } from '@zenyway/zenypass-service'
 
-export { AuthorizationDoc, ZenypassRecord }
+export { AuthorizationDoc, PouchDoc, ZenypassRecord }
 
 export type KVMap<V> = { [key: string]: V }
 
@@ -88,46 +88,47 @@ const RECORDS = [
   {} as KVMap<Partial<ZenypassRecord>>
 )
 
-export const zenypass = {
+export default Promise.resolve({
   signup,
   signin,
   getService
-}
+})
 
-function signup (creds: Credentials, opts?: any): Observable<string> {
-  const { username, passphrase } = creds
+function signup (username: string, passphrase: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(
     () => (username !== USERNAME)
     && (passphrase && passphrase.length >= MIN_PASSWORD_LENGTH)
       ? observable(SESSION_ID)
       : throwError(FORBIDDEN)
     )
+    .toPromise()
 }
 
-function signin (creds: Credentials, opts?: any): Observable<string> {
-  const { username, passphrase } = creds
+function signin (username: string, passphrase: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(
     () => username === USERNAME && passphrase === PASSWORD
-      ? observable(SESSION_ID)
+      ? observable(username)
       : throwError(UNAUTHORIZED)
     )
+    .toPromise()
 }
 
-function getService (session: string) {
+function getService (username: string) {
   const records = {
-    records$: getRecords$(session),
-    getRecord: getRecord.bind(void 0, session),
-    putRecord: putRecord.bind(void 0, session)
+    records$: getRecords$(),
+    getRecord: getRecord.bind(void 0, username),
+    putRecord: putRecord.bind(void 0, username)
   }
   return { unlock, records }
 }
 
-function unlock (password: string): Observable<string> {
+function unlock (password: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(
     () => password === PASSWORD
       ? observable(SESSION_ID)
       : throwError(UNAUTHORIZED)
     )
+    .toPromise()
 }
 
 export function authorize (sessionId: string): Observable<string> {
@@ -153,12 +154,8 @@ export function getAuthorizations$ (sessionId: string): Observable<KVMap<Authori
   : throwError(UNAUTHORIZED)
 }
 
-function getRecords$ (
-  sessionId: string
-): Observable<KVMap<Partial<ZenypassRecord>>> {
-  return sessionId === SESSION_ID
-  ? observable(RECORDS).pipe(concat(NEVER))
-  : throwError(UNAUTHORIZED)
+function getRecords$ (): Observable<KVMap<Partial<ZenypassRecord>>> {
+  return observable(RECORDS).pipe(concat(NEVER))
 }
 
 export const getRecord = accessRecordService<ZenypassRecord>(
