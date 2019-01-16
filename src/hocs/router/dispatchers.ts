@@ -33,12 +33,12 @@ const selectMenuItem = createActionFactory('SELECT_MENU_ITEM')
 const fatal = createActionFactory('FATAL')
 
 export function actionFromMenuItem (item: HTMLElement) {
-  return isLinkItem(item) ? link(item) : actionFromNonLinkMenuItem(item)
+  return isExternalLinkItem(item) ? link(item) : actionFromNonLinkMenuItem(item)
 }
 
-function isLinkItem (item: any): item is HTMLLinkElement {
-  const { baseURI, href } = item || {} as HTMLLinkElement
-  return href && (href.indexOf(baseURI) < 0)
+function isExternalLinkItem (item: any): item is HTMLLinkElement {
+  const { origin, href } = item || {} as HTMLLinkElement
+  return !!href && !!href.indexOf(origin)
 }
 
 const MENU_ITEM_REGEX = /^([\w-]+)(?:\/([\w-]+))?$/
