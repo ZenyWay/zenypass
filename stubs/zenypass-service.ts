@@ -31,12 +31,12 @@ interface Credentials {
   passphrase: string
 }
 
+export const USERNAME = 'me@zw.fr'
+const PASSWORD = '!!!'
 const AUTHENTICATION_DELAY = 1500 // ms
 const AUTHORIZATION_DELAY = 10000 // ms
 const TOKEN_DELAY = 500 // ms
 const RECORD_SERVICE_DELAY = 500 // ms
-const USERNAME = 'me@zw.fr'
-const PASSWORD = '!!!'
 const MIN_PASSWORD_LENGTH = 4
 const SESSION_ID = '42'
 const TOKEN = 'BCDE FGHI JKLN'
@@ -114,8 +114,9 @@ function signin (username: string, passphrase: string): Promise<string> {
 }
 
 function getService (username: string) {
+  if (username !== USERNAME) { return }
   const records = {
-    records$: getRecords$(),
+    records$: observable(RECORDS).pipe(concat(NEVER)),
     getRecord: getRecord.bind(void 0, username),
     putRecord: putRecord.bind(void 0, username)
   }
@@ -154,10 +155,6 @@ export function getAuthorizations$ (sessionId: string): Observable<KVMap<Authori
   : throwError(UNAUTHORIZED)
 }
 
-function getRecords$ (): Observable<KVMap<Partial<ZenypassRecord>>> {
-  return observable(RECORDS).pipe(concat(NEVER))
-}
-
 export const getRecord = accessRecordService<ZenypassRecord>(
   ref => ({ ...ref, password: RECORD_PASSWORD })
 )
@@ -170,20 +167,18 @@ export const deleteRecord = accessRecordService<PouchDoc>(ref => ({
 }))
 
 function accessRecordService <T> (result: Function) {
-  return function (sessionId: string, arg: any): Promise<T> {
-    return new Promise(function (resolve, reject) {
-      setTimeout(
-        () => sessionId === SESSION_ID
-          ? resolve(result(arg))
-          : reject(UNAUTHORIZED),
-        RECORD_SERVICE_DELAY
-      )
-    })
+  return function (username: string, arg: any): Promise<T> {
+    return stall(RECORD_SERVICE_DELAY)(
+      () => username === USERNAME
+        ? observable(result(arg))
+        : throwError(UNAUTHORIZED)
+    )
+    .toPromise()
   }
 }
 
 function stall (ms: number) {
-  return function <T> (fn: () => Observable<T>) {
+  return function <T> (fn: () => Observable<T> | Promise<T>) {
     return interval(ms).pipe(take(1), switchMap(fn))
   }
 }

@@ -24,9 +24,11 @@ import {
 } from 'components'
 import { withAuthentication } from 'hocs'
 import { MENU } from './helpers/consts'
+import { USERNAME } from '../stubs/zenypass-service'
 
 const attrs = {
   locale: 'fr',
+  session: USERNAME,
   menu: MENU.slice(1), // remove entry from home-page
   onLogout: action('LOGOUT'),
   onSelectMenuItem: action('SELECT_MENU_ITEM')
