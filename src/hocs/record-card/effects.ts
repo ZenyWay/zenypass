@@ -37,15 +37,18 @@ const cleartextRejected = createActionFactory('CLEARTEXT_REJECTED')
 const error = createActionFactory('ERROR')
 
 const cleartext = createPrivilegedRequest(
-  (username: string, ref: PouchDoc) => zenypass
-    .then(({ getService }) => getService(username).records.getRecord(ref)),
+  (username: string, ref: PouchDoc) =>
+    zenypass.then(({ getService }) =>
+      getService(username).records.getRecord(ref)
+    ),
   ({ password }: ZenypassRecord) => cleartextResolved(password),
-  (err: any) => err && err.status !== ERROR_STATUS.CLIENT_CLOSED_REQUEST
-    ? error(err)
-    : cleartextRejected()
+  (err: any) =>
+    err && err.status !== ERROR_STATUS.CLIENT_CLOSED_REQUEST
+      ? error(err)
+      : cleartextRejected()
 )
 
-export function cleartextOnPendingCleartextOrConnect (
+export function cleartextOnPendingCleartextOrConnect(
   _: any,
   state$: Observable<any>
 ) {
@@ -63,8 +66,8 @@ export function cleartextOnPendingCleartextOrConnect (
   )
   return merge(cleartext$, edit$, connect$).pipe(
     filter<any>(hasHandlerProp('onAuthenticationRequest')),
-    switchMap(
-      ({ props: { onAuthenticationRequest, session, record } }) => cleartext(
+    switchMap(({ props: { onAuthenticationRequest, session, record } }) =>
+      cleartext(
         toProjection(onAuthenticationRequest),
         session,
         record.unrestricted,

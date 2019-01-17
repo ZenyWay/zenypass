@@ -28,7 +28,7 @@ export enum ERROR_STATUS {
   INTERNAL_SERVER_ERROR = 500
 }
 
-export function newStatusError (
+export function newStatusError(
   status = ERROR_STATUS.INTERNAL_SERVER_ERROR,
   message = ''
 ) {

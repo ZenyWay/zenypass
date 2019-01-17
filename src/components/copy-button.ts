@@ -16,6 +16,6 @@
 import { copyButton, CopyButtonProps } from 'hocs'
 import { FAIconButton, FAIconButtonProps } from './sfcs/fa-icon'
 
-export const CopyButton = copyButton <FAIconButtonProps>(FAIconButton)
+export const CopyButton = copyButton<FAIconButtonProps>(FAIconButton)
 
 export { CopyButtonProps }

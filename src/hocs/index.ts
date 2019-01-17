@@ -14,11 +14,7 @@
  * Limitations under the License.
  */
 //
-export {
-  Component,
-  ComponentConstructor,
-  SFC
-} from 'component-from-events'
+export { Component, ComponentConstructor, SFC } from 'component-from-events'
 export { autoformatInput, AutoformatInputProps } from './autoformat-input'
 export {
   agentAuthorizationCard,

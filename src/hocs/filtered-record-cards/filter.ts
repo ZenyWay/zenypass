@@ -19,12 +19,14 @@ import { ZenypassRecord } from 'zenypass-service'
 export { ZenypassRecord }
 
 const TARGET_RECORD_FIELDS: [
-  'name', 'url', 'username', 'comments', 'keywords'
-] = [
-  'name', 'url', 'username', 'comments', 'keywords'
-]
+  'name',
+  'url',
+  'username',
+  'comments',
+  'keywords'
+] = ['name', 'url', 'username', 'comments', 'keywords']
 
-export default function (
+export default function(
   tokens: string[],
   records: Partial<ZenypassRecord>[]
 ): boolean[] {
@@ -37,7 +39,7 @@ export default function (
   return result
 }
 
-function recordIncludesAllTokens (
+function recordIncludesAllTokens(
   tokens: string[],
   record: Partial<ZenypassRecord>
 ): boolean {
@@ -47,7 +49,7 @@ function recordIncludesAllTokens (
   return true
 }
 
-function recordIncludesToken (
+function recordIncludesToken(
   token: string,
   record: Partial<ZenypassRecord>
 ): boolean {
@@ -57,7 +59,7 @@ function recordIncludesToken (
   return false
 }
 
-function fieldIncludesToken (token: string, field?: string[] | string): boolean {
+function fieldIncludesToken(token: string, field?: string[] | string): boolean {
   if (Array.isArray(field)) {
     for (const val of field) {
       if (fieldIncludesToken(token, val)) return true

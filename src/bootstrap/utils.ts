@@ -15,6 +15,6 @@
  */
 //
 const DEFAULT_HREF = '#'
-export function orDefaultHref (Tag: string, href?: string) {
-  return href || (Tag === 'a') && DEFAULT_HREF
+export function orDefaultHref(Tag: string, href?: string) {
+  return href || (Tag === 'a' && DEFAULT_HREF)
 }

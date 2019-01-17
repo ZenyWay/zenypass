@@ -30,7 +30,9 @@ import { pluck as select } from './functional'
 import { mapPayload } from './reducers'
 
 export type StandardActionSpec =
-  (string | ((...args: any[]) => any))[] | string | ((...args: any[]) => any)
+  | (string | ((...args: any[]) => any))[]
+  | string
+  | ((...args: any[]) => any)
 
 export type Handler = (...args: any) => void
 
@@ -39,27 +41,29 @@ export type Effect<S = any> = (
   state$: Observable<S>
 ) => Observable<StandardAction<any>>
 
-export function stateOnEvent (predicate: (event: StandardAction<any>) => boolean) {
-  return function (
+export function stateOnEvent(
+  predicate: (event: StandardAction<any>) => boolean
+) {
+  return function(
     event$: Observable<StandardAction<any>>,
     state$: Observable<any>
   ) {
     return event$.pipe(
       filter(predicate),
       withLatestFrom(state$),
-      pluck<any,any>('1')
+      pluck<any, any>('1')
     )
   }
 }
 
-export function eventOnStateEntryChange <S = any, P = any> (
+export function eventOnStateEntryChange<S = any, P = any>(
   type: string | ((arg: P) => StandardAction<P>),
   key: string[] | string | ((state: S) => any),
   payload: (state: S) => P = noop as (state: S) => any
 ) {
   const action = isFunction(type) ? type : createActionFactory(type)
   const pluckEntry = isFunction(key) ? key : select(key)
-  return function (_: any, state$: Observable<S>) {
+  return function(_: any, state$: Observable<S>) {
     return state$.pipe(
       distinctUntilChanged(void 0, pluckEntry),
       map(state => action(payload(state)))
@@ -67,55 +71,53 @@ export function eventOnStateEntryChange <S = any, P = any> (
   }
 }
 
-export function callHandlerOnEvent <S = any> (
+export function callHandlerOnEvent<S = any>(
   type: string,
   handler: string | string[] | ((state: S) => Handler),
   payload = mapPayload() as (state: S, event: StandardAction<any>) => any
 ) {
-  return applyHandlerOnEvent(
-    type,
-    handler,
-    (state, event) => [payload(state, event)]
-  )
+  return applyHandlerOnEvent(type, handler, (state, event) => [
+    payload(state, event)
+  ])
 }
 
-export function applyHandlerOnEvent <S = any> (
+export function applyHandlerOnEvent<S = any>(
   type: string,
   handler: string | string[] | ((state: S) => Handler),
-  payload = mapPayload(v => [v]) as (state: S, event: StandardAction<any>) => any[]
+  payload = mapPayload(v => [v]) as (
+    state: S,
+    event: StandardAction<any>
+  ) => any[]
 ) {
   return !isFunction(handler)
-  ? applyHandlerOnEvent(type, select(handler), payload)
-  : function (
-    event$: Observable<StandardAction<any>>,
-    state$: Observable<S>
-  ) {
-    return event$.pipe(
-      filter(event => event.type === type),
-      withLatestFrom(state$),
-      map(([ event, state ]) => ({ event, state, handler: handler(state) })),
-      filter(({ handler }) => isFunction(handler)),
-      tap(({ event, state, handler }) => handler(...payload(state, event))),
-      ignoreElements()
-    )
-  }
+    ? applyHandlerOnEvent(type, select(handler), payload)
+    : function(event$: Observable<StandardAction<any>>, state$: Observable<S>) {
+        return event$.pipe(
+          filter(event => event.type === type),
+          withLatestFrom(state$),
+          map(([event, state]) => ({ event, state, handler: handler(state) })),
+          filter(({ handler }) => isFunction(handler)),
+          tap(({ event, state, handler }) => handler(...payload(state, event))),
+          ignoreElements()
+        )
+      }
 }
 
-export function toProjection <I,O> (
+export function toProjection<I, O>(
   handler: (res$: Observer<O>, req?: I) => void
 ) {
-  return function (req?: I): Observable<O> {
+  return function(req?: I): Observable<O> {
     const res$ = new Subject<O>()
     Promise.resolve().then(() => handler(res$, req)) // asap
     return res$
   }
 }
 
-export function hasHandlerProp <
+export function hasHandlerProp<
   K extends string,
   P extends { [prop in K]?: Function } = { [prop in K]?: Function }
-> (prop: K) {
-  return function ({ props }: { props: P }) {
+>(prop: K) {
+  return function({ props }: { props: P }) {
     return isFunction(props[prop])
   }
 }

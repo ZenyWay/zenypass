@@ -29,8 +29,9 @@ import { createActionDispatchers } from 'basic-fsa-factories'
 import { tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
-export type AuthenticationModalProps<P extends AuthenticationModalSFCProps> =
-  AuthenticationModalHocProps & Rest<P, AuthenticationModalSFCProps>
+export type AuthenticationModalProps<
+  P extends AuthenticationModalSFCProps
+> = AuthenticationModalHocProps & Rest<P, AuthenticationModalSFCProps>
 
 export interface AuthenticationModalHocProps {
   authenticate?: boolean
@@ -40,16 +41,17 @@ export interface AuthenticationModalHocProps {
   onAuthenticated?: (sessionId: string) => void
 }
 
-export interface AuthenticationModalSFCProps extends AuthenticationModalSFCHandlerProps {
+export interface AuthenticationModalSFCProps
+  extends AuthenticationModalSFCHandlerProps {
   open?: boolean
   value?: string
   error?: boolean
-  pending?: boolean,
+  pending?: boolean
 }
 
 export interface AuthenticationModalSFCHandlerProps {
-  onChange?: (value: string) => void,
-  onCancel?: (event: Event) => void,
+  onChange?: (value: string) => void
+  onCancel?: (event: Event) => void
   onSubmit?: (event: Event) => void
 }
 
@@ -60,10 +62,22 @@ interface AuthenticationModalState {
   error?: string
 }
 
-function mapStateToProps (
-  { props, value, error, state }: AuthenticationModalState
-): Rest<AuthenticationModalSFCProps, AuthenticationModalSFCHandlerProps> {
-  const { authenticate: open, onCancelled, onAuthenticated, session, ...attrs } = props
+function mapStateToProps({
+  props,
+  value,
+  error,
+  state
+}: AuthenticationModalState): Rest<
+  AuthenticationModalSFCProps,
+  AuthenticationModalSFCHandlerProps
+> {
+  const {
+    authenticate: open,
+    onCancelled,
+    onAuthenticated,
+    session,
+    ...attrs
+  } = props
   return {
     ...attrs,
     open,
@@ -73,15 +87,15 @@ function mapStateToProps (
   }
 }
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => AuthenticationModalSFCHandlerProps =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => AuthenticationModalSFCHandlerProps = createActionDispatchers({
   onChange: 'CHANGE',
   onCancel: 'CANCEL',
   onSubmit: ['SUBMIT', preventDefault]
 })
 
-export function authenticationModal <P extends AuthenticationModalSFCProps> (
+export function authenticationModal<P extends AuthenticationModalSFCProps>(
   Modal: SFC<P>
 ): ComponentConstructor<AuthenticationModalProps<P>> {
   return componentFromEvents<AuthenticationModalProps<P>, P>(

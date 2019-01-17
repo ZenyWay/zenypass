@@ -28,20 +28,25 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { createActionDispatchers, createActionFactory, createActionFactories } from 'basic-fsa-factories'
+import {
+  createActionDispatchers,
+  createActionFactory,
+  createActionFactories
+} from 'basic-fsa-factories'
 import { preventDefault, shallowEqual } from 'utils'
 import { distinctUntilChanged, tap } from 'rxjs/operators'
 const log = (label: string) => console.log.bind(console, label)
 
-export type ConnectionModalProps<P extends ConnectionModalSFCProps> =
-ConnectionModalControllerProps & Rest<P,ConnectionModalSFCProps>
+export type ConnectionModalProps<
+  P extends ConnectionModalSFCProps
+> = ConnectionModalControllerProps & Rest<P, ConnectionModalSFCProps>
 
 export interface ConnectionModalControllerProps {
   onDone?: () => void
 }
 
 export interface ConnectionModalSFCProps
-extends ConnectionModalSFCHandlerProps {
+  extends ConnectionModalSFCHandlerProps {
   manual?: boolean
   cleartext?: boolean
   error?: boolean
@@ -75,30 +80,31 @@ const STATE_TO_COPY_PROP = {
   'copying-username': 'username'
 }
 
-function mapStateToProps (
-  {
-    props,
-    manual,
-    cleartext,
-    error,
-    state
-  }: ConnectionModalState
-): Rest<ConnectionModalSFCProps,ConnectionModalSFCHandlerProps> {
+function mapStateToProps({
+  props,
+  manual,
+  cleartext,
+  error,
+  state
+}: ConnectionModalState): Rest<
+  ConnectionModalSFCProps,
+  ConnectionModalSFCHandlerProps
+> {
   const copy = STATE_TO_COPY_PROP[state]
   const { onDone, ...attrs } = props
   return { ...attrs, manual, cleartext, error, copy }
 }
 
 const copied = createActionFactories({
-  'username': 'USERNAME_COPIED',
-  'password': 'PASSWORD_COPIED'
+  username: 'USERNAME_COPIED',
+  password: 'PASSWORD_COPIED'
 })
 
 const copyError = createActionFactory('COPY_ERROR')
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => ConnectionModalSFCHandlerProps =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => ConnectionModalSFCHandlerProps = createActionDispatchers({
   onCancel: 'CANCEL',
   onToggleManual: 'TOGGLE_MANUAL',
   onToggleCleartext: 'TOGGLE_CLEARTEXT',
@@ -107,16 +113,16 @@ createActionDispatchers({
   onPasswordCopied: onFieldCopied('password')
 })
 
-function onFieldCopied (field: 'username' | 'password') {
-  return function (success: boolean) {
+function onFieldCopied(field: 'username' | 'password') {
+  return function(success: boolean) {
     return success ? copied[field]() : copyError(field)
   }
 }
 
-export function connectionModal <P extends ConnectionModalSFCProps> (
+export function connectionModal<P extends ConnectionModalSFCProps>(
   ConnectionModal: SFC<P>
 ): ComponentConstructor<ConnectionModalProps<P>> {
-  return componentFromEvents<ConnectionModalProps<P>,P>(
+  return componentFromEvents<ConnectionModalProps<P>, P>(
     ConnectionModal,
     () => tap(log('controlled-connection-modal:event:')),
     redux(
@@ -126,7 +132,7 @@ export function connectionModal <P extends ConnectionModalSFCProps> (
       openWindowOnClickCopyWhenNotManual
     ),
     () => tap(log('controlled-connection-modal:state:')),
-    connect<ConnectionModalState,ConnectionModalSFCProps>(
+    connect<ConnectionModalState, ConnectionModalSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),

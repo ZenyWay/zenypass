@@ -32,7 +32,7 @@ const automata: AutomataSpec<AutomataState> = {
     CLICK: ['authenticating', intoError(always(''))]
   },
   authenticating: {
-    CANCEL: ['init',mapPayloadIntoError],
+    CANCEL: ['init', mapPayloadIntoError],
     AUTHENTICATED: 'authorizing'
   },
   authorizing: {

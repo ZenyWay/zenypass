@@ -37,7 +37,7 @@ const automata: AutomataSpec<AutomataState> = {
   },
   authenticating: {
     UNAUTHORIZED: ['dirty', into('error')(mapPayload())],
-    AUTHENTICATED: [ 'pristine', clearValue, clearError ]
+    AUTHENTICATED: ['pristine', clearValue, clearError]
   }
 }
 

@@ -32,9 +32,13 @@ const authenticated = createActionFactory('AUTHENTICATED')
 const unauthorized = createActionFactory('UNAUTHORIZED')
 const error = createActionFactory<any>('ERROR')
 
-export function authenticateOnAuthenticating (
+export function authenticateOnAuthenticating(
   _: any,
-  state$: Observable<{ state: string, value: string, props: { session: string } }>
+  state$: Observable<{
+    state: string
+    value: string
+    props: { session: string }
+  }>
 ) {
   return state$.pipe(
     distinctUntilKeyChanged('state'),
@@ -44,14 +48,16 @@ export function authenticateOnAuthenticating (
   )
 }
 
-function authenticate (
-  { value, props: { session } }
-): Promise<StandardAction<any>> {
+function authenticate({
+  value,
+  props: { session }
+}): Promise<StandardAction<any>> {
   return zenypass
     .then(({ getService }) => getService(session).unlock(value))
     .then(() => authenticated(session))
-    .catch(err => err && err.status === ERROR_STATUS.UNAUTHORIZED
-      ? unauthorized(err)
-      : error(err)
+    .catch(err =>
+      err && err.status === ERROR_STATUS.UNAUTHORIZED
+        ? unauthorized(err)
+        : error(err)
     )
 }

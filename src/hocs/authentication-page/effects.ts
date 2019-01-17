@@ -65,30 +65,30 @@ const authenticated = createActionFactory<void>('AUTHENTICATED')
 const unauthorized = createActionFactory<void>('UNAUTHORIZED')
 const error = createActionFactory<any>('ERROR')
 
-export function focusEmailInputOnMount (
+export function focusEmailInputOnMount(
   event$: Observable<StandardAction<any>>
 ) {
   return event$.pipe(
-    filter(({ type, payload }) => (type === 'INPUT_REF') && !!payload.email),
+    filter(({ type, payload }) => type === 'INPUT_REF' && !!payload.email),
     tap(({ payload }) => payload.email.focus()),
     ignoreElements()
   )
 }
 
-export function focusInputOnEvent (type: string, input: string) {
-  return function focusPasswordInputOnValidEmail (
+export function focusInputOnEvent(type: string, input: string) {
+  return function focusPasswordInputOnValidEmail(
     event$: Observable<StandardAction<any>>,
     state$: Observable<any>
   ) {
     return stateOnEvent(hasEntry('type', type))(event$, state$).pipe(
-      pluck<any,HTMLElement>('inputs', input),
+      pluck<any, HTMLElement>('inputs', input),
       tap(input => input && input.focus()),
       ignoreElements()
     )
   }
 }
 
-export function callAuthenticationPageTypeHandlerOnStatePagePending (
+export function callAuthenticationPageTypeHandlerOnStatePagePending(
   _: any,
   state$: Observable<any>
 ) {
@@ -99,64 +99,70 @@ export function callAuthenticationPageTypeHandlerOnStatePagePending (
       state: state.split(':')
     })),
     distinctUntilChanged(
-      (a, b) => (a[0] === b[0]) && (a[3] === b[3]), // compare type and option
+      (a, b) => a[0] === b[0] && a[3] === b[3], // compare type and option
       select('state')
     ),
-    filter(({ handler, state }) => (state[3] === 'pending') && isFunction(handler)),
-    tap(({ handler, state }) => Promise.resolve().then(() => handler(state[0]))),
+    filter(
+      ({ handler, state }) => state[3] === 'pending' && isFunction(handler)
+    ),
+    tap(({ handler, state }) =>
+      Promise.resolve().then(() => handler(state[0]))
+    ),
     ignoreElements()
   )
 }
 
-export function signupOrSigninOrAuthorizeOnTypePropChange (
+export function signupOrSigninOrAuthorizeOnTypePropChange(
   _: any,
   state$: Observable<any>
 ) {
   return state$.pipe(
-    pluck<any,AuthenticationPageType>('props', 'type'),
+    pluck<any, AuthenticationPageType>('props', 'type'),
     distinctUntilChanged(),
     map((type = AuthenticationPageType.Signin) => changePageType[type]())
   )
 }
 
-export function validateEmailOnEmailPropChange (
+export function validateEmailOnEmailPropChange(
   _: any,
   state$: Observable<any>
 ) {
   return state$.pipe(
-    pluck<any,string>('props', 'email'),
+    pluck<any, string>('props', 'email'),
     skipWhile(email => !email), // ignore initial undefined, if any
     distinctUntilChanged(),
-    map(email => isInvalidEmail(email) ? invalidEmail() : validEmail())
+    map(email => (isInvalidEmail(email) ? invalidEmail() : validEmail()))
   )
 }
 
-export function validatePasswordOnChangePassword (
+export function validatePasswordOnChangePassword(
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
   return stateOnEvent(hasEntry('type', 'CHANGE_PASSWORD'))(event$, state$).pipe(
-    map(state => hasValidPassword(state) ? validPassword() : invalidPassword())
+    map(state =>
+      hasValidPassword(state) ? validPassword() : invalidPassword()
+    )
   )
 }
 
-export function validateConfirmOnChangeConfirm (
+export function validateConfirmOnChangeConfirm(
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
   return stateOnEvent(hasEntry('type', 'CHANGE_CONFIRM'))(event$, state$).pipe(
-    map(state => hasValidConfirm(state) ? validConfirm() : invalidConfirm())
+    map(state => (hasValidConfirm(state) ? validConfirm() : invalidConfirm()))
   )
 }
 
-export function serviceSigninOnSubmitFromSigninSubmitting (
+export function serviceSigninOnSubmitFromSigninSubmitting(
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
   return stateOnEvent(({ type }) => type === 'SUBMIT')(event$, state$).pipe(
     filter<any>(({ state }) => /^signin:submitting/.test(state)),
-    switchMap(
-      ({ props: { email }, password }) => zenypass
+    switchMap(({ props: { email }, password }) =>
+      zenypass
         .then(({ signin }) => signin(email, password))
         .then(() => authenticated(email))
         .catch(err => unauthorizedOrError(err))
@@ -164,14 +170,14 @@ export function serviceSigninOnSubmitFromSigninSubmitting (
   )
 }
 
-export function serviceSignupOnSubmitFromSignupSubmitting (
+export function serviceSignupOnSubmitFromSignupSubmitting(
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
   return stateOnEvent(({ type }) => type === 'SUBMIT')(event$, state$).pipe(
     filter<any>(({ state }) => state === 'signup:submitting'),
-    switchMap(
-      ({ props, password }) => zenypass
+    switchMap(({ props, password }) =>
+      zenypass
         .then(({ signup }) => signup(props.email, password))
         .then(() => togglePageType())
         .catch(err => error(err))
@@ -181,25 +187,26 @@ export function serviceSignupOnSubmitFromSignupSubmitting (
 
 const MIN_SIGNUP_PASSWORD_LENGTH = 4
 const MIN_SIGNIN_PASSWORD_LENGTH = 1
-function hasValidPassword (state: { props?: any, password?: string } = {}) {
-  const min =
-    isSignup(state) ? MIN_SIGNUP_PASSWORD_LENGTH : MIN_SIGNIN_PASSWORD_LENGTH
+function hasValidPassword(state: { props?: any; password?: string } = {}) {
+  const min = isSignup(state)
+    ? MIN_SIGNUP_PASSWORD_LENGTH
+    : MIN_SIGNIN_PASSWORD_LENGTH
   const { password } = state
   return password && password.length >= min
 }
 
-function isSignup ({ props } = {} as any) {
+function isSignup({ props } = {} as any) {
   return props && props.type === AuthenticationPageType.Signup
 }
 
-function hasValidConfirm (
-  { password, confirm } = {} as { password?: string, confirm?: string }
+function hasValidConfirm(
+  { password, confirm } = {} as { password?: string; confirm?: string }
 ) {
   return confirm && confirm === password
 }
 
-function unauthorizedOrError (err: any) {
+function unauthorizedOrError(err: any) {
   return err && err.status !== ERROR_STATUS.UNAUTHORIZED
-  ? error(err)
-  : unauthorized()
+    ? error(err)
+    : unauthorized()
 }

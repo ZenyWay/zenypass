@@ -14,8 +14,15 @@
  * Limitations under the License.
  */
 //
-export type BasicColor = 'primary' | 'secondary' | 'success' | 'danger'
-  | 'warning' | 'info' | 'light' | 'dark'
+export type BasicColor =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'danger'
+  | 'warning'
+  | 'info'
+  | 'light'
+  | 'dark'
 
 export interface UnknownProps {
   [attr: string]: unknown

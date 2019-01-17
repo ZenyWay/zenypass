@@ -16,11 +16,7 @@
 //
 import zenypass, { ZenypassRecord } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import {
-  createPrivilegedRequest,
-  toProjection,
-  isFunction
-} from 'utils'
+import { createPrivilegedRequest, toProjection, isFunction } from 'utils'
 import {
   catchError,
   distinctUntilKeyChanged,
@@ -34,16 +30,17 @@ import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
 // const log = (label: string) => console.log.bind(console, label)
 
-const createRecordRequested =
-  createActionFactory<void>('CREATE_RECORD_REQUESTED')
-const createRecordResolved =
-  createActionFactory<ZenypassRecord>('CREATE_RECORD_RESOLVED')
-const createRecordRejected =
-  createActionFactory<any>('CREATE_RECORD_REJECTED')
+const createRecordRequested = createActionFactory<void>(
+  'CREATE_RECORD_REQUESTED'
+)
+const createRecordResolved = createActionFactory<ZenypassRecord>(
+  'CREATE_RECORD_RESOLVED'
+)
+const createRecordRejected = createActionFactory<any>('CREATE_RECORD_REJECTED')
 const updateRecords = createActionFactory('UPDATE_RECORDS')
 const error = createActionFactory('ERROR')
 
-export function createRecordOnSelectNewRecordMenuItem (
+export function createRecordOnSelectNewRecordMenuItem(
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -57,8 +54,7 @@ export function createRecordOnSelectNewRecordMenuItem (
         toProjection(onAuthenticationRequest),
         username,
         true // unrestricted
-      )
-      .pipe(startWith(createRecordRequested()))
+      ).pipe(startWith(createRecordRequested()))
     ),
     catchError(err => observableOf(error(err)))
   )
@@ -67,8 +63,8 @@ export function createRecordOnSelectNewRecordMenuItem (
 const createRecord$ = createPrivilegedRequest<ZenypassRecord>(
   (username: string) =>
     observableFrom(
-      zenypass.then(
-        ({ getService }) => getService(username).records.newRecord()
+      zenypass.then(({ getService }) =>
+        getService(username).records.newRecord()
       )
     ),
   createRecordResolved,
@@ -77,20 +73,20 @@ const createRecord$ = createPrivilegedRequest<ZenypassRecord>(
 
 const getRecords$ = createPrivilegedRequest(
   (username: string) =>
-    observableFrom(zenypass.then(({ getService }) => getService(username)))
-    .pipe(switchMap(({ records }) => records.records$)),
+    observableFrom(
+      zenypass.then(({ getService }) => getService(username))
+    ).pipe(switchMap(({ records }) => records.records$)),
   updateRecords,
   error
 )
 
-export function injectRecordsFromService (
-  _: any,
-  state$: Observable<any>
-) {
+export function injectRecordsFromService(_: any, state$: Observable<any>) {
   return state$.pipe(
     pluck<any, any>('props'),
     distinctUntilKeyChanged('onAuthenticationRequest'),
-    filter(({ onAuthenticationRequest }) => isFunction(onAuthenticationRequest)),
+    filter(({ onAuthenticationRequest }) =>
+      isFunction(onAuthenticationRequest)
+    ),
     switchMap(({ onAuthenticationRequest, session: username }) =>
       getRecords$(
         toProjection(onAuthenticationRequest),

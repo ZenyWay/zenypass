@@ -30,7 +30,7 @@ import { isString } from 'utils'
 
 const debounce = createActionFactory('DEBOUNCE')
 
-export function debounceInputWhenDebounce (
+export function debounceInputWhenDebounce(
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -38,13 +38,11 @@ export function debounceInputWhenDebounce (
     pluck('props', 'debounce'),
     filter(Boolean),
     distinctUntilChanged(),
-    map(
-      (delay: number | string) => isString(delay)
-        ? Number.parseInt(delay, 10)
-        : delay
+    map((delay: number | string) =>
+      isString(delay) ? Number.parseInt(delay, 10) : delay
     ),
-    switchMap(
-      delay => event$.pipe(
+    switchMap(delay =>
+      event$.pipe(
         filter(({ type }) => type === 'INPUT'),
         debounceTime(delay)
       )
@@ -53,12 +51,12 @@ export function debounceInputWhenDebounce (
   )
 }
 
-export function callChangeHandlerOnDebounceOrBlurWhenIsChange (
+export function callChangeHandlerOnDebounceOrBlurWhenIsChange(
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
   return event$.pipe(
-    filter(({ type }) => (type === 'BLUR') || (type === 'DEBOUNCE')),
+    filter(({ type }) => type === 'BLUR' || type === 'DEBOUNCE'),
     withLatestFrom(state$),
     filter(([_, state]) => hasOnChangeHandler(state) && isChange(state)),
     tap(callChangeHandler),
@@ -66,14 +64,14 @@ export function callChangeHandlerOnDebounceOrBlurWhenIsChange (
   )
 }
 
-function hasOnChangeHandler ({ props }) {
+function hasOnChangeHandler({ props }) {
   return !!props.onChange
 }
 
-function isChange ({ props, value }) {
+function isChange({ props, value }) {
   return props.value !== value
 }
 
-function callChangeHandler ([ { payload: event }, { props, value } ]) {
+function callChangeHandler([{ payload: event }, { props, value }]) {
   props.onChange(value, event.currentTarget)
 }

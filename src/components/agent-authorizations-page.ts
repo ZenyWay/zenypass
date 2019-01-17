@@ -21,9 +21,8 @@ import {
   AgentAuthorizationsPageProps as AgentAuthorizationsPageSFCProps
 } from './sfcs/agent-authorizations-page'
 
-export const AgentAuthorizationsPage =
-agentAuthorizationsPage <AgentAuthorizationsPageSFCProps>(
-  AgentAuthorizationsPageSFC
-)
+export const AgentAuthorizationsPage = agentAuthorizationsPage<
+  AgentAuthorizationsPageSFCProps
+>(AgentAuthorizationsPageSFC)
 
 export { AgentAuthorizationsPageProps }

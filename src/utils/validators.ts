@@ -14,8 +14,7 @@
  * Limitations under the License.
  */
 
-const INVALID_EMAIL =
-  /^(?:[^@]*|@.*|.*@|[^@]+@[^@]*@.*|.*\.|.*@\.[^@]+|.*@[^@.]+|.*[\n(){}\/\\<>]+.*)$/m
+const INVALID_EMAIL = /^(?:[^@]*|@.*|.*@|[^@]+@[^@]*@.*|.*\.|.*@\.[^@]+|.*@[^@.]+|.*[\n(){}\/\\<>]+.*)$/m
 
 /**
  * an email is considered invalid when at least one of the following applies:
@@ -28,6 +27,6 @@ const INVALID_EMAIL =
  * note that if none of the above apply,
  * the email might still be invalid...
  */
-export function isInvalidEmail (email: string) {
+export function isInvalidEmail(email: string) {
   return INVALID_EMAIL.test(email)
 }

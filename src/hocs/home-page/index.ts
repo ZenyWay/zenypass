@@ -33,8 +33,8 @@ import { Observer } from 'rxjs'
 import { tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 //
-export type HomePageProps<P extends HomePageSFCProps> =
-  HomePageHocProps & Rest<P, HomePageSFCProps>
+export type HomePageProps<P extends HomePageSFCProps> = HomePageHocProps &
+  Rest<P, HomePageSFCProps>
 
 export interface HomePageHocProps {
   locale: string
@@ -67,9 +67,13 @@ interface HomePageState {
   error?: string
 }
 
-function mapStateToProps (
-  { props, state, menu, records, error }: HomePageState
-): Rest<HomePageSFCProps, HomePageSFCHandlerProps> {
+function mapStateToProps({
+  props,
+  state,
+  menu,
+  records,
+  error
+}: HomePageState): Rest<HomePageSFCProps, HomePageSFCHandlerProps> {
   return {
     ...props, // menu and onSelectMenuItem from props are both overwritten
     menu,
@@ -79,14 +83,14 @@ function mapStateToProps (
   }
 }
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => HomePageSFCHandlerProps =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => HomePageSFCHandlerProps = createActionDispatchers({
   onSelectMenuItem: 'SELECT_MENU_ITEM',
   onCancel: 'CANCEL'
 })
 
-export function homePage <P extends HomePageSFCProps> (
+export function homePage<P extends HomePageSFCProps>(
   HomePageSFC: SFC<P>
 ): ComponentConstructor<HomePageProps<P>> {
   return componentFromEvents<HomePageProps<P>, P>(

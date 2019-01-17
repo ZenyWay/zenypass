@@ -14,11 +14,11 @@
  * Limitations under the License.
  */
 //
-export function classes (...classes: string[]): string {
+export function classes(...classes: string[]): string {
   return classes.filter(Boolean).join(' ')
 }
 
-export function preventDefault (event: Event) {
+export function preventDefault(event: Event) {
   event.preventDefault()
   return event
 }

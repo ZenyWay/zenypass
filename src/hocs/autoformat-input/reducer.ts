@@ -23,12 +23,12 @@ export default compose.into(0)(
   forType('PROPS')(into('props')(mapPayload()))
 )
 
-function formatPayloadValueIntoValueOrError (state, { payload }) {
+function formatPayloadValueIntoValueOrError(state, { payload }) {
   const { value } = payload
   const { props, error } = state
   const format = props.format || DEFAULT_FORMATTERS[props.type]
   const update = format ? format(value) : { value }
-  return !shallowEqual(update.value, state.value) || (update.error !== error)
+  return !shallowEqual(update.value, state.value) || update.error !== error
     ? { ...state, value: update.value, error: update.error }
     : state
 }

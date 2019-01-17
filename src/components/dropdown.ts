@@ -14,10 +14,7 @@
  * Limitations under the License.
  */
 //
-import {
-  dropdown,
-  DropdownProps as GenericDropdownProps
-} from 'hocs'
+import { dropdown, DropdownProps as GenericDropdownProps } from 'hocs'
 import {
   Dropdown as DropdownSFC,
   DropdownProps as DropdownSFCProps,
@@ -26,8 +23,6 @@ import {
 
 export { DropdownItemSpec }
 
-export const Dropdown = dropdown<DropdownSFCProps>(
-  DropdownSFC
-)
+export const Dropdown = dropdown<DropdownSFCProps>(DropdownSFC)
 
 export type DropdownProps = GenericDropdownProps<DropdownSFCProps>

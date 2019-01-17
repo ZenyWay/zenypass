@@ -34,9 +34,8 @@ const onAgents = createActionFactory('AGENTS')
 const onServerError = createActionFactory('SERVER_ERROR')
 const unauthorized = createActionFactory('UNAUTHORIZED')
 
-export function getAgentsOnAuthenticated ({ getAuthorizations$ }) {
-  return function (event$, state$: Observable<{}>) {
-
+export function getAgentsOnAuthenticated({ getAuthorizations$ }) {
+  return function(event$, state$: Observable<{}>) {
     const unmount$ = state$.pipe(last())
 
     return event$.pipe(
@@ -46,8 +45,7 @@ export function getAgentsOnAuthenticated ({ getAuthorizations$ }) {
       switchMap(authorizing)
     )
 
-    function authorizing (sessionId) {
-
+    function authorizing(sessionId) {
       return getAuthorizations$(sessionId).pipe(
         takeUntil(unmount$),
         map(onAgents),
@@ -57,15 +55,15 @@ export function getAgentsOnAuthenticated ({ getAuthorizations$ }) {
   }
 }
 
-function unauthorizedOrServerError (err) {
-  const status = err && err.status || 501
-  return observable(err && err.message || `ERROR ${status}`).pipe(
+function unauthorizedOrServerError(err) {
+  const status = (err && err.status) || 501
+  return observable((err && err.message) || `ERROR ${status}`).pipe(
     map(status === 401 ? unauthorized : onServerError)
   )
 }
 
-function ofType (type) {
-  return function (action) {
+function ofType(type) {
+  return function(action) {
     return action.type === type
   }
 }

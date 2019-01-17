@@ -20,14 +20,14 @@ import compose from 'basic-compose'
 import { always, forType, mapPayload, not } from 'utils'
 
 export type RecordAutomataState =
-'public'
-| 'pending:cleartext'
-| 'pending:edit'
-| 'cleartext'
-| 'edit'
-| 'pending:cancel'
-| 'pending:save'
-| 'pending:delete'
+  | 'public'
+  | 'pending:cleartext'
+  | 'pending:edit'
+  | 'cleartext'
+  | 'edit'
+  | 'pending:cancel'
+  | 'pending:save'
+  | 'pending:delete'
 
 const clearPassword = into('password')(always(void 0))
 const clearChanges = into('changes')(always(void 0))
@@ -37,16 +37,14 @@ const toggleExpanded = propCursor('expanded')(not())
 const clearExpanded = into('expanded')(always(false))
 const toggleCleartext = propCursor('cleartext')(not())
 const cancelCleartext = into('cleartext')(always(false))
-const reset = [
-  clearExpanded, clearChanges, clearPassword, cancelCleartext
-]
+const reset = [clearExpanded, clearChanges, clearPassword, cancelCleartext]
 
-function updateRecord (record, { payload }) {
+function updateRecord(record, { payload }) {
   return { ...record, ...payload }
 }
 
 const recordAutomata: AutomataSpec<RecordAutomataState> = {
-  'public': {
+  public: {
     TOGGLE_EXPANDED: toggleExpanded,
     TOGGLE_CLEARTEXT: 'pending:cleartext',
     EDIT_RECORD_REQUESTED: 'pending:edit'
@@ -59,11 +57,11 @@ const recordAutomata: AutomataSpec<RecordAutomataState> = {
     CLEARTEXT_REJECTED: ['public', mapPayloadToError],
     CLEARTEXT_RESOLVED: ['edit', mapPayloadToPassword]
   },
-  'cleartext': {
+  cleartext: {
     TOGGLE_CLEARTEXT: ['public', clearPassword, cancelCleartext],
     TOGGLE_EXPANDED: ['public', ...reset]
   },
-  'edit': {
+  edit: {
     CHANGE: propCursor('changes')(updateRecord),
     TOGGLE_CLEARTEXT: toggleCleartext,
     TOGGLE_EXPANDED: 'pending:cancel',
@@ -74,7 +72,7 @@ const recordAutomata: AutomataSpec<RecordAutomataState> = {
     EDIT_RECORD_REQUESTED: 'edit',
     TOGGLE_EXPANDED: ['public', ...reset]
   },
-  'pending:save' : {
+  'pending:save': {
     SAVE_REJECTED: ['edit', mapPayloadToError],
     SAVE_RESOLVED: ['public', ...reset]
   },
@@ -86,14 +84,14 @@ const recordAutomata: AutomataSpec<RecordAutomataState> = {
 
 export type ConnectAutomataState = 'idle' | 'pending:connect' | 'connect'
 const connectAutomata: AutomataSpec<ConnectAutomataState> = {
-  'idle': {
+  idle: {
     TOGGLE_CONNECT: 'pending:connect'
   },
   'pending:connect': {
     CLEARTEXT_REJECTED: ['idle', mapPayloadToError],
     CLEARTEXT_RESOLVED: ['connect', toggleCleartext, mapPayloadToPassword]
   },
-  'connect': {
+  connect: {
     TOGGLE_CONNECT: ['idle', cancelCleartext, clearPassword]
   }
 }

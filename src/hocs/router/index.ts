@@ -39,8 +39,7 @@ import { tap } from 'rxjs/operators'
 import { MenuSpec } from 'utils'
 const log = label => console.log.bind(console, label)
 
-export type RouterProps<P extends RouterSFCProps> =
-  Rest<P, RouterSFCProps>
+export type RouterProps<P extends RouterSFCProps> = Rest<P, RouterSFCProps>
 
 export interface RouterSFCProps extends RouterSFCHandlerProps {
   locale: string
@@ -73,9 +72,15 @@ interface RouterState {
   link?: HTMLLinkElement
 }
 
-function mapStateToProps (
-  { props, locale, path, info, email, session, error }: RouterState
-): Rest<RouterSFCProps, RouterSFCHandlerProps> {
+function mapStateToProps({
+  props,
+  locale,
+  path,
+  info,
+  email,
+  session,
+  error
+}: RouterState): Rest<RouterSFCProps, RouterSFCHandlerProps> {
   const menu = MENUS[path]
   const lang = locale || DEFAULT_LOCALE
   return {
@@ -90,9 +95,9 @@ function mapStateToProps (
   }
 }
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => RouterSFCHandlerProps =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => RouterSFCHandlerProps = createActionDispatchers({
   onAuthenticated: 'AUTHENTICATED',
   onAuthenticationPageType: actionFromAuthenticationPageType,
   onEmailChange: 'EMAIL',
@@ -101,18 +106,13 @@ createActionDispatchers({
   onCloseInfo: 'CLOSE_INFO'
 })
 
-export function router <P extends RouterSFCProps> (
+export function router<P extends RouterSFCProps>(
   RouterSFC: SFC<P>
 ): ComponentConstructor<RouterProps<P>> {
   return componentFromEvents<RouterProps<P>, P>(
     RouterSFC,
     () => tap(log('router:event:')),
-    redux(
-      reducer,
-      injectParamsFromUrl,
-      openLinkOnCloseInfo,
-      signoutOnLogout
-    ),
+    redux(reducer, injectParamsFromUrl, openLinkOnCloseInfo, signoutOnLogout),
     () => tap(log('router:state:')),
     connect<RouterState, RouterSFCProps>(
       mapStateToProps,

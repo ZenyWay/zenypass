@@ -20,19 +20,15 @@ import {
   of as observableOf,
   throwError
 } from 'rxjs'
-import {
-  catchError,
-  map,
-  switchMap
-} from 'rxjs/operators'
+import { catchError, map, switchMap } from 'rxjs/operators'
 // const log = (label: string) => console.log.bind(console, label)
 
-export function createPrivilegedRequest <T> (
+export function createPrivilegedRequest<T>(
   request: (username: string, ...args: any[]) => Observable<T> | Promise<T>,
   resolve: (val: T) => StandardAction<any>,
   reject: (err: any) => StandardAction<any>
 ) {
-  return function (
+  return function(
     authenticate: (username: string) => Observable<string> | Promise<string>,
     username: string,
     unrestricted: boolean,
@@ -44,30 +40,27 @@ export function createPrivilegedRequest <T> (
       username,
       unrestricted,
       ...args
-    )
-    .pipe(
+    ).pipe(
       map(resolve),
       catchError((error: any) => observableOf(reject(error)))
     )
   }
 }
 
-function doPrivilegedRequest <T> (
+function doPrivilegedRequest<T>(
   authenticate: (username: string) => Observable<string> | Promise<string>,
   request: (username: string, ...args: any[]) => Observable<T> | Promise<T>,
   username: string,
   unrestricted: boolean,
   ...args: any[]
 ) {
-  return (
-    !unrestricted
+  return (!unrestricted
     ? observableFrom(authenticate(username))
     : observableOf(username)
-  )
-  .pipe(
+  ).pipe(
     switchMap(username => request(username, ...args)),
-    catchError(
-      error => error && error.status !== 401 // unauthorized
+    catchError(error =>
+      error && error.status !== 401 // unauthorized
         ? throwError(error)
         : doPrivilegedRequest(authenticate, request, username, false, ...args)
     )

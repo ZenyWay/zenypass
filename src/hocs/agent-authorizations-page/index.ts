@@ -29,11 +29,12 @@ import { values } from 'utils'
 import { createActionDispatchers } from 'basic-fsa-factories'
 // import { tap } from 'rxjs/operators'
 
-export type AgentAuthorizationsPageProps<P extends AgentAuthorizationsPageSFCProps> =
-Rest<P,AgentAuthorizationsPageSFCProps>
+export type AgentAuthorizationsPageProps<
+  P extends AgentAuthorizationsPageSFCProps
+> = Rest<P, AgentAuthorizationsPageSFCProps>
 
 export interface AgentAuthorizationsPageSFCProps
-extends AgentAuthorizationsPageSFCHandlerProps {
+  extends AgentAuthorizationsPageSFCHandlerProps {
   agents?: AuthorizedAgentInfo[]
   error?: string
   authenticate?: boolean
@@ -57,18 +58,19 @@ interface AgentAuthorizationsPageState {
   error?: string
 }
 
-function mapStateToProps (
-  {
-    props,
-    authorizations,
-    state,
-    error
-  }: AgentAuthorizationsPageState
-): Rest<AgentAuthorizationsPageSFCProps, AgentAuthorizationsPageSFCHandlerProps> {
+function mapStateToProps({
+  props,
+  authorizations,
+  state,
+  error
+}: AgentAuthorizationsPageState): Rest<
+  AgentAuthorizationsPageSFCProps,
+  AgentAuthorizationsPageSFCHandlerProps
+> {
   const agents = values(authorizations).map(authorization => ({
-    'agent': authorization.identifier,
-    'date': new Date(authorization.certified),
-    'key': `${authorization._id}/${authorization._rev}`
+    agent: authorization.identifier,
+    date: new Date(authorization.certified),
+    key: `${authorization._id}/${authorization._rev}`
   }))
 
   return {
@@ -79,22 +81,24 @@ function mapStateToProps (
   }
 }
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => AgentAuthorizationsPageSFCHandlerProps =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => AgentAuthorizationsPageSFCHandlerProps = createActionDispatchers({
   onCancel: 'CANCEL',
   onAuthenticated: 'AUTHENTICATED'
 })
 
-export function agentAuthorizationsPage <P extends AgentAuthorizationsPageSFCProps> (
+export function agentAuthorizationsPage<
+  P extends AgentAuthorizationsPageSFCProps
+>(
   AgentAuthorizationsPage: SFC<P>
 ): ComponentConstructor<AgentAuthorizationsPageProps<P>> {
-  return componentFromEvents<AgentAuthorizationsPageProps<P>,P>(
+  return componentFromEvents<AgentAuthorizationsPageProps<P>, P>(
     AgentAuthorizationsPage,
     // () => tap(console.log.bind(console,'controlled-authorization-page-event:')),
     redux(reducer /*, getAgentsOnAuthenticated({ getAuthorizations$ }) */),
     // () => tap(console.log.bind(console,'controlled-authorization-page-state:')),
-    connect<AgentAuthorizationsPageState,AgentAuthorizationsPageSFCProps>(
+    connect<AgentAuthorizationsPageState, AgentAuthorizationsPageSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     )

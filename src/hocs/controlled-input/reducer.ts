@@ -16,17 +16,15 @@
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
-import {
-  forType,
-  mapPayload,
-  pluck
-} from 'utils'
+import { forType, mapPayload, pluck } from 'utils'
 
 export type AutomataState = 'pristine' | 'dirty'
 
 const intoProps = into('props')
 const intoValue = into('value')
-const putValueFromInputIntoValue = intoValue(mapPayload(pluck('target','value')))
+const putValueFromInputIntoValue = intoValue(
+  mapPayload(pluck('target', 'value'))
+)
 
 const automata: AutomataSpec<AutomataState> = {
   pristine: {

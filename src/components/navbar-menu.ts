@@ -24,8 +24,6 @@ import {
 
 export { MenuSpecs, DropdownItemSpec }
 
-export const NavbarMenu = dropdown<NavbarMenuSFCProps>(
-  NavbarMenuSFC
-)
+export const NavbarMenu = dropdown<NavbarMenuSFCProps>(NavbarMenuSFC)
 
 export type NavBarMenuProps = DropdownProps<NavbarMenuSFCProps>

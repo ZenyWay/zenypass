@@ -19,8 +19,7 @@ import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 const locale = require('./locale.json')
 const LOCALE_REGEXP = /^locale\/(\w+)$/
-const LOCALE_MENU =
-  localizeMenu(l10ns, locale, excludeCurrentLocale)
+const LOCALE_MENU = localizeMenu(l10ns, locale, excludeCurrentLocale)
 
 export const LOCALES = Object.keys(l10ns)
 export const DEFAULT_LOCALE = LOCALES[0]
@@ -28,10 +27,10 @@ export const DEFAULT_LOCALE = LOCALES[0]
 export default {
   '/': localizeMenu(
     l10ns,
-    assemble(
-      require('./homepage.json'),
-      { locale, help: require('./help.json') }
-    ),
+    assemble(require('./homepage.json'), {
+      locale,
+      help: require('./help.json')
+    }),
     excludeCurrentLocale
   ),
   '/authorize': LOCALE_MENU,
@@ -39,14 +38,14 @@ export default {
   '/signin': LOCALE_MENU
 }
 
-function assemble <T> (
+function assemble<T>(
   root: (T | string)[],
   branches: { [key: string]: T[] }
 ): (T[] | T)[] {
-  return root.map(entry => isString(entry) ? branches[entry] : entry)
+  return root.map(entry => (isString(entry) ? branches[entry] : entry))
 }
 
-function excludeCurrentLocale (locale: string, item: MenuItemSpec) {
+function excludeCurrentLocale(locale: string, item: MenuItemSpec) {
   const match = LOCALE_REGEXP.exec(item['data-id'])
   return match && match[1] === locale
 }

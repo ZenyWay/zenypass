@@ -28,38 +28,40 @@ import componentFromEvents, {
 import { createActionDispatchers } from 'basic-fsa-factories'
 // import { tap } from 'rxjs/operators'
 
-export type AgentAuthorizationCardProps<P extends AgentAuthorizationCardSFCProps> =
-  Rest<P, AgentAuthorizationCardSFCProps>
+export type AgentAuthorizationCardProps<
+  P extends AgentAuthorizationCardSFCProps
+> = Rest<P, AgentAuthorizationCardSFCProps>
 
 export interface AgentAuthorizationCardSFCProps
-extends AgentAuthorizationCardSFCHandlerProps {
-  authenticate?: boolean,
-  pending?: boolean,
-  error?: string,
-  token?: string,
+  extends AgentAuthorizationCardSFCHandlerProps {
+  authenticate?: boolean
+  pending?: boolean
+  error?: string
+  token?: string
 }
 
 export interface AgentAuthorizationCardSFCHandlerProps {
-  onCancel?: () => void,
-  onClick?: (event: MouseEvent) => void,
+  onCancel?: () => void
+  onClick?: (event: MouseEvent) => void
   onAuthenticated?: (sessionId: string) => void
 }
 
 interface AgentAuthorizationCardState {
-  props: { [prop: string]: unknown },
+  props: { [prop: string]: unknown }
   state: AutomataState
-  token?: string,
-  error?: string,
+  token?: string
+  error?: string
 }
 
-function mapStateToProps (
-  {
-    props,
-    state,
-    token,
-    error
-  }: AgentAuthorizationCardState
-): Rest<AgentAuthorizationCardSFCProps, AgentAuthorizationCardSFCHandlerProps> {
+function mapStateToProps({
+  props,
+  state,
+  token,
+  error
+}: AgentAuthorizationCardState): Rest<
+  AgentAuthorizationCardSFCProps,
+  AgentAuthorizationCardSFCHandlerProps
+> {
   return {
     ...props,
     error,
@@ -69,23 +71,25 @@ function mapStateToProps (
   }
 }
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => AgentAuthorizationCardSFCHandlerProps =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => AgentAuthorizationCardSFCHandlerProps = createActionDispatchers({
   onClick: 'CLICK',
   onCancel: 'CANCEL',
   onAuthenticated: 'AUTHENTICATED'
 })
 
-export function agentAuthorizationCard <P extends AgentAuthorizationCardSFCProps> (
+export function agentAuthorizationCard<
+  P extends AgentAuthorizationCardSFCProps
+>(
   AgentAuthorizationCard: SFC<P>
 ): ComponentConstructor<AgentAuthorizationCardProps<P>> {
-  return componentFromEvents<AgentAuthorizationCardProps<P>,P>(
+  return componentFromEvents<AgentAuthorizationCardProps<P>, P>(
     AgentAuthorizationCard,
     // () => tap(console.log.bind(console,'controlled-authorization-card:event:')),
     redux(reducer /*, getTokenOnAuthenticated({ authorize }) */),
     // () => tap(console.log.bind(console,'controlled-authorization-card:state:')),
-    connect<AgentAuthorizationCardState,AgentAuthorizationCardSFCProps>(
+    connect<AgentAuthorizationCardState, AgentAuthorizationCardSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     )

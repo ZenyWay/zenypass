@@ -32,8 +32,7 @@ import copyToClipboard from 'clipboard-copy'
 const expired = createActionFactory('EXPIRED')
 const copied = createActionFactory('COPIED')
 
-export function timeoutAfterDisabled (_, state$) {
-
+export function timeoutAfterDisabled(_, state$) {
   return state$.pipe(
     pluck('state'),
     distinctUntilChanged(),
@@ -43,50 +42,56 @@ export function timeoutAfterDisabled (_, state$) {
     concatMap(timeout)
   )
 
-  function timeout (ms) {
+  function timeout(ms) {
     return observable(expired()).pipe(delay(ms))
   }
 }
 
-export function copyToClipboardAndCallOnClickOnClick (event$, state$) {
+export function copyToClipboardAndCallOnClickOnClick(event$, state$) {
   const click$ = event$.pipe(
     filter(ofType('CLICK')),
     withLatestFrom(state$),
     share()
   )
 
-  const copy$ = click$.pipe(pluck('1', 'props'), concatMap(copy))
+  const copy$ = click$.pipe(
+    pluck('1', 'props'),
+    concatMap(copy)
+  )
 
-  const onClick$ = click$.pipe(tap(callOnClick), ignoreElements())
+  const onClick$ = click$.pipe(
+    tap(callOnClick),
+    ignoreElements()
+  )
 
   return merge(copy$, onClick$)
 }
 
-function equals (v) {
-  return function (val) {
+function equals(v) {
+  return function(val) {
     return v === val
   }
 }
 
-function ofType (t) {
-  return function ({ type }) {
+function ofType(t) {
+  return function({ type }) {
     return type === t
   }
 }
 
-function callOnClick ([ event, { props } ]) {
+function callOnClick([event, { props }]) {
   const { onClick } = props
   if (!onClick) return
   onClick(event.payload)
 }
 
-function copy ({ onCopied, value }) {
+function copy({ onCopied, value }) {
   return copyToClipboard(value)
-  .then(success(true))
-  .catch(success(false))
+    .then(success(true))
+    .catch(success(false))
 
-  function success (val: boolean) {
-    return function () {
+  function success(val: boolean) {
+    return function() {
       onCopied && onCopied(val)
       return copied(val)
     }

@@ -20,7 +20,13 @@ import compose from 'basic-compose'
 import { always, forType, mapPayload, pluck } from 'utils'
 
 export type RouteAutomataState =
-  '/' | '/signup' | '/signin' | '/authorize' | '/devices' | '/storage' | '/fatal'
+  | '/'
+  | '/signup'
+  | '/signin'
+  | '/authorize'
+  | '/devices'
+  | '/storage'
+  | '/fatal'
 export type LinkAutomataState = 'idle' | 'info'
 
 const mapPayloadIntoError = into('error')(mapPayload())
@@ -65,10 +71,10 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
 }
 
 const linkAutomata: AutomataSpec<LinkAutomataState> = {
-  'idle': {
+  idle: {
     LINK: ['info', into('link')(mapPayload())]
   },
-  'info': {
+  info: {
     CLOSE_INFO: 'idle'
   }
 }

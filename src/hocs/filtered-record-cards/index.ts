@@ -31,12 +31,15 @@ import { callHandlerOnEvent } from 'utils'
 // import { tap } from 'rxjs/operators'
 // const log = label => console.log.bind(console, label)
 
-const DEFAULT_PROPS: Partial<FilteredRecordCardsProps<FilteredRecordCardsSFCProps>> = {
+const DEFAULT_PROPS: Partial<
+  FilteredRecordCardsProps<FilteredRecordCardsSFCProps>
+> = {
   debounce: 300 // ms
 }
 
-export type FilteredRecordCardsProps<P extends FilteredRecordCardsSFCProps> =
-  FilteredRecordCardsHocProps & Rest<P, FilteredRecordCardsSFCProps>
+export type FilteredRecordCardsProps<
+  P extends FilteredRecordCardsSFCProps
+> = FilteredRecordCardsHocProps & Rest<P, FilteredRecordCardsSFCProps>
 
 export interface FilteredRecordCardsHocProps {
   filter?: boolean
@@ -45,7 +48,7 @@ export interface FilteredRecordCardsHocProps {
 }
 
 export interface FilteredRecordCardsSFCProps
-extends FilteredRecordCardsSFCHandlerProps {
+  extends FilteredRecordCardsSFCHandlerProps {
   filter?: boolean[]
   tokens?: string[]
   debounce?: string | number
@@ -65,9 +68,15 @@ interface FilteredRecordCardsState {
   filter?: boolean[]
 }
 
-function mapStateToProps (
-  { props, state, tokens, filter }: FilteredRecordCardsState
-): Rest<FilteredRecordCardsSFCProps, FilteredRecordCardsSFCHandlerProps> {
+function mapStateToProps({
+  props,
+  state,
+  tokens,
+  filter
+}: FilteredRecordCardsState): Rest<
+  FilteredRecordCardsSFCProps,
+  FilteredRecordCardsSFCHandlerProps
+> {
   const { onFilterCancel, ...attrs } = props
   return {
     ...attrs,
@@ -76,19 +85,22 @@ function mapStateToProps (
   }
 }
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => Partial<FilteredRecordCardsSFCHandlerProps> =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => Partial<FilteredRecordCardsSFCHandlerProps> = createActionDispatchers({
   onTokensChange: 'TOKENS',
   onTokensClear: 'CLEAR',
   onToggleFilter: 'TOGGLE_FILTER',
   onSearchFieldRef: 'SEARCH_FIELD_REF'
 })
 
-export function filteredRecordCards <P extends FilteredRecordCardsSFCProps> (
+export function filteredRecordCards<P extends FilteredRecordCardsSFCProps>(
   FilteredRecordCardsSFC: SFC<P>
 ): ComponentConstructor<FilteredRecordCardsProps<P>> {
-  const FilteredRecordCards = componentFromEvents<FilteredRecordCardsProps<P>, P>(
+  const FilteredRecordCards = componentFromEvents<
+    FilteredRecordCardsProps<P>,
+    P
+  >(
     FilteredRecordCardsSFC,
     // () => tap(log('filtered-record-cards:event:')),
     redux(
@@ -104,9 +116,9 @@ export function filteredRecordCards <P extends FilteredRecordCardsSFCProps> (
     )
     // () => tap(log('filtered-record-cards:view-props:'))
   )
-
-  ;(FilteredRecordCards as any).defaultProps =
-    DEFAULT_PROPS as Partial<FilteredRecordCardsProps<P>>
+  ;(FilteredRecordCards as any).defaultProps = DEFAULT_PROPS as Partial<
+    FilteredRecordCardsProps<P>
+  >
 
   return FilteredRecordCards
 }

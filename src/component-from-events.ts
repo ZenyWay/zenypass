@@ -13,7 +13,10 @@
  * Limitations under the License.
  */
 //
-import redux, { connect as _connect, Reducer } from 'component-from-stream-redux'
+import redux, {
+  connect as _connect,
+  Reducer
+} from 'component-from-stream-redux'
 import componentFromStream, {
   Component,
   ComponentConstructor,
@@ -38,16 +41,19 @@ export {
   Reducer
 }
 
-export type Rest<T extends U,U extends {} = {}> = Pick<T,Exclude<keyof T, keyof U>>
+export type Rest<T extends U, U extends {} = {}> = Pick<
+  T,
+  Exclude<keyof T, keyof U>
+>
 
-export function connect <S= {},P= {}> (
+export function connect<S = {}, P = {}>(
   mapStateToProps: (state: S) => Partial<P>,
   mapDispatchToProps: (dispatch: (...args: any[]) => void) => Partial<P>
-): OperatorFactory<any,S,P> {
+): OperatorFactory<any, S, P> {
   return compose.into(0)(map, _connect(mapStateToProps, mapDispatchToProps))
 }
 
-export default function <P, Q>(
+export default function<P, Q>(
   render: SFC<Q>,
   factory: OperatorFactory<StandardAction<P>, any, any>,
   ...factories: OperatorFactory<StandardAction<P>, any, any>[]

@@ -26,8 +26,10 @@ import {
 
 export { Record }
 
-export const FilteredRecordCards =
-  filteredRecordCards<FilteredRecordCardsSFCProps>(FilteredRecordCardsSFC)
+export const FilteredRecordCards = filteredRecordCards<
+  FilteredRecordCardsSFCProps
+>(FilteredRecordCardsSFC)
 
-export type FilteredRecordCardsProps =
-  GenericFilteredRecordCardsProps<FilteredRecordCardsSFCProps>
+export type FilteredRecordCardsProps = GenericFilteredRecordCardsProps<
+  FilteredRecordCardsSFCProps
+>

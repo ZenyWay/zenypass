@@ -26,8 +26,9 @@ import { applyHandlerOnEvent, shallowEqual } from 'utils'
 import { tap, distinctUntilChanged } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
-export type AutoformatInputProps<P extends ControlledInputProps> =
-  AutoformatInputControllerProps & Rest<P,ControlledInputProps>
+export type AutoformatInputProps<
+  P extends ControlledInputProps
+> = AutoformatInputControllerProps & Rest<P, ControlledInputProps>
 
 export interface AutoformatInputControllerProps {
   type?: string // TODO union type
@@ -57,9 +58,11 @@ interface AutoformatInputState {
   error?: string
 }
 
-function mapStateToProps (
-  { props, value, error }: AutoformatInputState
-): Rest<ControlledInputProps,InputHandlerProps> {
+function mapStateToProps({
+  props,
+  value,
+  error
+}: AutoformatInputState): Rest<ControlledInputProps, InputHandlerProps> {
   const { type, format, onChange, ...attrs } = props
   return {
     ...attrs,
@@ -69,24 +72,23 @@ function mapStateToProps (
   }
 }
 
-function toString (val: string[] | string): string {
+function toString(val: string[] | string): string {
   return Array.isArray(val) ? val.join(' ') : val
 }
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => InputHandlerProps =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => InputHandlerProps = createActionDispatchers({
   onChange: [
     'CHANGE',
     (value: string, target: HTMLElement) => ({ value, target })
   ]
 })
 
-export function autoformatInput <P extends ControlledInputProps> (
+export function autoformatInput<P extends ControlledInputProps>(
   ControlledInput: SFC<P>
 ): ComponentConstructor<AutoformatInputProps<P>> {
-  const AutoformatInput =
-  componentFromEvents<AutoformatInputProps<P>,P>(
+  const AutoformatInput = componentFromEvents<AutoformatInputProps<P>, P>(
     ControlledInput,
     () => tap(log('autoformat:EVENT:')),
     redux(
@@ -98,16 +100,16 @@ export function autoformatInput <P extends ControlledInputProps> (
       )
     ),
     () => tap(log('autoformat:STATE:')),
-    connect<AutoformatInputState,ControlledInputProps>(
+    connect<AutoformatInputState, ControlledInputProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
     () => distinctUntilChanged(shallowEqual),
     () => tap(log('autoformat:VIEW_PROPS:'))
   )
-
-  ;(AutoformatInput as any).defaultProps =
-    DEFAULT_PROPS as Partial<AutoformatInputProps<P>>
+  ;(AutoformatInput as any).defaultProps = DEFAULT_PROPS as Partial<
+    AutoformatInputProps<P>
+  >
 
   return AutoformatInput
 }

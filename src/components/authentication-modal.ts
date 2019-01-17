@@ -21,9 +21,8 @@ import {
   AuthenticationModalProps as AuthenticationModalSFCProps
 } from './sfcs/authentication-modal'
 
-export const AuthenticationModal =
-  authenticationModal <AuthenticationModalSFCProps>(
-    AuthenticationModalSFC
-  )
+export const AuthenticationModal = authenticationModal<
+  AuthenticationModalSFCProps
+>(AuthenticationModalSFC)
 
 export { AuthenticationModalProps }

@@ -34,21 +34,21 @@ interface DropdownComponentState {
   dropdown: HTMLElement
 }
 
-export function toggleBackdropHandlers (
+export function toggleBackdropHandlers(
   _: any,
   state$: Observable<DropdownComponentState>
 ) {
   return state$.pipe(
-    pluck<DropdownComponentState,AutomataState>('state'),
+    pluck<DropdownComponentState, AutomataState>('state'),
     distinctUntilChanged(),
-    switchMap(
-      state => state === 'expanded'
-      ? merge(
-        fromEvent<MouseEvent>(document, 'click'),
-        fromEvent<TouchEvent>(document, 'touchstart')
-        // TODO fromEvent<KeyboardEvent>(document, 'keyup')
-      )
-      : NEVER
+    switchMap(state =>
+      state === 'expanded'
+        ? merge(
+            fromEvent<MouseEvent>(document, 'click'),
+            fromEvent<TouchEvent>(document, 'touchstart')
+            // TODO fromEvent<KeyboardEvent>(document, 'keyup')
+          )
+        : NEVER
     ),
     withLatestFrom(state$),
     filter(
@@ -59,6 +59,6 @@ export function toggleBackdropHandlers (
   )
 }
 
-function isClickOutside (dropdown: HTMLElement, target: HTMLElement) {
-  return (dropdown === target) || !dropdown.contains(target)
+function isClickOutside(dropdown: HTMLElement, target: HTMLElement) {
+  return dropdown === target || !dropdown.contains(target)
 }

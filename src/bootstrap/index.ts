@@ -1,4 +1,4 @@
-import { from } from 'rxjs';
+import { from } from 'rxjs'
 
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
@@ -38,12 +38,18 @@ export {
 } from './card'
 export { Collapse, CollapseProps } from './collapse'
 export {
-  Dropdown, DropdownProps,
-  DropdownDivider, DropdownDividerProps,
-  DropdownHeader, DropdownHeaderProps,
-  DropdownItem, DropdownItemProps,
-  DropdownMenu, DropdownMenuProps,
-  DropdownToggle, DropdownToggleProps
+  Dropdown,
+  DropdownProps,
+  DropdownDivider,
+  DropdownDividerProps,
+  DropdownHeader,
+  DropdownHeaderProps,
+  DropdownItem,
+  DropdownItemProps,
+  DropdownMenu,
+  DropdownMenuProps,
+  DropdownToggle,
+  DropdownToggleProps
 } from './dropdown'
 export { FormGroup, FormGroupProps } from './form-group'
 export { Input, InputProps } from './input'
@@ -57,12 +63,18 @@ export {
 } from './input-group'
 export { Label, LabelProps } from './label'
 export {
-  Nav, NavProps,
-  Navbar, NavbarProps,
-  NavbarBrand, NavbarBrandProps,
-  NavItem, NavItemProps,
-  NavLink, NavLinkProps,
-  NavbarToggler, NavbarTogglerProps
+  Nav,
+  NavProps,
+  Navbar,
+  NavbarProps,
+  NavbarBrand,
+  NavbarBrandProps,
+  NavItem,
+  NavItemProps,
+  NavLink,
+  NavLinkProps,
+  NavbarToggler,
+  NavbarTogglerProps
 } from './nav'
 export { ProgressBar, ProgressBarProps } from './progress'
 export { Row } from './layout'

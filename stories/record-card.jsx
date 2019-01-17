@@ -30,5 +30,5 @@ const RecordCard =
 
 storiesOf('RecordCard', module)
   .add('default', () => (
-    <RecordCard record={RECORD} locale='fr' session={USERNAME}/>
+    <RecordCard record={RECORD} locale='fr' session={USERNAME} />
   ))

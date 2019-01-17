@@ -23,8 +23,8 @@ import compose from 'basic-compose'
 export type AutomataState = 'disabled' | 'enabled'
 
 const clearFilter = into('filter')(always())
-const updateFilter = into('filter')(
-  ({ props, tokens }) => getFilterList(tokens, props.records)
+const updateFilter = into('filter')(({ props, tokens }) =>
+  getFilterList(tokens, props.records)
 )
 const clearTokens = into('tokens')(always())
 const mapPayloadIntoTokens = into('tokens')(mapPayload())

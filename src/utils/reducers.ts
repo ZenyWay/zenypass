@@ -23,33 +23,32 @@ export interface StandardAction<P = any> {
   payload?: P
 }
 
-export function keepIfEqual (equal = shallowEqual) {
-  return function (reduce) {
-    return function (previous, action) {
+export function keepIfEqual(equal = shallowEqual) {
+  return function(reduce) {
+    return function(previous, action) {
       const update = reduce(previous, action)
       return equal(update, previous) ? previous : update
     }
   }
 }
 
-export function mapPayload <I,O> (project = identity as (val: I) => O) {
-  return function <A extends StandardAction<I>>(_, { payload }: A) {
+export function mapPayload<I, O>(project = identity as (val: I) => O) {
+  return function<A extends StandardAction<I>>(_, { payload }: A) {
     return project(payload)
   }
 }
-export function mergePayload <S extends O,I,O> (project = identity as (val: I) => O) {
-  return function <A extends StandardAction<I>>(
-    state: S,
-    { payload }: A
-  ): S {
+export function mergePayload<S extends O, I, O>(
+  project = identity as (val: I) => O
+) {
+  return function<A extends StandardAction<I>>(state: S, { payload }: A): S {
     const update = project(payload)
     return !update ? state : { ...(state as any), ...(update as any) }
   }
 }
 
-export function forType (type) {
-  return function (reduce) {
-    return function (state, action) {
+export function forType(type) {
+  return function(reduce) {
+    return function(state, action) {
       return action.type === type ? reduce(state, action) : state
     }
   }

@@ -30,8 +30,9 @@ import { callHandlerOnEvent /*, shallowEqual */ } from 'utils'
 // import { /* distinctUntilChanged,*/ tap } from 'rxjs/operators'
 // const log = label => console.log.bind(console, label)
 
-export type ControlledInputProps<P extends InputProps> =
-ControlledInputControllerProps & Rest<P, InputProps>
+export type ControlledInputProps<
+  P extends InputProps
+> = ControlledInputControllerProps & Rest<P, InputProps>
 
 export interface ControlledInputControllerProps {
   value?: string
@@ -64,27 +65,25 @@ interface ControlledInputState {
   value?: string
 }
 
-function mapStateToProps (
-  {
-    props,
-    value
-  }: ControlledInputState
-): Rest<InputProps, InputHandlerProps> {
+function mapStateToProps({
+  props,
+  value
+}: ControlledInputState): Rest<InputProps, InputHandlerProps> {
   const { debounce, onChange, ...attrs } = props
   return { ...attrs, value }
 }
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => InputHandlerProps =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => InputHandlerProps = createActionDispatchers({
   onBlur: 'BLUR', // https://github.com/infernojs/inferno/issues/1361
   onInput: 'INPUT'
 })
 
-export function controlledInput <P extends InputProps> (
+export function controlledInput<P extends InputProps>(
   Input: SFC<P>
 ): ComponentConstructor<ControlledInputProps<P>> {
-  const ControlledInput = componentFromEvents<ControlledInputProps<P>,P>(
+  const ControlledInput = componentFromEvents<ControlledInputProps<P>, P>(
     Input,
     // () => tap(log('controlled-input:EVENT:')),
     redux(
@@ -94,16 +93,16 @@ export function controlledInput <P extends InputProps> (
       callChangeHandlerOnDebounceOrBlurWhenIsChange
     ),
     // () => tap(log('controlled-input:STATE:')),
-    connect<ControlledInputState,InputProps>(
+    connect<ControlledInputState, InputProps>(
       mapStateToProps,
       mapDispatchToProps
     )
     // () => distinctUntilChanged(shallowEqual),
     // () => tap(log('controlled-input:PROPS:'))
   )
-
-  ;(ControlledInput as any).defaultProps =
-    DEFAULT_PROPS as ControlledInputProps<P>
+  ;(ControlledInput as any).defaultProps = DEFAULT_PROPS as ControlledInputProps<
+    P
+  >
 
   return ControlledInput
 }

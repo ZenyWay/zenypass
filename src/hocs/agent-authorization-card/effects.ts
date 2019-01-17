@@ -39,9 +39,8 @@ const authenticationError = createActionFactory('AUTH_ERROR')
 
 const log = (label: string) => console.log.bind(console, label)
 
-export function getTokenOnAuthenticated ({ authorize }) {
-
-  return function (event$, state$: Observable<{}>) {
+export function getTokenOnAuthenticated({ authorize }) {
+  return function(event$, state$: Observable<{}>) {
     const unmount$ = state$.pipe(last())
 
     return event$.pipe(
@@ -51,7 +50,7 @@ export function getTokenOnAuthenticated ({ authorize }) {
       switchMap(authorizing)
     )
 
-    function authorizing (sessionId) {
+    function authorizing(sessionId) {
       const cancel$ = event$.pipe(filter(ofType('CLICK')))
 
       return authorize(sessionId).pipe(
@@ -65,15 +64,15 @@ export function getTokenOnAuthenticated ({ authorize }) {
   }
 }
 
-function authenticateOrServerError (err) {
-  const status = err && err.status || 501
-  return observable(err && err.message || `ERROR ${status}`).pipe(
+function authenticateOrServerError(err) {
+  const status = (err && err.status) || 501
+  return observable((err && err.message) || `ERROR ${status}`).pipe(
     map(status === 401 ? authenticationError : onServerError)
   )
 }
 
-function ofType (type) {
-  return function (action) {
+function ofType(type) {
+  return function(action) {
     return action.type === type
   }
 }

@@ -93,15 +93,16 @@ export {
   RecordCard as RecordCardSFC,
   RecordCardProps as RecordCardSFCProps
 } from './sfcs/record-card'
-export {
-  RecordCard, RecordCardProps
-} from './record-card'
+export { RecordCard, RecordCardProps } from './record-card'
 export {
   Router as RouterSFC,
   RouterProps as RouterSFCProps
 } from './sfcs/router'
 export { Router, RouterProps } from './router'
 export { SearchField, SearchFieldProps } from './sfcs/search-field'
-export { AuthenticationPage, AuthenticationPageProps } from './authentication-page'
+export {
+  AuthenticationPage,
+  AuthenticationPageProps
+} from './authentication-page'
 export { SplashCard, SplashCardProps } from './sfcs/splash-card'
 export { withAuthenticationModal } from './sfcs/with-authentication'

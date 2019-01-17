@@ -39,10 +39,23 @@ export {
   Observer,
   SFC
 }
-export type Operator<I= {},O= I> = GenericOperator<I,O,Observable<I>,Observable<O>>
-export type OperatorFactory<A= void,I= {},O= I> =
-  GenericOperatorFactory<A,I,O,Observable<I>,Observable<O>>
+export type Operator<I = {}, O = I> = GenericOperator<
+  I,
+  O,
+  Observable<I>,
+  Observable<O>
+>
+export type OperatorFactory<A = void, I = {}, O = I> = GenericOperatorFactory<
+  A,
+  I,
+  O,
+  Observable<I>,
+  Observable<O>
+>
 
-const componentFromStream = createComponentFromStreamFactory(Component, from) as ComponentFromStreamFactory<Component<any, any>, Node>
+const componentFromStream = createComponentFromStreamFactory(
+  Component,
+  from
+) as ComponentFromStreamFactory<Component<any, any>, Node>
 
 export default componentFromStream

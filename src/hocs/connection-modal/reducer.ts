@@ -26,11 +26,15 @@ const mapPayloadIntoError = into('error')(mapPayload(not(pluck('success'))))
 const clearError = into('error')(always(void 0))
 
 export type AutomataState =
-'copy-any' | 'copying-any'
-| 'copy-password' | 'copying-password'
-| 'copy-username' | 'copying-username'
-| 'clear-clipboard' | 'clearing-clipboard'
-| 'cancelling'
+  | 'copy-any'
+  | 'copying-any'
+  | 'copy-password'
+  | 'copying-password'
+  | 'copy-username'
+  | 'copying-username'
+  | 'clear-clipboard'
+  | 'clearing-clipboard'
+  | 'cancelling'
 
 const automata: AutomataSpec<AutomataState> = {
   'copy-any': {
@@ -68,21 +72,21 @@ const automata: AutomataSpec<AutomataState> = {
     CANCEL: 'cancelling',
     CLIPBOARD_CLEARED: 'cancelling'
   },
-  'cancelling': {
+  cancelling: {
     CANCELLED: 'copy-any'
   }
 }
 
 const common = {
-  'WINDOW_OPEN_REJECTED': into('manual')(always(true)),
-  'USERNAME_COPIED': clearError,
-  'PASSWORD_COPIED': clearError,
-  'COPY_ERROR': mapPayloadIntoError,
-  'TOGGLE_MANUAL': propCursor('manual')(not()),
-  'TOGGLE_CLEARTEXT': propCursor('cleartext')(not()),
-  'CANCEL': clearError,
-  'CANCELLED': compose.into(0)(clearWindowRef, into('manual')(always(false))),
-  'PROPS': into('props')(mapPayload())
+  WINDOW_OPEN_REJECTED: into('manual')(always(true)),
+  USERNAME_COPIED: clearError,
+  PASSWORD_COPIED: clearError,
+  COPY_ERROR: mapPayloadIntoError,
+  TOGGLE_MANUAL: propCursor('manual')(not()),
+  TOGGLE_CLEARTEXT: propCursor('cleartext')(not()),
+  CANCEL: clearError,
+  CANCELLED: compose.into(0)(clearWindowRef, into('manual')(always(false))),
+  PROPS: into('props')(mapPayload())
 }
 
 export default compose.into(0)(
@@ -90,8 +94,8 @@ export default compose.into(0)(
   createReducers(common)
 )
 
-function createReducers <S> (reducers: { [event: string]: Reducer<S,any> }) {
-  return function (state: S, event) {
+function createReducers<S>(reducers: { [event: string]: Reducer<S, any> }) {
+  return function(state: S, event) {
     const reducer = reducers[event.type]
     return reducer ? reducer(state, event) : state
   }

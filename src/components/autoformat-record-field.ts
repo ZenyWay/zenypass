@@ -23,7 +23,8 @@ import {
   RecordFieldProps as RecordFieldSFCProps
 } from './sfcs/record-field'
 
-export const AutoformatRecordField =
-  autoformatInput<RecordFieldSFCProps>(RecordFieldSFC)
+export const AutoformatRecordField = autoformatInput<RecordFieldSFCProps>(
+  RecordFieldSFC
+)
 
 export { AutoformatRecordFieldProps }

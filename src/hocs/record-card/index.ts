@@ -30,8 +30,8 @@ import { Observer } from 'rxjs'
 import { tap } from 'rxjs/operators'
 const log = (label: string) => console.log.bind(console, label)
 
-export type RecordCardProps<P extends RecordCardSFCProps> =
-RecordCardHocProps & Rest<P, RecordCardSFCProps>
+export type RecordCardProps<P extends RecordCardSFCProps> = RecordCardHocProps &
+  Rest<P, RecordCardSFCProps>
 
 export interface RecordCardHocProps {
   record: Partial<ZenypassRecord>
@@ -40,8 +40,7 @@ export interface RecordCardHocProps {
   onError?: (error: any) => void
 }
 
-export interface RecordCardSFCProps
-extends RecordCardSFCHandlerProps {
+export interface RecordCardSFCProps extends RecordCardSFCHandlerProps {
   record: Partial<ZenypassRecord>
   disabled?: boolean
   connect?: boolean
@@ -52,7 +51,12 @@ extends RecordCardSFCHandlerProps {
 }
 
 export type PendingState =
-  'cleartext' | 'cancel' | 'edit' | 'save' | 'delete' | 'connect'
+  | 'cleartext'
+  | 'cancel'
+  | 'edit'
+  | 'save'
+  | 'delete'
+  | 'connect'
 
 export interface RecordCardSFCHandlerProps {
   onToggleConnect?: (event: MouseEvent) => void
@@ -74,7 +78,7 @@ interface RecordCardState {
   error?: string
 }
 
-function mapStateToProps ({
+function mapStateToProps({
   props,
   password,
   changes,
@@ -96,20 +100,20 @@ function mapStateToProps ({
     error,
     record:
       !changes && !cleartext
-      ? record
-      : { ...record, password: cleartext && password, ...changes }
+        ? record
+        : { ...record, password: cleartext && password, ...changes }
   }
 }
 
 const PENDING_REGEXP = /^pending:(\w+)$/i
-function toPendingProp (state: RecordAutomataState | ConnectAutomataState) {
+function toPendingProp(state: RecordAutomataState | ConnectAutomataState) {
   const match = PENDING_REGEXP.exec(state)
-  return match ? match[1] as PendingState : void 0
+  return match ? (match[1] as PendingState) : void 0
 }
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => RecordCardSFCHandlerProps =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => RecordCardSFCHandlerProps = createActionDispatchers({
   onToggleConnect: 'TOGGLE_CONNECT',
   onToggleCleartext: 'TOGGLE_CLEARTEXT',
   onToggleExpanded: 'TOGGLE_EXPANDED',
@@ -124,10 +128,10 @@ createActionDispatchers({
   onDeleteRecordRequest: 'DELETE_RECORD_REQUESTED'
 })
 
-export function recordCard <P extends RecordCardSFCProps> (
+export function recordCard<P extends RecordCardSFCProps>(
   RecordCardSFC: SFC<P>
 ): ComponentConstructor<RecordCardProps<P>> {
-  return componentFromEvents<RecordCardProps<P>,P>(
+  return componentFromEvents<RecordCardProps<P>, P>(
     RecordCardSFC,
     () => tap(log('record-card:event:')),
     redux(
@@ -136,7 +140,7 @@ export function recordCard <P extends RecordCardSFCProps> (
       cleartextOnPendingCleartextOrConnect // TODO: effects using `onAuthenticate`
     ),
     () => tap(log('record-card:state:')),
-    connect<RecordCardState,RecordCardSFCProps>(
+    connect<RecordCardState, RecordCardSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),

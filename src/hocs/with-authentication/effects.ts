@@ -33,7 +33,7 @@ import { newStatusError, ERROR_STATUS } from 'utils'
 
 const CANCELLED_ERROR = newStatusError(ERROR_STATUS.CLIENT_CLOSED_REQUEST)
 
-export function plugResponse (
+export function plugResponse(
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -46,24 +46,28 @@ export function plugResponse (
     map(({ payload }) => observable(payload))
   )
   // result$$ completes when component unmounts
-  const result$$ = merge(err$$, res$$).pipe(
-    takeUntil(state$.pipe(last()))
-  )
+  const result$$ = merge(err$$, res$$).pipe(takeUntil(state$.pipe(last())))
 
   return event$.pipe(
     filter(({ type }) => type === 'AUTHENTICATION_REQUESTED'),
-    tap(
-      ({ payload: result$ }) => plug(result$$, result$, throwError(CANCELLED_ERROR))
+    tap(({ payload: result$ }) =>
+      plug(result$$, result$, throwError(CANCELLED_ERROR))
     ),
     ignoreElements()
   )
 }
 
-function plug <T> (
+function plug<T>(
   source$$: Observable<Observable<T>>, // assumption: hot Observable
   sink$: Observer<T>,
   alt: Observable<T>
 ) {
   // unsubscribe when source errors or completes
-  source$$.pipe(defaultIfEmpty(alt), first(), switchAll()).subscribe(sink$)
+  source$$
+    .pipe(
+      defaultIfEmpty(alt),
+      first(),
+      switchAll()
+    )
+    .subscribe(sink$)
 }

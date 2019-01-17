@@ -35,24 +35,38 @@ import { always, forType, mapPayload, mergePayload, not } from 'utils'
  *   * 'pending' disables all inputs
  */
 export type AutomataState =
-  'signin:input:email:pending' | 'signin:input:email'
-  | 'signin:error:email:pending' | 'signin:error:email'
+  | 'signin:input:email:pending'
+  | 'signin:input:email'
+  | 'signin:error:email:pending'
+  | 'signin:error:email'
   | 'signin:input:password:pending'
-  | 'signin:input:password' | 'signin:input:password:retry'
-  | 'signin:error:password' | 'signin:error:password:retry'
-  | 'signin:input:submit' | 'signin:input:submit:retry'
-  | 'signin:error:submit' | 'signin:error:submit:retry'
-  | 'signin:submitting' | 'signin:submitting:retry'
+  | 'signin:input:password'
+  | 'signin:input:password:retry'
+  | 'signin:error:password'
+  | 'signin:error:password:retry'
+  | 'signin:input:submit'
+  | 'signin:input:submit:retry'
+  | 'signin:error:submit'
+  | 'signin:error:submit:retry'
+  | 'signin:submitting'
+  | 'signin:submitting:retry'
   | 'authorize:error:password'
-  | 'authorize:input:token:pending' | 'authorize:input:token'
+  | 'authorize:input:token:pending'
+  | 'authorize:input:token'
   | 'authorize:error:token'
-  | 'authorize:input:submit' | 'authorize:error:submit'
+  | 'authorize:input:submit'
+  | 'authorize:error:submit'
   | 'authorize:submitting'
-  | 'signup:input:email' | 'signup:error:email'
-  | 'signup:input:password' | 'signup:error:password'
-  | 'signup:input:confirm' | 'signup:error:confirm'
-  | 'signup:input:consents' | 'signup:input:terms'
-  | 'signup:input:submit' | 'signup:error:submit'
+  | 'signup:input:email'
+  | 'signup:error:email'
+  | 'signup:input:password'
+  | 'signup:error:password'
+  | 'signup:input:confirm'
+  | 'signup:error:confirm'
+  | 'signup:input:consents'
+  | 'signup:input:terms'
+  | 'signup:input:submit'
+  | 'signup:error:submit'
   | 'signup:submitting'
 
 const setCreated = into('created')(always(true))
@@ -62,8 +76,9 @@ const clearNews = into('news')(always())
 const clearPassword = propCursor('password')(always(''))
 const clearConfirm = propCursor('confirm')(always(''))
 const clearToken = propCursor('token')(always(''))
-const clearPasswords =
-  mergePayload(always({ password: '', confirm: '', token: '' }))
+const clearPasswords = mergePayload(
+  always({ password: '', confirm: '', token: '' })
+)
 
 /**
  * only change page type on SIGNUP, SIGNIN, or AUTHORIZE

@@ -21,9 +21,8 @@ import {
 } from './sfcs/agent-authorization-card'
 import { agentAuthorizationCard, AgentAuthorizationCardProps } from 'hocs'
 
-export const AgentAuthorizationCard =
-  agentAuthorizationCard<AgentAuthorizationCardSFCProps>(
-    AgentAuthorizationCardSFC
-  )
+export const AgentAuthorizationCard = agentAuthorizationCard<
+  AgentAuthorizationCardSFCProps
+>(AgentAuthorizationCardSFC)
 
 export { AgentAuthorizationCardProps }

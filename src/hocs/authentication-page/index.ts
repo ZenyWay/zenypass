@@ -34,17 +34,17 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { createActionDispatchers, createActionFactories } from 'basic-fsa-factories'
 import {
-  callHandlerOnEvent,
-  preventDefault,
-  shallowEqual
-} from 'utils'
+  createActionDispatchers,
+  createActionFactories
+} from 'basic-fsa-factories'
+import { callHandlerOnEvent, preventDefault, shallowEqual } from 'utils'
 import { tap, distinctUntilChanged } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
-export type AuthenticationPageProps<P extends AuthenticationPageSFCProps> =
-  AuthenticationPageHocProps & Rest<P, AuthenticationPageSFCProps>
+export type AuthenticationPageProps<
+  P extends AuthenticationPageSFCProps
+> = AuthenticationPageHocProps & Rest<P, AuthenticationPageSFCProps>
 
 export interface AuthenticationPageHocProps {
   type?: AuthenticationPageType
@@ -58,7 +58,7 @@ export interface AuthenticationPageHocProps {
 export { AuthenticationPageType }
 
 export interface AuthenticationPageSFCProps
-extends AuthenticationPageSFCHandlerProps {
+  extends AuthenticationPageSFCHandlerProps {
   type?: AuthenticationPageType
   consents?: boolean
   created?: boolean
@@ -138,9 +138,16 @@ const CURRENT_INPUT_TO_ENABLED = {
   }
 }
 
-function mapStateToProps (
-  { props, state, created, inputs, ...changes }: AuthenticationPageState
-): Rest<AuthenticationPageSFCProps, AuthenticationPageSFCHandlerProps> {
+function mapStateToProps({
+  props,
+  state,
+  created,
+  inputs,
+  ...changes
+}: AuthenticationPageState): Rest<
+  AuthenticationPageSFCProps,
+  AuthenticationPageSFCHandlerProps
+> {
   const {
     onAuthenticated,
     onAuthenticationPageType,
@@ -152,20 +159,20 @@ function mapStateToProps (
   const [type, inputState, currentInput, opt] = state.split(':')
   const pending = inputState === 'submitting'
   const enabled =
-    (opt !== 'pending') && CURRENT_INPUT_TO_ENABLED[type][currentInput]
-  const error = (inputState === 'error') && currentInput as any
+    opt !== 'pending' && CURRENT_INPUT_TO_ENABLED[type][currentInput]
+  const error = inputState === 'error' && (currentInput as any)
   const terms =
-    (currentInput === 'submit') && (type === AuthenticationPageType.Signup)
+    currentInput === 'submit' && type === AuthenticationPageType.Signup
   return {
     ...attrs,
     ...changes,
     email,
-    consents: terms || (currentInput === 'terms'),
+    consents: terms || currentInput === 'terms',
     terms,
     created,
     pending,
     enabled,
-    retry: (error === 'submit') && (opt === 'retry'),
+    retry: error === 'submit' && opt === 'retry',
     error
   }
 }
@@ -179,12 +186,12 @@ const change = createActionFactories({
   terms: 'TOGGLE_TERMS'
 })
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => AuthenticationPageSFCHandlerProps =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => AuthenticationPageSFCHandlerProps = createActionDispatchers({
   onCancel: 'CANCEL',
-  onChange:
-    (value: string, input: HTMLElement) => change[input.dataset.id](value),
+  onChange: (value: string, input: HTMLElement) =>
+    change[input.dataset.id](value),
   // onSelectEmail: 'SELECT_EMAIL',
   onSubmit: ['SUBMIT', preventDefault],
   onTogglePageType: 'TOGGLE_PAGE_TYPE',
@@ -194,13 +201,13 @@ createActionDispatchers({
   onConfirmInputRef: ['INPUT_REF', inputRef('confirm')]
 })
 
-function inputRef (field: string) {
-  return function (input: HTMLElement) {
+function inputRef(field: string) {
+  return function(input: HTMLElement) {
     return { [field]: input } // input may be null (on component unmount)
   }
 }
 
-export function authenticationPage <P extends AuthenticationPageSFCProps> (
+export function authenticationPage<P extends AuthenticationPageSFCProps>(
   AuthenticationPageSFC: SFC<P>
 ): ComponentConstructor<AuthenticationPageProps<P>> {
   return componentFromEvents<AuthenticationPageProps<P>, P>(
@@ -225,9 +232,10 @@ export function authenticationPage <P extends AuthenticationPageSFCProps> (
       callHandlerOnEvent(
         'TOGGLE_PAGE_TYPE',
         ['props', 'onAuthenticationPageType'],
-        ({ props }) => props.type === AuthenticationPageType.Signup
-          ? AuthenticationPageType.Signin
-          : AuthenticationPageType.Signup
+        ({ props }) =>
+          props.type === AuthenticationPageType.Signup
+            ? AuthenticationPageType.Signin
+            : AuthenticationPageType.Signup
       ),
       callHandlerOnEvent('AUTHENTICATED', ['props', 'onAuthenticated']),
       callHandlerOnEvent('CHANGE_EMAIL', ['props', 'onEmailChange']),

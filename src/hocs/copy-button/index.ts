@@ -14,7 +14,10 @@
  */
 //
 import reducer, { AutomataState } from './reducer'
-import { timeoutAfterDisabled, copyToClipboardAndCallOnClickOnClick } from './effects'
+import {
+  timeoutAfterDisabled,
+  copyToClipboardAndCallOnClickOnClick
+} from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -26,8 +29,8 @@ import { createActionDispatchers } from 'basic-fsa-factories'
 // import { tap } from 'rxjs/operators'
 // const log = label => console.log.bind(console, label)
 
-export type CopyButtonProps<P extends ButtonProps> =
-  CopyButtonControllerProps & Rest<P,ButtonProps>
+export type CopyButtonProps<P extends ButtonProps> = CopyButtonControllerProps &
+  Rest<P, ButtonProps>
 
 export interface CopyButtonControllerProps {
   value?: string
@@ -63,38 +66,37 @@ interface CopyButtonState {
   state: AutomataState
 }
 
-function mapStateToProps (
-  { props, state }: CopyButtonState
-): Rest<ButtonProps, ButtonHandlerProps> {
+function mapStateToProps({
+  props,
+  state
+}: CopyButtonState): Rest<ButtonProps, ButtonHandlerProps> {
   const disabled = state === 'disabled'
   const icon = props && props.icons && props.icons[state]
   const { value, timeout, icons, onCopied, onClick, ...attrs } = props
   return { ...attrs, disabled, icon }
 }
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => ButtonHandlerProps =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => ButtonHandlerProps = createActionDispatchers({
   onClick: 'CLICK'
 })
 
-export function copyButton <P extends ButtonProps> (
+export function copyButton<P extends ButtonProps>(
   Button: SFC<P>
 ): ComponentConstructor<CopyButtonProps<P>> {
-  const CopyButton = componentFromEvents<CopyButtonProps<P>,P>(
+  const CopyButton = componentFromEvents<CopyButtonProps<P>, P>(
     Button,
     // () => tap(log('copy-button:event:')),
     redux(reducer, timeoutAfterDisabled, copyToClipboardAndCallOnClickOnClick),
     // () => tap(log('copy-button:state:')),
-    connect<CopyButtonState,ButtonProps>(
+    connect<CopyButtonState, ButtonProps>(
       mapStateToProps,
       mapDispatchToProps
     )
     // () => tap(log('copy-button:props:'))
   )
-
-  ;(CopyButton as any).defaultProps =
-    DEFAULT_PROPS as CopyButtonProps<P>
+  ;(CopyButton as any).defaultProps = DEFAULT_PROPS as CopyButtonProps<P>
 
   return CopyButton
 }

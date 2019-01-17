@@ -29,14 +29,16 @@ import { Observer } from 'rxjs'
 // import { tap } from 'rxjs/operators'
 // const log = label => console.log.bind(console, label)
 
-export type AuthenticationProviderProps<P extends AuthenticationProviderSFCProps> =
-  AuthenticationProviderHocProps & Rest<P, AuthenticationProviderSFCProps>
+export type AuthenticationProviderProps<
+  P extends AuthenticationProviderSFCProps
+> = AuthenticationProviderHocProps & Rest<P, AuthenticationProviderSFCProps>
 
 export interface AuthenticationProviderHocProps {
   session?: string
 }
 
-export interface AuthenticationProviderSFCProps extends AuthenticationProviderSFCHandlerProps {
+export interface AuthenticationProviderSFCProps
+  extends AuthenticationProviderSFCHandlerProps {
   authenticate?: boolean
   session?: string
 }
@@ -53,30 +55,32 @@ interface AuthenticationProviderState {
   session: string
 }
 
-function mapStateToProps (
-  { props, authenticate, session }: AuthenticationProviderState
-): Rest<AuthenticationProviderSFCProps, AuthenticationProviderSFCHandlerProps> {
+function mapStateToProps({
+  props,
+  authenticate,
+  session
+}: AuthenticationProviderState): Rest<
+  AuthenticationProviderSFCProps,
+  AuthenticationProviderSFCHandlerProps
+> {
   return { ...props, authenticate, session: session || props.session }
 }
 
-const mapDispatchToProps:
-(dispatch: (event: any) => void) => AuthenticationProviderSFCHandlerProps =
-createActionDispatchers({
+const mapDispatchToProps: (
+  dispatch: (event: any) => void
+) => AuthenticationProviderSFCHandlerProps = createActionDispatchers({
   onAuthenticationRequest: 'AUTHENTICATION_REQUESTED',
   onAuthenticationRejected: 'AUTHENTICATION_REJECTED',
   onAuthenticationResolved: 'AUTHENTICATION_RESOLVED'
 })
 
-export function withAuthentication <P extends AuthenticationProviderSFCProps> (
+export function withAuthentication<P extends AuthenticationProviderSFCProps>(
   AuthenticationProviderSFC: SFC<P>
 ): ComponentConstructor<AuthenticationProviderProps<P>> {
   return componentFromEvents<AuthenticationProviderProps<P>, P>(
     AuthenticationProviderSFC,
     // () => tap(log('authentication-provider:event:')),
-    redux(
-      reducer,
-      plugResponse
-    ),
+    redux(reducer, plugResponse),
     // () => tap(log('authentication-provider:state:')),
     connect<AuthenticationProviderState, AuthenticationProviderSFCProps>(
       mapStateToProps,
