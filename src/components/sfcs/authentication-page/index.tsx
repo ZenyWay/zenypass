@@ -87,7 +87,7 @@ const SUBMIT_ACTIONS: { [key in AuthenticationPageType]: string } = {
   authorize: 'Authorize this device'
 }
 
-export function AuthenticationPage ({
+export function AuthenticationPage({
   locale,
   locales,
   type = AuthenticationPageType.Signin,
@@ -122,10 +122,10 @@ export function AuthenticationPage ({
   const title = t(TITLES[type])
   const isSignup = type === 'signup'
   const question = t(
-    isSignup ? 'Already have an account' : 'You don\'t have an account'
+    isSignup ? 'Already have an account' : "You don't have an account"
   )
   return (
-    <section className='container' {...attrs}>
+    <section className="container" {...attrs}>
       <ConsentsModal
         locale={locale}
         display={consents}
@@ -142,19 +142,18 @@ export function AuthenticationPage ({
         onConfirm={onSubmit}
       >
         <p>
-          {t('Typo')} ? {t('Try again')}.<br/>
-          <br/>
-          {t('No typo')} ? {t('Try to authorize this browser to access your account')}.
+          {t('Typo')} ? {t('Try again')}.<br />
+          <br />
+          {t('No typo')} ?{' '}
+          {t('Try to authorize this browser to access your account')}.
         </p>
       </InfoModal>
-      <Row className='justify-content-center' >
-        <SplashCard >
-          <CardTitle className='mt-3'>
-            {title}
-          </CardTitle>
-          <CardBody className='px-0' >
+      <Row className="justify-content-center">
+        <SplashCard>
+          <CardTitle className="mt-3">{title}</CardTitle>
+          <CardBody className="px-0">
             <AuthenticationForm
-              id='authentication-form'
+              id="authentication-form"
               type={type}
               email={email}
               password={password}
@@ -177,42 +176,39 @@ export function AuthenticationPage ({
               outline
               items={locales.slice(1)}
               onSelectItem={onSelectLocale}
-              className='float-left'
+              className="float-left"
             />
             <Button
-              type='submit'
-              form='authentication-form'
-              color='info'
+              type="submit"
+              form="authentication-form"
+              color="info"
               disabled={
-                !enabled || (enabled === 'email')
-                || ((type !== 'signin') && (enabled === 'password'))
+                !enabled ||
+                enabled === 'email' ||
+                (type !== 'signin' && enabled === 'password')
               }
-              className='float-right'
+              className="float-right"
             >
-              {
-                !pending ? null : (
-                  <FAIcon icon='spinner' animate='spin' className='mr-1'/>
-                )
-              }
+              {!pending ? null : (
+                <FAIcon icon="spinner" animate="spin" className="mr-1" />
+              )}
               {t(SUBMIT_ACTIONS[type])}
             </Button>
           </CardBody>
         </SplashCard>
       </Row>
-      <Row className='justify-content-center' >
-        <a
-          href={t('help-link')}
-          target='_blank'
-          className='text-info'
-        >
+      <Row className="justify-content-center">
+        <a href={t('help-link')} target="_blank" className="text-info">
           <small>{t('Online-help')}</small>
         </a>
       </Row>
-      <Row className='justify-content-center' >
+      <Row className="justify-content-center">
         <SplashFooterCard>
           <CardBody>
-            <p><small>{question} ?</small></p>
-            <Button color='info' onClick={onTogglePageType} disabled={pending} >
+            <p>
+              <small>{question} ?</small>
+            </p>
+            <Button color="info" onClick={onTogglePageType} disabled={pending}>
               {t(isSignup ? 'Login' : 'Create your account')}
             </Button>
           </CardBody>

@@ -26,9 +26,8 @@ const attrs = {
   onSubmit: preventDefaultAction('CLICKED')
 }
 
-storiesOf('AgentAuthorizationCard', module)
-  .add('default', () => (
-    <Wrapper>
-      <AgentAuthorizationCard {...attrs} />
-    </Wrapper>
-  ))
+storiesOf('AgentAuthorizationCard', module).add('default', () => (
+  <Wrapper>
+    <AgentAuthorizationCard {...attrs} />
+  </Wrapper>
+))

@@ -54,9 +54,11 @@ const UNAUTHORIZED = newStatusError(401, 'UNAUTHORIZED')
 const FORBIDDEN = newStatusError(403, 'FORBIDDEN')
 const MAX_CERTIFIED_MS = 90 * 24 * 60 * 60 * 1000 // 90 days in ms
 const AUTHORIZATIONS = [
-  'Ubuntu Opera', 'MacOS Safari', 'Windows Chrome'
+  'Ubuntu Opera',
+  'MacOS Safari',
+  'Windows Chrome'
 ].reduce(
-  function (agents, identifier, index) {
+  function(agents, identifier, index) {
     const _id = String(index)
     const certified = Date.now() - Math.floor(Math.random() * MAX_CERTIFIED_MS)
     agents[_id] = { _id, _rev: '1-0', identifier, certified }
@@ -91,7 +93,7 @@ const RECORDS = [
     comments: 'Rob says wow !'
   }
 ].reduce(
-  function (records, record) {
+  function(records, record) {
     records[record._id] = record
     return records
   },
@@ -106,27 +108,27 @@ export default Promise.resolve({
   getService
 })
 
-function signup (username: string, passphrase: string): Promise<string> {
-  return stall(AUTHENTICATION_DELAY)(
-    () => (username !== USERNAME)
-    && (passphrase && passphrase.length >= MIN_PASSWORD_LENGTH)
+function signup(username: string, passphrase: string): Promise<string> {
+  return stall(AUTHENTICATION_DELAY)(() =>
+    username !== USERNAME &&
+    (passphrase && passphrase.length >= MIN_PASSWORD_LENGTH)
       ? observableOf(SESSION_ID)
       : throwError(FORBIDDEN)
-    )
-    .toPromise()
+  ).toPromise()
 }
 
-function signin (username: string, passphrase: string): Promise<string> {
-  return stall(AUTHENTICATION_DELAY)(
-    () => username === USERNAME && passphrase === PASSWORD
+function signin(username: string, passphrase: string): Promise<string> {
+  return stall(AUTHENTICATION_DELAY)(() =>
+    username === USERNAME && passphrase === PASSWORD
       ? observableOf(username)
       : throwError(UNAUTHORIZED)
-    )
-    .toPromise()
+  ).toPromise()
 }
 
-function getService (username: string) {
-  if (username !== USERNAME) { return }
+function getService(username: string) {
+  if (username !== USERNAME) {
+    return
+  }
   const records = {
     records$,
     getRecord: getRecord.bind(void 0, username),
@@ -136,40 +138,38 @@ function getService (username: string) {
   return { unlock, records, signout: noop }
 }
 
-function unlock (password: string): Promise<string> {
-  return stall(AUTHENTICATION_DELAY)(
-    () => password === PASSWORD
-      ? observableOf(SESSION_ID)
-      : throwError(UNAUTHORIZED)
-    )
-    .toPromise()
+function unlock(password: string): Promise<string> {
+  return stall(AUTHENTICATION_DELAY)(() =>
+    password === PASSWORD ? observableOf(SESSION_ID) : throwError(UNAUTHORIZED)
+  ).toPromise()
 }
 
-export function authorize (sessionId: string): Observable<string> {
+export function authorize(sessionId: string): Observable<string> {
   return sessionId === SESSION_ID
-  ? observableOf(TOKEN).pipe(
-      delay(TOKEN_DELAY),
-      concat(NEVER),
-      takeUntil(interval(AUTHORIZATION_DELAY))
-    )
-  : throwError(UNAUTHORIZED)
+    ? observableOf(TOKEN).pipe(
+        delay(TOKEN_DELAY),
+        concat(NEVER),
+        takeUntil(interval(AUTHORIZATION_DELAY))
+      )
+    : throwError(UNAUTHORIZED)
 }
 
-export function getAuthorizations$ (sessionId: string): Observable<KVMap<AuthorizationDoc>> {
+export function getAuthorizations$(
+  sessionId: string
+): Observable<KVMap<AuthorizationDoc>> {
   const authorizations = Object.keys(AUTHORIZATIONS).reduce(
-    function (agents, _id) {
+    function(agents, _id) {
       agents[_id] = { ...AUTHORIZATIONS[_id] }
       return agents
     },
     {} as KVMap<AuthorizationDoc>
   )
   return sessionId === SESSION_ID
-  ? observableOf(authorizations).pipe(concat(NEVER))
-  : throwError(UNAUTHORIZED)
+    ? observableOf(authorizations).pipe(concat(NEVER))
+    : throwError(UNAUTHORIZED)
 }
 
-const recordsUpdate$ =
-  new BehaviorSubject<RecordsUpdate>(() => RECORDS)
+const recordsUpdate$ = new BehaviorSubject<RecordsUpdate>(() => RECORDS)
 
 interface RecordsUpdate {
   (records: KVMap<Partial<ZenypassRecord>>): KVMap<Partial<ZenypassRecord>>
@@ -182,58 +182,53 @@ const records$ = recordsUpdate$.pipe(
   )
 )
 
-const getRecord = accessRecordService<PouchDoc,ZenypassRecord>(
-  ({ _id }) => records$.pipe(
+const getRecord = accessRecordService<PouchDoc, ZenypassRecord>(({ _id }) =>
+  records$.pipe(
     first(),
     map(
-      records => ({ ...records[_id], password: RECORD_PASSWORD }) as ZenypassRecord
+      records =>
+        ({ ...records[_id], password: RECORD_PASSWORD } as ZenypassRecord)
     )
   )
 )
 
-const newRecord = accessRecordService<void,ZenypassRecord>(
-  function () {
-    const record = EMPTY_RECORD
-    recordsUpdate$.next(
-      records => ({ ...records, [record._id]: record })
-    )
-    return Promise.resolve(record)
-  }
-)
+const newRecord = accessRecordService<void, ZenypassRecord>(function() {
+  const record = EMPTY_RECORD
+  recordsUpdate$.next(records => ({ ...records, [record._id]: record }))
+  return Promise.resolve(record)
+})
 
-const putRecord = accessRecordService<ZenypassRecord,ZenypassRecord>(
-  function (record) {
-    recordsUpdate$.next(
-      records => ({ ...records, [record._id]: record })
-    )
-    return Promise.resolve(record)
-  }
-)
+const putRecord = accessRecordService<ZenypassRecord, ZenypassRecord>(function(
+  record
+) {
+  recordsUpdate$.next(records => ({ ...records, [record._id]: record }))
+  return Promise.resolve(record)
+})
 
-const deleteRecord = accessRecordService<PouchDoc,PouchDoc>(ref => {
-  const deleted = ({ ...ref, _deleted: true })
-  recordsUpdate$.next(
-    records => ({ ...records, [deleted._id]: deleted })
-  )
+const deleteRecord = accessRecordService<PouchDoc, PouchDoc>(ref => {
+  const deleted = { ...ref, _deleted: true }
+  recordsUpdate$.next(records => ({ ...records, [deleted._id]: deleted }))
   return Promise.resolve(deleted)
 })
 
-function accessRecordService <I,O> (
+function accessRecordService<I, O>(
   result: (arg?: I) => Observable<O> | Promise<O>
 ) {
-  return function (username: string, arg: I): Promise<O> {
-    return stall(RECORD_SERVICE_DELAY)(
-      () => username === USERNAME
+  return function(username: string, arg: I): Promise<O> {
+    return stall(RECORD_SERVICE_DELAY)(() =>
+      username === USERNAME
         ? observableFrom(result(arg))
         : throwError(UNAUTHORIZED)
-    )
-    .toPromise()
+    ).toPromise()
   }
 }
 
-function stall (ms: number) {
-  return function <T> (fn: () => Observable<T> | Promise<T>) {
-    return interval(ms).pipe(take(1), switchMap(fn))
+function stall(ms: number) {
+  return function<T>(fn: () => Observable<T> | Promise<T>) {
+    return interval(ms).pipe(
+      take(1),
+      switchMap(fn)
+    )
   }
 }
 
@@ -241,12 +236,12 @@ interface StatusError extends Error {
   status: number
 }
 
-function newStatusError (status = 501, message = '') {
+function newStatusError(status = 501, message = '') {
   const err = new Error(message) as StatusError
   err.status = status
   return err
 }
 
-function noop () {
+function noop() {
   // do nothing
 }

@@ -20,54 +20,53 @@ import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { AgentAuthorizationsPageSFC as AgentAuthorizationsPage } from 'components'
 
-const agents = [{
-  browser: 'Firefox',
-  date: '2018-07-27',
-  key: 0
-},
-{
-  browser: 'Opera',
-  date: '2018-07-27',
-  key: 1
-},
-{
-  browser: 'Chrome',
-  date: '2018-07-27',
-  key: 2
-},
-{
-  browser: 'Chromium',
-  date: '2018-07-27',
-  key: 3
-},
-{
-  browser: 'Safari',
-  date: '2018-07-27',
-  key: 4
-},
-{
-  browser: 'Edge',
-  date: '2018-07-27',
-  key: 5
-},
-{
-  browser: 'Explorer',
-  date: '2018-07-27',
-  key: 6
-},
-{
-  browser: 'Opera Neon',
-  date: '2018-07-27',
-  key: 7
-},
-{
-  browser: 'Opera Linux',
-  date: '2018-07-27',
-  key: 8
-}
-].map((agent) => (
-  { ...agent, date: new Date(agent.date) }
-))
+const agents = [
+  {
+    browser: 'Firefox',
+    date: '2018-07-27',
+    key: 0
+  },
+  {
+    browser: 'Opera',
+    date: '2018-07-27',
+    key: 1
+  },
+  {
+    browser: 'Chrome',
+    date: '2018-07-27',
+    key: 2
+  },
+  {
+    browser: 'Chromium',
+    date: '2018-07-27',
+    key: 3
+  },
+  {
+    browser: 'Safari',
+    date: '2018-07-27',
+    key: 4
+  },
+  {
+    browser: 'Edge',
+    date: '2018-07-27',
+    key: 5
+  },
+  {
+    browser: 'Explorer',
+    date: '2018-07-27',
+    key: 6
+  },
+  {
+    browser: 'Opera Neon',
+    date: '2018-07-27',
+    key: 7
+  },
+  {
+    browser: 'Opera Linux',
+    date: '2018-07-27',
+    key: 8
+  }
+].map(agent => ({ ...agent, date: new Date(agent.date) }))
 
 const attrs = {
   locale: 'fr',
@@ -75,12 +74,8 @@ const attrs = {
 }
 
 storiesOf('AgentAuthorizationsPage (SFC)', module)
-  .add('default', () => (
-    <AgentAuthorizationsPage {...attrs} />
-  ))
-  .add('error', () => (
-    <AgentAuthorizationsPage {...attrs} error='ERROR' />
-  ))
+  .add('default', () => <AgentAuthorizationsPage {...attrs} />)
+  .add('error', () => <AgentAuthorizationsPage {...attrs} error="ERROR" />)
   .add('authenticate', () => (
     <AgentAuthorizationsPage {...attrs} authenticate />
   ))

@@ -12,9 +12,10 @@
     "components": "./src/components",
     "create-element": "./src/create-element",
     "hocs": "./src/hocs",
-    "zenypass-service": "./src/zenypass-service",
+    "react-devtools": "inferno-devtools",
     "static": "./src/static",
-    "utils": "./src/utils"
+    "utils": "./src/utils",
+    "zenypass-service": "./src/zenypass-service"
   },
   "scripts": {
     "stage": "bin/git-stage git.zenyway.com:staging-v2.zenypass.git dist staging",
@@ -101,7 +102,7 @@
     "coveralls": "3.0.2",
     "cpx": "1.5.0",
     "envify": "4.1.0",
-    "eslint-plugin-typescript": "0.14.0",
+    "eslint-plugin-typescript": "^0.14.0",
     "extract-zip": "1.6.7",
     "http-server": "0.11.1",
     "imgurify": "2.0.1",
@@ -130,8 +131,6 @@
     "ts-loader": "5.3.3",
     "ts-node": "7.0.1",
     "tsify": "4.0.1",
-    "tslint": "5.12.1",
-    "tslint-config-standard": "8.0.1",
     "typescript": "3.2.2",
     "typescript-eslint-parser": "21.0.2",
     "uglify-es": "3.3.9",

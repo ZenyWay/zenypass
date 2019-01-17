@@ -24,7 +24,4 @@ const attrs = {
   locale: 'fr'
 }
 
-storiesOf('Router', module)
-  .add('default', () => (
-    <Router {...attrs} />
-  ))
+storiesOf('Router', module).add('default', () => <Router {...attrs} />)

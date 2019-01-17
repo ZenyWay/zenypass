@@ -43,7 +43,7 @@ export interface DropdownItemSpec {
   disabled?: boolean
 }
 
-export function Dropdown ({
+export function Dropdown({
   inputGroup,
   navItem,
   active,
@@ -92,7 +92,7 @@ export interface DropdownMenuItemsProps {
   onClickItem?: (event: MouseEvent) => void
 }
 
-function DropdownMenuItems ({
+function DropdownMenuItems({
   items,
   className,
   onClickItem
@@ -123,11 +123,13 @@ export interface MenuItemIconProps {
   [prop: string]: unknown
 }
 
-export function MenuItemIcon ({ icon, className, ...attrs }: MenuItemIconProps) {
+export function MenuItemIcon({ icon, className, ...attrs }: MenuItemIconProps) {
   if (!icon) return null
-  return !icon ? null : Array.isArray(icon)
-  ? <MenuItemIcons icons={icon} className={className} {...attrs} />
-  : <i className={classes(icon, 'mr-1', className)} {...attrs} />
+  return !icon ? null : Array.isArray(icon) ? (
+    <MenuItemIcons icons={icon} className={className} {...attrs} />
+  ) : (
+    <i className={classes(icon, 'mr-1', className)} {...attrs} />
+  )
 }
 
 interface MenuItemIconsProps extends MenuItemIconProps {
@@ -136,7 +138,7 @@ interface MenuItemIconsProps extends MenuItemIconProps {
   [prop: string]: unknown
 }
 
-function MenuItemIcons ({ icons, ...attrs }: MenuItemIconsProps) {
+function MenuItemIcons({ icons, ...attrs }: MenuItemIconsProps) {
   let i = icons.length
   const elements = new Array<JSX.Element>(i)
   while (i--) {

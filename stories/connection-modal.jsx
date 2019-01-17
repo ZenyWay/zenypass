@@ -34,7 +34,6 @@ const attrs = {
   onDone: action('DONE')
 }
 
-storiesOf('ConnectionModal', module)
-  .add('default', () => (
-    <ConnectionModal {...attrs} />
-  ))
+storiesOf('ConnectionModal', module).add('default', () => (
+  <ConnectionModal {...attrs} />
+))

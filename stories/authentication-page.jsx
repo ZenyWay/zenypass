@@ -34,7 +34,7 @@ const attrs = {
   onSelectLocale: action('SELECT_LOCALE')
 }
 
-const emails = [ 'jane.doe@example.com', 'rob@hvsc.org' ]
+const emails = ['jane.doe@example.com', 'rob@hvsc.org']
   .map(email => ({
     'data-id': `email/${email}`,
     icon: 'fa fa-user',
@@ -67,23 +67,10 @@ storiesOf('AuthenticationPage', module)
       {...attrs}
     />
   ))
-  .add('signup', () => (
-    <AuthenticationPage
-      type='signup'
-      {...attrs}
-    />
-  ))
+  .add('signup', () => <AuthenticationPage type="signup" {...attrs} />)
   .add('signup-email', () => (
-    <AuthenticationPage
-      type='signup'
-      email={emails[0].label}
-      {...attrs}
-    />
+    <AuthenticationPage type="signup" email={emails[0].label} {...attrs} />
   ))
   .add('authorize-email', () => (
-    <AuthenticationPage
-      type='authorize'
-      email={emails[0].label}
-      {...attrs}
-    />
+    <AuthenticationPage type="authorize" email={emails[0].label} {...attrs} />
   ))

@@ -41,7 +41,6 @@ const attrs = {
   onClickItem: preventDefaultAction('CLICK_ITEM')
 }
 
-storiesOf('Dropdown', module)
-  .add('default', () => (
-    <Dropdown {...props} items={items} {...attrs} />
-  ))
+storiesOf('Dropdown', module).add('default', () => (
+  <Dropdown {...props} items={items} {...attrs} />
+))

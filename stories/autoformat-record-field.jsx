@@ -32,8 +32,8 @@ storiesOf('AutoformatRecordField', module)
   // text inputs with both onChange and onInput handlers will malfunction in Storybook (inferno-compat)
   .add('onchange-issue', () => (
     <input
-      id='onchange-issue'
-      type='text'
+      id="onchange-issue"
+      type="text"
       onInput={action('INPUT')}
       onChange={action('CHANGE')}
     />
@@ -41,25 +41,25 @@ storiesOf('AutoformatRecordField', module)
   .add('csv', () => (
     <AutoformatRecordField
       {...attrs}
-      id='csv'
-      type='csv'
+      id="csv"
+      type="csv"
       value={['comma', 'separated', 'values']}
     />
   ))
   .add('email', () => (
     <AutoformatRecordField
       {...attrs}
-      id='email'
-      type='email'
-      value='john.doe@example.com'
+      id="email"
+      type="email"
+      value="john.doe@example.com"
     />
   ))
   .add('password', () => (
     <AutoformatRecordField
       {...attrs}
-      id='password'
-      type='password'
-      value='P@ssw0rd'
+      id="password"
+      type="password"
+      value="P@ssw0rd"
       onToggle={onToggleCleartext}
       onCopy={onCopyPassword}
     />
@@ -67,38 +67,38 @@ storiesOf('AutoformatRecordField', module)
   .add('textarea', () => (
     <AutoformatRecordField
       {...attrs}
-      id='textarea'
-      type='textarea'
-      value='Rob says wow !'
+      id="textarea"
+      type="textarea"
+      value="Rob says wow !"
     />
   ))
   .add('url', () => (
     <AutoformatRecordField
       {...attrs}
-      id='url'
-      type='url'
-      value='https://example.com'
+      id="url"
+      type="url"
+      value="https://example.com"
     />
   ))
   .add('url-copy', () => (
     <AutoformatRecordField
       {...attrs}
-      id='url-copy'
-      type='url'
-      value='https://example.com'
+      id="url-copy"
+      type="url"
+      value="https://example.com"
       copy
     />
   ))
   .add('url-disabled', () => (
     <AutoformatRecordField
       {...attrs}
-      id='url-disabled'
-      type='url'
-      value='https://example.com'
+      id="url-disabled"
+      type="url"
+      value="https://example.com"
       disabled
     />
   ))
-  /*
+/*
   .add('url-copy-disabled', () => (
     <AutoformatRecordField
       {...attrs}

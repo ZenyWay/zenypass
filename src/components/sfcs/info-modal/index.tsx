@@ -36,7 +36,7 @@ export interface InfoModalProps {
   [prop: string]: unknown
 }
 
-export function InfoModal ({
+export function InfoModal({
   locale,
   expanded,
   progress,
@@ -48,34 +48,28 @@ export function InfoModal ({
   const t = l10ns[locale]
 
   return (
-    <Modal isOpen={expanded} toggle={onCancel} >
-      <ModalHeader toggle={onCancel} className='bg-info text-white' >
+    <Modal isOpen={expanded} toggle={onCancel}>
+      <ModalHeader toggle={onCancel} className="bg-info text-white">
         {t(onConfirm ? 'Please confirm' : progress ? 'Please wait' : 'Info')}...
       </ModalHeader>
-      <ModalBody {...attrs} >
+      <ModalBody {...attrs}>
         {children}
-        {
-          !progress ? null : (
-            <ProgressBar ratio={progress} animated striped bg='info' />
-          )
-        }
+        {!progress ? null : (
+          <ProgressBar ratio={progress} animated striped bg="info" />
+        )}
       </ModalBody>
-      {
-        !onConfirm && !onCancel ? null : (
-          <ModalFooter className='bg-light'>
-            {
-              !onConfirm ? null : (
-                <Button color='info' outline onClick={onConfirm}>
-                  {t('Yes')}
-                </Button>
-              )
-            }
-            <Button color='info' onClick={onCancel}>
-              {t(!onConfirm ? 'Ok' : 'No')}
+      {!onConfirm && !onCancel ? null : (
+        <ModalFooter className="bg-light">
+          {!onConfirm ? null : (
+            <Button color="info" outline onClick={onConfirm}>
+              {t('Yes')}
             </Button>
-          </ModalFooter>
-        )
-      }
+          )}
+          <Button color="info" onClick={onCancel}>
+            {t(!onConfirm ? 'Ok' : 'No')}
+          </Button>
+        </ModalFooter>
+      )}
     </Modal>
   )
 }

@@ -15,11 +15,7 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import {
-  InputGroup,
-  InputGroupText,
-  InputGroupPrepend
-} from 'bootstrap'
+import { InputGroup, InputGroupText, InputGroupPrepend } from 'bootstrap'
 import { FAIcon, FAIconButton } from './fa-icon'
 import { Dropdown, DropdownItemSpec } from '../dropdown'
 import { classes } from 'utils'
@@ -46,7 +42,7 @@ export interface IconLabelInputGroupProps {
   [prop: string]: unknown
 }
 
-export function IconLabelInputGroup ({
+export function IconLabelInputGroup({
   id,
   options,
   icon,
@@ -71,37 +67,34 @@ export function IconLabelInputGroup ({
   }
   return (
     <InputGroup id={id} size={size} {...attrs}>
-      {!icon ? null : (
-        options && options.length
-        ? (
-          <Dropdown
-            {...iconProps}
-            inputGroup='prepend'
-            outline
-            items={options}
-            onSelectItem={onSelectItem}
-          />
-        ) : (
-          <InputGroupPrepend>
-            {!onIconClick ? (
-              <InputGroupText
-                className={classes(invalid && 'border-danger text-danger')}
-              >
-                <FAIcon {...iconProps} fw />
-              </InputGroupText>
-            ) : (
-              <FAIconButton
-                id={`${id}_toggle-button`}
-                {...iconProps}
-                pending={pending}
-                outline
-                onClick={onIconClick}
-                disabled={disabled}
-                title={buttonTitle}
-              />
-            )}
-          </InputGroupPrepend>
-        )
+      {!icon ? null : options && options.length ? (
+        <Dropdown
+          {...iconProps}
+          inputGroup="prepend"
+          outline
+          items={options}
+          onSelectItem={onSelectItem}
+        />
+      ) : (
+        <InputGroupPrepend>
+          {!onIconClick ? (
+            <InputGroupText
+              className={classes(invalid && 'border-danger text-danger')}
+            >
+              <FAIcon {...iconProps} fw />
+            </InputGroupText>
+          ) : (
+            <FAIconButton
+              id={`${id}_toggle-button`}
+              {...iconProps}
+              pending={pending}
+              outline
+              onClick={onIconClick}
+              disabled={disabled}
+              title={buttonTitle}
+            />
+          )}
+        </InputGroupPrepend>
       )}
       {children}
     </InputGroup>

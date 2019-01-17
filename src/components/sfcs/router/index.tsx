@@ -48,7 +48,7 @@ export interface CoreRouterProps {
   onSelectMenuItem?: (target: HTMLElement) => void
 }
 
-export function Router ({
+export function Router({
   locale,
   info,
   onCloseInfo,
@@ -57,9 +57,11 @@ export function Router ({
   const t = l10ns[locale]
   return (
     <div>
-      <InfoModal locale={locale} expanded={info} onCancel={onCloseInfo} >
-        <p>{t('ZenyPass Help is hosted on Medium')}:<br/>
-        {t('a dedicated window will open')}</p>
+      <InfoModal locale={locale} expanded={info} onCancel={onCloseInfo}>
+        <p>
+          {t('ZenyPass Help is hosted on Medium')}:<br />
+          {t('a dedicated window will open')}
+        </p>
       </InfoModal>
       <CoreRouter locale={locale} {...attrs} />
     </div>
@@ -72,7 +74,7 @@ const AUTHENTICATION_PAGE_TYPES = {
   '/authorize': AuthenticationPageType.Authorize
 }
 
-function CoreRouter ({
+function CoreRouter({
   locale,
   email,
   session,

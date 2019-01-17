@@ -19,7 +19,9 @@ import { createElement } from 'create-element'
 import { Card, CardProps, CardBody, CardFooter, CardHeader } from 'bootstrap'
 import { FAIconButton } from '../fa-icon'
 import createL10ns from 'basic-l10n'
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
+const debug =
+  process.env.NODE_ENV !== 'production' &&
+  require('debug')('zenypass:components:access-authorization:')
 const l10ns = createL10ns(require('./locales.json'), { debug })
 
 export interface AgentAuthorizationCardProps extends CardProps {
@@ -33,7 +35,7 @@ export interface AgentAuthorizationCardProps extends CardProps {
   onAuthenticated?: (sessionID: string) => void
 }
 
-export function AgentAuthorizationCard ({
+export function AgentAuthorizationCard({
   error,
   locale,
   onClick,
@@ -42,7 +44,6 @@ export function AgentAuthorizationCard ({
   token,
   ...attrs
 }: AgentAuthorizationCardProps) {
-
   const t = l10ns[locale]
 
   const txt = pending && token ? t('Access authorization token:') : '...'
@@ -50,20 +51,20 @@ export function AgentAuthorizationCard ({
 
   return (
     <Card
-      align='center'
+      align="center"
       border={error ? 'danger' : pending && 'info'}
       {...attrs}
     >
-      <CardHeader bg='transparent' className='border-0' />
+      <CardHeader bg="transparent" className="border-0" />
       <CardBody>
         {pending ? (
           <div>
-            <p className='mb-2'>{txt}</p>
-            <p className='mb-2'>{token}</p>
+            <p className="mb-2">{txt}</p>
+            <p className="mb-2">{token}</p>
           </div>
         ) : null}
         <FAIconButton
-          color='info'
+          color="info"
           pending={pending && !token}
           onClick={onClick}
           className={pending && 'btn-outline-info'}
@@ -71,7 +72,11 @@ export function AgentAuthorizationCard ({
           {buttonTxt}
         </FAIconButton>
       </CardBody>
-      <CardFooter bg='transparent' text={error && 'danger'} className='border-0' >
+      <CardFooter
+        bg="transparent"
+        text={error && 'danger'}
+        className="border-0"
+      >
         {error}
       </CardFooter>
     </Card>

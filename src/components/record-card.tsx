@@ -14,10 +14,7 @@
  * Limitations under the License.
  */
 //
-import {
-  recordCard,
-  RecordCardProps as GenericRecordCardProps
-} from 'hocs'
+import { recordCard, RecordCardProps as GenericRecordCardProps } from 'hocs'
 import {
   Record,
   RecordCard as RecordCardSFC,

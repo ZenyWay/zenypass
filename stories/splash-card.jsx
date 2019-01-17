@@ -8,11 +8,10 @@ import { CardBody } from 'bootstrap'
 
 const attrs = {}
 
-storiesOf('SplashCard (SFC)', module)
-  .add('default', () => (
-    <SplashCard {...attrs} >
-      <CardBody>
-        <p>some content here...</p>
-      </CardBody>
-    </SplashCard>
-  ))
+storiesOf('SplashCard (SFC)', module).add('default', () => (
+  <SplashCard {...attrs}>
+    <CardBody>
+      <p>some content here...</p>
+    </CardBody>
+  </SplashCard>
+))

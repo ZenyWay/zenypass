@@ -47,7 +47,8 @@ const recordAutomata: AutomataSpec<RecordAutomataState> = {
   public: {
     TOGGLE_EXPANDED: toggleExpanded,
     TOGGLE_CLEARTEXT: 'pending:cleartext',
-    EDIT_RECORD_REQUESTED: 'pending:edit'
+    EDIT_RECORD_REQUESTED: 'pending:edit',
+    EDIT_RECORD: ['edit', toggleExpanded]
   },
   'pending:cleartext': {
     CLEARTEXT_REJECTED: ['public', mapPayloadToError],

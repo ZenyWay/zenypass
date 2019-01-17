@@ -30,9 +30,5 @@ const attr = {
 }
 
 storiesOf('NavbarMenu (SFC)', module)
-  .add('default', () => (
-    <NavbarMenuSFC {...attr} />
-  ))
-  .add('expanded', () => (
-    <NavbarMenuSFC {...attr} expanded />
-  ))
+  .add('default', () => <NavbarMenuSFC {...attr} />)
+  .add('expanded', () => <NavbarMenuSFC {...attr} expanded />)

@@ -15,13 +15,16 @@
  */
 //
 import zenypass, { PouchDoc, ZenypassRecord } from 'zenypass-service'
-import { createActionFactory } from 'basic-fsa-factories'
+import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import { Observable, of as observableOf, merge } from 'rxjs'
 import {
   catchError,
   distinctUntilKeyChanged,
   filter,
-  switchMap
+  map,
+  pluck,
+  switchMap,
+  withLatestFrom
 } from 'rxjs/operators'
 import {
   ERROR_STATUS,
@@ -32,9 +35,21 @@ import {
 } from 'utils'
 // const log = (label: string) => console.log.bind(console, label)
 
+const editRecord = createActionFactory('EDIT_RECORD')
 const cleartextResolved = createActionFactory('CLEARTEXT_RESOLVED')
 const cleartextRejected = createActionFactory('CLEARTEXT_REJECTED')
 const error = createActionFactory('ERROR')
+
+export function editRecordOnPublicAndNoRecordName(
+  _: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return state$.pipe(
+    distinctUntilKeyChanged('state'),
+    filter(({ props, state }) => state === 'public' && !props.record.name),
+    map(() => editRecord())
+  )
+}
 
 const cleartext = createPrivilegedRequest(
   (username: string, ref: PouchDoc) =>

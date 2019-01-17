@@ -26,7 +26,7 @@ export interface LabelProps {
   [prop: string]: unknown
 }
 
-export function Label ({
+export function Label({
   for: htmlFor,
   size,
   check,
@@ -40,6 +40,8 @@ export function Label ({
     className
   )
   return (
-    <label htmlFor={htmlFor} className={classNames} {...attrs}>{children}</label>
+    <label htmlFor={htmlFor} className={classNames} {...attrs}>
+      {children}
+    </label>
   )
 }

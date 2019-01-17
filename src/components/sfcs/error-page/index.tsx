@@ -39,25 +39,32 @@ const ERROR_TYPES = {
 
 const INTERNAL_SERVER_ERROR = newStatusError(500)
 
-export function ErrorPage (
-  {
-    locale,
-    error = INTERNAL_SERVER_ERROR,
-    children,
-    ...attrs
-  }: ErrorPageProps & { [prop: string]: unknown }
-) {
+export function ErrorPage({
+  locale,
+  error = INTERNAL_SERVER_ERROR,
+  children,
+  ...attrs
+}: ErrorPageProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
   const { status = INTERNAL_SERVER_ERROR.status, message = null } = error
   const type = ERROR_TYPES[status] || null
   return (
     <section {...attrs}>
-      <h3><FAIcon icon='bomb'/> <FAIcon icon='bomb'/> <FAIcon icon='bomb'/></h3>
+      <h3>
+        <FAIcon icon="bomb" /> <FAIcon icon="bomb" /> <FAIcon icon="bomb" />
+      </h3>
       <p>
-        {t('Sorry, an unrecoverable error occurred')}...<br/>
+        {t('Sorry, an unrecoverable error occurred')}...
+        <br />
         {t('Please reload this page to restart ZenyPass')}.
       </p>
-      <div><p>{status} {type}<br/>{message}</p></div>
+      <div>
+        <p>
+          {status} {type}
+          <br />
+          {message}
+        </p>
+      </div>
       {children}
     </section>
   )

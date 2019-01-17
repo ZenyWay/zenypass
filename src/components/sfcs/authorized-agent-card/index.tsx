@@ -19,7 +19,9 @@ import { createElement } from 'create-element'
 import { Card, CardBody, CardFooter, CardHeader } from 'bootstrap'
 import createL10ns from 'basic-l10n'
 
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-browser:')
+const debug =
+  process.env.NODE_ENV !== 'production' &&
+  require('debug')('zenypass:components:access-browser:')
 const l10ns = createL10ns(require('./locales.json'), { debug })
 
 export interface AuthorizedAgentCardProps {
@@ -28,22 +30,24 @@ export interface AuthorizedAgentCardProps {
   locale: string
 }
 
-export function AuthorizedAgentCard ({
+export function AuthorizedAgentCard({
   agent,
   date,
   locale
 }: AuthorizedAgentCardProps) {
-
   const t = l10ns[locale]
 
   return (
-    <Card className='mb-2'>
-      <CardHeader className='border-0 bg-white'> <h5>{agent}</h5> </CardHeader>
+    <Card className="mb-2">
+      <CardHeader className="border-0 bg-white">
+        {' '}
+        <h5>{agent}</h5>{' '}
+      </CardHeader>
       <CardBody>
-        <p className='mb-2'>{t('Access authorized since:')}</p>
+        <p className="mb-2">{t('Access authorized since:')}</p>
         <p>{date.toLocaleString()}</p>
       </CardBody>
-      <CardFooter className='border-0 bg-white' />
+      <CardFooter className="border-0 bg-white" />
     </Card>
   )
 }

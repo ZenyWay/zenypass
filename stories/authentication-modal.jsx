@@ -30,6 +30,4 @@ const attrs = {
 storiesOf('AuthenticationModal', module)
   // onChange prop becomes onInput: https://github.com/infernojs/inferno/issues/1263#issuecomment-361710508
   // text inputs with both onChange and onInput handlers will malfunction in Storybook (inferno-compat)
-  .add('default', () => (
-    <AuthenticationModal {...attrs} />
-  ))
+  .add('default', () => <AuthenticationModal {...attrs} />)

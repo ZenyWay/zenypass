@@ -29,9 +29,9 @@ export interface InputProps {
   [prop: string]: unknown
 }
 
-const onKeyPress = ({ target, key }) => (key === 'Enter') && target.blur()
+const onKeyPress = ({ target, key }) => key === 'Enter' && target.blur()
 
-export function Input ({
+export function Input({
   type,
   invalid,
   className,
@@ -40,11 +40,13 @@ export function Input ({
   ...attrs
 }: InputProps) {
   const Tag = (type === 'textarea' ? type : 'input') as 'input'
-  return <Tag
-    ref={innerRef}
-    type={type}
-    className={classes(invalid && 'is-invalid', className)}
-    onKeyPress={blurOnEnterKey && onKeyPress}
-    {...attrs}
-  />
+  return (
+    <Tag
+      ref={innerRef}
+      type={type}
+      className={classes(invalid && 'is-invalid', className)}
+      onKeyPress={blurOnEnterKey && onKeyPress}
+      {...attrs}
+    />
+  )
 }

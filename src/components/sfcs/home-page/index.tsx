@@ -45,7 +45,7 @@ export interface HomePageProps {
   onCloseModal?: (event: MouseEvent) => void
 }
 
-export function HomePage ({
+export function HomePage({
   locale,
   menu,
   records = [],
@@ -63,7 +63,7 @@ export function HomePage ({
   onToggleFilter,
   onCloseModal,
   ...attrs
-}: HomePageProps & { [prop: string]: unknown}) {
+}: HomePageProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
 
   return (
@@ -75,34 +75,30 @@ export function HomePage ({
         onCancel={!busy && onCloseModal}
       >
         <p>
-          {t(busy ? 'Creating new card' : 'Sorry, something went wrong')}...<br/>
+          {t(busy ? 'Creating new card' : 'Sorry, something went wrong')}...
+          <br />
           {busy ? null : error}
         </p>
       </InfoModal>
-      <header className='sticky-top'>
-        <NavbarMenu
-          menu={menu}
-          onSelectItem={onSelectMenuItem}
-        >
+      <header className="sticky-top">
+        <NavbarMenu menu={menu} onSelectItem={onSelectMenuItem}>
           <FAIconButton
-            icon='search'
-            color='info'
+            icon="search"
+            color="info"
             onClick={onToggleFilter}
             active={!!filter}
           />
         </NavbarMenu>
-        {
-          !filter ? null : (
-            <SearchField
-              innerRef={onSearchFieldRef}
-              className='col-12 col-md-6 col-xl-4 px-0 py-1 bg-white'
-              tokens={tokens}
-              debounce={debounce}
-              onChange={onTokensChange}
-              onClear={onTokensClear}
-            />
-          )
-        }
+        {!filter ? null : (
+          <SearchField
+            innerRef={onSearchFieldRef}
+            className="col-12 col-md-6 col-xl-4 px-0 py-1 bg-white"
+            tokens={tokens}
+            debounce={debounce}
+            onChange={onTokensChange}
+            onClear={onTokensClear}
+          />
+        )}
       </header>
       <FilteredRecordCards
         locale={locale}

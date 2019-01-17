@@ -31,11 +31,12 @@ const AuthenticatedRouter = withAuthentication<PrivilegedRouterProps>(
   withAuthenticationModal(PrivilegedRouter)
 )
 
-type AuthenticatedRouterProps = AuthenticationProviderProps<PrivilegedRouterProps>
+type AuthenticatedRouterProps = AuthenticationProviderProps<
+  PrivilegedRouterProps
+>
 
-export const Router: ComponentConstructor<RouterProps> =
-  router<AuthenticatedRouterProps>(
-    (props: AuthenticatedRouterProps) => <AuthenticatedRouter {...props} />
-  )
+export const Router: ComponentConstructor<RouterProps> = router<
+  AuthenticatedRouterProps
+>((props: AuthenticatedRouterProps) => <AuthenticatedRouter {...props} />)
 
 export type RouterProps = GenericRouterProps<AuthenticatedRouterProps>

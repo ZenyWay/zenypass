@@ -15,13 +15,18 @@
  */
 /** @jsx createElement */
 import 'symbol-observable' // polyfill
-import { createElement, render } from 'create-element'
+import { createElement, initDevTools, render } from 'create-element'
 import { Router as App } from 'components'
 
-const app = document.getElementById('app')
-render(<App />, removeChildNodes(app)) // Inferno expects empty node
+const app = removeChildNodes(document.getElementById('app')) // Inferno expects empty node
 
-function removeChildNodes (node: HTMLElement): HTMLElement {
-  Array.from(app.childNodes).forEach(el => el.remove())
+if (process.env.NODE_ENV !== 'production') {
+  initDevTools()
+}
+
+render(<App />, app)
+
+function removeChildNodes(node: HTMLElement): HTMLElement {
+  Array.from(node.childNodes).forEach(el => el.remove())
   return node
 }

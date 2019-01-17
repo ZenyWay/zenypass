@@ -28,9 +28,10 @@ import {
 
 export { AuthenticationPageType }
 
-export const AuthenticationPage = authenticationPage<AuthenticationPageSFCProps>(
-  (props: AuthenticationPageSFCProps) => <AuthenticationPageSFC {...props} />
-)
+export const AuthenticationPage = authenticationPage<
+  AuthenticationPageSFCProps
+>((props: AuthenticationPageSFCProps) => <AuthenticationPageSFC {...props} />)
 
-export type AuthenticationPageProps =
-  GenericAuthenticationPageProps<AuthenticationPageSFCProps>
+export type AuthenticationPageProps = GenericAuthenticationPageProps<
+  AuthenticationPageSFCProps
+>

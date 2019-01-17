@@ -46,6 +46,6 @@ storiesOf('AgentAuthorizationCard (SFC)', module)
   ))
   .add('error', () => (
     <Wrapper>
-      <AgentAuthorizationCard {...attrs} error='ERROR' />
+      <AgentAuthorizationCard {...attrs} error="ERROR" />
     </Wrapper>
   ))

@@ -19,9 +19,9 @@ import { classes } from 'utils'
 import { orDefaultHref } from './utils'
 
 export interface NavProps {
-  tabs?: boolean,
-  pills?: boolean,
-  vertical?: boolean,
+  tabs?: boolean
+  pills?: boolean
+  vertical?: boolean
   horizontal?: 'center' | 'end'
   justified?: boolean
   fill?: boolean
@@ -33,7 +33,7 @@ export interface NavProps {
   [prop: string]: unknown
 }
 
-export function Nav ({
+export function Nav({
   tabs,
   pills,
   vertical,
@@ -60,9 +60,7 @@ export function Nav ({
     className
   )
 
-  return (
-    <Tag className={classNames} {...attrs} />
-  )
+  return <Tag className={classNames} {...attrs} />
 }
 
 export interface NavbarProps {
@@ -80,7 +78,7 @@ export interface NavbarProps {
   [prop: string]: unknown
 }
 
-export function Navbar ({
+export function Navbar({
   expand,
   light,
   dark,
@@ -105,9 +103,7 @@ export function Navbar ({
     className
   )
 
-  return (
-    <Tag className={classNames} ref={innerRef} {...attrs} />
-  )
+  return <Tag className={classNames} ref={innerRef} {...attrs} />
 }
 
 export interface NavbarBrandProps {
@@ -118,13 +114,13 @@ export interface NavbarBrandProps {
   [prop: string]: unknown
 }
 
-export function NavbarBrand ({
+export function NavbarBrand({
   href,
   className,
   tag,
   ...attrs
 }: NavbarBrandProps) {
-  const Tag: 'a' = tag || 'a' as any
+  const Tag: 'a' = tag || ('a' as any)
   const classNames = classes('navbar-brand', className)
 
   return (
@@ -139,7 +135,7 @@ export interface NavbarTogglerProps {
   [prop: string]: unknown
 }
 
-export function NavbarToggler ({
+export function NavbarToggler({
   className,
   children,
   tag,
@@ -150,7 +146,7 @@ export function NavbarToggler ({
 
   return (
     <Tag className={classNames} {...attrs}>
-      {children || <span className='navbar-toggler-icon' />}
+      {children || <span className="navbar-toggler-icon" />}
     </Tag>
   )
 }
@@ -164,7 +160,7 @@ export interface NavItemProps {
   [prop: string]: unknown
 }
 
-export function NavItem ({
+export function NavItem({
   active,
   disabled,
   className,
@@ -178,9 +174,7 @@ export function NavItem ({
     disabled && 'disabled',
     className
   )
-  return (
-    <Tag className={classNames} {...attrs} />
-  )
+  return <Tag className={classNames} {...attrs} />
 }
 
 export interface NavLinkProps {
@@ -189,13 +183,13 @@ export interface NavLinkProps {
   disabled?: boolean
   active?: boolean
   className?: string
-  onClick? (event: MouseEvent): void
+  onClick?(event: MouseEvent): void
   tag?: string
   children?: any
   [prop: string]: unknown
 }
 
-export function NavLink ({
+export function NavLink({
   href,
   toggle,
   disabled,
@@ -204,7 +198,7 @@ export function NavLink ({
   tag,
   ...attrs
 }: NavLinkProps) {
-  const Tag: 'a' = tag || 'a' as any
+  const Tag: 'a' = tag || ('a' as any)
   const classNames = classes(
     'nav-link',
     toggle && 'dropdown-toggle',
@@ -213,10 +207,6 @@ export function NavLink ({
     className
   )
   return (
-    <Tag
-      className={classNames}
-      href={orDefaultHref(Tag, href)}
-      {...attrs}
-    />
+    <Tag className={classNames} href={orDefaultHref(Tag, href)} {...attrs} />
   )
 }

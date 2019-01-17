@@ -31,7 +31,7 @@ export interface FAIconProps {
   [prop: string]: unknown
 }
 
-export function FAIcon ({
+export function FAIcon({
   icon,
   size,
   rotate,
@@ -56,9 +56,7 @@ export function FAIcon ({
     fw && 'fa-fw',
     className
   )
-  return (
-    <i className={classNames} {...attrs} />
-  )
+  return <i className={classNames} {...attrs} />
 }
 
 export interface FAIconButtonProps extends ButtonProps {
@@ -69,7 +67,7 @@ export interface FAIconButtonProps extends ButtonProps {
   animate?: 'spin' | 'pulse' | '' | false
 }
 
-export function FAIconButton ({
+export function FAIconButton({
   icon,
   pending,
   rotate,

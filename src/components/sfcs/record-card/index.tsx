@@ -15,7 +15,7 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement } from 'create-element'
+import { createElement, Fragment } from 'create-element'
 import { Button, Card, CardHeader, CardBody, CardFooter } from 'bootstrap'
 import { FAIconButton, FAIcon } from '../fa-icon'
 import { IconLabelInputFormGroup } from '../icon-label-form-group'
@@ -29,7 +29,7 @@ const l10ns = createL10ns(require('./locales.json'))
 export { Record }
 
 export interface RecordCardProps {
-  locale: string,
+  locale: string
   record: Record
   expanded?: boolean
   disabled?: boolean
@@ -49,9 +49,14 @@ export interface RecordCardProps {
 }
 
 export type PendingState =
-  'cleartext' | 'cancel' | 'edit' | 'save' | 'delete' | 'connect'
+  | 'cleartext'
+  | 'cancel'
+  | 'edit'
+  | 'save'
+  | 'delete'
+  | 'connect'
 
-export function RecordCard ({
+export function RecordCard({
   locale,
   record,
   expanded,
@@ -77,74 +82,65 @@ export function RecordCard ({
       className={classes('col-12 col-md-6 col-xl-4 mt-2 px-0', className)}
       {...attrs}
     >
-      <CardHeader className='border-0 bg-white pb-0'>
-        {
-          !disabled ? null : (
-            <Button
-              id={`collapsed-record-card:${_id}:name`}
-              href={url}
-              target='_blank'
-              size='lg'
-              color='light'
-              disabled={!url}
-            >
-              {name}
-            </Button>
-          )
-        }
+      <CardHeader className="border-0 bg-white pb-0">
+        {!disabled ? null : (
+          <Button
+            id={`collapsed-record-card:${_id}:name`}
+            href={url}
+            target="_blank"
+            size="lg"
+            color="light"
+            disabled={!url}
+          >
+            {name}
+          </Button>
+        )}
       </CardHeader>
-      <CardBody className='py-2'>
-        {
-          expanded
-          ? (
-            <RecordCardBody
-              locale={locale}
-              record={record}
-              disabled={disabled}
-              cleartext={cleartext}
-              pending={pending}
-              onChange={onChange}
-              onConnectRequest={onToggleConnect}
-              onToggleCleartext={onToggleCleartext}
-            />
-          )
-          : (
-            <IconLabelInputFormGroup
-              id={`collapsed-record-card:${_id}:username`}
-              value={username}
-              icon='user'
-              plaintext
-              className='mb-0'
-            />
-          )
-        }
+      <CardBody className="py-2">
+        {expanded ? (
+          <RecordCardBody
+            locale={locale}
+            record={record}
+            disabled={disabled}
+            cleartext={cleartext}
+            pending={pending}
+            onChange={onChange}
+            onConnectRequest={onToggleConnect}
+            onToggleCleartext={onToggleCleartext}
+          />
+        ) : (
+          <IconLabelInputFormGroup
+            id={`collapsed-record-card:${_id}:username`}
+            value={username}
+            icon="user"
+            plaintext
+            className="mb-0"
+          />
+        )}
       </CardBody>
-      <CardFooter className='border-0 bg-white pt-0'>
-        {
-          !expanded
-          ? (
-            CollapsedCardFooter({ // TODO replace with JSX when inferno@6
-              _id,
-              pending: pending === 'connect',
-              onConnectRequest: onToggleConnect
-            }) as any
-          )
-          : (
-            ExpandedCardFooter({ // TODO replace with JSX when inferno@6
-              locale,
-              _id,
-              disabled,
-              pending,
-              onEditRecordRequest,
-              onUpdateRecordRequest,
-              onDeleteRecordRequest
-            }) as any
-          )
-        }
+      <CardFooter className="border-0 bg-white pt-0">
+        {!expanded ? (
+          <CollapsedCardFooter
+            _id={_id}
+            pending={pending === 'connect'}
+            onConnectRequest={onToggleConnect}
+          />
+        ) : (
+          <ExpandedCardFooter
+            locale={locale}
+            _id={_id}
+            disabled={disabled}
+            unlimited={!!record.name}
+            pending={pending}
+            onEditRecordRequest={onEditRecordRequest}
+            onUpdateRecordRequest={onUpdateRecordRequest}
+            onDeleteRecordRequest={onDeleteRecordRequest}
+          />
+        )}
         <FAIconButton
           id={`collapsed-record-card:${_id}:toggle-expand`}
           icon={!expanded ? 'caret-down' : disabled ? 'caret-up' : 'close'}
-          className='close'
+          className={classes('close', !record.name && 'invisible')}
           onClick={onToggleExpanded}
         />
       </CardFooter>
@@ -175,78 +171,84 @@ interface CollapsedCardFooterProps {
   onConnectRequest?: (event?: MouseEvent) => void
 }
 
-function CollapsedCardFooter ({
+function CollapsedCardFooter({
   _id,
   pending,
   onConnectRequest
 }: CollapsedCardFooterProps) {
-  return [ // TODO replace with Fragment when inferno@6
-    <span className='py-2 pr-2'>
-      <FAIcon icon='lock' fw />
-    </span>,
-    <FAIconButton
-      id={`collapsed-record-card:${_id}:connect`}
-      icon='external-link'
-      pending={pending}
-      outline
-      onClick={onConnectRequest}
-    />
-  ]
+  return (
+    <Fragment>
+      <span className="py-2 pr-2">
+        <FAIcon icon="lock" fw />
+      </span>
+      <FAIconButton
+        id={`collapsed-record-card:${_id}:connect`}
+        icon="external-link"
+        pending={pending}
+        outline
+        onClick={onConnectRequest}
+      />
+    </Fragment>
+  )
 }
 
 interface ExpandedCardFooterProps {
-  locale: string,
+  locale: string
   _id: string
   disabled: boolean
+  unlimited?: boolean
   pending?: 'edit' | 'save' | 'delete' | unknown
   onEditRecordRequest?: (event: MouseEvent) => void
   onUpdateRecordRequest?: (event: MouseEvent) => void
   onDeleteRecordRequest?: (event: MouseEvent) => void
 }
 
-function ExpandedCardFooter ({
+function ExpandedCardFooter({
   locale,
   _id,
   disabled,
+  unlimited,
   pending,
   onEditRecordRequest,
   onUpdateRecordRequest,
   onDeleteRecordRequest
 }: ExpandedCardFooterProps) {
   const t = l10ns[locale]
-  const edit = !disabled || (pending === 'save') || (pending === 'delete')
-  return !edit
-  ? [
+  const edit = !disabled || pending === 'save' || pending === 'delete'
+  return !edit ? (
     <FAIconButton
       id={`expanded-record-card:${_id}:edit`}
-      icon='edit'
+      icon="edit"
       pending={pending === 'edit'}
       outline
-      className='border-secondary'
+      className="border-secondary"
       onClick={onEditRecordRequest}
     >
       &nbsp;{t('Edit')}
     </FAIconButton>
-  ]
-  : [
-    <FAIconButton
-      id={`expanded-record-card:${_id}:save`}
-      icon='download'
-      pending={pending === 'save'}
-      outline
-      className='border-secondary mr-2'
-      onClick={onUpdateRecordRequest}
-    >
-      &nbsp;{t('Save')}
-    </FAIconButton>,
-    <FAIconButton
-      id={`expanded-record-card:${_id}:delete`}
-      icon='trash'
-      pending={pending === 'delete'}
-      outline
-      color='danger'
-      className='border-secondary'
-      onClick={onDeleteRecordRequest}
-    />
-  ]
+  ) : (
+    <Fragment>
+      {!unlimited ? null : (
+        <FAIconButton
+          id={`expanded-record-card:${_id}:save`}
+          icon="download"
+          pending={pending === 'save'}
+          outline
+          className="border-secondary mr-2"
+          onClick={onUpdateRecordRequest}
+        >
+          &nbsp;{t('Save')}
+        </FAIconButton>
+      )}
+      <FAIconButton
+        id={`expanded-record-card:${_id}:delete`}
+        icon="trash"
+        pending={pending === 'delete'}
+        outline
+        color="danger"
+        className="border-secondary"
+        onClick={onDeleteRecordRequest}
+      />
+    </Fragment>
+  )
 }

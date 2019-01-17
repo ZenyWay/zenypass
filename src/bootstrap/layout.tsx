@@ -19,21 +19,17 @@ import { classes } from 'utils'
 import { UnknownProps } from './types'
 
 export interface RowProps {
-  tag?: string,
-  noGutter?: boolean,
+  tag?: string
+  noGutter?: boolean
   className?: string
 }
 
-export function Row ({
+export function Row({
   tag: Tag = 'div',
   noGutter,
   className,
   ...attrs
 }: RowProps & UnknownProps) {
-  const classNames = classes(
-    'row',
-    noGutter && 'no-gutter',
-    className
-  )
+  const classNames = classes('row', noGutter && 'no-gutter', className)
   return <Tag className={classNames} {...attrs} />
 }

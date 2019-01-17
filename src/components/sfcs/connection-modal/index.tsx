@@ -31,7 +31,9 @@ import { CopyButton } from '../../copy-button'
 import { IconLabelInputFormGroup } from '../icon-label-form-group'
 import { RecordField } from '../record-field'
 import createL10ns from 'basic-l10n'
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
+const debug =
+  process.env.NODE_ENV !== 'production' &&
+  require('debug')('zenypass:components:access-authorization:')
 const l10ns = createL10ns(require('./locales.json'), { debug })
 
 export interface ConnectionModalProps {
@@ -59,7 +61,7 @@ const DEFAULT_COPY_BUTTON_ICONS = {
   enabled: 'external-link'
 }
 
-export function ConnectionModal ({
+export function ConnectionModal({
   open,
   manual,
   name,
@@ -86,33 +88,31 @@ export function ConnectionModal ({
 
   return (
     <Modal isOpen={open} toggle={onCancel} {...attrs}>
-      <ModalHeader toggle={onCancel} className='bg-info text-white' >
+      <ModalHeader toggle={onCancel} className="bg-info text-white">
         {t('Login')}
       </ModalHeader>
       <ModalBody>
-        <IconLabelInputFormGroup value={name} size='lg' plaintext />
-        {!copy || (copy === 'password')
-        ? (
-          <IconLabelInputFormGroup value={username} icon='user' plaintext />
-        )
-        : (
+        <IconLabelInputFormGroup value={name} size="lg" plaintext />
+        {!copy || copy === 'password' ? (
+          <IconLabelInputFormGroup value={username} icon="user" plaintext />
+        ) : (
           <RecordField
-            id='connection-modal-username-field'
+            id="connection-modal-username-field"
             locale={locale}
-            type='email'
-            className='mb-2'
-            icon='user'
+            type="email"
+            className="mb-2"
+            icon="user"
             value={username}
             disabled
           >
             <InputGroupAppend>
               <CopyButton
                 href={href}
-                target='_blank'
-                rel='noopener'
+                target="_blank"
+                rel="noopener"
                 icons={icons}
                 value={username}
-                color={copyUsername ? 'info' : 'secondary' }
+                color={copyUsername ? 'info' : 'secondary'}
                 outline={!copyUsername}
                 onClick={onClickCopy}
                 onCopied={onUsernameCopied}
@@ -122,12 +122,12 @@ export function ConnectionModal ({
             </InputGroupAppend>
           </RecordField>
         )}
-        {!copy || (copy === 'username') ? null : (
+        {!copy || copy === 'username' ? null : (
           <RecordField
-            id='connection-modal-password-field'
+            id="connection-modal-password-field"
             locale={locale}
             type={cleartext ? 'text' : 'password'}
-            className='mb-2'
+            className="mb-2"
             icon={cleartext ? 'eye-slash' : 'eye'}
             buttonTitle={t('Show the password')}
             value={cleartext ? password : '*****'}
@@ -137,11 +137,11 @@ export function ConnectionModal ({
             <InputGroupAppend>
               <CopyButton
                 href={href}
-                target='_blank'
-                rel='noopener'
+                target="_blank"
+                rel="noopener"
                 icons={icons}
                 value={password}
-                color='info'
+                color="info"
                 onClick={onClickCopy}
                 onCopied={onPasswordCopied}
               >
@@ -154,9 +154,9 @@ export function ConnectionModal ({
           <FormGroup check onInput={copy === 'all' ? onToggleManual : void 0}>
             <Label check>
               <Input
-                type='checkbox'
-                className='form-check-input'
-                value='automatic'
+                type="checkbox"
+                className="form-check-input"
+                value="automatic"
                 checked={!manual}
                 disabled={copy !== 'all'}
               />
@@ -165,15 +165,19 @@ export function ConnectionModal ({
           </FormGroup>
         )}
         {!error ? null : (
-          <p class='bg-danger text-white text-center'>ERROR: {error} !</p>
+          <p class="bg-danger text-white text-center">ERROR: {error} !</p>
         )}
       </ModalBody>
       {copy ? null : (
         <ModalFooter>
-          <small class='text-center'>
-            {t('Close this dialog box to flush your password from the clipboard')}
+          <small class="text-center">
+            {t(
+              'Close this dialog box to flush your password from the clipboard'
+            )}
           </small>
-          <Button color='info' onClick={onCancel}>{t('Close')}</Button>
+          <Button color="info" onClick={onCancel}>
+            {t('Close')}
+          </Button>
         </ModalFooter>
       )}
     </Modal>

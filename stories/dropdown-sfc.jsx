@@ -45,9 +45,7 @@ const attrs = {
 }
 
 storiesOf('Dropdown (SFC)', module)
-  .add('default', () => (
-    <DropdownSFC {...props} items={items} {...attrs} />
-  ))
+  .add('default', () => <DropdownSFC {...props} items={items} {...attrs} />)
   .add('expanded', () => (
     <DropdownSFC {...props} items={items} {...attrs} expanded />
   ))

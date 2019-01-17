@@ -81,7 +81,7 @@ namespace css {
   )
 }
 
-export function ConsentsModal ({
+export function ConsentsModal({
   locale,
   display,
   terms,
@@ -93,52 +93,60 @@ export function ConsentsModal ({
 }: ConsentsModalProps & UnknownProps) {
   const t = l10ns[locale]
   return (
-    <Modal isOpen={display} toggle={onCancel} size='lg' {...attrs}>
-      <ModalHeader toggle={onCancel} className='bg-info text-white' >
+    <Modal isOpen={display} toggle={onCancel} size="lg" {...attrs}>
+      <ModalHeader toggle={onCancel} className="bg-info text-white">
         {t('T&Cs')}
       </ModalHeader>
       <ModalBody>
-        <form id='consents-modal-form' onSubmit={onSubmit}>
-          <div class='mb-3'>
-            <div className={css.notepad} >
+        <form id="consents-modal-form" onSubmit={onSubmit}>
+          <div class="mb-3">
+            <div className={css.notepad}>
               <small
-                dangerouslySetInnerHTML={{ // https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml
+                dangerouslySetInnerHTML={{
+                  // https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml
                   __html: TERMS_MD[locale]
                 }}
               />
             </div>
-            <a target='_blank' href={t('tnc-link')}>
+            <a target="_blank" href={t('tnc-link')}>
               <small>{t('View the T&Cs online')}</small>
             </a>
           </div>
           <ConsentCheckbox
-            id='terms'
+            id="terms"
             checked={terms}
             label={t('I have read and accept the T&Cs of ZenyPass')}
             error={!terms && t('Required for creating an account')}
             onToggle={onToggle}
           />
           <ConsentCheckbox
-            id='news'
+            id="news"
             checked={news}
-            label={t('I subscribe to the newsletter containing help and news about ZenyPass')}
+            label={t(
+              'I subscribe to the newsletter containing help and news about ZenyPass'
+            )}
             onToggle={onToggle}
-            className='mb-0'
+            className="mb-0"
           >
-            <small className='form-text text-muted'>
+            <small className="form-text text-muted">
               {`${t('Also follow ZenyPass on')} `}
-              <a target='_blank' href={t('info-link')}>Medium</a>
+              <a target="_blank" href={t('info-link')}>
+                Medium
+              </a>
               {` ${t('and')} `}
-              <a target='_blank' href={t('facebook-link')}>Facebook</a>.
+              <a target="_blank" href={t('facebook-link')}>
+                Facebook
+              </a>
+              .
             </small>
           </ConsentCheckbox>
         </form>
       </ModalBody>
-      <ModalFooter className='bg-light'>
+      <ModalFooter className="bg-light">
         <Button
-          type='submit'
-          form='consents-modal-form'
-          color='info'
+          type="submit"
+          form="consents-modal-form"
+          color="info"
           disabled={!terms}
         >
           {t('Accept')}
@@ -157,7 +165,7 @@ export interface ConsentCheckboxProps {
   onToggle?: (event: Event) => void
 }
 
-function ConsentCheckbox ({
+function ConsentCheckbox({
   id,
   checked,
   label,
@@ -168,14 +176,14 @@ function ConsentCheckbox ({
 }: ConsentCheckboxProps & UnknownProps) {
   const inputId = `${id}_consent`
   return (
-    <FormGroup {...attrs} >
+    <FormGroup {...attrs}>
       <InputGroup>
         <InputGroupPrepend>
           <InputGroupText
             className={classes(error && 'border-danger text-danger')}
           >
             <Input
-              type='checkbox'
+              type="checkbox"
               id={inputId}
               data-id={id}
               checked={checked}
@@ -184,15 +192,16 @@ function ConsentCheckbox ({
           </InputGroupText>
         </InputGroupPrepend>
         <label
-          className={
-            classes('form-control form-control-sm h-auto', error && 'is-invalid')
-          }
+          className={classes(
+            'form-control form-control-sm h-auto',
+            error && 'is-invalid'
+          )}
           htmlFor={inputId}
         >
           {label || null}
         </label>
       </InputGroup>
-      <small className={classes(error && 'form-text text-danger')} >
+      <small className={classes(error && 'form-text text-danger')}>
         {error || null}
       </small>
       {children}

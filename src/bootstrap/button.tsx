@@ -32,7 +32,7 @@ export interface ButtonProps {
   [prop: string]: unknown
 }
 
-export function Button ({
+export function Button({
   active,
   block,
   className,
@@ -44,7 +44,7 @@ export function Button ({
   onClick,
   ...attrs
 }: ButtonProps) {
-  const Tag: any = (href ? 'a' : 'button')
+  const Tag: any = href ? 'a' : 'button'
 
   return (
     <Tag

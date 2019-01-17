@@ -39,24 +39,28 @@ export interface AuthenticationConsumerProps {
   [prop: string]: unknown
 }
 
-export type Rest<T extends U,U extends {} = {}> = Pick<T,Exclude<keyof T, keyof U>>
+export type Rest<T extends U, U extends {} = {}> = Pick<
+  T,
+  Exclude<keyof T, keyof U>
+>
 
-export function withAuthenticationModal <
+export function withAuthenticationModal<
   P extends AuthenticationConsumerProps = AuthenticationConsumerProps
-> (
+>(
   GenericPrivilegedComponent: ComponentConstructor<P> | SFC<P>
 ): SFC<AuthenticationProviderProps & Rest<P, AuthenticationConsumerProps>> {
-  const PrivilegedComponent =
-    GenericPrivilegedComponent as ComponentConstructor<AuthenticationConsumerProps>
-  return function ({
-      locale,
-      authenticate,
-      session,
-      onAuthenticationResolved,
-      onAuthenticationRejected,
-      onAuthenticationRequest,
-      ...attrs
-    }: AuthenticationProviderProps) {
+  const PrivilegedComponent = GenericPrivilegedComponent as ComponentConstructor<
+    AuthenticationConsumerProps
+  >
+  return function({
+    locale,
+    authenticate,
+    session,
+    onAuthenticationResolved,
+    onAuthenticationRejected,
+    onAuthenticationRequest,
+    ...attrs
+  }: AuthenticationProviderProps) {
     return (
       <Fragment>
         <AuthenticationModal

@@ -27,7 +27,9 @@ import {
 import { FAIconButton } from '../fa-icon'
 import { ControlledInput } from '../../controlled-input'
 import createL10ns from 'basic-l10n'
-const debug = (process.env.NODE_ENV !== 'production') && require('debug')('zenypass:components:access-authorization:')
+const debug =
+  process.env.NODE_ENV !== 'production' &&
+  require('debug')('zenypass:components:access-authorization:')
 const l10ns = createL10ns(require('./locales.json'), { debug })
 
 export interface AuthenticationModalProps {
@@ -41,7 +43,7 @@ export interface AuthenticationModalProps {
   onSubmit?: (event: Event) => void
 }
 
-export function AuthenticationModal ({
+export function AuthenticationModal({
   open,
   value,
   pending,
@@ -51,35 +53,36 @@ export function AuthenticationModal ({
   onSubmit,
   onCancel
 }: AuthenticationModalProps) {
-
   const t = l10ns[locale]
 
   return (
-    <Modal isOpen={open} toggle={onCancel} >
-      <ModalHeader toggle={onCancel} className='bg-info text-white' >
+    <Modal isOpen={open} toggle={onCancel}>
+      <ModalHeader toggle={onCancel} className="bg-info text-white">
         {t('Authorization')}
       </ModalHeader>
       <ModalBody>
-        <Form id='PasswordModalForm' onSubmit={onSubmit}>
+        <Form id="PasswordModalForm" onSubmit={onSubmit}>
           <Label>{t('Please enter your ZenyPass password')}</Label>
           <ControlledInput
             placeholder={t('ZenyPass password')}
-            type='password'
-            className={`border-${error ? 'danger' : 'info'} rounded form-control`}
+            type="password"
+            className={`border-${
+              error ? 'danger' : 'info'
+            } rounded form-control`}
             value={value}
             onChange={onChange}
             blurOnEnterKey
             autoFocus
           />
         </Form>
-        {error ? <p className='text-danger'>{t('Invalid password')}</p> : null}
+        {error ? <p className="text-danger">{t('Invalid password')}</p> : null}
       </ModalBody>
-      <ModalFooter className='bg-light'>
+      <ModalFooter className="bg-light">
         <FAIconButton
-          type='submit'
+          type="submit"
           pending={pending}
-          form='PasswordModalForm'
-          color='info'
+          form="PasswordModalForm"
+          color="info"
         >
           {t('Authorize')}
         </FAIconButton>

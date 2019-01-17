@@ -33,7 +33,7 @@ const logoClassName = style({
 
 const ZP_VERSION = process.env.ZP_VERSION
 
-export function SplashCard ({
+export function SplashCard({
   className,
   children,
   ...attrs
@@ -43,15 +43,10 @@ export function SplashCard ({
     className
   )
   return (
-    <Card
-      align='center'
-      border='info'
-      className={classNames}
-      {...attrs}
-    >
+    <Card align="center" border="info" className={classNames} {...attrs}>
       <CardImg
         src={ZENYPASS_LOGO_CYAN_SVG}
-        alt='ZenyPass Logo'
+        alt="ZenyPass Logo"
         className={logoClassName}
       />
       <small>v{ZP_VERSION}</small>
@@ -60,7 +55,7 @@ export function SplashCard ({
   )
 }
 
-export function SplashFooterCard ({
+export function SplashFooterCard({
   className,
   ...attrs
 }: SplashCardProps & { [prop: string]: unknown }) {
@@ -68,11 +63,5 @@ export function SplashFooterCard ({
     'col-sm-10 col-md-8 col-lg-7 col-xl-6 border-0 bg-transparent',
     className
   )
-  return (
-    <Card
-      align='center'
-      className={classNames}
-      {...attrs}
-    />
-  )
+  return <Card align="center" className={classNames} {...attrs} />
 }

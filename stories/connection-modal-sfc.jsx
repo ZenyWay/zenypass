@@ -41,48 +41,20 @@ const attrs = {
 }
 
 storiesOf('ConnectionModal (SFC)', module)
-  .add('copy-all', () => (
-    <ConnectionModal
-      copy='all'
-      {...attrs}
-    />
-  ))
+  .add('copy-all', () => <ConnectionModal copy="all" {...attrs} />)
   .add('copy-username', () => (
-    <ConnectionModal
-      warning='password-first'
-      copy='username'
-      {...attrs}
-    />
+    <ConnectionModal warning="password-first" copy="username" {...attrs} />
   ))
   .add('copy-password', () => (
     <ConnectionModal
-      warning='clipboard-contaminated'
-      copy='password'
+      warning="clipboard-contaminated"
+      copy="password"
       {...attrs}
     />
   ))
-  .add('cleartext', () => (
-    <ConnectionModal
-      cleartext
-      copy='all'
-      {...attrs}
-    />
-  ))
-  .add('manual', () => (
-    <ConnectionModal
-      manual
-      copy='all'
-      {...attrs}
-    />
-  ))
-  .add('clear-clipboard', () => (
-    <ConnectionModal
-      {...attrs}
-    />
-  ))
+  .add('cleartext', () => <ConnectionModal cleartext copy="all" {...attrs} />)
+  .add('manual', () => <ConnectionModal manual copy="all" {...attrs} />)
+  .add('clear-clipboard', () => <ConnectionModal {...attrs} />)
   .add('clear-clipboard-error', () => (
-    <ConnectionModal
-      error='clear-clipboard'
-      {...attrs}
-    />
+    <ConnectionModal error="clear-clipboard" {...attrs} />
   ))

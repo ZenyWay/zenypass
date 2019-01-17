@@ -29,7 +29,7 @@ export interface SearchFieldProps {
   innerRef?: (ref: HTMLElement) => void
 }
 
-export function SearchField ({
+export function SearchField({
   tokens,
   debounce,
   onChange,
@@ -38,21 +38,18 @@ export function SearchField ({
   ...attrs
 }: SearchFieldProps) {
   return (
-    <IconLabelInputGroup
-      icon='search'
-      {...attrs}
-    >
+    <IconLabelInputGroup icon="search" {...attrs}>
       <AutoformatInput
         innerRef={innerRef}
-        type='csv'
-        className='form-control'
+        type="csv"
+        className="form-control"
         value={tokens}
         debounce={debounce}
         onChange={onChange}
       />
       <InputGroupAppend>
         <Button outline onClick={onClear}>
-          <FAIcon icon='times' />
+          <FAIcon icon="times" />
         </Button>
       </InputGroupAppend>
     </IconLabelInputGroup>

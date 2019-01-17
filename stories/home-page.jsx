@@ -34,10 +34,6 @@ const attrs = {
   onSelectMenuItem: action('SELECT_MENU_ITEM')
 }
 
-const HomePage =
-  withAuthentication(withAuthenticationModal(PrivilegedHomePage))
+const HomePage = withAuthentication(withAuthenticationModal(PrivilegedHomePage))
 
-storiesOf('HomePage', module)
-  .add('default', () => (
-    <HomePage {...attrs} />
-  ))
+storiesOf('HomePage', module).add('default', () => <HomePage {...attrs} />)

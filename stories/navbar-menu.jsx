@@ -26,9 +26,8 @@ const attr = {
   onClickItem: preventDefaultAction('CLICK_ITEM')
 }
 
-storiesOf('NavbarMenu', module)
-  .add('default', () => (
-    <NavbarMenu {...attr}>
-      <span className='text-light'>***</span>
-    </NavbarMenu>
-  ))
+storiesOf('NavbarMenu', module).add('default', () => (
+  <NavbarMenu {...attr}>
+    <span className="text-light">***</span>
+  </NavbarMenu>
+))

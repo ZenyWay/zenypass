@@ -28,7 +28,7 @@ const attr = {
 
 storiesOf('InfoModal (SFC)', module)
   .add('progress', () => (
-    <InfoModal expanded progress='100' {...attr}>
+    <InfoModal expanded progress="100" {...attr}>
       <p>Opération en cours...</p>
     </InfoModal>
   ))

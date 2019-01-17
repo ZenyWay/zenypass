@@ -20,10 +20,7 @@ import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import { RECORDS, MENU } from './helpers/consts'
 import preventDefaultAction from './helpers/prevent-default'
-import {
-  HomePageSFC,
-  withAuthenticationModal
-} from 'components'
+import { HomePageSFC, withAuthenticationModal } from 'components'
 import { withAuthentication } from 'hocs'
 
 const attrs = {
@@ -38,19 +35,12 @@ const attrs = {
   onToggleFilter: action('TOGGLE_FILTER')
 }
 
-const HomePage =
-  withAuthentication(withAuthenticationModal(HomePageSFC))
+const HomePage = withAuthentication(withAuthenticationModal(HomePageSFC))
 
 storiesOf('HomePage (SFC)', module)
-  .add('default', () => (
-    <HomePage {...attrs} />
-  ))
+  .add('default', () => <HomePage {...attrs} />)
   .add('filter', () => (
-    <HomePage filter={[false, true, false]} tokens='com zen' {...attrs} />
+    <HomePage filter={[false, true, false]} tokens="com zen" {...attrs} />
   ))
-  .add('busy', () => (
-    <HomePage busy {...attrs} />
-  ))
-  .add('error', () => (
-    <HomePage error='ouch !' {...attrs} />
-  ))
+  .add('busy', () => <HomePage busy {...attrs} />)
+  .add('error', () => <HomePage error="ouch !" {...attrs} />)

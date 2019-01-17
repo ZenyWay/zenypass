@@ -20,14 +20,14 @@ import { classes } from 'utils'
 export interface FormGroupProps {
   size?: 'sm' | 'lg' | '' | false
   check?: boolean
-  row?: boolean,
+  row?: boolean
   inline?: boolean
   className?: string
   children?: any
   [prop: string]: unknown
 }
 
-export function FormGroup ({
+export function FormGroup({
   size,
   check,
   row,
@@ -44,6 +44,8 @@ export function FormGroup ({
     className
   )
   return (
-    <div className={classNames} {...attrs}>{children}</div>
+    <div className={classNames} {...attrs}>
+      {children}
+    </div>
   )
 }

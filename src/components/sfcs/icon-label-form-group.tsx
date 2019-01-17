@@ -31,7 +31,7 @@ export interface IconLabelInputFormGroupProps extends FormGroupProps {
   className?: string
 }
 
-export function IconLabelInputFormGroup ({
+export function IconLabelInputFormGroup({
   icon,
   rotate,
   flip,
@@ -61,11 +61,11 @@ export function IconLabelInputFormGroup ({
           />
         </Label>
       )}
-      {
-        plaintext
-        ? <span className={classNames}>{value}</span>
-        : <Input className={classNames} readonly={readonly} value={value} />
-      }
+      {plaintext ? (
+        <span className={classNames}>{value}</span>
+      ) : (
+        <Input className={classNames} readonly={readonly} value={value} />
+      )}
     </FormGroup>
   )
 }

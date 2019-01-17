@@ -29,3 +29,5 @@ export {
 // export type ComponentType<P extends {} = {}> = SFC<P> | IComponentConstructor<P>
 
 export { createElement } from 'inferno-create-element'
+
+export { initDevTools } from 'inferno-devtools'

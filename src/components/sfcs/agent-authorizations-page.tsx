@@ -36,38 +36,40 @@ export interface AuthorizedAgentInfo {
   key: string
 }
 
-export function AgentAuthorizationsPage ({
-    error,
-    agents = [],
-    className,
-    locale,
-    ...attrs
+export function AgentAuthorizationsPage({
+  error,
+  agents = [],
+  className,
+  locale,
+  ...attrs
 }: Partial<AgentAuthorizationsPageProps> & UnknownProps) {
   return (
     <Container>
-      { error &&
-      <Row className='text-danger text-center border border-danger rounded my-3 py-2'>
-        <Col sm='12'>
-          {error}
-        </Col>
-      </Row> }
-      <Row className={classes('align-items-center', className)} mb={2} {...attrs}>
+      {error && (
+        <Row className="text-danger text-center border border-danger rounded my-3 py-2">
+          <Col sm="12">{error}</Col>
+        </Row>
+      )}
+      <Row
+        className={classes('align-items-center', className)}
+        mb={2}
+        {...attrs}
+      >
         <Colonne>
           <AgentAuthorizationCard locale={locale} />
         </Colonne>
-        { agents.map(({ agent, date, key }) => (
-            <Colonne key={key}>
-              <AuthorizedAgentCard agent={agent} date={date} locale={locale} />
-            </Colonne>
-          ))
-        }
+        {agents.map(({ agent, date, key }) => (
+          <Colonne key={key}>
+            <AuthorizedAgentCard agent={agent} date={date} locale={locale} />
+          </Colonne>
+        ))}
       </Row>
     </Container>
   )
 }
 
 const Colonne = ({ children }) => (
-  <Col xl='4' md='6' className='text-center rounded'>
+  <Col xl="4" md="6" className="text-center rounded">
     {children}
   </Col>
 )

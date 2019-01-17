@@ -41,6 +41,15 @@ export const RECORDS = [
   }
 ]
 
+export const EMPTY_RECORD = {
+  _id: '4',
+  name: '',
+  url: '',
+  username: '',
+  keywords: [],
+  comments: ''
+}
+
 export const RECORD = RECORDS[0]
 
 export const LANG_MENU = [

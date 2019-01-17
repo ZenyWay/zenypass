@@ -22,8 +22,9 @@ import {
 import { ControlledInput, ControlledInputProps } from './controlled-input'
 
 export const AutoformatInput = autoformatInput<ControlledInputProps>(
-  (props: ControlledInputProps) => (<ControlledInput {...props} />)
+  (props: ControlledInputProps) => <ControlledInput {...props} />
 )
 
-export type AutoformatInputProps =
-  GenericAutoformatInputProps<ControlledInputProps>
+export type AutoformatInputProps = GenericAutoformatInputProps<
+  ControlledInputProps
+>

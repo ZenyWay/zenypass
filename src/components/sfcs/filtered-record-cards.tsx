@@ -30,7 +30,7 @@ export interface FilteredRecordCardsProps {
   onAuthenticationRequest?: (res$: Observer<string>) => void
 }
 
-export function FilteredRecordCards ({
+export function FilteredRecordCards({
   locale,
   session,
   records = [],
@@ -42,10 +42,7 @@ export function FilteredRecordCards ({
   let i = records.length
   if (!i) return null
   const cards = new Array<JSX.Element>(i)
-  const classNames = classes(
-    'pl-0',
-    className
-  )
+  const classNames = classes('pl-0', className)
   while (i--) {
     const record = records[i]
     cards[i] = (
@@ -59,5 +56,9 @@ export function FilteredRecordCards ({
       />
     )
   }
-  return <ul {...attrs} className={classNames} >{cards}</ul>
+  return (
+    <ul {...attrs} className={classNames}>
+      {cards}
+    </ul>
+  )
 }

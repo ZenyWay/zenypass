@@ -31,11 +31,9 @@ import {
 
 export { DropdownItemSpec, MenuSpecs, Record }
 
-const FilteredHomePage =
-  filteredRecordCards<HomePageSFCProps>(HomePageSFC)
+const FilteredHomePage = filteredRecordCards<HomePageSFCProps>(HomePageSFC)
 
-type FilteredHomePageProps =
-  GenericFilteredRecordCardsProps<HomePageSFCProps>
+type FilteredHomePageProps = GenericFilteredRecordCardsProps<HomePageSFCProps>
 
 export const HomePage = homePage<FilteredHomePageProps>(
   (props: FilteredHomePageProps) => <FilteredHomePage {...props} />
