@@ -60,7 +60,7 @@ export default compose.into(0)(
 function sortRecordsByName(records: {
   [id: string]: Partial<ZenypassRecord>
 }): Partial<ZenypassRecord>[] {
-  return values(records).sort(compareRecordNames)
+  return values(records).filter(Boolean).sort(compareRecordNames)
 }
 
 function compareRecordNames(
