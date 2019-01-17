@@ -12,24 +12,34 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-import { interval, NEVER, of as observable, Observable, throwError } from 'rxjs'
-import { concat, delay, switchMap, take, takeUntil } from 'rxjs/operators'
+import {
+  BehaviorSubject,
+  Observable,
+  NEVER,
+  interval,
+  from as observableFrom,
+  of as observableOf,
+  throwError
+} from 'rxjs'
+import {
+  concat,
+  delay,
+  first,
+  map,
+  scan,
+  switchMap,
+  take,
+  takeUntil
+} from 'rxjs/operators'
 import {
   AuthorizationDoc,
   PouchDoc,
-  ZenypassRecord,
-  ZenypassService,
-  ZenypassServiceAccess
+  ZenypassRecord
 } from '@zenyway/zenypass-service'
 
 export { AuthorizationDoc, PouchDoc, ZenypassRecord }
 
 export type KVMap<V> = { [key: string]: V }
-
-interface Credentials {
-  username: string
-  passphrase: string
-}
 
 export const USERNAME = 'me@zw.fr'
 const PASSWORD = '!!!'
@@ -88,6 +98,8 @@ const RECORDS = [
   {} as KVMap<Partial<ZenypassRecord>>
 )
 
+const EMPTY_RECORD = { _id: '4' } as ZenypassRecord
+
 export default Promise.resolve({
   signup,
   signin,
@@ -98,7 +110,7 @@ function signup (username: string, passphrase: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(
     () => (username !== USERNAME)
     && (passphrase && passphrase.length >= MIN_PASSWORD_LENGTH)
-      ? observable(SESSION_ID)
+      ? observableOf(SESSION_ID)
       : throwError(FORBIDDEN)
     )
     .toPromise()
@@ -107,7 +119,7 @@ function signup (username: string, passphrase: string): Promise<string> {
 function signin (username: string, passphrase: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(
     () => username === USERNAME && passphrase === PASSWORD
-      ? observable(username)
+      ? observableOf(username)
       : throwError(UNAUTHORIZED)
     )
     .toPromise()
@@ -116,17 +128,18 @@ function signin (username: string, passphrase: string): Promise<string> {
 function getService (username: string) {
   if (username !== USERNAME) { return }
   const records = {
-    records$: observable(RECORDS).pipe(concat(NEVER)),
+    records$,
     getRecord: getRecord.bind(void 0, username),
+    newRecord: newRecord.bind(void 0, username),
     putRecord: putRecord.bind(void 0, username)
   }
-  return { unlock, records }
+  return { unlock, records, signout: noop }
 }
 
 function unlock (password: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(
     () => password === PASSWORD
-      ? observable(SESSION_ID)
+      ? observableOf(SESSION_ID)
       : throwError(UNAUTHORIZED)
     )
     .toPromise()
@@ -134,7 +147,7 @@ function unlock (password: string): Promise<string> {
 
 export function authorize (sessionId: string): Observable<string> {
   return sessionId === SESSION_ID
-  ? observable(TOKEN).pipe(
+  ? observableOf(TOKEN).pipe(
       delay(TOKEN_DELAY),
       concat(NEVER),
       takeUntil(interval(AUTHORIZATION_DELAY))
@@ -151,26 +164,67 @@ export function getAuthorizations$ (sessionId: string): Observable<KVMap<Authori
     {} as KVMap<AuthorizationDoc>
   )
   return sessionId === SESSION_ID
-  ? observable(authorizations).pipe(concat(NEVER))
+  ? observableOf(authorizations).pipe(concat(NEVER))
   : throwError(UNAUTHORIZED)
 }
 
-export const getRecord = accessRecordService<ZenypassRecord>(
-  ref => ({ ...ref, password: RECORD_PASSWORD })
+const recordsUpdate$ =
+  new BehaviorSubject<RecordsUpdate>(() => RECORDS)
+
+interface RecordsUpdate {
+  (records: KVMap<Partial<ZenypassRecord>>): KVMap<Partial<ZenypassRecord>>
+}
+
+const records$ = recordsUpdate$.pipe(
+  scan<RecordsUpdate, KVMap<Partial<ZenypassRecord>>>(
+    (records, update) => update(records),
+    {}
+  )
 )
 
-export const putRecord = accessRecordService<ZenypassRecord>(record => record)
+const getRecord = accessRecordService<PouchDoc,ZenypassRecord>(
+  ({ _id }) => records$.pipe(
+    first(),
+    map(
+      records => ({ ...records[_id], password: RECORD_PASSWORD }) as ZenypassRecord
+    )
+  )
+)
 
-export const deleteRecord = accessRecordService<PouchDoc>(ref => ({
-  ...ref,
-  _deleted: true
-}))
+const newRecord = accessRecordService<void,ZenypassRecord>(
+  function () {
+    const record = EMPTY_RECORD
+    recordsUpdate$.next(
+      records => ({ ...records, [record._id]: record })
+    )
+    return Promise.resolve(record)
+  }
+)
 
-function accessRecordService <T> (result: Function) {
-  return function (username: string, arg: any): Promise<T> {
+const putRecord = accessRecordService<ZenypassRecord,ZenypassRecord>(
+  function (record) {
+    recordsUpdate$.next(
+      records => ({ ...records, [record._id]: record })
+    )
+    return Promise.resolve(record)
+  }
+)
+
+const deleteRecord = accessRecordService<PouchDoc,PouchDoc>(ref => {
+  const deleted = ({ ...ref, _deleted: true })
+  recordsUpdate$.next(
+    records => ({ ...records, [deleted._id]: deleted })
+  )
+  return Promise.resolve(deleted)
+})
+
+function accessRecordService <I,O> (
+  result: (arg?: I) => Observable<O> | Promise<O>
+) {
+  return function (username: string, arg: I): Promise<O> {
     return stall(RECORD_SERVICE_DELAY)(
       () => username === USERNAME
-        ? observable(result(arg))
+        ? observableFrom(result(arg))
         : throwError(UNAUTHORIZED)
     )
     .toPromise()
@@ -191,4 +245,8 @@ function newStatusError (status = 501, message = '') {
   const err = new Error(message) as StatusError
   err.status = status
   return err
+}
+
+function noop () {
+  // do nothing
 }

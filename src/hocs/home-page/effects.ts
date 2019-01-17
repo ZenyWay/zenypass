@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 //
-import zenypass from 'zenypass-service'
+import zenypass, { ZenypassRecord } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   createPrivilegedRequest,
@@ -22,21 +22,24 @@ import {
   isFunction
 } from 'utils'
 import {
-  delay,
+  catchError,
+  distinctUntilKeyChanged,
   filter,
   pluck,
-  switchMap,
   startWith,
-  distinctUntilKeyChanged,
-  catchError
+  switchMap,
+  withLatestFrom
 } from 'rxjs/operators'
 import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
 // const log = (label: string) => console.log.bind(console, label)
 
-const createRecordRequested = createActionFactory('CREATE_RECORD_REQUESTED')
-const createRecordResolved = createActionFactory('CREATE_RECORD_RESOLVED')
-const createRecordRejected = createActionFactory('CREATE_RECORD_REJECTED')
+const createRecordRequested =
+  createActionFactory<void>('CREATE_RECORD_REQUESTED')
+const createRecordResolved =
+  createActionFactory<ZenypassRecord>('CREATE_RECORD_RESOLVED')
+const createRecordRejected =
+  createActionFactory<any>('CREATE_RECORD_REJECTED')
 const updateRecords = createActionFactory('UPDATE_RECORDS')
 const error = createActionFactory('ERROR')
 
@@ -46,24 +49,36 @@ export function createRecordOnSelectNewRecordMenuItem (
 ) {
   return event$.pipe(
     filter(({ type }) => type === 'SELECT_MENU_ITEM'),
-    pluck('payload', 'dataset', 'id'),
-    filter(id => id === 'new-entry'),
-    switchMap(createRecord)
+    filter(({ payload }) => payload.dataset.id === 'new-entry'),
+    withLatestFrom(state$),
+    pluck('1', 'props'),
+    switchMap(({ onAuthenticationRequest, session: username }) =>
+      createRecord$(
+        toProjection(onAuthenticationRequest),
+        username,
+        true // unrestricted
+      )
+      .pipe(startWith(createRecordRequested()))
+    ),
+    catchError(err => observableOf(error(err)))
   )
 }
 
-function createRecord (): Observable<StandardAction<any>> {
-  return observableOf(createRecordResolved()).pipe(
-    delay(1500), // TODO
-    startWith(createRecordRequested())
-  )
-}
+const createRecord$ = createPrivilegedRequest<ZenypassRecord>(
+  (username: string) =>
+    observableFrom(
+      zenypass.then(
+        ({ getService }) => getService(username).records.newRecord()
+      )
+    ),
+  createRecordResolved,
+  createRecordRejected
+)
 
 const getRecords$ = createPrivilegedRequest(
   (username: string) =>
     observableFrom(zenypass.then(({ getService }) => getService(username)))
-    .pipe(switchMap(({ records }) => records.records$))
-  ,
+    .pipe(switchMap(({ records }) => records.records$)),
   updateRecords,
   error
 )
@@ -76,11 +91,13 @@ export function injectRecordsFromService (
     pluck<any, any>('props'),
     distinctUntilKeyChanged('onAuthenticationRequest'),
     filter(({ onAuthenticationRequest }) => isFunction(onAuthenticationRequest)),
-    switchMap(({ onAuthenticationRequest, session: username }) => getRecords$(
-      toProjection(onAuthenticationRequest),
-      username,
-      true // unrestricted
-    )),
+    switchMap(({ onAuthenticationRequest, session: username }) =>
+      getRecords$(
+        toProjection(onAuthenticationRequest),
+        username,
+        true // unrestricted
+      )
+    ),
     catchError(err => observableOf(error(err)))
   )
 }
