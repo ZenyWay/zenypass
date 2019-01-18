@@ -151,7 +151,7 @@ export function ConnectionModal({
           </RecordField>
         )}
         {!copy ? null : (
-          <FormGroup check onInput={copy === 'all' ? onToggleManual : void 0}>
+          <FormGroup check onChange={copy === 'all' ? onToggleManual : void 0}>
             <Label check>
               <Input
                 type="checkbox"
