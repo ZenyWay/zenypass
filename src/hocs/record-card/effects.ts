@@ -22,9 +22,7 @@ import {
   distinctUntilKeyChanged,
   filter,
   map,
-  pluck,
-  switchMap,
-  withLatestFrom
+  switchMap
 } from 'rxjs/operators'
 import {
   ERROR_STATUS,
@@ -64,21 +62,26 @@ const updateRecord = createPrivilegedRequest(
   updateRecordRejected
 )
 
-export function updateRecordOnPendingUpdateRecord (
+export function updateRecordOnPendingUpdateRecord(
   _: any,
   state$: Observable<any>
 ) {
   return state$.pipe(
     distinctUntilKeyChanged('state'),
-    filter(hasEntry('state', 'pending:update')),
+    filter(hasEntry('state', 'pending:save')),
     filter<any>(hasHandlerProp('onAuthenticationRequest')),
-    switchMap(({ props: { onAuthenticationRequest, session, record }, changes }) =>
-      updateRecord(
-        toProjection(onAuthenticationRequest),
-        session,
-        true, // unrestricted
-        { ...record, ...changes }
-      )
+    switchMap(
+      ({
+        props: { onAuthenticationRequest, session, record },
+        password,
+        changes
+      }) =>
+        updateRecord(
+          toProjection(onAuthenticationRequest),
+          session,
+          true, // unrestricted
+          { ...record, password, ...changes }
+        )
     ),
     catchError(err => observableOf(error(err)))
   )

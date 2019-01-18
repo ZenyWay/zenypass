@@ -140,7 +140,10 @@ export function RecordCard({
         <FAIconButton
           id={`collapsed-record-card:${_id}:toggle-expand`}
           icon={!expanded ? 'caret-down' : disabled ? 'caret-up' : 'close'}
-          className={classes('close', !record.name && 'invisible')}
+          className={classes(
+            'close',
+            (!record.name || !!pending) && 'invisible'
+          )}
           onClick={onToggleExpanded}
         />
       </CardFooter>
@@ -214,12 +217,11 @@ function ExpandedCardFooter({
   onDeleteRecordRequest
 }: ExpandedCardFooterProps) {
   const t = l10ns[locale]
-  const edit = !disabled || pending === 'save' || pending === 'delete'
-  return !edit ? (
+  return disabled && !(pending === 'save') && !(pending === 'delete') ? (
     <FAIconButton
       id={`expanded-record-card:${_id}:edit`}
       icon="edit"
-      pending={pending === 'edit'}
+      pending={!!pending}
       outline
       className="border-secondary"
       onClick={onEditRecordRequest}
@@ -232,7 +234,7 @@ function ExpandedCardFooter({
         <FAIconButton
           id={`expanded-record-card:${_id}:save`}
           icon="download"
-          pending={pending === 'save'}
+          pending={!!pending}
           outline
           className="border-secondary mr-2"
           onClick={onUpdateRecordRequest}
@@ -243,7 +245,7 @@ function ExpandedCardFooter({
       <FAIconButton
         id={`expanded-record-card:${_id}:delete`}
         icon="trash"
-        pending={pending === 'delete'}
+        pending={!!pending}
         outline
         color="danger"
         className="border-secondary"
