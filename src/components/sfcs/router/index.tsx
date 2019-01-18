@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement } from 'create-element'
+import { createElement, Fragment } from 'create-element'
 import { HomePage, MenuSpecs, DropdownItemSpec } from '../../home-page'
 import {
   AuthenticationPage,
@@ -56,7 +56,7 @@ export function Router({
 }: RouterProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
   return (
-    <div>
+    <Fragment>
       <InfoModal locale={locale} expanded={info} onCancel={onCloseInfo}>
         <p>
           {t('ZenyPass Help is hosted on Medium')}:<br />
@@ -64,7 +64,7 @@ export function Router({
         </p>
       </InfoModal>
       <CoreRouter locale={locale} {...attrs} />
-    </div>
+    </Fragment>
   )
 }
 
