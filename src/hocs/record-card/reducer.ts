@@ -26,7 +26,7 @@ export type RecordAutomataState =
   | 'cleartext'
   | 'edit'
   | 'pending:cancel'
-  | 'pending:save'
+  | 'pending:update'
   | 'pending:delete'
 
 const clearPassword = into('password')(always(void 0))
@@ -66,20 +66,20 @@ const recordAutomata: AutomataSpec<RecordAutomataState> = {
     CHANGE: propCursor('changes')(updateRecord),
     TOGGLE_CLEARTEXT: toggleCleartext,
     TOGGLE_EXPANDED: 'pending:cancel',
-    SAVE_REQUESTED: 'pending:save',
-    DELETE_REQUESTED: 'pending:delete'
+    UPDATE_RECORD_REQUESTED: 'pending:update',
+    DELETE_RECORD_REQUESTED: 'pending:delete'
   },
   'pending:cancel': {
     EDIT_RECORD_REQUESTED: 'edit',
     TOGGLE_EXPANDED: ['public', ...reset]
   },
-  'pending:save': {
-    SAVE_REJECTED: ['edit', mapPayloadToError],
-    SAVE_RESOLVED: ['public', ...reset]
+  'pending:update': {
+    UPDATE_RECORD_REJECTED: ['edit', mapPayloadToError],
+    UPDATE_RECORD_RESOLVED: ['public', ...reset]
   },
   'pending:delete': {
-    DELETE_REJECTED: ['edit', mapPayloadToError],
-    DELETE_RESOLVED: ['public', ...reset]
+    DELETE_RECORD_REJECTED: ['edit', mapPayloadToError],
+    DELETE_RECORD_RESOLVED: ['public', ...reset]
   }
 }
 

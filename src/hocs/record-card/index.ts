@@ -18,7 +18,8 @@ import { ZenypassRecord } from 'zenypass-service'
 import reducer, { ConnectAutomataState, RecordAutomataState } from './reducer'
 import {
   cleartextOnPendingCleartextOrConnect,
-  editRecordOnPublicAndNoRecordName
+  editRecordOnPublicAndNoRecordName,
+  updateRecordOnPendingUpdateRecord
 } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
@@ -141,7 +142,8 @@ export function recordCard<P extends RecordCardSFCProps>(
       reducer,
       callHandlerOnEvent('ERROR', ['props', 'onError']),
       cleartextOnPendingCleartextOrConnect,
-      editRecordOnPublicAndNoRecordName
+      editRecordOnPublicAndNoRecordName,
+      updateRecordOnPendingUpdateRecord
     ),
     () => tap(log('record-card:state:')),
     connect<RecordCardState, RecordCardSFCProps>(

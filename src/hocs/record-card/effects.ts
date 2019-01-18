@@ -38,6 +38,10 @@ import {
 const editRecord = createActionFactory('EDIT_RECORD')
 const cleartextResolved = createActionFactory('CLEARTEXT_RESOLVED')
 const cleartextRejected = createActionFactory('CLEARTEXT_REJECTED')
+const updateRecordResolved = createActionFactory('UPDATE_RECORD_RESOLVED')
+const updateRecordRejected = createActionFactory('UPDATE_RECORD_REJECTED')
+const deleteRecordResolved = createActionFactory('DELETE_RECORD_RESOLVED')
+const deleteRecordRejected = createActionFactory('DELETE_RECORD_REJECTED')
 const error = createActionFactory('ERROR')
 
 export function editRecordOnPublicAndNoRecordName(
@@ -48,6 +52,35 @@ export function editRecordOnPublicAndNoRecordName(
     distinctUntilKeyChanged('state'),
     filter(({ props, state }) => state === 'public' && !props.record.name),
     map(() => editRecord())
+  )
+}
+
+const updateRecord = createPrivilegedRequest(
+  (username: string, record: ZenypassRecord) =>
+    zenypass.then(({ getService }) =>
+      getService(username).records.putRecord(record)
+    ),
+  updateRecordResolved,
+  updateRecordRejected
+)
+
+export function updateRecordOnPendingUpdateRecord (
+  _: any,
+  state$: Observable<any>
+) {
+  return state$.pipe(
+    distinctUntilKeyChanged('state'),
+    filter(hasEntry('state', 'pending:update')),
+    filter<any>(hasHandlerProp('onAuthenticationRequest')),
+    switchMap(({ props: { onAuthenticationRequest, session, record }, changes }) =>
+      updateRecord(
+        toProjection(onAuthenticationRequest),
+        session,
+        true, // unrestricted
+        { ...record, ...changes }
+      )
+    ),
+    catchError(err => observableOf(error(err)))
   )
 }
 
