@@ -141,6 +141,10 @@
   "aliasify": {
     "aliases": {}
   },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
   "standard": {
     "parser": "typescript-eslint-parser",
     "plugins": [
