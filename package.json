@@ -1,7 +1,7 @@
 {
   "name": "@zenyway/zenypass",
   "configPublish": "http://npm.zenyway.com:5984",
-  "version": "2.0.0-alpha.3",
+  "version": "2.0.0-alpha.4",
   "description": "zero-knowledge open source password manager web-app that syncs and runs everywhere",
   "main": "dist/index.js",
   "browser": {
@@ -72,7 +72,7 @@
     "component-from-stream-redux": "0.5.7",
     "debug": "4.1.1",
     "inferno": "7.0.5",
-    "inferno-bootstrap": "7.0.0",
+    "inferno-bootstrap": "7.2.0",
     "inferno-create-element": "7.0.5",
     "query-string": "6.2.0",
     "rxjs": "6.3.3",
