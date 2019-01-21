@@ -214,20 +214,22 @@ const putRecord = accessRecordService<ZenypassRecord, ZenypassRecord>(function(
   record
 ) {
   const updated = incrementRecordRevision(record)
-  updateRecords(records => ({
-    ...records,
-    [record._id]: updated
-  }))
+  updateRecords(records =>
+    removeDeleted({
+      ...records,
+      [record._id]: updated
+    })
+  )
   return Promise.resolve(updated)
 })
 
-const deleteRecord = accessRecordService<ZenypassRecord, ZenypassRecord>(
-  record => {
-    const deleted = { ...incrementRecordRevision(record), _deleted: true }
-    updateRecords(records => ({ ...records, [deleted._id]: deleted }))
-    return Promise.resolve(deleted)
-  }
-)
+function removeDeleted(
+  records: KVMap<Partial<ZenypassRecord>>
+): KVMap<Partial<ZenypassRecord>> {
+  return Object.keys(records)
+    .filter(_id => !records[_id]._deleted)
+    .reduce((purged, _id) => ({ ...purged, [_id]: records[_id] }), {})
+}
 
 function accessRecordService<I, O>(
   result: (arg?: I) => Observable<O> | Promise<O>

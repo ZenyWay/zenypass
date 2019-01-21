@@ -63,13 +63,15 @@ const updateRecord = createPrivilegedRequest(
     )
 )
 
-export function updateRecordOnPendingUpdateRecord(
+export function updateRecordOnPendingSaveOrDeleteRecord(
   _: any,
   state$: Observable<any>
 ) {
   return state$.pipe(
     distinctUntilKeyChanged('state'),
-    filter(hasEntry('state', 'pending:save')),
+    filter(
+      ({ state }) => state === 'pending:save' || state === 'pending:delete'
+    ),
     filter<any>(hasHandlerProp('onAuthenticationRequest')),
     switchMap(
       ({
@@ -77,15 +79,20 @@ export function updateRecordOnPendingUpdateRecord(
         password,
         changes
       }) =>
-        updateRecord(
-          toProjection(onAuthenticationRequest),
-          session,
-          true, // unrestricted
-          { ...record, password, ...changes }
-        ).pipe(
+        updateRecord(toProjection(onAuthenticationRequest), session, true, {
+          ...record,
+          password,
+          ...changes
+        }).pipe(
           delayWhen(recordInProps),
-          map(updateRecordResolved),
-          catchError((error: any) => observableOf(updateRecordRejected(error)))
+          map(changes._deleted ? deleteRecordResolved : updateRecordResolved),
+          catchError((error: any) =>
+            observableOf(
+              (changes._deleted ? deleteRecordRejected : updateRecordRejected)(
+                error
+              )
+            )
+          )
         )
     ),
     catchError(err => observableOf(error(err)))

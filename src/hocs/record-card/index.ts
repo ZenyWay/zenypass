@@ -19,7 +19,7 @@ import reducer, { ConnectAutomataState, RecordAutomataState } from './reducer'
 import {
   cleartextOnPendingCleartextOrConnect,
   editRecordOnPublicAndNoRecordName,
-  updateRecordOnPendingUpdateRecord
+  updateRecordOnPendingSaveOrDeleteRecord
 } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
@@ -143,7 +143,7 @@ export function recordCard<P extends RecordCardSFCProps>(
       callHandlerOnEvent('ERROR', ['props', 'onError']),
       cleartextOnPendingCleartextOrConnect,
       editRecordOnPublicAndNoRecordName,
-      updateRecordOnPendingUpdateRecord
+      updateRecordOnPendingSaveOrDeleteRecord
     ),
     () => tap(log('record-card:state:')),
     connect<RecordCardState, RecordCardSFCProps>(

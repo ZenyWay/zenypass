@@ -31,6 +31,7 @@ export type RecordAutomataState =
 
 const clearPassword = into('password')(always(void 0))
 const clearChanges = into('changes')(always(void 0))
+const toggleRecordDeleted = propCursor('changes')(propCursor('_deleted')(not()))
 const mapPayloadToPassword = into('password')(mapPayload())
 const mapPayloadToError = into('error')(mapPayload())
 const toggleExpanded = propCursor('expanded')(not())
@@ -68,7 +69,7 @@ const recordAutomata: AutomataSpec<RecordAutomataState> = {
     TOGGLE_CLEARTEXT: toggleCleartext,
     TOGGLE_EXPANDED: 'pending:cancel',
     UPDATE_RECORD_REQUESTED: 'pending:save',
-    DELETE_RECORD_REQUESTED: 'pending:delete'
+    DELETE_RECORD_REQUESTED: ['pending:delete', toggleRecordDeleted]
   },
   'pending:cancel': {
     EDIT_RECORD_REQUESTED: 'edit',
@@ -79,7 +80,7 @@ const recordAutomata: AutomataSpec<RecordAutomataState> = {
     UPDATE_RECORD_RESOLVED: ['public', ...reset]
   },
   'pending:delete': {
-    DELETE_RECORD_REJECTED: ['edit', mapPayloadToError],
+    DELETE_RECORD_REJECTED: ['edit', toggleRecordDeleted, mapPayloadToError],
     DELETE_RECORD_RESOLVED: ['public', ...reset]
   }
 }
