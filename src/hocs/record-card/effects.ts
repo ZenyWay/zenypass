@@ -19,9 +19,11 @@ import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import { Observable, of as observableOf, merge } from 'rxjs'
 import {
   catchError,
+  delayWhen,
   distinctUntilKeyChanged,
   filter,
   map,
+  pluck,
   switchMap
 } from 'rxjs/operators'
 import {
@@ -31,6 +33,7 @@ import {
   hasHandlerProp,
   toProjection
 } from 'utils'
+import { any } from 'bluebird'
 // const log = (label: string) => console.log.bind(console, label)
 
 const editRecord = createActionFactory('EDIT_RECORD')
@@ -57,9 +60,7 @@ const updateRecord = createPrivilegedRequest(
   (username: string, record: ZenypassRecord) =>
     zenypass.then(({ getService }) =>
       getService(username).records.putRecord(record)
-    ),
-  updateRecordResolved,
-  updateRecordRejected
+    )
 )
 
 export function updateRecordOnPendingUpdateRecord(
@@ -81,22 +82,25 @@ export function updateRecordOnPendingUpdateRecord(
           session,
           true, // unrestricted
           { ...record, password, ...changes }
+        ).pipe(
+          delayWhen(recordInProps),
+          map(updateRecordResolved),
+          catchError((error: any) => observableOf(updateRecordRejected(error)))
         )
     ),
     catchError(err => observableOf(error(err)))
   )
+
+  function recordInProps(record: ZenypassRecord): Observable<ZenypassRecord> {
+    return state$.pipe(
+      pluck<any, ZenypassRecord>('props', 'record'),
+      filter(({ _id, _rev }) => _id === record._id && _rev === record._rev)
+    )
+  }
 }
 
-const cleartext = createPrivilegedRequest(
-  (username: string, ref: PouchDoc) =>
-    zenypass.then(({ getService }) =>
-      getService(username).records.getRecord(ref)
-    ),
-  ({ password }: ZenypassRecord) => cleartextResolved(password),
-  (err: any) =>
-    err && err.status !== ERROR_STATUS.CLIENT_CLOSED_REQUEST
-      ? error(err)
-      : cleartextRejected()
+const cleartext = createPrivilegedRequest((username: string, ref: PouchDoc) =>
+  zenypass.then(({ getService }) => getService(username).records.getRecord(ref))
 )
 
 export function cleartextOnPendingCleartextOrConnect(
@@ -123,6 +127,15 @@ export function cleartextOnPendingCleartextOrConnect(
         session,
         record.unrestricted,
         record
+      ).pipe(
+        map(({ password }: ZenypassRecord) => cleartextResolved(password)),
+        catchError((err: any) =>
+          observableOf(
+            err && err.status !== ERROR_STATUS.CLIENT_CLOSED_REQUEST
+              ? error(err)
+              : cleartextRejected()
+          )
+        )
       )
     ),
     catchError(err => observableOf(error(err)))

@@ -24,9 +24,7 @@ import { catchError, map, switchMap } from 'rxjs/operators'
 // const log = (label: string) => console.log.bind(console, label)
 
 export function createPrivilegedRequest<T>(
-  request: (username: string, ...args: any[]) => Observable<T> | Promise<T>,
-  resolve: (val: T) => StandardAction<any>,
-  reject: (err: any) => StandardAction<any>
+  request: (username: string, ...args: any[]) => Observable<T> | Promise<T>
 ) {
   return function(
     authenticate: (username: string) => Observable<string> | Promise<string>,
@@ -34,15 +32,13 @@ export function createPrivilegedRequest<T>(
     unrestricted: boolean,
     ...args: any[]
   ) {
+    // curry request argument
     return doPrivilegedRequest(
       authenticate,
       request,
       username,
       unrestricted,
       ...args
-    ).pipe(
-      map(resolve),
-      catchError((error: any) => observableOf(reject(error)))
     )
   }
 }

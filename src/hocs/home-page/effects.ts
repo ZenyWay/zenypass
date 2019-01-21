@@ -21,6 +21,7 @@ import {
   catchError,
   distinctUntilKeyChanged,
   filter,
+  map,
   pluck,
   startWith,
   switchMap,
@@ -54,7 +55,11 @@ export function createRecordOnSelectNewRecordMenuItem(
         toProjection(onAuthenticationRequest),
         username,
         true // unrestricted
-      ).pipe(startWith(createRecordRequested()))
+      ).pipe(
+        map(createRecordResolved),
+        catchError(err => observableOf(createRecordRejected(err))),
+        startWith(createRecordRequested())
+      )
     ),
     catchError(err => observableOf(error(err)))
   )
@@ -66,18 +71,13 @@ const createRecord$ = createPrivilegedRequest<ZenypassRecord>(
       zenypass.then(({ getService }) =>
         getService(username).records.newRecord()
       )
-    ),
-  createRecordResolved,
-  createRecordRejected
+    )
 )
 
-const getRecords$ = createPrivilegedRequest(
-  (username: string) =>
-    observableFrom(
-      zenypass.then(({ getService }) => getService(username))
-    ).pipe(switchMap(({ records }) => records.records$)),
-  updateRecords,
-  error
+const getRecords$ = createPrivilegedRequest((username: string) =>
+  observableFrom(zenypass.then(({ getService }) => getService(username))).pipe(
+    switchMap(({ records }) => records.records$)
+  )
 )
 
 export function injectRecordsFromService(_: any, state$: Observable<any>) {
@@ -92,6 +92,9 @@ export function injectRecordsFromService(_: any, state$: Observable<any>) {
         toProjection(onAuthenticationRequest),
         username,
         true // unrestricted
+      ).pipe(
+        map(updateRecords),
+        catchError(err => observableOf(error(err)))
       )
     ),
     catchError(err => observableOf(error(err)))

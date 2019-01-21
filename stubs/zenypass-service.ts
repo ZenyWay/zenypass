@@ -92,15 +92,17 @@ const RECORDS = [
     keywords: ['sid', 'music', 'collection'],
     comments: 'Rob says wow !'
   }
-].reduce(
-  function(records, record) {
-    records[record._id] = record
-    return records
-  },
-  {} as KVMap<Partial<ZenypassRecord>>
-)
+]
+  .map(incrementRecordRevision)
+  .reduce(
+    function(records, record) {
+      records[record._id] = record
+      return records
+    },
+    {} as KVMap<Partial<ZenypassRecord>>
+  )
 
-const EMPTY_RECORD = { _id: '4' } as ZenypassRecord
+const EMPTY_RECORD = incrementRecordRevision({ _id: '4' } as ZenypassRecord)
 
 export default Promise.resolve({
   signup,
@@ -192,24 +194,40 @@ const getRecord = accessRecordService<PouchDoc, ZenypassRecord>(({ _id }) =>
   )
 )
 
+function updateRecords(
+  update: (
+    records: KVMap<Partial<ZenypassRecord>>
+  ) => KVMap<Partial<ZenypassRecord>>
+) {
+  setTimeout(() => recordsUpdate$.next(update))
+}
+
 const newRecord = accessRecordService<void, ZenypassRecord>(function() {
-  const record = EMPTY_RECORD
-  recordsUpdate$.next(records => ({ ...records, [record._id]: record }))
-  return Promise.resolve(record)
+  updateRecords(records => ({
+    ...records,
+    [EMPTY_RECORD._id]: EMPTY_RECORD
+  }))
+  return Promise.resolve(EMPTY_RECORD)
 })
 
 const putRecord = accessRecordService<ZenypassRecord, ZenypassRecord>(function(
   record
 ) {
-  recordsUpdate$.next(records => ({ ...records, [record._id]: record }))
-  return Promise.resolve(record)
+  const updated = incrementRecordRevision(record)
+  updateRecords(records => ({
+    ...records,
+    [record._id]: updated
+  }))
+  return Promise.resolve(updated)
 })
 
-const deleteRecord = accessRecordService<PouchDoc, PouchDoc>(ref => {
-  const deleted = { ...ref, _deleted: true }
-  recordsUpdate$.next(records => ({ ...records, [deleted._id]: deleted }))
-  return Promise.resolve(deleted)
-})
+const deleteRecord = accessRecordService<ZenypassRecord, ZenypassRecord>(
+  record => {
+    const deleted = { ...incrementRecordRevision(record), _deleted: true }
+    updateRecords(records => ({ ...records, [deleted._id]: deleted }))
+    return Promise.resolve(deleted)
+  }
+)
 
 function accessRecordService<I, O>(
   result: (arg?: I) => Observable<O> | Promise<O>
@@ -230,6 +248,14 @@ function stall(ms: number) {
       switchMap(fn)
     )
   }
+}
+
+function incrementRecordRevision(record: ZenypassRecord): ZenypassRecord {
+  return { ...record, _rev: incrementHexString(record._rev) }
+}
+
+function incrementHexString(rev: string = '0'): string {
+  return (Number.parseInt(rev, 16) + 1).toString(16)
 }
 
 interface StatusError extends Error {
