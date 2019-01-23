@@ -81,7 +81,7 @@ namespace css {
   )
 }
 
-export function ConsentsModal({
+export function ConsentsModal ({
   locale,
   display,
   terms,
@@ -93,13 +93,13 @@ export function ConsentsModal({
 }: ConsentsModalProps & UnknownProps) {
   const t = l10ns[locale]
   return (
-    <Modal isOpen={display} toggle={onCancel} size="lg" {...attrs}>
-      <ModalHeader toggle={onCancel} className="bg-info text-white">
+    <Modal isOpen={display} toggle={onCancel} size='lg' {...attrs}>
+      <ModalHeader toggle={onCancel} className='bg-info text-white'>
         {t('T&Cs')}
       </ModalHeader>
       <ModalBody>
-        <form id="consents-modal-form" onSubmit={onSubmit}>
-          <div class="mb-3">
+        <form id='consents-modal-form' onSubmit={onSubmit}>
+          <div class='mb-3'>
             <div className={css.notepad}>
               <small
                 dangerouslySetInnerHTML={{
@@ -108,33 +108,33 @@ export function ConsentsModal({
                 }}
               />
             </div>
-            <a target="_blank" href={t('tnc-link')}>
+            <a target='_blank' href={t('tnc-link')}>
               <small>{t('View the T&Cs online')}</small>
             </a>
           </div>
           <ConsentCheckbox
-            id="terms"
+            id='terms'
             checked={terms}
             label={t('I have read and accept the T&Cs of ZenyPass')}
             error={!terms && t('Required for creating an account')}
             onToggle={onToggle}
           />
           <ConsentCheckbox
-            id="news"
+            id='news'
             checked={news}
             label={t(
               'I subscribe to the newsletter containing help and news about ZenyPass'
             )}
             onToggle={onToggle}
-            className="mb-0"
+            className='mb-0'
           >
-            <small className="form-text text-muted">
+            <small className='form-text text-muted'>
               {`${t('Also follow ZenyPass on')} `}
-              <a target="_blank" href={t('info-link')}>
+              <a target='_blank' href={t('info-link')}>
                 Medium
               </a>
               {` ${t('and')} `}
-              <a target="_blank" href={t('facebook-link')}>
+              <a target='_blank' href={t('facebook-link')}>
                 Facebook
               </a>
               .
@@ -142,11 +142,11 @@ export function ConsentsModal({
           </ConsentCheckbox>
         </form>
       </ModalBody>
-      <ModalFooter className="bg-light">
+      <ModalFooter className='bg-light'>
         <Button
-          type="submit"
-          form="consents-modal-form"
-          color="info"
+          type='submit'
+          form='consents-modal-form'
+          color='info'
           disabled={!terms}
         >
           {t('Accept')}
@@ -165,7 +165,7 @@ export interface ConsentCheckboxProps {
   onToggle?: (event: Event) => void
 }
 
-function ConsentCheckbox({
+function ConsentCheckbox ({
   id,
   checked,
   label,
@@ -183,7 +183,7 @@ function ConsentCheckbox({
             className={classes(error && 'border-danger text-danger')}
           >
             <Input
-              type="checkbox"
+              type='checkbox'
               id={inputId}
               data-id={id}
               checked={checked}

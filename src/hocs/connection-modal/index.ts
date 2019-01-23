@@ -80,7 +80,7 @@ const STATE_TO_COPY_PROP = {
   'copying-username': 'username'
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   manual,
   cleartext,
@@ -113,13 +113,13 @@ const mapDispatchToProps: (
   onPasswordCopied: onFieldCopied('password')
 })
 
-function onFieldCopied(field: 'username' | 'password') {
-  return function(success: boolean) {
+function onFieldCopied (field: 'username' | 'password') {
+  return function (success: boolean) {
     return success ? copied[field]() : copyError(field)
   }
 }
 
-export function connectionModal<P extends ConnectionModalSFCProps>(
+export function connectionModal<P extends ConnectionModalSFCProps> (
   ConnectionModal: SFC<P>
 ): ComponentConstructor<ConnectionModalProps<P>> {
   return componentFromEvents<ConnectionModalProps<P>, P>(

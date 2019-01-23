@@ -60,7 +60,7 @@ export interface RecordFieldProps extends InputProps {
   onIconClick?: (event: MouseEvent) => void
 }
 
-export function RecordField({
+export function RecordField ({
   id,
   locale,
   type,
@@ -103,7 +103,7 @@ export function RecordField({
       <ControlledInput
         type={type}
         id={`${id}${type ? `_${type}` : ''}_input`}
-        className="form-control"
+        className='form-control'
         invalid={!!error}
         value={value}
         placeholder={
@@ -115,12 +115,12 @@ export function RecordField({
         onChange={onChange}
         {...attrs}
       />
-      {error ? <small className="invalid-feedback">{error}</small> : null}
+      {error ? <small className='invalid-feedback'>{error}</small> : null}
       {children}
     </IconLabelInputGroup>
   )
 }
 
-function formatPlaceholder(l10n: L10nTag, placeholder: string): string {
+function formatPlaceholder (l10n: L10nTag, placeholder: string): string {
   return placeholder && `${l10n(placeholder)}...`
 }

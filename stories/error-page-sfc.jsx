@@ -23,7 +23,7 @@ const error = new Error('error message')
 error.status = 403
 
 storiesOf('ErrorPage (SFC)', module).add('403', () => (
-  <ErrorPage locale="en" error={error}>
+  <ErrorPage locale='en' error={error}>
     <p>more details...</p>
   </ErrorPage>
 ))

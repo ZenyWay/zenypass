@@ -31,7 +31,7 @@ export interface InputProps {
 
 const onKeyPress = ({ target, key }) => key === 'Enter' && target.blur()
 
-export function Input({
+export function Input ({
   type,
   invalid,
   className,

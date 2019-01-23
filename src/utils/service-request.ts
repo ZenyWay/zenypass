@@ -23,10 +23,10 @@ import {
 import { catchError, map, switchMap } from 'rxjs/operators'
 // const log = (label: string) => console.log.bind(console, label)
 
-export function createPrivilegedRequest<T>(
+export function createPrivilegedRequest<T> (
   request: (username: string, ...args: any[]) => Observable<T> | Promise<T>
 ) {
-  return function(
+  return function (
     authenticate: (username: string) => Observable<string> | Promise<string>,
     username: string,
     unrestricted: boolean,
@@ -43,7 +43,7 @@ export function createPrivilegedRequest<T>(
   }
 }
 
-function doPrivilegedRequest<T>(
+function doPrivilegedRequest<T> (
   authenticate: (username: string) => Observable<string> | Promise<string>,
   request: (username: string, ...args: any[]) => Observable<T> | Promise<T>,
   username: string,

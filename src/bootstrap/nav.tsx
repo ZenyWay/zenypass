@@ -33,7 +33,7 @@ export interface NavProps {
   [prop: string]: unknown
 }
 
-export function Nav({
+export function Nav ({
   tabs,
   pills,
   vertical,
@@ -78,7 +78,7 @@ export interface NavbarProps {
   [prop: string]: unknown
 }
 
-export function Navbar({
+export function Navbar ({
   expand,
   light,
   dark,
@@ -114,7 +114,7 @@ export interface NavbarBrandProps {
   [prop: string]: unknown
 }
 
-export function NavbarBrand({
+export function NavbarBrand ({
   href,
   className,
   tag,
@@ -135,7 +135,7 @@ export interface NavbarTogglerProps {
   [prop: string]: unknown
 }
 
-export function NavbarToggler({
+export function NavbarToggler ({
   className,
   children,
   tag,
@@ -146,7 +146,7 @@ export function NavbarToggler({
 
   return (
     <Tag className={classNames} {...attrs}>
-      {children || <span className="navbar-toggler-icon" />}
+      {children || <span className='navbar-toggler-icon' />}
     </Tag>
   )
 }
@@ -160,7 +160,7 @@ export interface NavItemProps {
   [prop: string]: unknown
 }
 
-export function NavItem({
+export function NavItem ({
   active,
   disabled,
   className,
@@ -189,7 +189,7 @@ export interface NavLinkProps {
   [prop: string]: unknown
 }
 
-export function NavLink({
+export function NavLink ({
   href,
   toggle,
   disabled,

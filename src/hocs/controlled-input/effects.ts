@@ -30,7 +30,7 @@ import { isString } from 'utils'
 
 const debounce = createActionFactory('DEBOUNCE')
 
-export function debounceInputWhenDebounce(
+export function debounceInputWhenDebounce (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -51,7 +51,7 @@ export function debounceInputWhenDebounce(
   )
 }
 
-export function callChangeHandlerOnDebounceOrBlurWhenIsChange(
+export function callChangeHandlerOnDebounceOrBlurWhenIsChange (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -64,14 +64,14 @@ export function callChangeHandlerOnDebounceOrBlurWhenIsChange(
   )
 }
 
-function hasOnChangeHandler({ props }) {
+function hasOnChangeHandler ({ props }) {
   return !!props.onChange
 }
 
-function isChange({ props, value }) {
+function isChange ({ props, value }) {
   return props.value !== value
 }
 
-function callChangeHandler([{ payload: event }, { props, value }]) {
+function callChangeHandler ([{ payload: event }, { props, value }]) {
   props.onChange(value, event.currentTarget)
 }

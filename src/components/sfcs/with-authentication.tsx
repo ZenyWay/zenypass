@@ -46,13 +46,13 @@ export type Rest<T extends U, U extends {} = {}> = Pick<
 
 export function withAuthenticationModal<
   P extends AuthenticationConsumerProps = AuthenticationConsumerProps
->(
+> (
   GenericPrivilegedComponent: ComponentConstructor<P> | SFC<P>
 ): SFC<AuthenticationProviderProps & Rest<P, AuthenticationConsumerProps>> {
   const PrivilegedComponent = GenericPrivilegedComponent as ComponentConstructor<
     AuthenticationConsumerProps
   >
-  return function({
+  return function ({
     locale,
     authenticate,
     session,

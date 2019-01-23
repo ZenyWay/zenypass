@@ -41,7 +41,7 @@ const createRecordRejected = createActionFactory<any>('CREATE_RECORD_REJECTED')
 const updateRecords = createActionFactory('UPDATE_RECORDS')
 const error = createActionFactory('ERROR')
 
-export function createRecordOnSelectNewRecordMenuItem(
+export function createRecordOnSelectNewRecordMenuItem (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -80,7 +80,7 @@ const getRecords$ = createPrivilegedRequest((username: string) =>
   )
 )
 
-export function injectRecordsFromService(_: any, state$: Observable<any>) {
+export function injectRecordsFromService (_: any, state$: Observable<any>) {
   return state$.pipe(
     pluck<any, any>('props'),
     distinctUntilKeyChanged('onAuthenticationRequest'),

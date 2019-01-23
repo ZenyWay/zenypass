@@ -48,7 +48,7 @@ export interface CoreRouterProps {
   onSelectMenuItem?: (target: HTMLElement) => void
 }
 
-export function Router({
+export function Router ({
   locale,
   info,
   onCloseInfo,
@@ -74,7 +74,7 @@ const AUTHENTICATION_PAGE_TYPES = {
   '/authorize': AuthenticationPageType.Authorize
 }
 
-function CoreRouter({
+function CoreRouter ({
   locale,
   email,
   session,

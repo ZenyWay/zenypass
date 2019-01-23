@@ -41,7 +41,7 @@ const cancelled = createActionFactory('CANCELLED')
 
 const log = (label: string) => console.log.bind(console, label)
 
-export function clearClipboardOnClearingClipboard(
+export function clearClipboardOnClearingClipboard (
   _: any,
   state$: Observable<any>
 ) {
@@ -54,7 +54,7 @@ export function clearClipboardOnClearingClipboard(
   )
 }
 
-export function callOnDoneOnCancelling(_: any, state$: Observable<any>) {
+export function callOnDoneOnCancelling (_: any, state$: Observable<any>) {
   return state$.pipe(
     distinctUntilKeyChanged('state'),
     filter(hasEntry('state', 'cancelling')),
@@ -63,7 +63,7 @@ export function callOnDoneOnCancelling(_: any, state$: Observable<any>) {
   )
 }
 
-export function openWindowOnClickCopyWhenNotManual(
+export function openWindowOnClickCopyWhenNotManual (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -77,7 +77,7 @@ export function openWindowOnClickCopyWhenNotManual(
   )
 }
 
-function openWindow(event, windowref) {
+function openWindow (event, windowref) {
   if (!windowref) {
     // || windowref.closed) {
     const { target } = event

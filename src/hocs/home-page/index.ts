@@ -67,7 +67,7 @@ interface HomePageState {
   error?: string
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   state,
   menu,
@@ -90,7 +90,7 @@ const mapDispatchToProps: (
   onCancel: 'CANCEL'
 })
 
-export function homePage<P extends HomePageSFCProps>(
+export function homePage<P extends HomePageSFCProps> (
   HomePageSFC: SFC<P>
 ): ComponentConstructor<HomePageProps<P>> {
   return componentFromEvents<HomePageProps<P>, P>(

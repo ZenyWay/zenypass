@@ -26,7 +26,7 @@ export interface ProgressBarProps {
   children?: any
 }
 
-export function ProgressBar({
+export function ProgressBar ({
   ratio,
   bg,
   striped,
@@ -43,7 +43,7 @@ export function ProgressBar({
     className
   )
   return (
-    <div class="progress">
+    <div class='progress'>
       <div className={classNames} {...attrs} />
     </div>
   )

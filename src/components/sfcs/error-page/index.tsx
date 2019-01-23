@@ -39,7 +39,7 @@ const ERROR_TYPES = {
 
 const INTERNAL_SERVER_ERROR = newStatusError(500)
 
-export function ErrorPage({
+export function ErrorPage ({
   locale,
   error = INTERNAL_SERVER_ERROR,
   children,
@@ -51,7 +51,7 @@ export function ErrorPage({
   return (
     <section {...attrs}>
       <h3>
-        <FAIcon icon="bomb" /> <FAIcon icon="bomb" /> <FAIcon icon="bomb" />
+        <FAIcon icon='bomb' /> <FAIcon icon='bomb' /> <FAIcon icon='bomb' />
       </h3>
       <p>
         {t('Sorry, an unrecoverable error occurred')}...

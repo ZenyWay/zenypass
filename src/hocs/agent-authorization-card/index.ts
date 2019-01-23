@@ -53,7 +53,7 @@ interface AgentAuthorizationCardState {
   error?: string
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   state,
   token,
@@ -81,7 +81,7 @@ const mapDispatchToProps: (
 
 export function agentAuthorizationCard<
   P extends AgentAuthorizationCardSFCProps
->(
+> (
   AgentAuthorizationCard: SFC<P>
 ): ComponentConstructor<AgentAuthorizationCardProps<P>> {
   return componentFromEvents<AgentAuthorizationCardProps<P>, P>(

@@ -78,8 +78,7 @@ describe('effect: authenticateOnSubmit:', () => {
       scheduler.run(({ cold, hot, expectObservable }) => {
         const event$ = hot('^--s', { s: submit() })
         const state$ = hot('^-s-', { s: { value: PASSWORD, props } })
-        authenticate
-          .and.returnValue(cold('-'))
+        authenticate.and.returnValue(cold('-'))
         const result$ = fut(event$, state$).pipe(ignoreElements())
         expectObservable(result$).toBe('-')
       })
@@ -91,8 +90,7 @@ describe('effect: authenticateOnSubmit:', () => {
       scheduler.run(({ cold, hot, expectObservable }) => {
         const event$ = hot('^--s--s', { s: submit() })
         const state$ = hot('^-s-', { s: { value: PASSWORD, props } })
-        authenticate
-          .and.returnValue(cold('-'))
+        authenticate.and.returnValue(cold('-'))
         const result$ = fut(event$, state$).pipe(ignoreElements())
         expectObservable(result$).toBe('-')
       })
@@ -104,11 +102,9 @@ describe('effect: authenticateOnSubmit:', () => {
         scheduler.run(({ cold, hot, expectObservable }) => {
           const event$ = hot('^--s', { s: submit() })
           const state$ = hot('^-s', { s: { value: PASSWORD, props } })
-          authenticate
-            .and.returnValue(cold('--s', { s: '42' }))
+          authenticate.and.returnValue(cold('--s', { s: '42' }))
           const result$ = fut(event$, state$)
-          expectObservable(result$).toBe('-----d',
-            { d: done() })
+          expectObservable(result$).toBe('-----d', { d: done() })
         })
       })
     })
@@ -124,9 +120,10 @@ describe('effect: authenticateOnSubmit:', () => {
           const event$ = hot('^--s', { s: submit() })
           const state$ = hot('^-s', { s: { value: PASSWORD, props } })
           authenticate.and.returnValue(cold('--#', void 0, err))
-          const result$ = fut(event$,state$)
-          expectObservable(result$).toBe('-----e',
-          { e: authenticationError('UNAUTHORIZED') })
+          const result$ = fut(event$, state$)
+          expectObservable(result$).toBe('-----e', {
+            e: authenticationError('UNAUTHORIZED')
+          })
         })
       })
     })
@@ -142,9 +139,10 @@ describe('effect: authenticateOnSubmit:', () => {
           const event$ = hot('^--s', { s: submit() })
           const state$ = hot('^-s', { s: { value: PASSWORD, props } })
           authenticate.and.returnValue(cold('--#', void 0, err))
-          const result$ = fut(event$,state$)
-          expectObservable(result$).toBe('-----e',
-          { e: onServerError('ERROR 402') })
+          const result$ = fut(event$, state$)
+          expectObservable(result$).toBe('-----e', {
+            e: onServerError('ERROR 402')
+          })
         })
       })
     })
@@ -155,7 +153,7 @@ describe('effect: authenticateOnSubmit:', () => {
           const event$ = hot('^--s', { s: submit() })
           const state$ = hot('^-s-------|', { s: { value: PASSWORD, props } })
           authenticate.and.returnValue(cold('--s', { s: '42' }))
-          const result$ = fut(event$,state$)
+          const result$ = fut(event$, state$)
           expectObservable(result$).toBe('-----d----|', { d: done() })
         })
       })
@@ -167,7 +165,7 @@ describe('effect: authenticateOnSubmit:', () => {
           const event$ = hot('^-s', { s: submit() })
           const state$ = hot('^s---|', { s: { value: PASSWORD, props } })
           authenticate.and.returnValue(cold('--s-|', { s: '42' }))
-          const result$ = fut(event$,state$)
+          const result$ = fut(event$, state$)
           expectObservable(result$).toBe('----d|', { d: done() })
         })
       })
@@ -177,13 +175,11 @@ describe('effect: authenticateOnSubmit:', () => {
       scheduler.run(({ cold, hot, expectObservable }) => {
         const event$ = hot('^--s-c-s', { s: submit(), c: cancel() })
         const state$ = hot('^s-----', { s: { value: PASSWORD, props } })
-        authenticate
-          .and.returnValue(cold('-'))
+        authenticate.and.returnValue(cold('-'))
         const result$ = fut(event$, state$).pipe(ignoreElements())
         expectObservable(result$).toBe('-')
       })
       expect(authenticate).toHaveBeenCalledTimes(2)
     })
-
   })
 })

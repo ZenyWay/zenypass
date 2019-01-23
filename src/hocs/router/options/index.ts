@@ -38,14 +38,14 @@ export default {
   '/signin': LOCALE_MENU
 }
 
-function assemble<T>(
+function assemble<T> (
   root: (T | string)[],
   branches: { [key: string]: T[] }
 ): (T[] | T)[] {
   return root.map(entry => (isString(entry) ? branches[entry] : entry))
 }
 
-function excludeCurrentLocale(locale: string, item: MenuItemSpec) {
+function excludeCurrentLocale (locale: string, item: MenuItemSpec) {
   const match = LOCALE_REGEXP.exec(item['data-id'])
   return match && match[1] === locale
 }

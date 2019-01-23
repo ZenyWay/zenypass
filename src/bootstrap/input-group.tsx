@@ -26,7 +26,7 @@ export interface InputGroupAddonProps {
   [prop: string]: unknown
 }
 
-export function InputGroup({ size, className, ...attrs }: InputGroupProps) {
+export function InputGroup ({ size, className, ...attrs }: InputGroupProps) {
   return (
     <div
       className={classes(
@@ -39,7 +39,7 @@ export function InputGroup({ size, className, ...attrs }: InputGroupProps) {
   )
 }
 
-export function InputGroupPrepend({
+export function InputGroupPrepend ({
   className,
   ...attrs
 }: InputGroupAddonProps) {
@@ -48,13 +48,13 @@ export function InputGroupPrepend({
   )
 }
 
-export function InputGroupAppend({
+export function InputGroupAppend ({
   className,
   ...attrs
 }: InputGroupAddonProps) {
   return <div className={classes('input-group-append', className)} {...attrs} />
 }
 
-export function InputGroupText({ className, ...attrs }: InputGroupAddonProps) {
+export function InputGroupText ({ className, ...attrs }: InputGroupAddonProps) {
   return <div className={classes('input-group-text', className)} {...attrs} />
 }

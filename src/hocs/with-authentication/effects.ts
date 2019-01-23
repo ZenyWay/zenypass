@@ -33,7 +33,7 @@ import { newStatusError, ERROR_STATUS } from 'utils'
 
 const CANCELLED_ERROR = newStatusError(ERROR_STATUS.CLIENT_CLOSED_REQUEST)
 
-export function plugResponse(
+export function plugResponse (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -57,7 +57,7 @@ export function plugResponse(
   )
 }
 
-function plug<T>(
+function plug<T> (
   source$$: Observable<Observable<T>>, // assumption: hot Observable
   sink$: Observer<T>,
   alt: Observable<T>

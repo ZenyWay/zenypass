@@ -36,7 +36,7 @@ export interface InfoModalProps {
   [prop: string]: unknown
 }
 
-export function InfoModal({
+export function InfoModal ({
   locale,
   expanded,
   progress,
@@ -49,23 +49,23 @@ export function InfoModal({
 
   return (
     <Modal isOpen={expanded} toggle={onCancel}>
-      <ModalHeader toggle={onCancel} className="bg-info text-white">
+      <ModalHeader toggle={onCancel} className='bg-info text-white'>
         {t(onConfirm ? 'Please confirm' : progress ? 'Please wait' : 'Info')}...
       </ModalHeader>
       <ModalBody {...attrs}>
         {children}
         {!progress ? null : (
-          <ProgressBar ratio={progress} animated striped bg="info" />
+          <ProgressBar ratio={progress} animated striped bg='info' />
         )}
       </ModalBody>
       {!onConfirm && !onCancel ? null : (
-        <ModalFooter className="bg-light">
+        <ModalFooter className='bg-light'>
           {!onConfirm ? null : (
-            <Button color="info" outline onClick={onConfirm}>
+            <Button color='info' outline onClick={onConfirm}>
               {t('Yes')}
             </Button>
           )}
-          <Button color="info" onClick={onCancel}>
+          <Button color='info' onClick={onCancel}>
             {t(!onConfirm ? 'Ok' : 'No')}
           </Button>
         </ModalFooter>

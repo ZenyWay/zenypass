@@ -40,7 +40,7 @@ const HomePage = withAuthentication(withAuthenticationModal(HomePageSFC))
 storiesOf('HomePage (SFC)', module)
   .add('default', () => <HomePage {...attrs} />)
   .add('filter', () => (
-    <HomePage filter={[false, true, false]} tokens="com zen" {...attrs} />
+    <HomePage filter={[false, true, false]} tokens='com zen' {...attrs} />
   ))
   .add('busy', () => <HomePage busy {...attrs} />)
-  .add('error', () => <HomePage error="ouch !" {...attrs} />)
+  .add('error', () => <HomePage error='ouch !' {...attrs} />)

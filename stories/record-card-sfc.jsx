@@ -48,7 +48,7 @@ storiesOf('RecordCard (SFC)', module)
       {...attrs}
       expanded
       disabled
-      pending="cleartext"
+      pending='cleartext'
     />
   ))
   .add('expanded-disabled-cleartext', () => (
@@ -60,7 +60,7 @@ storiesOf('RecordCard (SFC)', module)
       {...attrs}
       expanded
       disabled
-      pending="edit"
+      pending='edit'
     />
   ))
   .add('expanded', () => (
@@ -70,11 +70,11 @@ storiesOf('RecordCard (SFC)', module)
     <RecordCard record={privateRecord} {...attrs} expanded cleartext />
   ))
   .add('expanded-pending-save', () => (
-    <RecordCard record={privateRecord} {...attrs} expanded pending="save" />
+    <RecordCard record={privateRecord} {...attrs} expanded pending='save' />
   ))
   .add('expanded-pending-delete', () => (
-    <RecordCard record={privateRecord} {...attrs} expanded pending="delete" />
+    <RecordCard record={privateRecord} {...attrs} expanded pending='delete' />
   ))
   .add('expanded-pending-cancel', () => (
-    <RecordCard record={privateRecord} {...attrs} expanded pending="cancel" />
+    <RecordCard record={privateRecord} {...attrs} expanded pending='cancel' />
   ))

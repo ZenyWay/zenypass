@@ -52,7 +52,7 @@ interface DropdownState {
   state: AutomataState
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   state
 }: DropdownState): Rest<DropdownSFCProps, DropdownSFCHandlerProps> {
@@ -76,7 +76,7 @@ const mapDispatchToProps: (
   innerRef: 'INNER_REF'
 })
 
-export function dropdown<P extends DropdownSFCProps>(
+export function dropdown<P extends DropdownSFCProps> (
   DropdownSFC: SFC<P>
 ): ComponentConstructor<DropdownProps<P>> {
   return componentFromEvents<DropdownProps<P>, P>(

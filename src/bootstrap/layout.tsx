@@ -24,7 +24,7 @@ export interface RowProps {
   className?: string
 }
 
-export function Row({
+export function Row ({
   tag: Tag = 'div',
   noGutter,
   className,

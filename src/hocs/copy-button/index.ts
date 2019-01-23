@@ -66,7 +66,7 @@ interface CopyButtonState {
   state: AutomataState
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   state
 }: CopyButtonState): Rest<ButtonProps, ButtonHandlerProps> {
@@ -82,7 +82,7 @@ const mapDispatchToProps: (
   onClick: 'CLICK'
 })
 
-export function copyButton<P extends ButtonProps>(
+export function copyButton<P extends ButtonProps> (
   Button: SFC<P>
 ): ComponentConstructor<CopyButtonProps<P>> {
   const CopyButton = componentFromEvents<CopyButtonProps<P>, P>(

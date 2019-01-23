@@ -32,7 +32,7 @@ const authenticated = createActionFactory('AUTHENTICATED')
 const unauthorized = createActionFactory('UNAUTHORIZED')
 const error = createActionFactory<any>('ERROR')
 
-export function authenticateOnAuthenticating(
+export function authenticateOnAuthenticating (
   _: any,
   state$: Observable<{
     state: string
@@ -48,7 +48,7 @@ export function authenticateOnAuthenticating(
   )
 }
 
-function authenticate({
+function authenticate ({
   value,
   props: { session }
 }): Promise<StandardAction<any>> {

@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 
-export function shallowEqual(a, b) {
+export function shallowEqual (a, b) {
   if (a === b) {
     return true
   }
@@ -36,38 +36,38 @@ export function shallowEqual(a, b) {
   return true
 }
 
-export function shallowDiffer(a, b) {
+export function shallowDiffer (a, b) {
   return !shallowEqual(a, b)
 }
 
-export function isObject(v: any): v is object {
+export function isObject (v: any): v is object {
   return typeof v === 'object'
 }
 
-export function isFunction(v: any): v is Function {
+export function isFunction (v: any): v is Function {
   return typeof v === 'function'
 }
 
-export function isString(v: any): v is String | string {
+export function isString (v: any): v is String | string {
   return typeof (v && v.valueOf()) === 'string'
 }
 
-export function isBoolean(v: any): v is Boolean | boolean {
+export function isBoolean (v: any): v is Boolean | boolean {
   return typeof (v && v.valueOf()) === 'boolean'
 }
 
-export function identity(v: any): typeof v {
+export function identity (v: any): typeof v {
   return v
 }
 
-export function values<T extends {} = {}>(entries: T): T[keyof T][] {
+export function values<T extends {} = {}> (entries: T): T[keyof T][] {
   const values = Object.keys(entries) as any[]
   let i = values.length
   while (i--) values[i] = entries[values[i]]
   return values
 }
 
-export function setListEntry<V = any>(
+export function setListEntry<V = any> (
   arr: V[],
   key: string | number,
   val: V
@@ -79,6 +79,6 @@ export function setListEntry<V = any>(
 
 // strings
 const UPPERCASE_REGEX = /[A-Z\d]+/g
-export function constantFromCamelCase(camel: string, separator: string = '_') {
+export function constantFromCamelCase (camel: string, separator: string = '_') {
   return camel.replace(UPPERCASE_REGEX, `${separator}$&`).toUpperCase()
 }

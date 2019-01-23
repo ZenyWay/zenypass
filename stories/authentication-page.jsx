@@ -67,10 +67,10 @@ storiesOf('AuthenticationPage', module)
       {...attrs}
     />
   ))
-  .add('signup', () => <AuthenticationPage type="signup" {...attrs} />)
+  .add('signup', () => <AuthenticationPage type='signup' {...attrs} />)
   .add('signup-email', () => (
-    <AuthenticationPage type="signup" email={emails[0].label} {...attrs} />
+    <AuthenticationPage type='signup' email={emails[0].label} {...attrs} />
   ))
   .add('authorize-email', () => (
-    <AuthenticationPage type="authorize" email={emails[0].label} {...attrs} />
+    <AuthenticationPage type='authorize' email={emails[0].label} {...attrs} />
   ))

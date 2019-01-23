@@ -138,7 +138,7 @@ const CURRENT_INPUT_TO_ENABLED = {
   }
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   state,
   created,
@@ -201,13 +201,13 @@ const mapDispatchToProps: (
   onConfirmInputRef: ['INPUT_REF', inputRef('confirm')]
 })
 
-function inputRef(field: string) {
-  return function(input: HTMLElement) {
+function inputRef (field: string) {
+  return function (input: HTMLElement) {
     return { [field]: input } // input may be null (on component unmount)
   }
 }
 
-export function authenticationPage<P extends AuthenticationPageSFCProps>(
+export function authenticationPage<P extends AuthenticationPageSFCProps> (
   AuthenticationPageSFC: SFC<P>
 ): ComponentConstructor<AuthenticationPageProps<P>> {
   return componentFromEvents<AuthenticationPageProps<P>, P>(

@@ -19,88 +19,124 @@ import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
 import { always, forType, mapPayload, not } from 'utils'
 
-export type RecordAutomataState =
-  | 'public'
-  | 'pending:cleartext'
-  | 'pending:edit'
-  | 'cleartext'
-  | 'edit'
-  | 'pending:cancel'
-  | 'pending:save'
-  | 'pending:delete'
+export enum RecordFsmState {
+  Thumbnail = 'THUMBNAIL',
+  ReadonlyConcealed = 'READONLY_CONCEALED',
+  ReadonlyCleartext = 'READONLY_CLEARTEXT',
+  EditConcealed = 'EDIT_CONCEALED',
+  EditConcealedError = 'EDIT_CONCEALED_ERROR',
+  EditCleartext = 'EDIT_CLEARTEXT',
+  EditCleartextError = 'EDIT_CLEARTEXT_ERROR',
+  PendingCleartext = 'PENDING_CLEARTEXT',
+  PendingEdit = 'PENDING_EDIT',
+  PendingCancel = 'PENDING_CANCEL',
+  PendingSave = 'PENDING_SAVE',
+  PendingDelete = 'PENDING_DELETE'
+}
 
 const clearPassword = into('password')(always(void 0))
 const clearChanges = into('changes')(always(void 0))
+const mergePayloadIntoChanges = propCursor('changes')(
+  (changes, { payload }) => ({ ...changes, ...payload })
+)
 const toggleRecordDeleted = propCursor('changes')(propCursor('_deleted')(not()))
 const mapPayloadToPassword = into('password')(mapPayload())
 const mapPayloadToError = into('error')(mapPayload())
-const toggleExpanded = propCursor('expanded')(not())
-const clearExpanded = into('expanded')(always(false))
-const toggleCleartext = propCursor('cleartext')(not())
-const cancelCleartext = into('cleartext')(always(false))
-const reset = [clearExpanded, clearChanges, clearPassword, cancelCleartext]
+const reset = [clearChanges, clearPassword]
 
-function updateRecord(record, { payload }) {
-  return { ...record, ...payload }
-}
-
-const recordAutomata: AutomataSpec<RecordAutomataState> = {
-  public: {
-    TOGGLE_EXPANDED: toggleExpanded,
-    TOGGLE_CLEARTEXT: 'pending:cleartext',
-    EDIT_RECORD_REQUESTED: 'pending:edit',
-    EDIT_RECORD: ['edit', toggleExpanded]
+const recordAutomata: AutomataSpec<RecordFsmState> = {
+  [RecordFsmState.Thumbnail]: {
+    TOGGLE_EXPANDED: RecordFsmState.ReadonlyConcealed,
+    INVALID_RECORD: RecordFsmState.EditConcealedError
   },
-  'pending:cleartext': {
-    CLEARTEXT_REJECTED: ['public', mapPayloadToError],
-    CLEARTEXT_RESOLVED: ['cleartext', toggleCleartext, mapPayloadToPassword]
+  [RecordFsmState.ReadonlyConcealed]: {
+    TOGGLE_EXPANDED: RecordFsmState.Thumbnail,
+    TOGGLE_CLEARTEXT: RecordFsmState.PendingCleartext,
+    EDIT_RECORD_REQUESTED: RecordFsmState.PendingEdit
   },
-  'pending:edit': {
-    CLEARTEXT_REJECTED: ['public', mapPayloadToError],
-    CLEARTEXT_RESOLVED: ['edit', mapPayloadToPassword]
+  [RecordFsmState.ReadonlyCleartext]: {
+    TOGGLE_EXPANDED: [RecordFsmState.Thumbnail, clearPassword],
+    TOGGLE_CLEARTEXT: [RecordFsmState.ReadonlyConcealed, clearPassword],
+    EDIT_RECORD_REQUESTED: RecordFsmState.EditCleartext
   },
-  cleartext: {
-    TOGGLE_CLEARTEXT: ['public', clearPassword, cancelCleartext],
-    TOGGLE_EXPANDED: ['public', ...reset],
-    EDIT_RECORD_REQUESTED: 'edit'
+  [RecordFsmState.EditConcealedError]: {
+    CHANGE: mergePayloadIntoChanges,
+    NAMED_RECORD: RecordFsmState.EditConcealed,
+    TOGGLE_CLEARTEXT: RecordFsmState.EditCleartextError
   },
-  edit: {
-    CHANGE: propCursor('changes')(updateRecord),
-    TOGGLE_CLEARTEXT: toggleCleartext,
-    TOGGLE_EXPANDED: 'pending:cancel',
-    UPDATE_RECORD_REQUESTED: 'pending:save',
-    DELETE_RECORD_REQUESTED: ['pending:delete', toggleRecordDeleted]
+  [RecordFsmState.EditCleartextError]: {
+    CHANGE: mergePayloadIntoChanges,
+    NAMED_RECORD: RecordFsmState.EditCleartext,
+    TOGGLE_CLEARTEXT: RecordFsmState.EditConcealedError
   },
-  'pending:cancel': {
-    EDIT_RECORD_REQUESTED: 'edit',
-    TOGGLE_EXPANDED: ['public', ...reset]
+  [RecordFsmState.EditConcealed]: {
+    CHANGE: mergePayloadIntoChanges,
+    NAMELESS_RECORD: RecordFsmState.EditConcealedError,
+    TOGGLE_CLEARTEXT: RecordFsmState.EditCleartext,
+    TOGGLE_EXPANDED: RecordFsmState.PendingCancel,
+    UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,
+    DELETE_RECORD_REQUESTED: [RecordFsmState.PendingDelete, toggleRecordDeleted]
   },
-  'pending:save': {
-    UPDATE_RECORD_REJECTED: ['edit', mapPayloadToError],
-    UPDATE_RECORD_RESOLVED: ['public', ...reset]
+  [RecordFsmState.EditCleartext]: {
+    CHANGE: mergePayloadIntoChanges,
+    NAMELESS_RECORD: RecordFsmState.EditCleartextError,
+    TOGGLE_CLEARTEXT: RecordFsmState.EditConcealed,
+    TOGGLE_EXPANDED: RecordFsmState.PendingCancel,
+    UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,
+    DELETE_RECORD_REQUESTED: [RecordFsmState.PendingDelete, toggleRecordDeleted]
   },
-  'pending:delete': {
-    DELETE_RECORD_REJECTED: ['edit', toggleRecordDeleted, mapPayloadToError],
-    DELETE_RECORD_RESOLVED: ['public', ...reset]
+  [RecordFsmState.PendingCleartext]: {
+    CLEARTEXT_REJECTED: [RecordFsmState.ReadonlyConcealed, mapPayloadToError],
+    CLEARTEXT_RESOLVED: [RecordFsmState.ReadonlyCleartext, mapPayloadToPassword]
+  },
+  [RecordFsmState.PendingEdit]: {
+    CLEARTEXT_REJECTED: [RecordFsmState.ReadonlyConcealed, mapPayloadToError],
+    CLEARTEXT_RESOLVED: [RecordFsmState.EditConcealed, mapPayloadToPassword]
+  },
+  [RecordFsmState.PendingCancel]: {
+    EDIT_RECORD_REQUESTED: RecordFsmState.EditConcealed,
+    TOGGLE_EXPANDED: [RecordFsmState.Thumbnail, ...reset]
+  },
+  [RecordFsmState.PendingSave]: {
+    UPDATE_RECORD_REJECTED: [RecordFsmState.EditConcealed, mapPayloadToError],
+    UPDATE_RECORD_RESOLVED: [RecordFsmState.Thumbnail, ...reset]
+  },
+  [RecordFsmState.PendingDelete]: {
+    DELETE_RECORD_REJECTED: [
+      RecordFsmState.EditConcealed,
+      toggleRecordDeleted,
+      mapPayloadToError
+    ],
+    DELETE_RECORD_RESOLVED: [RecordFsmState.Thumbnail, ...reset]
   }
 }
 
-export type ConnectAutomataState = 'idle' | 'pending:connect' | 'connect'
-const connectAutomata: AutomataSpec<ConnectAutomataState> = {
-  idle: {
-    TOGGLE_CONNECT: 'pending:connect'
+/**
+ * restriction: connect may only be triggered from locked record state,
+ * i.e. `thumbnail` or `readonly:concealed`
+ */
+export type ConnectAutomataState = 'locked' | 'connect' | 'pending:connect'
+export enum ConnectFsmState {
+  Locked = 'LOCKED',
+  Connect = 'CONNECT',
+  Pending = 'PENDING'
+}
+
+const connectAutomata: AutomataSpec<ConnectFsmState> = {
+  [ConnectFsmState.Locked]: {
+    TOGGLE_CONNECT: ConnectFsmState.Pending
   },
-  'pending:connect': {
-    CLEARTEXT_REJECTED: ['idle', mapPayloadToError],
-    CLEARTEXT_RESOLVED: ['connect', toggleCleartext, mapPayloadToPassword]
+  [ConnectFsmState.Connect]: {
+    TOGGLE_CONNECT: [ConnectFsmState.Locked, clearPassword]
   },
-  connect: {
-    TOGGLE_CONNECT: ['idle', cancelCleartext, clearPassword]
+  [ConnectFsmState.Pending]: {
+    CLEARTEXT_REJECTED: [ConnectFsmState.Locked, mapPayloadToError],
+    CLEARTEXT_RESOLVED: [ConnectFsmState.Connect, mapPayloadToPassword]
   }
 }
 
 export default compose.into(0)(
-  createAutomataReducer(recordAutomata, 'public'),
-  createAutomataReducer(connectAutomata, 'idle', 'connect'),
+  createAutomataReducer(recordAutomata, RecordFsmState.Thumbnail),
+  createAutomataReducer(connectAutomata, ConnectFsmState.Locked, 'connect'),
   forType('PROPS')(into('props')(mapPayload()))
 )

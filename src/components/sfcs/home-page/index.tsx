@@ -45,7 +45,7 @@ export interface HomePageProps {
   onCloseModal?: (event: MouseEvent) => void
 }
 
-export function HomePage({
+export function HomePage ({
   locale,
   menu,
   records = [],
@@ -80,11 +80,11 @@ export function HomePage({
           {busy ? null : error}
         </p>
       </InfoModal>
-      <header className="sticky-top">
+      <header className='sticky-top'>
         <NavbarMenu menu={menu} onSelectItem={onSelectMenuItem}>
           <FAIconButton
-            icon="search"
-            color="info"
+            icon='search'
+            color='info'
             onClick={onToggleFilter}
             active={!!filter}
           />
@@ -92,7 +92,7 @@ export function HomePage({
         {!filter ? null : (
           <SearchField
             innerRef={onSearchFieldRef}
-            className="col-12 col-md-6 col-xl-4 px-0 py-1 bg-white"
+            className='col-12 col-md-6 col-xl-4 px-0 py-1 bg-white'
             tokens={tokens}
             debounce={debounce}
             onChange={onTokensChange}

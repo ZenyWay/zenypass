@@ -29,19 +29,19 @@ export interface CardProps {
   className?: string
 }
 
-export function Card(props: CardProps & UnknownProps) {
+export function Card (props: CardProps & UnknownProps) {
   return CardFragment(props)
 }
 
-export function CardHeader(props: CardProps & UnknownProps) {
+export function CardHeader (props: CardProps & UnknownProps) {
   return CardFragment({ ...props, type: 'header' })
 }
 
-export function CardBody(props: CardProps & UnknownProps) {
+export function CardBody (props: CardProps & UnknownProps) {
   return CardFragment({ ...props, type: 'body' })
 }
 
-export function CardFooter(props: CardProps & UnknownProps) {
+export function CardFooter (props: CardProps & UnknownProps) {
   return CardFragment({ ...props, type: 'footer' })
 }
 
@@ -51,7 +51,7 @@ export interface CardImgProps {
   className?: string
 }
 
-export function CardImg({
+export function CardImg ({
   tag: Tag = 'img',
   align,
   className,
@@ -79,8 +79,8 @@ export const CardTitle = createComponent({
   className: 'card-title'
 })
 
-function createComponent(defaults: { tag: string; className: string }) {
-  return function({
+function createComponent (defaults: { tag: string; className: string }) {
+  return function ({
     tag: Tag = defaults.tag,
     className,
     ...attrs
@@ -92,7 +92,7 @@ function createComponent(defaults: { tag: string; className: string }) {
 
 type CardFragmentType = 'header' | 'body' | 'footer'
 
-function CardFragment({
+function CardFragment ({
   tag: Tag = 'div',
   type,
   border,

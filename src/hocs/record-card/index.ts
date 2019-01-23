@@ -15,10 +15,10 @@
  */
 //
 import { ZenypassRecord } from 'zenypass-service'
-import reducer, { ConnectAutomataState, RecordAutomataState } from './reducer'
+import reducer, { ConnectFsmState, RecordFsmState } from './reducer'
 import {
   cleartextOnPendingCleartextOrConnect,
-  editRecordOnPublicAndNoRecordName,
+  InvalidRecordOnThumbnailAndNoRecordName,
   updateRecordOnPendingSaveOrDeleteRecord
 } from './effects'
 import componentFromEvents, {
@@ -44,20 +44,25 @@ export interface RecordCardHocProps {
   onError?: (error: any) => void
 }
 
-export interface RecordCardSFCProps extends RecordCardSFCHandlerProps {
+export interface RecordCardSFCProps
+  extends Partial<RecordCardSFCState>,
+    RecordCardSFCHandlerProps {
   record: Partial<ZenypassRecord>
-  disabled?: boolean
-  connect?: boolean
-  pending?: PendingState
-  expanded?: boolean
-  cleartext?: boolean
-  error?: string
+}
+
+export interface RecordCardSFCState {
+  edit: boolean
+  connect: boolean
+  pending: PendingState
+  expanded: boolean
+  cleartext: boolean
+  error: boolean
 }
 
 export type PendingState =
   | 'cleartext'
-  | 'cancel'
   | 'edit'
+  | 'cancel'
   | 'save'
   | 'delete'
   | 'connect'
@@ -73,46 +78,79 @@ export interface RecordCardSFCHandlerProps {
 
 interface RecordCardState {
   props: RecordCardProps<RecordCardSFCProps>
-  state: RecordAutomataState
-  connect: ConnectAutomataState
+  state: RecordFsmState
+  connect: ConnectFsmState
   password?: string
   changes?: Partial<ZenypassRecord>
-  expanded?: boolean
-  cleartext?: boolean
-  error?: string
 }
 
-function mapStateToProps({
+const RECORD_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
+  [state in RecordFsmState]: Partial<RecordCardSFCState>
+} = {
+  [RecordFsmState.Thumbnail]: {},
+  [RecordFsmState.ReadonlyConcealed]: { expanded: true },
+  [RecordFsmState.ReadonlyCleartext]: { expanded: true, cleartext: true },
+  [RecordFsmState.EditConcealed]: { expanded: true, edit: true },
+  [RecordFsmState.EditConcealedError]: {
+    expanded: true,
+    edit: true,
+    error: true
+  },
+  [RecordFsmState.EditCleartext]: {
+    expanded: true,
+    edit: true,
+    cleartext: true
+  },
+  [RecordFsmState.EditCleartextError]: {
+    expanded: true,
+    edit: true,
+    cleartext: true,
+    error: true
+  },
+  [RecordFsmState.PendingCleartext]: { expanded: true, pending: 'cleartext' },
+  [RecordFsmState.PendingEdit]: { expanded: true, pending: 'edit' },
+  [RecordFsmState.PendingCancel]: {
+    expanded: true,
+    edit: true,
+    pending: 'cancel'
+  },
+  [RecordFsmState.PendingSave]: { expanded: true, edit: true, pending: 'save' },
+  [RecordFsmState.PendingDelete]: {
+    expanded: true,
+    edit: true,
+    pending: 'delete'
+  }
+}
+
+const CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
+  [state in ConnectFsmState]: Partial<RecordCardSFCState>
+} = {
+  [ConnectFsmState.Locked]: {},
+  [ConnectFsmState.Connect]: { connect: true },
+  [ConnectFsmState.Pending]: { pending: 'connect' }
+}
+
+function mapStateToProps ({
   props,
   password,
   changes,
-  state,
-  connect,
-  expanded,
-  cleartext,
-  error
+  state: recordFsm,
+  connect: connectFsm
 }: RecordCardState): RecordCardSFCProps {
   const { record, session, onAuthenticationRequest, ...attrs } = props
-  const pending = toPendingProp(connect) || toPendingProp(state)
+  const sfcState = {
+    ...RECORD_FSM_STATE_TO_RECORD_CARD_SFC_STATE[recordFsm],
+    ...CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE[connectFsm]
+  }
+  const { cleartext } = sfcState
   return {
     ...attrs,
-    disabled: state !== 'edit',
-    connect: connect === 'connect',
-    pending,
-    expanded,
-    cleartext,
-    error,
+    ...sfcState,
     record:
       !changes && !cleartext
         ? record
         : { ...record, password: cleartext && password, ...changes }
   }
-}
-
-const PENDING_REGEXP = /^pending:(\w+)$/i
-function toPendingProp(state: RecordAutomataState | ConnectAutomataState) {
-  const match = PENDING_REGEXP.exec(state)
-  return match ? (match[1] as PendingState) : void 0
 }
 
 const mapDispatchToProps: (
@@ -132,7 +170,7 @@ const mapDispatchToProps: (
   onDeleteRecordRequest: 'DELETE_RECORD_REQUESTED'
 })
 
-export function recordCard<P extends RecordCardSFCProps>(
+export function recordCard<P extends RecordCardSFCProps> (
   RecordCardSFC: SFC<P>
 ): ComponentConstructor<RecordCardProps<P>> {
   return componentFromEvents<RecordCardProps<P>, P>(
@@ -142,7 +180,7 @@ export function recordCard<P extends RecordCardSFCProps>(
       reducer,
       callHandlerOnEvent('ERROR', ['props', 'onError']),
       cleartextOnPendingCleartextOrConnect,
-      editRecordOnPublicAndNoRecordName,
+      InvalidRecordOnThumbnailAndNoRecordName,
       updateRecordOnPendingSaveOrDeleteRecord
     ),
     () => tap(log('record-card:state:')),

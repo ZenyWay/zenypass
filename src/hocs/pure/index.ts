@@ -33,7 +33,7 @@ const log = (label: string) => console.log.bind(console, label)
  * purity here refers only to the referential integrity of returned value
  * vs. input props.
  */
-export function pure<P extends {} = {}>(
+export function pure<P extends {} = {}> (
   SFC: SFC<P>,
   equals = shallowEqual
 ): ComponentConstructor<P> {

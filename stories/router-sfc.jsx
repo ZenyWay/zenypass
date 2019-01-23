@@ -39,17 +39,17 @@ const Router = withAuthentication(withAuthenticationModal(RouterSFC))
 storiesOf('Router (SFC)', module)
   .add('/', () => (
     <Router
-      path="/"
+      path='/'
       menu={MENU.slice(1) /* remove entry from home-page */}
       {...attrs}
     />
   ))
   .add('/authorize', () => (
-    <Router path="/authorize" menu={LANG_MENU} {...attrs} />
+    <Router path='/authorize' menu={LANG_MENU} {...attrs} />
   ))
-  .add('/signup', () => <Router path="/signup" menu={LANG_MENU} {...attrs} />)
-  .add('/signin', () => <Router path="/signin" menu={LANG_MENU} {...attrs} />)
+  .add('/signup', () => <Router path='/signup' menu={LANG_MENU} {...attrs} />)
+  .add('/signin', () => <Router path='/signin' menu={LANG_MENU} {...attrs} />)
   .add('/fatal', () => (
-    <Router path="/fatal" error={INTERNAL_ERROR} {...attrs} />
+    <Router path='/fatal' error={INTERNAL_ERROR} {...attrs} />
   ))
-  .add('/unknown/route', () => <Router path="/unknown/route" {...attrs} />)
+  .add('/unknown/route', () => <Router path='/unknown/route' {...attrs} />)

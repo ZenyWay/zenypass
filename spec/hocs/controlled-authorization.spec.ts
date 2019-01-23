@@ -83,8 +83,7 @@ describe('effect: getTokenOnClickFromInit:', () => {
       scheduler.run(({ cold, hot, expectObservable }) => {
         const event$ = hot('^--s', { s: sessionId('42') })
         const state$ = hot('^-')
-        authorize
-          .and.returnValue(cold('--t', { t: 'RANDOM_TOKEN' }))
+        authorize.and.returnValue(cold('--t', { t: 'RANDOM_TOKEN' }))
         const result$ = fut(event$, state$).pipe(ignoreElements())
         expectObservable(result$).toBe('-')
       })
@@ -96,8 +95,7 @@ describe('effect: getTokenOnClickFromInit:', () => {
       scheduler.run(({ cold, hot, expectObservable }) => {
         const event$ = hot('^--s--s', { s: sessionId('42') })
         const state$ = hot('^-')
-        authorize
-          .and.returnValue(cold('--t', { t: 'RANDOM_TOKEN' }))
+        authorize.and.returnValue(cold('--t', { t: 'RANDOM_TOKEN' }))
         const result$ = fut(event$, state$).pipe(ignoreElements())
         expectObservable(result$).toBe('-')
       })
@@ -108,8 +106,7 @@ describe('effect: getTokenOnClickFromInit:', () => {
       scheduler.run(({ cold, hot, expectObservable }) => {
         const event$ = hot('^--s-c-s', { s: sessionId('42'), c: click() })
         const state$ = hot('^-ab-a-b', { a: AUTHENTICATING, b: AUTHORIZING })
-        authorize
-          .and.returnValue(cold('-'))
+        authorize.and.returnValue(cold('-'))
         const result$ = fut(event$, state$).pipe(ignoreElements())
         expectObservable(result$).toBe('-')
       })
@@ -121,10 +118,11 @@ describe('effect: getTokenOnClickFromInit:', () => {
         scheduler.run(({ cold, hot, expectObservable }) => {
           const event$ = hot('^--s', { s: sessionId('42') })
           const state$ = hot('^-')
-          authorize
-            .and.returnValue(cold('--t', { t: 'RANDOM_TOKEN' }))
+          authorize.and.returnValue(cold('--t', { t: 'RANDOM_TOKEN' }))
           const result$ = fut(event$, state$).pipe(take(1))
-          expectObservable(result$).toBe('-----(t|)', { t: token('RANDOM_TOKEN') })
+          expectObservable(result$).toBe('-----(t|)', {
+            t: token('RANDOM_TOKEN')
+          })
         })
       })
     })
@@ -140,9 +138,10 @@ describe('effect: getTokenOnClickFromInit:', () => {
           const event$ = hot('^--s', { s: sessionId('42') })
           const state$ = hot('^-')
           authorize.and.returnValue(cold('--#', void 0, err))
-          const result$ = fut(event$,state$)
-          expectObservable(result$).toBe('-----e',
-          { e: onServerError('ERROR 402') })
+          const result$ = fut(event$, state$)
+          expectObservable(result$).toBe('-----e', {
+            e: onServerError('ERROR 402')
+          })
         })
       })
     })
@@ -151,13 +150,16 @@ describe('effect: getTokenOnClickFromInit:', () => {
       it('should emit a `SERVER_DONE` event', () => {
         scheduler.run(({ expectObservable, cold, hot }) => {
           const event$ = hot('^--s---c', { s: sessionId('42'), c: click() })
-          const state$ = hot('^--a-b-', { a: { state: AUTHENTICATING },
-            b: { state: AUTHORIZING } })
-          authorize.and.returnValue(cold('--t',
-          { t: 'RANDOM_TOKEN' }))
-          const result$ = fut(event$,state$)
-          expectObservable(result$).toBe('-----t-d',
-          { d: onServerDone(), t: token('RANDOM_TOKEN') })
+          const state$ = hot('^--a-b-', {
+            a: { state: AUTHENTICATING },
+            b: { state: AUTHORIZING }
+          })
+          authorize.and.returnValue(cold('--t', { t: 'RANDOM_TOKEN' }))
+          const result$ = fut(event$, state$)
+          expectObservable(result$).toBe('-----t-d', {
+            d: onServerDone(),
+            t: token('RANDOM_TOKEN')
+          })
         })
       })
     })
@@ -167,11 +169,12 @@ describe('effect: getTokenOnClickFromInit:', () => {
         scheduler.run(({ expectObservable, cold, hot }) => {
           const event$ = hot('^s', { s: sessionId('42') })
           const state$ = hot('^b------|', { b: { state: AUTHENTICATING } })
-          authorize.and.returnValue(cold('--t',
-            { t: 'RANDOM_TOKEN' }))
-          const result$ = fut(event$,state$)
-          expectObservable(result$).toBe('---t----(d|)',
-          { t: token('RANDOM_TOKEN'),d: onServerDone() })
+          authorize.and.returnValue(cold('--t', { t: 'RANDOM_TOKEN' }))
+          const result$ = fut(event$, state$)
+          expectObservable(result$).toBe('---t----(d|)', {
+            t: token('RANDOM_TOKEN'),
+            d: onServerDone()
+          })
         })
       })
     })
@@ -181,14 +184,14 @@ describe('effect: getTokenOnClickFromInit:', () => {
         scheduler.run(({ expectObservable, cold, hot }) => {
           const event$ = hot('^s', { s: sessionId('42') })
           const state$ = hot('^b------|', { b: { state: AUTHENTICATING } })
-          authorize.and.returnValue(cold('--t-|',
-            { t: 'RANDOM_TOKEN' }))
-          const result$ = fut(event$,state$)
-          expectObservable(result$).toBe('---t-d--|',
-          { t: token('RANDOM_TOKEN'),d: onServerDone() })
+          authorize.and.returnValue(cold('--t-|', { t: 'RANDOM_TOKEN' }))
+          const result$ = fut(event$, state$)
+          expectObservable(result$).toBe('---t-d--|', {
+            t: token('RANDOM_TOKEN'),
+            d: onServerDone()
+          })
         })
       })
     })
-
   })
 })

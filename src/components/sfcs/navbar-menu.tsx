@@ -45,7 +45,7 @@ export interface MenuSpecs
 
 export { DropdownItemSpec }
 
-export function NavbarMenu({
+export function NavbarMenu ({
   menu = [],
   expanded,
   onClickItem,
@@ -56,15 +56,15 @@ export function NavbarMenu({
   ...attrs
 }: NavbarMenuProps) {
   return (
-    <Navbar color="info" dark expand="md" innerRef={innerRef}>
+    <Navbar color='info' dark expand='md' innerRef={innerRef}>
       <NavbarBrand>
-        <img height="32" src={ZENYPASS_LOGO_WHITE_SVG} />
+        <img height='32' src={ZENYPASS_LOGO_WHITE_SVG} />
         <small>&nbsp;ZenyPass</small>
       </NavbarBrand>
-      <span class="flex-fill text-light">{children}</span>
+      <span class='flex-fill text-light'>{children}</span>
       <NavbarToggler onClick={onClickToggle} />
       <Collapse navbar isOpen={expanded}>
-        <Nav className="ml-auto" navbar>
+        <Nav className='ml-auto' navbar>
           <NavMenuItems
             menu={menu}
             onClickItem={onClickItem}
@@ -82,7 +82,7 @@ interface NavMenuItemsProps {
   onSelectItem?: (target: HTMLElement) => void
 }
 
-function NavMenuItems({
+function NavMenuItems ({
   menu = [],
   onClickItem,
   onSelectItem
@@ -108,14 +108,14 @@ interface NavMenuItemProps {
   onSelectItem?: (target: HTMLElement) => void
 }
 
-function NavMenuItem({
+function NavMenuItem ({
   item = {},
   onClickItem,
   onSelectItem
 }: NavMenuItemProps) {
   return Array.isArray(item) ? (
     <Dropdown
-      className="text-light"
+      className='text-light'
       right
       navItem
       {...item[0]}
@@ -125,7 +125,7 @@ function NavMenuItem({
   ) : (
     <NavItem>
       <NavMenuLink
-        className="text-light"
+        className='text-light'
         item={item}
         onClickItem={onClickItem}
       />
@@ -139,7 +139,7 @@ interface NavMenuLinkProps {
   onClickItem?: (event: MouseEvent) => void
 }
 
-function NavMenuLink({ className, item, onClickItem }: NavMenuLinkProps) {
+function NavMenuLink ({ className, item, onClickItem }: NavMenuLinkProps) {
   const { label, icon, ...attrs } = item
   return (
     <NavLink className={className} onClick={onClickItem} {...attrs}>

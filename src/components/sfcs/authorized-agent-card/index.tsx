@@ -30,7 +30,7 @@ export interface AuthorizedAgentCardProps {
   locale: string
 }
 
-export function AuthorizedAgentCard({
+export function AuthorizedAgentCard ({
   agent,
   date,
   locale
@@ -38,16 +38,16 @@ export function AuthorizedAgentCard({
   const t = l10ns[locale]
 
   return (
-    <Card className="mb-2">
-      <CardHeader className="border-0 bg-white">
+    <Card className='mb-2'>
+      <CardHeader className='border-0 bg-white'>
         {' '}
         <h5>{agent}</h5>{' '}
       </CardHeader>
       <CardBody>
-        <p className="mb-2">{t('Access authorized since:')}</p>
+        <p className='mb-2'>{t('Access authorized since:')}</p>
         <p>{date.toLocaleString()}</p>
       </CardBody>
-      <CardFooter className="border-0 bg-white" />
+      <CardFooter className='border-0 bg-white' />
     </Card>
   )
 }

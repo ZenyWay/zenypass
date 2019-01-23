@@ -35,7 +35,7 @@ export interface AgentAuthorizationCardProps extends CardProps {
   onAuthenticated?: (sessionID: string) => void
 }
 
-export function AgentAuthorizationCard({
+export function AgentAuthorizationCard ({
   error,
   locale,
   onClick,
@@ -51,20 +51,20 @@ export function AgentAuthorizationCard({
 
   return (
     <Card
-      align="center"
+      align='center'
       border={error ? 'danger' : pending && 'info'}
       {...attrs}
     >
-      <CardHeader bg="transparent" className="border-0" />
+      <CardHeader bg='transparent' className='border-0' />
       <CardBody>
         {pending ? (
           <div>
-            <p className="mb-2">{txt}</p>
-            <p className="mb-2">{token}</p>
+            <p className='mb-2'>{txt}</p>
+            <p className='mb-2'>{token}</p>
           </div>
         ) : null}
         <FAIconButton
-          color="info"
+          color='info'
           pending={pending && !token}
           onClick={onClick}
           className={pending && 'btn-outline-info'}
@@ -73,9 +73,9 @@ export function AgentAuthorizationCard({
         </FAIconButton>
       </CardBody>
       <CardFooter
-        bg="transparent"
+        bg='transparent'
         text={error && 'danger'}
-        className="border-0"
+        className='border-0'
       >
         {error}
       </CardFooter>

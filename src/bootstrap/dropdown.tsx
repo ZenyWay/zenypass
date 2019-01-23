@@ -33,7 +33,7 @@ export interface DropdownProps {
   [prop: string]: unknown
 }
 
-export function Dropdown({
+export function Dropdown ({
   expanded,
   direction,
   inputGroup,
@@ -63,7 +63,7 @@ export interface DropdownDividerProps {
   [prop: string]: unknown
 }
 
-export function DropdownDivider({
+export function DropdownDivider ({
   className,
   tag,
   ...attrs
@@ -79,7 +79,7 @@ export interface DropdownHeaderProps {
   [prop: string]: unknown
 }
 
-export function DropdownHeader({
+export function DropdownHeader ({
   className,
   tag,
   ...attrs
@@ -98,7 +98,7 @@ export interface DropdownItemProps {
   [prop: string]: unknown
 }
 
-export function DropdownItem({
+export function DropdownItem ({
   active,
   href,
   className,
@@ -124,7 +124,7 @@ export interface DropdownMenuProps {
   [prop: string]: unknown
 }
 
-export function DropdownMenu({
+export function DropdownMenu ({
   expanded,
   right,
   className,
@@ -152,7 +152,7 @@ export interface DropdownToggleProps {
   [prop: string]: unknown
 }
 
-export function DropdownToggle({
+export function DropdownToggle ({
   split,
   color = 'secondary',
   nav,

@@ -58,7 +58,7 @@ interface AutoformatInputState {
   error?: string
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   value,
   error
@@ -72,7 +72,7 @@ function mapStateToProps({
   }
 }
 
-function toString(val: string[] | string): string {
+function toString (val: string[] | string): string {
   return Array.isArray(val) ? val.join(' ') : val
 }
 
@@ -85,7 +85,7 @@ const mapDispatchToProps: (
   ]
 })
 
-export function autoformatInput<P extends ControlledInputProps>(
+export function autoformatInput<P extends ControlledInputProps> (
   ControlledInput: SFC<P>
 ): ComponentConstructor<AutoformatInputProps<P>> {
   const AutoformatInput = componentFromEvents<AutoformatInputProps<P>, P>(

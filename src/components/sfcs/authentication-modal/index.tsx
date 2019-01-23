@@ -43,7 +43,7 @@ export interface AuthenticationModalProps {
   onSubmit?: (event: Event) => void
 }
 
-export function AuthenticationModal({
+export function AuthenticationModal ({
   open,
   value,
   pending,
@@ -57,15 +57,15 @@ export function AuthenticationModal({
 
   return (
     <Modal isOpen={open} toggle={onCancel}>
-      <ModalHeader toggle={onCancel} className="bg-info text-white">
+      <ModalHeader toggle={onCancel} className='bg-info text-white'>
         {t('Authorization')}
       </ModalHeader>
       <ModalBody>
-        <Form id="PasswordModalForm" onSubmit={onSubmit}>
+        <Form id='PasswordModalForm' onSubmit={onSubmit}>
           <Label>{t('Please enter your ZenyPass password')}</Label>
           <ControlledInput
             placeholder={t('ZenyPass password')}
-            type="password"
+            type='password'
             className={`border-${
               error ? 'danger' : 'info'
             } rounded form-control`}
@@ -75,14 +75,14 @@ export function AuthenticationModal({
             autoFocus
           />
         </Form>
-        {error ? <p className="text-danger">{t('Invalid password')}</p> : null}
+        {error ? <p className='text-danger'>{t('Invalid password')}</p> : null}
       </ModalBody>
-      <ModalFooter className="bg-light">
+      <ModalFooter className='bg-light'>
         <FAIconButton
-          type="submit"
+          type='submit'
           pending={pending}
-          form="PasswordModalForm"
-          color="info"
+          form='PasswordModalForm'
+          color='info'
         >
           {t('Authorize')}
         </FAIconButton>

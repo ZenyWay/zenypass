@@ -58,7 +58,7 @@ const AUTHORIZATIONS = [
   'MacOS Safari',
   'Windows Chrome'
 ].reduce(
-  function(agents, identifier, index) {
+  function (agents, identifier, index) {
     const _id = String(index)
     const certified = Date.now() - Math.floor(Math.random() * MAX_CERTIFIED_MS)
     agents[_id] = { _id, _rev: '1-0', identifier, certified }
@@ -95,7 +95,7 @@ const RECORDS = [
 ]
   .map(incrementRecordRevision)
   .reduce(
-    function(records, record) {
+    function (records, record) {
       records[record._id] = record
       return records
     },
@@ -110,7 +110,7 @@ export default Promise.resolve({
   getService
 })
 
-function signup(username: string, passphrase: string): Promise<string> {
+function signup (username: string, passphrase: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
     username !== USERNAME &&
     (passphrase && passphrase.length >= MIN_PASSWORD_LENGTH)
@@ -119,7 +119,7 @@ function signup(username: string, passphrase: string): Promise<string> {
   ).toPromise()
 }
 
-function signin(username: string, passphrase: string): Promise<string> {
+function signin (username: string, passphrase: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
     username === USERNAME && passphrase === PASSWORD
       ? observableOf(username)
@@ -127,7 +127,7 @@ function signin(username: string, passphrase: string): Promise<string> {
   ).toPromise()
 }
 
-function getService(username: string) {
+function getService (username: string) {
   if (username !== USERNAME) {
     return
   }
@@ -140,13 +140,13 @@ function getService(username: string) {
   return { unlock, records, signout: noop }
 }
 
-function unlock(password: string): Promise<string> {
+function unlock (password: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
     password === PASSWORD ? observableOf(SESSION_ID) : throwError(UNAUTHORIZED)
   ).toPromise()
 }
 
-export function authorize(sessionId: string): Observable<string> {
+export function authorize (sessionId: string): Observable<string> {
   return sessionId === SESSION_ID
     ? observableOf(TOKEN).pipe(
         delay(TOKEN_DELAY),
@@ -156,11 +156,11 @@ export function authorize(sessionId: string): Observable<string> {
     : throwError(UNAUTHORIZED)
 }
 
-export function getAuthorizations$(
+export function getAuthorizations$ (
   sessionId: string
 ): Observable<KVMap<AuthorizationDoc>> {
   const authorizations = Object.keys(AUTHORIZATIONS).reduce(
-    function(agents, _id) {
+    function (agents, _id) {
       agents[_id] = { ...AUTHORIZATIONS[_id] }
       return agents
     },
@@ -194,7 +194,7 @@ const getRecord = accessRecordService<PouchDoc, ZenypassRecord>(({ _id }) =>
   )
 )
 
-function updateRecords(
+function updateRecords (
   update: (
     records: KVMap<Partial<ZenypassRecord>>
   ) => KVMap<Partial<ZenypassRecord>>
@@ -202,7 +202,7 @@ function updateRecords(
   setTimeout(() => recordsUpdate$.next(update))
 }
 
-const newRecord = accessRecordService<void, ZenypassRecord>(function() {
+const newRecord = accessRecordService<void, ZenypassRecord>(function () {
   updateRecords(records => ({
     ...records,
     [EMPTY_RECORD._id]: EMPTY_RECORD
@@ -210,7 +210,7 @@ const newRecord = accessRecordService<void, ZenypassRecord>(function() {
   return Promise.resolve(EMPTY_RECORD)
 })
 
-const putRecord = accessRecordService<ZenypassRecord, ZenypassRecord>(function(
+const putRecord = accessRecordService<ZenypassRecord, ZenypassRecord>(function (
   record
 ) {
   const updated = incrementRecordRevision(record)
@@ -223,7 +223,7 @@ const putRecord = accessRecordService<ZenypassRecord, ZenypassRecord>(function(
   return Promise.resolve(updated)
 })
 
-function removeDeleted(
+function removeDeleted (
   records: KVMap<Partial<ZenypassRecord>>
 ): KVMap<Partial<ZenypassRecord>> {
   return Object.keys(records)
@@ -231,10 +231,10 @@ function removeDeleted(
     .reduce((purged, _id) => ({ ...purged, [_id]: records[_id] }), {})
 }
 
-function accessRecordService<I, O>(
+function accessRecordService<I, O> (
   result: (arg?: I) => Observable<O> | Promise<O>
 ) {
-  return function(username: string, arg: I): Promise<O> {
+  return function (username: string, arg: I): Promise<O> {
     return stall(RECORD_SERVICE_DELAY)(() =>
       username === USERNAME
         ? observableFrom(result(arg))
@@ -243,8 +243,8 @@ function accessRecordService<I, O>(
   }
 }
 
-function stall(ms: number) {
-  return function<T>(fn: () => Observable<T> | Promise<T>) {
+function stall (ms: number) {
+  return function<T> (fn: () => Observable<T> | Promise<T>) {
     return interval(ms).pipe(
       take(1),
       switchMap(fn)
@@ -252,11 +252,11 @@ function stall(ms: number) {
   }
 }
 
-function incrementRecordRevision(record: ZenypassRecord): ZenypassRecord {
+function incrementRecordRevision (record: ZenypassRecord): ZenypassRecord {
   return { ...record, _rev: incrementHexString(record._rev) }
 }
 
-function incrementHexString(rev: string = '0'): string {
+function incrementHexString (rev: string = '0'): string {
   return (Number.parseInt(rev, 16) + 1).toString(16)
 }
 
@@ -264,12 +264,12 @@ interface StatusError extends Error {
   status: number
 }
 
-function newStatusError(status = 501, message = '') {
+function newStatusError (status = 501, message = '') {
   const err = new Error(message) as StatusError
   err.status = status
   return err
 }
 
-function noop() {
+function noop () {
   // do nothing
 }

@@ -26,7 +26,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 render(<App />, app)
 
-function removeChildNodes(node: HTMLElement): HTMLElement {
+function removeChildNodes (node: HTMLElement): HTMLElement {
   Array.from(node.childNodes).forEach(el => el.remove())
   return node
 }

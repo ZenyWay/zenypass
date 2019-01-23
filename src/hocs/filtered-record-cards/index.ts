@@ -68,7 +68,7 @@ interface FilteredRecordCardsState {
   filter?: boolean[]
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   state,
   tokens,
@@ -94,7 +94,7 @@ const mapDispatchToProps: (
   onSearchFieldRef: 'SEARCH_FIELD_REF'
 })
 
-export function filteredRecordCards<P extends FilteredRecordCardsSFCProps>(
+export function filteredRecordCards<P extends FilteredRecordCardsSFCProps> (
   FilteredRecordCardsSFC: SFC<P>
 ): ComponentConstructor<FilteredRecordCardsProps<P>> {
   const FilteredRecordCards = componentFromEvents<

@@ -35,11 +35,11 @@ storiesOf('AuthenticationModal (SFC)', module)
   .add('modal-password', () => <AuthenticationModal {...attrs} />)
   .add('wrong-password', () => <AuthenticationModal {...attrs} error />)
   .add('pending', () => <AuthenticationModal {...attrs} pending />)
-  .add('modal example', () => <ModalExample buttonLabel="open modal" />)
+  .add('modal example', () => <ModalExample buttonLabel='open modal' />)
 
 // from https://reactstrap.github.io/components/modals/
 class ModalExample extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
     this.state = {
       modal: false
@@ -48,16 +48,16 @@ class ModalExample extends Component {
     this.toggle = this.toggle.bind(this)
   }
 
-  toggle() {
+  toggle () {
     this.setState({
       modal: !this.state.modal
     })
   }
 
-  render() {
+  render () {
     return (
       <div>
-        <Button color="danger" onClick={this.toggle}>
+        <Button color='danger' onClick={this.toggle}>
           {this.props.buttonLabel}
         </Button>
         <Modal
@@ -76,10 +76,10 @@ class ModalExample extends Component {
             culpa qui officia deserunt mollit anim id est laborum.
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.toggle}>
+            <Button color='primary' onClick={this.toggle}>
               Do Something
             </Button>{' '}
-            <Button color="secondary" onClick={this.toggle}>
+            <Button color='secondary' onClick={this.toggle}>
               Cancel
             </Button>
           </ModalFooter>

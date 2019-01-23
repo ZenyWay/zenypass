@@ -72,7 +72,7 @@ interface RouterState {
   link?: HTMLLinkElement
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   locale,
   path,
@@ -106,7 +106,7 @@ const mapDispatchToProps: (
   onCloseInfo: 'CLOSE_INFO'
 })
 
-export function router<P extends RouterSFCProps>(
+export function router<P extends RouterSFCProps> (
   RouterSFC: SFC<P>
 ): ComponentConstructor<RouterProps<P>> {
   return componentFromEvents<RouterProps<P>, P>(

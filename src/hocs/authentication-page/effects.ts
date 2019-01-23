@@ -65,7 +65,7 @@ const authenticated = createActionFactory<void>('AUTHENTICATED')
 const unauthorized = createActionFactory<void>('UNAUTHORIZED')
 const error = createActionFactory<any>('ERROR')
 
-export function focusEmailInputOnMount(
+export function focusEmailInputOnMount (
   event$: Observable<StandardAction<any>>
 ) {
   return event$.pipe(
@@ -75,8 +75,8 @@ export function focusEmailInputOnMount(
   )
 }
 
-export function focusInputOnEvent(type: string, input: string) {
-  return function focusPasswordInputOnValidEmail(
+export function focusInputOnEvent (type: string, input: string) {
+  return function focusPasswordInputOnValidEmail (
     event$: Observable<StandardAction<any>>,
     state$: Observable<any>
   ) {
@@ -88,7 +88,7 @@ export function focusInputOnEvent(type: string, input: string) {
   }
 }
 
-export function callAuthenticationPageTypeHandlerOnStatePagePending(
+export function callAuthenticationPageTypeHandlerOnStatePagePending (
   _: any,
   state$: Observable<any>
 ) {
@@ -112,7 +112,7 @@ export function callAuthenticationPageTypeHandlerOnStatePagePending(
   )
 }
 
-export function signupOrSigninOrAuthorizeOnTypePropChange(
+export function signupOrSigninOrAuthorizeOnTypePropChange (
   _: any,
   state$: Observable<any>
 ) {
@@ -123,7 +123,7 @@ export function signupOrSigninOrAuthorizeOnTypePropChange(
   )
 }
 
-export function validateEmailOnEmailPropChange(
+export function validateEmailOnEmailPropChange (
   _: any,
   state$: Observable<any>
 ) {
@@ -135,7 +135,7 @@ export function validateEmailOnEmailPropChange(
   )
 }
 
-export function validatePasswordOnChangePassword(
+export function validatePasswordOnChangePassword (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -146,7 +146,7 @@ export function validatePasswordOnChangePassword(
   )
 }
 
-export function validateConfirmOnChangeConfirm(
+export function validateConfirmOnChangeConfirm (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -155,7 +155,7 @@ export function validateConfirmOnChangeConfirm(
   )
 }
 
-export function serviceSigninOnSubmitFromSigninSubmitting(
+export function serviceSigninOnSubmitFromSigninSubmitting (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -170,7 +170,7 @@ export function serviceSigninOnSubmitFromSigninSubmitting(
   )
 }
 
-export function serviceSignupOnSubmitFromSignupSubmitting(
+export function serviceSignupOnSubmitFromSignupSubmitting (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -187,7 +187,7 @@ export function serviceSignupOnSubmitFromSignupSubmitting(
 
 const MIN_SIGNUP_PASSWORD_LENGTH = 4
 const MIN_SIGNIN_PASSWORD_LENGTH = 1
-function hasValidPassword(state: { props?: any; password?: string } = {}) {
+function hasValidPassword (state: { props?: any; password?: string } = {}) {
   const min = isSignup(state)
     ? MIN_SIGNUP_PASSWORD_LENGTH
     : MIN_SIGNIN_PASSWORD_LENGTH
@@ -195,17 +195,17 @@ function hasValidPassword(state: { props?: any; password?: string } = {}) {
   return password && password.length >= min
 }
 
-function isSignup({ props } = {} as any) {
+function isSignup ({ props } = {} as any) {
   return props && props.type === AuthenticationPageType.Signup
 }
 
-function hasValidConfirm(
+function hasValidConfirm (
   { password, confirm } = {} as { password?: string; confirm?: string }
 ) {
   return confirm && confirm === password
 }
 
-function unauthorizedOrError(err: any) {
+function unauthorizedOrError (err: any) {
   return err && err.status !== ERROR_STATUS.UNAUTHORIZED
     ? error(err)
     : unauthorized()

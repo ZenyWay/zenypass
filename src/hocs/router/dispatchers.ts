@@ -32,39 +32,39 @@ const link = createActionFactory('LINK')
 const selectMenuItem = createActionFactory('SELECT_MENU_ITEM')
 const fatal = createActionFactory('FATAL')
 
-export function actionFromMenuItem(item: HTMLElement) {
+export function actionFromMenuItem (item: HTMLElement) {
   return isExternalLinkItem(item) ? link(item) : actionFromNonLinkMenuItem(item)
 }
 
-function isExternalLinkItem(item: any): item is HTMLLinkElement {
+function isExternalLinkItem (item: any): item is HTMLLinkElement {
   const { baseURI, href } = item || ({} as HTMLLinkElement)
   return domain(href) !== domain(baseURI)
 }
 
 const DOMAIN_REGEXP = /(?:https?:\/\/)?([^/]+)\//i
 
-function domain(url?: string): string {
+function domain (url?: string): string {
   const match = url && DOMAIN_REGEXP.exec(url)
   return match && match[1].toLowerCase()
 }
 
 const MENU_ITEM_REGEX = /^([\w-]+)(?:\/([\w-]+))?$/
 
-function actionFromNonLinkMenuItem(item: HTMLElement): StandardAction<any> {
+function actionFromNonLinkMenuItem (item: HTMLElement): StandardAction<any> {
   const { id } = item.dataset
   const [_, type, param] = MENU_ITEM_REGEX.exec(id) || ([] as string[])
   const action = type && MENU_ACTIONS[type]
   return action ? action(param) : selectMenuItem(item)
 }
 
-export function actionFromError(error?: any): StandardAction<any> {
+export function actionFromError (error?: any): StandardAction<any> {
   const action = isUnauthorizedOrClosed(error) ? MENU_ACTIONS.logout : fatal
   return action(error)
 }
 
 const UNAUTHORIZED_OR_CLOSED_CODES = [401, 403, 499]
 
-function isUnauthorizedOrClosed(error) {
+function isUnauthorizedOrClosed (error) {
   return error && UNAUTHORIZED_OR_CLOSED_CODES.indexOf(error.status) >= 0
 }
 
@@ -76,7 +76,7 @@ const AUTHENTICATION_PAGE_ACTIONS = createActionFactories({
   [AuthenticationPageType.Authorize]: 'AUTHORIZE'
 })
 
-export function actionFromAuthenticationPageType(
+export function actionFromAuthenticationPageType (
   type: AuthenticationPageType = AuthenticationPageType.Signin
 ) {
   return AUTHENTICATION_PAGE_ACTIONS[type]()

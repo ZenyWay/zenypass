@@ -45,7 +45,7 @@
  * this implementation first tries to use the legacy ExecCommand API,
  * before attempting the new Clipboard API.
  */
-export default function(text: string): Promise<void> {
+export default function (text: string): Promise<void> {
   const iframe = document.createElement('iframe')
   iframe.setAttribute('sandbox', 'allow-same-origin')
   document.body.appendChild(iframe)
@@ -56,7 +56,7 @@ export default function(text: string): Promise<void> {
   return result
 }
 
-function copyToClipboard(text: string, win = window): Promise<void> {
+function copyToClipboard (text: string, win = window): Promise<void> {
   const selection = win.getSelection()
   if (!selection) {
     return win !== window
@@ -81,7 +81,7 @@ function copyToClipboard(text: string, win = window): Promise<void> {
   return success ? Promise.resolve() : Promise.reject()
 }
 
-function execCommand(command: string, win = window) {
+function execCommand (command: string, win = window) {
   try {
     return win.document.execCommand(command)
   } catch (err) {

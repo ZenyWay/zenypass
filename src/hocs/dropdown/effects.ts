@@ -34,7 +34,7 @@ interface DropdownComponentState {
   dropdown: HTMLElement
 }
 
-export function toggleBackdropHandlers(
+export function toggleBackdropHandlers (
   _: any,
   state$: Observable<DropdownComponentState>
 ) {
@@ -59,6 +59,6 @@ export function toggleBackdropHandlers(
   )
 }
 
-function isClickOutside(dropdown: HTMLElement, target: HTMLElement) {
+function isClickOutside (dropdown: HTMLElement, target: HTMLElement) {
   return dropdown === target || !dropdown.contains(target)
 }

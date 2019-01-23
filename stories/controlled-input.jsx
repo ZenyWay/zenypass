@@ -27,5 +27,5 @@ const attrs = {
 
 storiesOf('ControlledInput', module)
   .add('default', () => <ControlledInput {...attrs} />)
-  .add('debounce 300ms', () => <ControlledInput {...attrs} debounce="300" />)
+  .add('debounce 300ms', () => <ControlledInput {...attrs} debounce='300' />)
   .add('blurOnEnterKey', () => <ControlledInput {...attrs} blurOnEnterKey />)

@@ -23,9 +23,9 @@ import Wrapper from './helpers/card-wrapper'
 storiesOf('AuthorizedAgentCard', module).add('default', () => (
   <Wrapper>
     <AuthorizedAgentCard
-      browser="OPERA"
-      date="Mardi 10 Juillet 2018"
-      locale="fr"
+      browser='OPERA'
+      date='Mardi 10 Juillet 2018'
+      locale='fr'
     />
   </Wrapper>
 ))

@@ -69,8 +69,7 @@ describe('effect: getAgentsOnAuthenticated:', () => {
       scheduler.run(({ cold, hot, expectObservable }) => {
         const event$ = hot('^--s', { s: authenticated(SESSION_ID) })
         const state$ = hot('^-')
-        getAuthorizations$
-          .and.returnValue(cold('--a', { a: 'AGENTS' }))
+        getAuthorizations$.and.returnValue(cold('--a', { a: 'AGENTS' }))
         const result$ = fut(event$, state$).pipe(ignoreElements())
         expectObservable(result$).toBe('-')
       })
@@ -82,8 +81,7 @@ describe('effect: getAgentsOnAuthenticated:', () => {
       scheduler.run(({ cold, hot, expectObservable }) => {
         const event$ = hot('^--s--s', { s: authenticated(SESSION_ID) })
         const state$ = hot('^-')
-        getAuthorizations$
-          .and.returnValue(cold('--a', { a: 'AGENTS' }))
+        getAuthorizations$.and.returnValue(cold('--a', { a: 'AGENTS' }))
         const result$ = fut(event$, state$).pipe(ignoreElements())
         expectObservable(result$).toBe('-')
       })
@@ -95,8 +93,7 @@ describe('effect: getAgentsOnAuthenticated:', () => {
         scheduler.run(({ cold, hot, expectObservable }) => {
           const event$ = hot('^--s', { s: authenticated(SESSION_ID) })
           const state$ = hot('^-')
-          getAuthorizations$
-            .and.returnValue(cold('--a', { a: 'AGENTS' }))
+          getAuthorizations$.and.returnValue(cold('--a', { a: 'AGENTS' }))
           const result$ = fut(event$, state$).pipe(take(1))
           expectObservable(result$).toBe('-----(a|)', { a: agents('AGENTS') })
         })
@@ -114,9 +111,10 @@ describe('effect: getAgentsOnAuthenticated:', () => {
           const event$ = hot('^--s', { s: authenticated(SESSION_ID) })
           const state$ = hot('^-')
           getAuthorizations$.and.returnValue(cold('--#', void 0, err))
-          const result$ = fut(event$,state$)
-          expectObservable(result$).toBe('-----e',
-          { e: authenticationError('UNAUTHORIZED') })
+          const result$ = fut(event$, state$)
+          expectObservable(result$).toBe('-----e', {
+            e: authenticationError('UNAUTHORIZED')
+          })
         })
       })
     })
@@ -132,9 +130,10 @@ describe('effect: getAgentsOnAuthenticated:', () => {
           const event$ = hot('^--s', { s: authenticated(SESSION_ID) })
           const state$ = hot('^-')
           getAuthorizations$.and.returnValue(cold('--#', void 0, err))
-          const result$ = fut(event$,state$)
-          expectObservable(result$).toBe('-----e',
-          { e: onServerError('ERROR 402') })
+          const result$ = fut(event$, state$)
+          expectObservable(result$).toBe('-----e', {
+            e: onServerError('ERROR 402')
+          })
         })
       })
     })
@@ -144,11 +143,9 @@ describe('effect: getAgentsOnAuthenticated:', () => {
         scheduler.run(({ expectObservable, cold, hot }) => {
           const event$ = hot('^s', { s: authenticated(SESSION_ID) })
           const state$ = hot('^-d----|', { d: { state: DEFAULT } })
-          getAuthorizations$.and.returnValue(cold('--a',
-            { a: 'AGENTS' }))
-          const result$ = fut(event$,state$)
-          expectObservable(result$).toBe('---a---|',
-          { a: agents('AGENTS') })
+          getAuthorizations$.and.returnValue(cold('--a', { a: 'AGENTS' }))
+          const result$ = fut(event$, state$)
+          expectObservable(result$).toBe('---a---|', { a: agents('AGENTS') })
         })
       })
     })
@@ -158,14 +155,11 @@ describe('effect: getAgentsOnAuthenticated:', () => {
         scheduler.run(({ expectObservable, cold, hot }) => {
           const event$ = hot('^s', { s: authenticated(SESSION_ID) })
           const state$ = hot('^-d-----|', { d: { state: DEFAULT } })
-          getAuthorizations$.and.returnValue(cold('--a-|',
-            { a: 'AGENTS' }))
-          const result$ = fut(event$,state$)
-          expectObservable(result$).toBe('---a----|',
-          { a: agents('AGENTS') })
+          getAuthorizations$.and.returnValue(cold('--a-|', { a: 'AGENTS' }))
+          const result$ = fut(event$, state$)
+          expectObservable(result$).toBe('---a----|', { a: agents('AGENTS') })
         })
       })
     })
-
   })
 })

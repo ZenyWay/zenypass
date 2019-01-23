@@ -93,7 +93,7 @@ const INFO = {
   }
 }
 
-export function AuthenticationForm({
+export function AuthenticationForm ({
   locale,
   type = AuthenticationPageType.Signin,
   emails,
@@ -132,7 +132,7 @@ export function AuthenticationForm({
             )}
             .
           </p>
-          <p className="text-muted">
+          <p className='text-muted'>
             <small>
               {t(
                 "If you haven't received the validation email, sent from the address info@zenyway.com, please check your spam folder"
@@ -143,16 +143,16 @@ export function AuthenticationForm({
         </Fragment>
       )}
       <PassiveRecordField
-        type="email"
-        id="email"
+        type='email'
+        id='email'
         blurOnEnterKey
-        className="mb-2"
+        className='mb-2'
         options={emails}
         icon={dropdown ? 'fa fa-user' : 'user'}
         placeholder={t('Enter your email address')}
         value={email}
         error={error === 'email' && t(ERRORS.email[type])}
-        data-id="email"
+        data-id='email'
         onChange={onChange}
         locale={locale}
         disabled={!enabled}
@@ -160,14 +160,14 @@ export function AuthenticationForm({
       />
       <PassiveRecordField
         type={cleartext ? 'text' : 'password'}
-        id="password"
+        id='password'
         blurOnEnterKey
-        className="mb-2"
-        icon="lock"
+        className='mb-2'
+        icon='lock'
         placeholder={passwordEnabled && t('Enter your password')}
         value={password}
         error={error === 'password' && t(ERRORS.password[type])}
-        data-id="password"
+        data-id='password'
         onChange={onChange}
         locale={locale}
         disabled={!passwordEnabled}
@@ -175,12 +175,12 @@ export function AuthenticationForm({
       />
       {type === 'signin' ? null : authorize ? (
         <PassiveRecordField
-          type="text"
-          id="token"
+          type='text'
+          id='token'
           blurOnEnterKey
-          className="mb-2"
-          icon="key"
-          flip="vertical"
+          className='mb-2'
+          icon='key'
+          flip='vertical'
           placeholder={
             confirmEnabled
               ? t('Enter the authorization code')
@@ -188,7 +188,7 @@ export function AuthenticationForm({
           }
           value={token}
           error={error === 'token' && t(ERRORS.token[type])}
-          data-id="token"
+          data-id='token'
           onChange={onChange}
           locale={locale}
           disabled={!confirmEnabled}
@@ -197,14 +197,14 @@ export function AuthenticationForm({
       ) : (
         <PassiveRecordField
           type={cleartext ? 'text' : 'password'}
-          id="confirm"
+          id='confirm'
           blurOnEnterKey
-          className="mb-2"
-          icon="lock"
+          className='mb-2'
+          icon='lock'
           placeholder={!confirmEnabled ? null : t('Confirm your password')}
           value={confirm}
           error={error === 'confirm' && t(ERRORS.confirm[type])}
-          data-id="confirm"
+          data-id='confirm'
           onChange={onChange}
           locale={locale}
           disabled={!confirmEnabled}
@@ -213,7 +213,7 @@ export function AuthenticationForm({
       )}
       <p>
         {!unauthorized ? null : (
-          <small className="text-danger">
+          <small className='text-danger'>
             {t('Unauthorized access')}:<br />
             {t(
               'Please verify your email address and enter your password again'
@@ -224,7 +224,7 @@ export function AuthenticationForm({
         {!info ? null : (
           <small>
             {t(info.message)}.<br />
-            <a href={t(info.link)} target="_blank" className="text-info">
+            <a href={t(info.link)} target='_blank' className='text-info'>
               {t('More information')}...
             </a>
           </small>

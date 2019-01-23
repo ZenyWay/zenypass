@@ -14,6 +14,7 @@
  * Limitations under the License.
  */
 //
+import { RecordFsmState, ConnectFsmState } from './reducer'
 import zenypass, { PouchDoc, ZenypassRecord } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import { Observable, of as observableOf, merge } from 'rxjs'
@@ -36,7 +37,7 @@ import {
 import { any } from 'bluebird'
 // const log = (label: string) => console.log.bind(console, label)
 
-const editRecord = createActionFactory('EDIT_RECORD')
+const invalidRecord = createActionFactory('INVALID_RECORD')
 const cleartextResolved = createActionFactory('CLEARTEXT_RESOLVED')
 const cleartextRejected = createActionFactory('CLEARTEXT_REJECTED')
 const updateRecordResolved = createActionFactory('UPDATE_RECORD_RESOLVED')
@@ -45,14 +46,17 @@ const deleteRecordResolved = createActionFactory('DELETE_RECORD_RESOLVED')
 const deleteRecordRejected = createActionFactory('DELETE_RECORD_REJECTED')
 const error = createActionFactory('ERROR')
 
-export function editRecordOnPublicAndNoRecordName(
+export function InvalidRecordOnThumbnailAndNoRecordName (
   _: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
   return state$.pipe(
     distinctUntilKeyChanged('state'),
-    filter(({ props, state }) => state === 'public' && !props.record.name),
-    map(() => editRecord())
+    filter(
+      ({ props, state }) =>
+        state === RecordFsmState.Thumbnail && !props.record.name
+    ),
+    map(() => invalidRecord())
   )
 }
 
@@ -63,14 +67,16 @@ const updateRecord = createPrivilegedRequest(
     )
 )
 
-export function updateRecordOnPendingSaveOrDeleteRecord(
+export function updateRecordOnPendingSaveOrDeleteRecord (
   _: any,
   state$: Observable<any>
 ) {
   return state$.pipe(
     distinctUntilKeyChanged('state'),
     filter(
-      ({ state }) => state === 'pending:save' || state === 'pending:delete'
+      ({ state }) =>
+        state === RecordFsmState.PendingSave ||
+        state === RecordFsmState.PendingDelete
     ),
     filter<any>(hasHandlerProp('onAuthenticationRequest')),
     switchMap(
@@ -98,7 +104,7 @@ export function updateRecordOnPendingSaveOrDeleteRecord(
     catchError(err => observableOf(error(err)))
   )
 
-  function recordInProps(record: ZenypassRecord): Observable<ZenypassRecord> {
+  function recordInProps (record: ZenypassRecord): Observable<ZenypassRecord> {
     return state$.pipe(
       pluck<any, ZenypassRecord>('props', 'record'),
       filter(({ _id, _rev }) => _id === record._id && _rev === record._rev)
@@ -110,21 +116,21 @@ const cleartext = createPrivilegedRequest((username: string, ref: PouchDoc) =>
   zenypass.then(({ getService }) => getService(username).records.getRecord(ref))
 )
 
-export function cleartextOnPendingCleartextOrConnect(
+export function cleartextOnPendingCleartextOrConnect (
   _: any,
   state$: Observable<any>
 ) {
   const cleartext$ = state$.pipe(
     distinctUntilKeyChanged('state'),
-    filter(hasEntry('state', 'pending:cleartext'))
+    filter(hasEntry('state', RecordFsmState.PendingCleartext))
   )
   const edit$ = state$.pipe(
     distinctUntilKeyChanged('state'),
-    filter(hasEntry('state', 'pending:edit'))
+    filter(hasEntry('state', RecordFsmState.PendingEdit))
   )
   const connect$ = state$.pipe(
     distinctUntilKeyChanged('connect'),
-    filter(hasEntry('connect', 'pending:connect'))
+    filter(hasEntry('connect', ConnectFsmState.Pending))
   )
   return merge(cleartext$, edit$, connect$).pipe(
     filter<any>(hasHandlerProp('onAuthenticationRequest')),

@@ -20,52 +20,52 @@ export interface Either<R, L = any> {
   unwrap<A, B>(left: (value: L) => B, right: (value: R) => A)
 }
 
-export function left<L, R = any>(value: L): Either<R, L> {
+export function left<L, R = any> (value: L): Either<R, L> {
   return new Left(value)
 }
 
-export function right<R, L = any>(value: R): Either<R, L> {
+export function right<R, L = any> (value: R): Either<R, L> {
   return new Right(value)
 }
 
 abstract class AbstractEither<R, L = any> implements Either<R, L> {
-  flatMap<A>(project: (value: R) => Either<A, L>): Either<A, L> {
+  flatMap<A> (project: (value: R) => Either<A, L>): Either<A, L> {
     return this.map(project).unwrap(identity, identity) // TODO fix this
   }
 
-  abstract map<A>(project: (value: R) => A): Either<A, L>
+  abstract map<A> (project: (value: R) => A): Either<A, L>
 
-  abstract unwrap<A, B>(left: (value: L) => B, right: (value: R) => A)
+  abstract unwrap<A, B> (left: (value: L) => B, right: (value: R) => A)
 }
 
 class Left<L> extends AbstractEither<any, L> implements Either<any, L> {
-  map<A>(project: (value: any) => A): Either<A, L> {
+  map<A> (project: (value: any) => A): Either<A, L> {
     return this
   }
 
-  unwrap<A, B>(left: (value: L) => B, right: (value: any) => A) {
+  unwrap<A, B> (left: (value: L) => B, right: (value: any) => A) {
     return left(this._value)
   }
 
-  constructor(private _value: L) {
+  constructor (private _value: L) {
     super()
   }
 }
 
 class Right<R> extends AbstractEither<R, any> implements Either<R, any> {
-  map<A>(project: (value: R) => A): Either<A, any> {
+  map<A> (project: (value: R) => A): Either<A, any> {
     return new Right(project(this._value))
   }
 
-  unwrap<A, B>(left: (value: any) => B, right: (value: R) => A) {
+  unwrap<A, B> (left: (value: any) => B, right: (value: R) => A) {
     return right(this._value)
   }
 
-  constructor(private _value: R) {
+  constructor (private _value: R) {
     super()
   }
 }
 
-function identity<V>(v: V): V {
+function identity<V> (v: V): V {
   return v
 }

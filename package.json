@@ -26,6 +26,8 @@
     "dist:production": "npm run dist:clean && npm run dist:static && browserify src/index.tsx -g [ envify purge --NODE_ENV=production --ZP_VERSION=$npm_package_version ] -t [ browserify-markdown --breaks false ] -p [ tsify -p src ] -t imgurify -g uglifyify -p [ common-shakeify -v ] | terser -c -m --toplevel > dist/index.js",
     "dist:staging": "npm run dist:clean && npm run dist:static && browserify src/index.tsx -g [ envify purge --NODE_ENV=staging --ZP_VERSION=$npm_package_version ] -t [ browserify-markdown --breaks false ] -p [ tsify -p src ] -t imgurify -g uglifyify -p [ common-shakeify -v ] | terser -c -m --toplevel > dist/index.js",
     "dist:static": "cpx \"src/favicons/(!index.ts)\" dist && cpx \"src/static/**/*\" dist",
+    "format": "prettier-standard \"{src,spec,stories,stubs}/**/*.[jt]@(s|sx)\"",
+    "lint": "standard \"{src,spec}/**/*.[jt]s\"",
     "prepublish": "npm run dist",
     "pretest": "mkdirp spec/reports && rimraf spec/reports/*",
     "test": "karma start spec/karma.conf.js --single-run",
@@ -62,8 +64,8 @@
   },
   "homepage": "https://github.com/zenyway/zenypass#readme",
   "dependencies": {
-    "@zenyway/zenypass-service": "^1.0.1",
-    "automata-reducer": "3.1.1",
+    "@zenyway/zenypass-service": "1.0.1",
+    "automata-reducer": "3.2.0",
     "basic-compose": "4.0.1",
     "basic-cursors": "2.2.0",
     "basic-fsa-factories": "1.1.0",
@@ -83,11 +85,13 @@
     "@storybook/addon-actions": "4.1.6",
     "@storybook/addon-options": "4.1.6",
     "@storybook/addon-viewport": "4.1.6",
-    "@storybook/components": "^4.1.6",
+    "@storybook/components": "4.1.6",
     "@storybook/react": "4.1.6",
     "@types/debug": "0.0.31",
     "@types/jasmine": "3.3.5",
     "@types/node": "10.12.18",
+    "@typescript-eslint/eslint-plugin": "^1.1.0",
+    "@typescript-eslint/parser": "^1.1.0",
     "aliasify": "2.1.0",
     "babel-loader": "8.0.5",
     "brfs": "2.0.1",
@@ -102,7 +106,6 @@
     "coveralls": "3.0.2",
     "cpx": "1.5.0",
     "envify": "4.1.0",
-    "eslint-plugin-typescript": "^0.14.0",
     "extract-zip": "1.6.7",
     "http-server": "0.11.1",
     "imgurify": "2.0.1",
@@ -124,16 +127,16 @@
     "karma-spec-reporter": "0.0.32",
     "mkdirp": "0.5.1",
     "pkg-dir-cli": "2.1.0",
+    "prettier-standard": "^9.1.1",
     "remap-istanbul": "0.8.4",
     "rimraf": "2.6.3",
     "standard": "12.0.1",
+    "terser": "3.14.1",
     "transform-loader": "0.2.4",
     "ts-loader": "5.3.3",
-    "ts-node": "7.0.1",
+    "ts-node": "8.0.1",
     "tsify": "4.0.1",
-    "typescript": "3.2.2",
-    "typescript-eslint-parser": "21.0.2",
-    "uglify-es": "3.3.9",
+    "typescript": "3.2.4",
     "uglifyify": "5.0.1",
     "undebuggify": "1.1.0",
     "watchify": "3.11.0"
@@ -146,9 +149,9 @@
     "singleQuote": true
   },
   "standard": {
-    "parser": "typescript-eslint-parser",
+    "parser": "@typescript-eslint/parser",
     "plugins": [
-      "typescript"
+      "@typescript-eslint"
     ]
   }
 }

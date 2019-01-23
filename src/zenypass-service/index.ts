@@ -42,15 +42,15 @@ export interface ZenypassService extends CoreZenypassService {
 
 // tslint:disable-next-line:class-name
 class _ZenypassServiceFactory implements ZenypassServiceFactory {
-  static getInstance(access: ZenypassServiceAccess): ZenypassServiceFactory {
+  static getInstance (access: ZenypassServiceAccess): ZenypassServiceFactory {
     return new _ZenypassServiceFactory(access)
   }
 
-  signup(username: string, passphrase: string): Promise<string> {
+  signup (username: string, passphrase: string): Promise<string> {
     return this._access.signup({ username, passphrase })
   }
 
-  signin(username: string, passphrase: string): Promise<ZenypassService> {
+  signin (username: string, passphrase: string): Promise<ZenypassService> {
     if (this._services[username]) {
       return Promise.reject(newStatusError(ERROR_STATUS.CONFLICT)) // max one session per username
     }
@@ -62,7 +62,7 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
       )
   }
 
-  requestAccess(
+  requestAccess (
     username: string,
     passphrase: string,
     secret: string
@@ -70,11 +70,11 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
     return this._access.requestAccess({ username, passphrase }, secret)
   }
 
-  getService(username: string): ZenypassService {
+  getService (username: string): ZenypassService {
     return this._services[username]
   }
 
-  private constructor(
+  private constructor (
     private _access: ZenypassServiceAccess,
     private _services = {} as { [username: string]: ZenypassService }
   ) {
@@ -84,7 +84,7 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
     this.getService = this.getService.bind(this)
   }
 
-  private _withSignout(
+  private _withSignout (
     username: string,
     service: CoreZenypassService
   ): ZenypassService {

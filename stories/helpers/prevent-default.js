@@ -16,7 +16,7 @@
 import { decorateAction } from '@storybook/addon-actions'
 
 export default decorateAction([
-  function(args) {
+  function (args) {
     const [event] = args
     event.preventDefault()
     return args

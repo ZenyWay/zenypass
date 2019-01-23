@@ -75,7 +75,7 @@ const attrs = {
 
 storiesOf('AgentAuthorizationsPage (SFC)', module)
   .add('default', () => <AgentAuthorizationsPage {...attrs} />)
-  .add('error', () => <AgentAuthorizationsPage {...attrs} error="ERROR" />)
+  .add('error', () => <AgentAuthorizationsPage {...attrs} error='ERROR' />)
   .add('authenticate', () => (
     <AgentAuthorizationsPage {...attrs} authenticate />
   ))

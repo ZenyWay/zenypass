@@ -62,7 +62,7 @@ interface AuthenticationModalState {
   error?: string
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   value,
   error,
@@ -95,7 +95,7 @@ const mapDispatchToProps: (
   onSubmit: ['SUBMIT', preventDefault]
 })
 
-export function authenticationModal<P extends AuthenticationModalSFCProps>(
+export function authenticationModal<P extends AuthenticationModalSFCProps> (
   Modal: SFC<P>
 ): ComponentConstructor<AuthenticationModalProps<P>> {
   return componentFromEvents<AuthenticationModalProps<P>, P>(

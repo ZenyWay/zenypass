@@ -27,6 +27,6 @@ const INVALID_EMAIL = /^(?:[^@]*|@.*|.*@|[^@]+@[^@]*@.*|.*\.|.*@\.[^@]+|.*@[^@.]
  * note that if none of the above apply,
  * the email might still be invalid...
  */
-export function isInvalidEmail(email: string) {
+export function isInvalidEmail (email: string) {
   return INVALID_EMAIL.test(email)
 }

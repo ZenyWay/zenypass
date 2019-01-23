@@ -94,8 +94,8 @@ export default compose.into(0)(
   createReducers(common)
 )
 
-function createReducers<S>(reducers: { [event: string]: Reducer<S, any> }) {
-  return function(state: S, event) {
+function createReducers<S> (reducers: { [event: string]: Reducer<S, any> }) {
+  return function (state: S, event) {
     const reducer = reducers[event.type]
     return reducer ? reducer(state, event) : state
   }

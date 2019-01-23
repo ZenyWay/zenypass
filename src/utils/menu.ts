@@ -27,20 +27,20 @@ export interface MenuItemSpec {
   disabled?: boolean
 }
 
-export function localizeMenu(
+export function localizeMenu (
   l10ns: KVs<L10nTag>,
   menu: MenuSpec,
   exclude: (locale: string, item: MenuItemSpec) => boolean = always(false)
 ): KVs<MenuSpec> {
   return Object.keys(l10ns).reduce(
-    function(specs: KVs<MenuSpec>, locale: string) {
+    function (specs: KVs<MenuSpec>, locale: string) {
       const t = l10ns[locale]
       specs[locale] = menu
         .filter(item => Array.isArray(item) || !exclude(locale, item))
         .map(localizeItem)
       return specs
 
-      function localizeItem(item: MenuItemSpec[] | MenuItemSpec) {
+      function localizeItem (item: MenuItemSpec[] | MenuItemSpec) {
         return Array.isArray(item)
           ? item.map(localizeItem)
           : {

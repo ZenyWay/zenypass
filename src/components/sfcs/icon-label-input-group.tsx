@@ -42,7 +42,7 @@ export interface IconLabelInputGroupProps {
   [prop: string]: unknown
 }
 
-export function IconLabelInputGroup({
+export function IconLabelInputGroup ({
   id,
   options,
   icon,
@@ -70,7 +70,7 @@ export function IconLabelInputGroup({
       {!icon ? null : options && options.length ? (
         <Dropdown
           {...iconProps}
-          inputGroup="prepend"
+          inputGroup='prepend'
           outline
           items={options}
           onSelectItem={onSelectItem}

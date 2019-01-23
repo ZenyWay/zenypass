@@ -15,12 +15,12 @@
  */
 import { identity } from './basic'
 
-export function pluck<T>(...keys: string[])
-export function pluck<T>(keys: string[] | string)
-export function pluck<T>(keys: string[] | string, ...rest: string[]) {
+export function pluck<T> (...keys: string[])
+export function pluck<T> (keys: string[] | string)
+export function pluck<T> (keys: string[] | string, ...rest: string[]) {
   return !Array.isArray(keys)
     ? pluck([keys].concat(rest))
-    : function(obj: any): T {
+    : function (obj: any): T {
         let res = obj
         for (const key of keys) {
           if (!res) return
@@ -30,33 +30,33 @@ export function pluck<T>(keys: string[] | string, ...rest: string[]) {
       }
 }
 
-export function always<T>(value?: T) {
-  return function(): T {
+export function always<T> (value?: T) {
+  return function (): T {
     return value
   }
 }
 
-export function not(fn = identity) {
-  return function(val) {
+export function not (fn = identity) {
+  return function (val) {
     return !fn(val)
   }
 }
 
-export function when<A extends any[], T = A[0]>(
+export function when<A extends any[], T = A[0]> (
   predicate: (...args: A) => boolean
 ) {
-  return function(
+  return function (
     ontrue: (...args: A) => T,
     onfalse: (...args: A) => T = identity as any
   ) {
-    return function(...args: A): T {
+    return function (...args: A): T {
       return predicate(...args) ? ontrue(...args) : onfalse(...args)
     }
   }
 }
 
-export function hasEntry<K extends string, V>(key: K, val: V) {
-  return function<T extends { [k in K]?: V } = { [k in K]?: V }>(obj?: T) {
+export function hasEntry<K extends string, V> (key: K, val: V) {
+  return function<T extends { [k in K]?: V } = { [k in K]?: V }> (obj?: T) {
     return obj && obj[key] === val
   }
 }

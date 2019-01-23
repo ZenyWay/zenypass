@@ -29,7 +29,7 @@ import { Observable, merge } from 'rxjs'
 
 const update = createActionFactory('UPDATE')
 
-export function focusSearchFieldOnMountOrEnable(
+export function focusSearchFieldOnMountOrEnable (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -43,7 +43,7 @@ export function focusSearchFieldOnMountOrEnable(
   )
 }
 
-export function updateOnNewRecordsProp(
+export function updateOnNewRecordsProp (
   event$: Observable<StandardAction<any>>
 ) {
   return event$.pipe(

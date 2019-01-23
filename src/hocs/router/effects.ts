@@ -38,7 +38,7 @@ const locale = createActionFactory('LOCALE')
 const signup = createActionFactory('SIGNUP')
 const signin = createActionFactory('SIGNIN')
 
-export function signoutOnLogout(
+export function signoutOnLogout (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -51,11 +51,11 @@ export function signoutOnLogout(
   )
 }
 
-function signout(username: string): Promise<void> {
+function signout (username: string): Promise<void> {
   return zenypass.then(({ getService }) => getService(username).signout())
 }
 
-export function openLinkOnCloseInfo(
+export function openLinkOnCloseInfo (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -68,11 +68,11 @@ export function openLinkOnCloseInfo(
   )
 }
 
-function openItemLink({ target, href }: HTMLLinkElement) {
+function openItemLink ({ target, href }: HTMLLinkElement) {
   window.open(href, target)
 }
 
-export function injectParamsFromUrl() {
+export function injectParamsFromUrl () {
   // support url hash in storybook (iframe in development mode)
   const win = process.env.NODE_ENV === 'development' ? window.top : window
   const hash$ = fromEvent(win, 'hashchange').pipe(
@@ -102,19 +102,19 @@ export function injectParamsFromUrl() {
 }
 
 const INVALID_EMAIL = /^(?:[^@]+|.*[\n(){}\/\\<>]+.*)$/m
-function sanitizeEmail(email: unknown) {
+function sanitizeEmail (email: unknown) {
   return !isString(email) || INVALID_EMAIL.test(email.valueOf())
     ? void 0
     : email
 }
 
-function sanitizeLang(lang: unknown) {
+function sanitizeLang (lang: unknown) {
   if (!isString(lang)) return void 0
   const i = LOCALES.indexOf(lang.trim().toLowerCase())
   return i < 0 ? void 0 : LOCALES[i]
 }
 
-function sanitizeSignup(signup: unknown) {
+function sanitizeSignup (signup: unknown) {
   return isString(signup)
     ? signup.trim().toLowerCase() === 'true'
     : isBoolean(signup)
@@ -122,13 +122,13 @@ function sanitizeSignup(signup: unknown) {
     : void 0
 }
 
-function parseQsParamsFromLocationHash(win: Window) {
+function parseQsParamsFromLocationHash (win: Window) {
   const { hash } = win.location
   return qs.parse(getQueryString(hash))
 }
 
 const QS_REGEXP = /\?(.*)$/
-function getQueryString(url: string) {
+function getQueryString (url: string) {
   const qs = QS_REGEXP.exec(url)
   return (qs && qs[1]) || ''
 }

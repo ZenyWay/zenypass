@@ -26,7 +26,7 @@ export interface LabelProps {
   [prop: string]: unknown
 }
 
-export function Label({
+export function Label ({
   for: htmlFor,
   size,
   check,

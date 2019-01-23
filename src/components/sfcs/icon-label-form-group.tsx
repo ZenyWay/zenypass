@@ -31,7 +31,7 @@ export interface IconLabelInputFormGroupProps extends FormGroupProps {
   className?: string
 }
 
-export function IconLabelInputFormGroup({
+export function IconLabelInputFormGroup ({
   icon,
   rotate,
   flip,

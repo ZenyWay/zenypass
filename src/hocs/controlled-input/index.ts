@@ -65,7 +65,7 @@ interface ControlledInputState {
   value?: string
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   value
 }: ControlledInputState): Rest<InputProps, InputHandlerProps> {
@@ -80,7 +80,7 @@ const mapDispatchToProps: (
   onInput: 'INPUT'
 })
 
-export function controlledInput<P extends InputProps>(
+export function controlledInput<P extends InputProps> (
   Input: SFC<P>
 ): ComponentConstructor<ControlledInputProps<P>> {
   const ControlledInput = componentFromEvents<ControlledInputProps<P>, P>(

@@ -31,8 +31,8 @@ const RecordCard = withAuthentication(
 
 storiesOf('RecordCard', module)
   .add('default', () => (
-    <RecordCard record={RECORD} locale="fr" session={USERNAME} />
+    <RecordCard record={RECORD} locale='fr' session={USERNAME} />
   ))
   .add('empty', () => (
-    <RecordCard record={EMPTY_RECORD} locale="fr" session={USERNAME} />
+    <RecordCard record={EMPTY_RECORD} locale='fr' session={USERNAME} />
   ))

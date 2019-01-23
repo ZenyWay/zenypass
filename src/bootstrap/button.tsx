@@ -32,7 +32,7 @@ export interface ButtonProps {
   [prop: string]: unknown
 }
 
-export function Button({
+export function Button ({
   active,
   block,
   className,

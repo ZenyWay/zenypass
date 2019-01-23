@@ -28,80 +28,80 @@ const common = {
 storiesOf('Button', module)
   .add('color', () => (
     <div>
-      <Button {...common} color="primary">
+      <Button {...common} color='primary'>
         Primary
       </Button>
       <Button {...common}>Secondary (default)</Button>
-      <Button {...common} color="success">
+      <Button {...common} color='success'>
         Success
       </Button>
-      <Button {...common} color="danger">
+      <Button {...common} color='danger'>
         Danger
       </Button>
-      <Button {...common} color="warning">
+      <Button {...common} color='warning'>
         Warning
       </Button>
-      <Button {...common} color="info">
+      <Button {...common} color='info'>
         Info
       </Button>
-      <Button {...common} color="light">
+      <Button {...common} color='light'>
         Light
       </Button>
-      <Button {...common} color="dark">
+      <Button {...common} color='dark'>
         Dark
       </Button>
-      <Button {...common} color="link">
+      <Button {...common} color='link'>
         Link
       </Button>
     </div>
   ))
   .add('outline', () => (
     <div>
-      <Button {...common} color="primary" outline>
+      <Button {...common} color='primary' outline>
         Primary
       </Button>
       <Button {...common} outline>
         Secondary (default)
       </Button>
-      <Button {...common} color="success" outline>
+      <Button {...common} color='success' outline>
         Success
       </Button>
-      <Button {...common} color="danger" outline>
+      <Button {...common} color='danger' outline>
         Danger
       </Button>
-      <Button {...common} color="warning" outline>
+      <Button {...common} color='warning' outline>
         Warning
       </Button>
-      <Button {...common} color="info" outline>
+      <Button {...common} color='info' outline>
         Info
       </Button>
-      <Button {...common} color="light" outline>
+      <Button {...common} color='light' outline>
         Light
       </Button>
-      <Button {...common} color="dark" outline>
+      <Button {...common} color='dark' outline>
         Dark
       </Button>
     </div>
   ))
   .add('size', () => (
     <div>
-      <Button {...common} color="primary" size="lg">
+      <Button {...common} color='primary' size='lg'>
         Large (lg)
       </Button>
-      <Button {...common} size="lg">
+      <Button {...common} size='lg'>
         Large (lg)
       </Button>
-      <Button {...common} color="primary" size="sm">
+      <Button {...common} color='primary' size='sm'>
         Small (sm)
       </Button>
-      <Button {...common} size="sm">
+      <Button {...common} size='sm'>
         Small (sm)
       </Button>
     </div>
   ))
   .add('block', () => (
     <div>
-      <Button {...common} color="primary" block>
+      <Button {...common} color='primary' block>
         Block level
       </Button>
       <Button {...common} block>

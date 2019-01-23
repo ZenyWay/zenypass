@@ -55,7 +55,7 @@ interface AuthenticationProviderState {
   session: string
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   authenticate,
   session
@@ -74,7 +74,7 @@ const mapDispatchToProps: (
   onAuthenticationResolved: 'AUTHENTICATION_RESOLVED'
 })
 
-export function withAuthentication<P extends AuthenticationProviderSFCProps>(
+export function withAuthentication<P extends AuthenticationProviderSFCProps> (
   AuthenticationProviderSFC: SFC<P>
 ): ComponentConstructor<AuthenticationProviderProps<P>> {
   return componentFromEvents<AuthenticationProviderProps<P>, P>(

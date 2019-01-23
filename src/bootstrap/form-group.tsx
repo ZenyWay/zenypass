@@ -27,7 +27,7 @@ export interface FormGroupProps {
   [prop: string]: unknown
 }
 
-export function FormGroup({
+export function FormGroup ({
   size,
   check,
   row,

@@ -30,7 +30,7 @@ export interface FilteredRecordCardsProps {
   onAuthenticationRequest?: (res$: Observer<string>) => void
 }
 
-export function FilteredRecordCards({
+export function FilteredRecordCards ({
   locale,
   session,
   records = [],

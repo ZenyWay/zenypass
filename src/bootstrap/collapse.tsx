@@ -24,7 +24,7 @@ export interface CollapseProps {
   [prop: string]: unknown
 }
 
-export function Collapse({ isOpen, navbar, tag, ...attrs }: CollapseProps) {
+export function Collapse ({ isOpen, navbar, tag, ...attrs }: CollapseProps) {
   const Tag = tag || 'div'
   const classNames = classes(navbar && 'navbar-collapse', !isOpen && 'collapse')
   return <Tag className={classNames} {...attrs} />

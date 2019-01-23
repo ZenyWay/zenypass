@@ -21,5 +21,5 @@ import { storiesOf } from '@storybook/react'
 import { AgentAuthorizationsPage } from 'components'
 
 storiesOf('AgentAuthorizationsPage', module).add('default', () => (
-  <AgentAuthorizationsPage locale="fr" />
+  <AgentAuthorizationsPage locale='fr' />
 ))

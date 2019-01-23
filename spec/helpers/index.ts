@@ -16,7 +16,7 @@
  * Limitations under the License.
  */
 //
-export function event <P> (type: string) {
+export function event<P> (type: string) {
   return function (payload: P) {
     return { type, payload }
   }
