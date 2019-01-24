@@ -130,7 +130,7 @@ const CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
   [ConnectFsmState.Pending]: { pending: 'connect' }
 }
 
-function mapStateToProps ({
+function mapStateToProps({
   props,
   password,
   changes,
@@ -142,14 +142,11 @@ function mapStateToProps ({
     ...RECORD_FSM_STATE_TO_RECORD_CARD_SFC_STATE[recordFsm],
     ...CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE[connectFsm]
   }
-  const { cleartext } = sfcState
+  const { cleartext, edit } = sfcState
   return {
     ...attrs,
     ...sfcState,
-    record:
-      !changes && !cleartext
-        ? record
-        : { ...record, password: cleartext && password, ...changes }
+    record: !edit && !cleartext ? record : { ...record, password, ...changes }
   }
 }
 
@@ -170,7 +167,7 @@ const mapDispatchToProps: (
   onDeleteRecordRequest: 'DELETE_RECORD_REQUESTED'
 })
 
-export function recordCard<P extends RecordCardSFCProps> (
+export function recordCard<P extends RecordCardSFCProps>(
   RecordCardSFC: SFC<P>
 ): ComponentConstructor<RecordCardProps<P>> {
   return componentFromEvents<RecordCardProps<P>, P>(
