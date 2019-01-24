@@ -47,7 +47,7 @@ const reset = [clearChanges, clearPassword]
 const recordAutomata: AutomataSpec<RecordFsmState> = {
   [RecordFsmState.Thumbnail]: {
     TOGGLE_EXPANDED: RecordFsmState.ReadonlyConcealed,
-    INVALID_RECORD: RecordFsmState.EditConcealedError
+    INVALID_RECORD: RecordFsmState.EditCleartextError
   },
   [RecordFsmState.ReadonlyConcealed]: {
     TOGGLE_EXPANDED: RecordFsmState.Thumbnail,
