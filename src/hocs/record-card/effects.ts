@@ -25,7 +25,8 @@ import {
   filter,
   map,
   pluck,
-  switchMap
+  switchMap,
+  withLatestFrom
 } from 'rxjs/operators'
 import {
   ERROR_STATUS,
@@ -37,6 +38,7 @@ import {
 import { any } from 'bluebird'
 // const log = (label: string) => console.log.bind(console, label)
 
+const validRecord = createActionFactory('VALID_RECORD')
 const invalidRecord = createActionFactory('INVALID_RECORD')
 const cleartextResolved = createActionFactory('CLEARTEXT_RESOLVED')
 const cleartextRejected = createActionFactory('CLEARTEXT_REJECTED')
@@ -46,17 +48,27 @@ const deleteRecordResolved = createActionFactory('DELETE_RECORD_RESOLVED')
 const deleteRecordRejected = createActionFactory('DELETE_RECORD_REJECTED')
 const error = createActionFactory('ERROR')
 
-export function InvalidRecordOnThumbnailAndNoRecordName(
-  _: Observable<StandardAction<any>>,
+function isValidRecord (record: ZenypassRecord) {
+  return !!(record && record.name)
+}
+
+export function validateRecordOnChangeOrThumbnail (
+  event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  return state$.pipe(
+  const thumbnail$ = state$.pipe(
     distinctUntilKeyChanged('state'),
-    filter(
-      ({ props, state }) =>
-        state === RecordFsmState.Thumbnail && !props.record.name
-    ),
-    map(() => invalidRecord())
+    filter(({ state }) => state === RecordFsmState.Thumbnail)
+  )
+  const change$ = event$.pipe(
+    filter(({ type }) => type === 'CHANGE'),
+    withLatestFrom(state$),
+    pluck('1')
+  )
+  return merge(thumbnail$, change$).pipe(
+    map(({ props: { record }, changes }) =>
+      isValidRecord({ ...record, ...changes }) ? validRecord() : invalidRecord()
+    )
   )
 }
 
@@ -67,7 +79,7 @@ const updateRecord = createPrivilegedRequest(
     )
 )
 
-export function updateRecordOnPendingSaveOrDeleteRecord(
+export function saveRecordOnPendingSaveOrDeleteRecord (
   _: any,
   state$: Observable<any>
 ) {
@@ -104,7 +116,7 @@ export function updateRecordOnPendingSaveOrDeleteRecord(
     catchError(err => observableOf(error(err)))
   )
 
-  function recordInProps(record: ZenypassRecord): Observable<ZenypassRecord> {
+  function recordInProps (record: ZenypassRecord): Observable<ZenypassRecord> {
     return state$.pipe(
       pluck<any, ZenypassRecord>('props', 'record'),
       filter(({ _id, _rev }) => _id === record._id && _rev === record._rev)
@@ -116,7 +128,7 @@ const cleartext = createPrivilegedRequest((username: string, ref: PouchDoc) =>
   zenypass.then(({ getService }) => getService(username).records.getRecord(ref))
 )
 
-export function cleartextOnPendingCleartextOrConnect(
+export function cleartextOnPendingCleartextOrConnect (
   _: any,
   state$: Observable<any>
 ) {

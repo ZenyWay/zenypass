@@ -61,17 +61,17 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
   },
   [RecordFsmState.EditConcealedError]: {
     CHANGE: mergePayloadIntoChanges,
-    NAMED_RECORD: RecordFsmState.EditConcealed,
+    VALID_RECORD: RecordFsmState.EditConcealed,
     TOGGLE_CLEARTEXT: RecordFsmState.EditCleartextError
   },
   [RecordFsmState.EditCleartextError]: {
     CHANGE: mergePayloadIntoChanges,
-    NAMED_RECORD: RecordFsmState.EditCleartext,
+    VALID_RECORD: RecordFsmState.EditCleartext,
     TOGGLE_CLEARTEXT: RecordFsmState.EditConcealedError
   },
   [RecordFsmState.EditConcealed]: {
     CHANGE: mergePayloadIntoChanges,
-    NAMELESS_RECORD: RecordFsmState.EditConcealedError,
+    INVALID_RECORD: RecordFsmState.EditConcealedError,
     TOGGLE_CLEARTEXT: RecordFsmState.EditCleartext,
     TOGGLE_EXPANDED: RecordFsmState.PendingCancel,
     UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,
@@ -79,7 +79,7 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
   },
   [RecordFsmState.EditCleartext]: {
     CHANGE: mergePayloadIntoChanges,
-    NAMELESS_RECORD: RecordFsmState.EditCleartextError,
+    INVALID_RECORD: RecordFsmState.EditCleartextError,
     TOGGLE_CLEARTEXT: RecordFsmState.EditConcealed,
     TOGGLE_EXPANDED: RecordFsmState.PendingCancel,
     UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,

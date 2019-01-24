@@ -18,8 +18,8 @@ import { ZenypassRecord } from 'zenypass-service'
 import reducer, { ConnectFsmState, RecordFsmState } from './reducer'
 import {
   cleartextOnPendingCleartextOrConnect,
-  InvalidRecordOnThumbnailAndNoRecordName,
-  updateRecordOnPendingSaveOrDeleteRecord
+  validateRecordOnChangeOrThumbnail,
+  saveRecordOnPendingSaveOrDeleteRecord
 } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
@@ -130,7 +130,7 @@ const CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
   [ConnectFsmState.Pending]: { pending: 'connect' }
 }
 
-function mapStateToProps({
+function mapStateToProps ({
   props,
   password,
   changes,
@@ -167,7 +167,7 @@ const mapDispatchToProps: (
   onDeleteRecordRequest: 'DELETE_RECORD_REQUESTED'
 })
 
-export function recordCard<P extends RecordCardSFCProps>(
+export function recordCard<P extends RecordCardSFCProps> (
   RecordCardSFC: SFC<P>
 ): ComponentConstructor<RecordCardProps<P>> {
   return componentFromEvents<RecordCardProps<P>, P>(
@@ -177,8 +177,8 @@ export function recordCard<P extends RecordCardSFCProps>(
       reducer,
       callHandlerOnEvent('ERROR', ['props', 'onError']),
       cleartextOnPendingCleartextOrConnect,
-      InvalidRecordOnThumbnailAndNoRecordName,
-      updateRecordOnPendingSaveOrDeleteRecord
+      validateRecordOnChangeOrThumbnail,
+      saveRecordOnPendingSaveOrDeleteRecord
     ),
     () => tap(log('record-card:state:')),
     connect<RecordCardState, RecordCardSFCProps>(
