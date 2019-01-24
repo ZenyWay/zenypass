@@ -46,7 +46,7 @@ const deleteRecordResolved = createActionFactory('DELETE_RECORD_RESOLVED')
 const deleteRecordRejected = createActionFactory('DELETE_RECORD_REJECTED')
 const error = createActionFactory('ERROR')
 
-export function InvalidRecordOnThumbnailAndNoRecordName (
+export function InvalidRecordOnThumbnailAndNoRecordName(
   _: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -67,7 +67,7 @@ const updateRecord = createPrivilegedRequest(
     )
 )
 
-export function updateRecordOnPendingSaveOrDeleteRecord (
+export function updateRecordOnPendingSaveOrDeleteRecord(
   _: any,
   state$: Observable<any>
 ) {
@@ -83,7 +83,7 @@ export function updateRecordOnPendingSaveOrDeleteRecord (
       ({
         props: { onAuthenticationRequest, session, record },
         password,
-        changes
+        changes = {}
       }) =>
         updateRecord(toProjection(onAuthenticationRequest), session, true, {
           ...record,
@@ -104,7 +104,7 @@ export function updateRecordOnPendingSaveOrDeleteRecord (
     catchError(err => observableOf(error(err)))
   )
 
-  function recordInProps (record: ZenypassRecord): Observable<ZenypassRecord> {
+  function recordInProps(record: ZenypassRecord): Observable<ZenypassRecord> {
     return state$.pipe(
       pluck<any, ZenypassRecord>('props', 'record'),
       filter(({ _id, _rev }) => _id === record._id && _rev === record._rev)
@@ -116,7 +116,7 @@ const cleartext = createPrivilegedRequest((username: string, ref: PouchDoc) =>
   zenypass.then(({ getService }) => getService(username).records.getRecord(ref))
 )
 
-export function cleartextOnPendingCleartextOrConnect (
+export function cleartextOnPendingCleartextOrConnect(
   _: any,
   state$: Observable<any>
 ) {
