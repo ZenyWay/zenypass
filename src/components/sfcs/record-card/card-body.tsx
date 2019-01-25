@@ -44,6 +44,7 @@ export const DEFAULT_PLACEHOLDERS: Partial<RecordCardBodyPlaceholders> = {
 export interface RecordCardBodyProps {
   record: Record
   locale: string
+  id?: string
   edit?: boolean
   cleartext?: boolean
   pending?: 'connect' | 'cleartext' | string
@@ -82,6 +83,7 @@ export type KV<K extends string, V> = { [k in K]: V }
 export function RecordCardBody ({
   record,
   locale,
+  id,
   edit,
   cleartext,
   pending,
@@ -104,16 +106,17 @@ export function RecordCardBody ({
     unrestricted
   } = record
   const t = l10ns[locale]
+  const key = id || _id
   const RecordField = edit
     ? (AutoformatRecordField as ComponentConstructor<RecordFieldProps>)
     : PassiveRecordField
 
   return (
-    <form key={_id} id={_id} {...attrs}>
+    <form key={key} id={key} {...attrs}>
       {!edit ? null : (
         <PassiveRecordField
           type='text'
-          id={`${_id}_name`}
+          id={`${key}_name`}
           className='mb-2'
           size='lg'
           placeholder={getPlaceholder(t, placeholders, 'name')}
@@ -126,7 +129,7 @@ export function RecordCardBody ({
       )}
       <RecordField
         type='url'
-        id={`${_id}_url`}
+        id={`${key}_url`}
         className='mb-2'
         icon={getIcon(icons, 'url')}
         placeholder={getPlaceholder(t, placeholders, 'url')}
@@ -138,7 +141,7 @@ export function RecordCardBody ({
       />
       <PassiveRecordField
         type='email'
-        id={`${_id}_username`}
+        id={`${key}_username`}
         className='mb-2'
         icon={getIcon(icons, 'username')}
         placeholder={getPlaceholder(t, placeholders, 'username')}
@@ -149,12 +152,12 @@ export function RecordCardBody ({
         locale={locale}
       >
         <InputGroupAppend>
-          <CopyButton id={`${_id}_copy-button`} value={username} outline />
+          <CopyButton id={`${key}_copy-button`} value={username} outline />
         </InputGroupAppend>
       </PassiveRecordField>
       <PassiveRecordField
         type={cleartext ? 'text' : 'password'}
-        id={`${_id}_password`}
+        id={`${key}_password`}
         className='mb-2'
         icon={getIcon(icons, cleartext ? 'cleartext' : 'password')}
         pending={pending === 'cleartext'}
@@ -169,7 +172,7 @@ export function RecordCardBody ({
         <InputGroupAppend>
           {!edit ? (
             <FAIconButton
-              id={`${_id}_connexion-button`}
+              id={`${key}_connexion-button`}
               icon='external-link'
               pending={pending === 'connect'}
               outline
@@ -177,7 +180,7 @@ export function RecordCardBody ({
             />
           ) : (
             <CopyButton
-              id={`${_id}_password_copy-button`}
+              id={`${key}_password_copy-button`}
               value={password}
               outline
             />
@@ -186,7 +189,7 @@ export function RecordCardBody ({
       </PassiveRecordField>
       <AutoformatRecordField
         type='csv'
-        id={`${_id}_keywords`}
+        id={`${key}_keywords`}
         className='mb-2'
         icon={getIcon(icons, 'keywords')}
         placeholder={getPlaceholder(t, placeholders, 'keywords')}
@@ -198,7 +201,7 @@ export function RecordCardBody ({
       />
       <PassiveRecordField
         type='textarea'
-        id={`${_id}_comments`}
+        id={`${key}_comments`}
         className='mb-2'
         icon={getIcon(icons, 'comments')}
         placeholder={getPlaceholder(t, placeholders, 'comments')}

@@ -43,7 +43,7 @@ export interface RecordCardProps {
   onToggleExpanded?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
   onChange?: (value: string[] | string, target?: HTMLElement) => void
-  onUpdateRecordRequest?: (event: MouseEvent) => void
+  onSaveRecordRequest?: (event: MouseEvent) => void
   onDeleteRecordRequest?: (event: MouseEvent) => void
   [prop: string]: unknown
 }
@@ -71,7 +71,7 @@ export function RecordCard ({
   onToggleExpanded,
   onEditRecordRequest,
   onChange,
-  onUpdateRecordRequest,
+  onSaveRecordRequest,
   onDeleteRecordRequest,
   ...attrs
 }: RecordCardProps) {
@@ -101,6 +101,7 @@ export function RecordCard ({
           <RecordCardBody
             locale={locale}
             record={record}
+            id={record._id}
             edit={edit}
             cleartext={cleartext}
             pending={pending}
@@ -108,6 +109,7 @@ export function RecordCard ({
             onChange={onChange}
             onConnectRequest={onToggleConnect}
             onToggleCleartext={onToggleCleartext}
+            onSubmit={onSaveRecordRequest}
           />
         ) : (
           <IconLabelInputFormGroup
@@ -134,7 +136,6 @@ export function RecordCard ({
             unlimited={!!record.name}
             pending={pending}
             onEditRecordRequest={onEditRecordRequest}
-            onUpdateRecordRequest={onUpdateRecordRequest}
             onDeleteRecordRequest={onDeleteRecordRequest}
           />
         )}
@@ -203,7 +204,6 @@ interface ExpandedCardFooterProps {
   unlimited?: boolean
   pending?: 'edit' | 'save' | 'delete' | unknown
   onEditRecordRequest?: (event: MouseEvent) => void
-  onUpdateRecordRequest?: (event: MouseEvent) => void
   onDeleteRecordRequest?: (event: MouseEvent) => void
 }
 
@@ -214,7 +214,6 @@ function ExpandedCardFooter ({
   unlimited,
   pending,
   onEditRecordRequest,
-  onUpdateRecordRequest,
   onDeleteRecordRequest
 }: ExpandedCardFooterProps) {
   const t = l10ns[locale]
@@ -233,12 +232,13 @@ function ExpandedCardFooter ({
     <Fragment>
       {!unlimited ? null : (
         <FAIconButton
+          type='submit'
+          form={_id}
           id={`expanded-record-card:${_id}:save`}
           icon='download'
           pending={!!pending}
           outline
           className='border-secondary mr-2'
-          onClick={onUpdateRecordRequest}
         >
           &nbsp;{t('Save')}
         </FAIconButton>

@@ -28,7 +28,7 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { callHandlerOnEvent } from 'utils'
+import { callHandlerOnEvent, preventDefault } from 'utils'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
 import { tap } from 'rxjs/operators'
@@ -72,7 +72,7 @@ export interface RecordCardSFCHandlerProps {
   onToggleCleartext?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
   onChange?: (value: string[] | string, target: HTMLElement) => void
-  onUpdateRecordRequest?: (event: MouseEvent) => void
+  onSaveRecordRequest?: (event: MouseEvent) => void
   onDeleteRecordRequest?: (event: MouseEvent) => void
 }
 
@@ -163,7 +163,7 @@ const mapDispatchToProps: (
       [input.dataset.id]: value
     })
   ],
-  onUpdateRecordRequest: 'UPDATE_RECORD_REQUESTED',
+  onSaveRecordRequest: ['UPDATE_RECORD_REQUESTED', preventDefault],
   onDeleteRecordRequest: 'DELETE_RECORD_REQUESTED'
 })
 
