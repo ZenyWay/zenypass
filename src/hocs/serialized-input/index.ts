@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-import reducer from './reducer'
-import { Formatter } from './formatters'
+import { into } from 'basic-cursors'
+import { csv } from './serializers'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -22,58 +22,45 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { applyHandlerOnEvent, shallowEqual } from 'utils'
+import { applyHandlerOnEvent, forType, mapPayload, shallowEqual } from 'utils'
 import { tap, distinctUntilChanged } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
-export type AutoformatInputProps<
+export type SerializedInputProps<
   P extends ControlledInputProps
-> = AutoformatInputControllerProps & Rest<P, ControlledInputProps>
+> = SerializedInputHocProps & Rest<P, ControlledInputProps>
 
-export interface AutoformatInputControllerProps {
+export interface SerializedInputHocProps {
   type?: string // TODO union type
   value?: string[] | string
-  format?: Formatter<string>
   onChange?: (value: string[] | string, target?: HTMLElement) => void
 }
 
 export interface ControlledInputProps extends InputHandlerProps {
   type?: string // TODO union type
   value?: string
-  error?: string
 }
 
 export interface InputHandlerProps {
   onChange?: (value: string[] | string, target: HTMLElement) => void
 }
 
-const DEFAULT_PROPS: Partial<AutoformatInputProps<ControlledInputProps>> = {
-  type: 'text',
-  value: ''
-}
-
-interface AutoformatInputState {
-  props: AutoformatInputProps<ControlledInputProps>
-  value: string[] | string
-  error?: string
+interface SerializedInputState {
+  props: SerializedInputProps<ControlledInputProps>
 }
 
 function mapStateToProps ({
-  props,
-  value,
-  error
-}: AutoformatInputState): Rest<ControlledInputProps, InputHandlerProps> {
-  const { type, format, onChange, ...attrs } = props
+  props
+}: SerializedInputState): Rest<ControlledInputProps, InputHandlerProps> {
+  const { type, onChange, ...attrs } = props
   return {
     ...attrs,
     type: type === 'csv' ? 'text' : type,
-    value: toString(value || props.value),
-    error
+    value:
+      type === 'csv'
+        ? csv.stringify(props.value as string[])
+        : (props.value as string)
   }
-}
-
-function toString (val: string[] | string): string {
-  return Array.isArray(val) ? val.join(' ') : val
 }
 
 const mapDispatchToProps: (
@@ -85,31 +72,29 @@ const mapDispatchToProps: (
   ]
 })
 
-export function autoformatInput<P extends ControlledInputProps> (
+export function serializedInput<P extends ControlledInputProps> (
   ControlledInput: SFC<P>
-): ComponentConstructor<AutoformatInputProps<P>> {
-  const AutoformatInput = componentFromEvents<AutoformatInputProps<P>, P>(
+): ComponentConstructor<SerializedInputProps<P>> {
+  return componentFromEvents<SerializedInputProps<P>, P>(
     ControlledInput,
-    () => tap(log('autoformat:EVENT:')),
+    () => tap(log('serialized-input:EVENT:')),
     redux(
-      reducer,
+      forType('PROPS')(into('props')(mapPayload())),
       applyHandlerOnEvent(
         'CHANGE',
         ['props', 'onChange'],
-        ({ value }, { payload }) => [value, payload.target]
+        ({ props: { type } }, { payload: { value, target } }) => [
+          type === 'csv' ? csv.parse(value) : value,
+          target
+        ]
       )
     ),
-    () => tap(log('autoformat:STATE:')),
-    connect<AutoformatInputState, ControlledInputProps>(
+    () => tap(log('serialized-input:STATE:')),
+    connect<SerializedInputState, ControlledInputProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
     () => distinctUntilChanged(shallowEqual),
-    () => tap(log('autoformat:VIEW_PROPS:'))
+    () => tap(log('serialized-input:VIEW_PROPS:'))
   )
-  ;(AutoformatInput as any).defaultProps = DEFAULT_PROPS as Partial<
-    AutoformatInputProps<P>
-  >
-
-  return AutoformatInput
 }

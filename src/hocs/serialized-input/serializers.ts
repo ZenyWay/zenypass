@@ -1,7 +1,6 @@
 /**
- * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
- * @author Stephane M. Catala
- * @license Apache Version 2.0
+ * @license
+ * Copyright 2019 Stephane M. Catala
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +12,28 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-export * from './basic'
-export * from './dom'
-export * from './effects'
-export * from './errors'
-export * from './functional'
-export * from './menu'
-export * from './reducers'
-export * from './service-request'
-export * from './types'
-export * from './validators'
+
+const CSV_SEPARATOR_REGEXP = /[\s,]+/
+const CSV_SEPARATOR = ' '
+
+export const csv = {
+  parse: parseCsv,
+  stringify: stringifyCsv
+}
+
+function stringifyCsv (arr: string[]) {
+  return !arr ? '' : arr.join(CSV_SEPARATOR)
+}
+
+function parseCsv (str: string = '') {
+  return !str
+    ? ''
+    : str
+        .split(CSV_SEPARATOR_REGEXP)
+        .map(trim)
+        .filter(Boolean)
+}
+
+function trim (str: string) {
+  return str.trim()
+}

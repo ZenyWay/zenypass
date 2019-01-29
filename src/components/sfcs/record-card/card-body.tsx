@@ -16,11 +16,8 @@
 /** @jsx createElement */
 import { createElement, ComponentConstructor } from 'create-element'
 import { InputGroupAppend } from 'bootstrap'
-import {
-  RecordField as PassiveRecordField,
-  RecordFieldProps
-} from '../record-field'
-import { AutoformatRecordField } from '../../autoformat-record-field'
+import { RecordField } from '../record-field'
+import { SerializedRecordField } from '../../serialized-record-field'
 import { CopyButton } from '../../copy-button'
 import { FAIconButton } from '../fa-icon'
 import createL10ns, { L10nTag } from 'basic-l10n'
@@ -48,7 +45,7 @@ export interface RecordCardBodyProps {
   edit?: boolean
   cleartext?: boolean
   pending?: 'connect' | 'cleartext' | string
-  error?: boolean
+  errors?: Partial<Errors>
   icons?: Partial<RecordCardBodyIcons>
   placeholders?: Partial<RecordCardBodyPlaceholders>
   onChange?: (value: string[] | string, target?: HTMLElement) => void
@@ -71,6 +68,14 @@ export interface Record {
   timestamp?: number
 }
 
+export type Errors = KV<
+  Exclude<
+    keyof Record,
+    '_id' | 'timestamp' | 'favicon' | 'unrestricted' | 'login'
+  >,
+  boolean
+>
+
 export type RecordCardBodyIcons = KV<
   RecordCardBodyInputFields | 'cleartext',
   string
@@ -87,7 +92,7 @@ export function RecordCardBody ({
   edit,
   cleartext,
   pending,
-  error,
+  errors = {},
   icons = DEFAULT_ICONS,
   placeholders = DEFAULT_PLACEHOLDERS,
   onChange,
@@ -107,21 +112,18 @@ export function RecordCardBody ({
   } = record
   const t = l10ns[locale]
   const key = id || _id
-  const RecordField = edit
-    ? (AutoformatRecordField as ComponentConstructor<RecordFieldProps>)
-    : PassiveRecordField
 
   return (
-    <form key={key} id={key} {...attrs}>
+    <form key={key} id={key} noValidate {...attrs}>
       {!edit ? null : (
-        <PassiveRecordField
+        <RecordField
           type='text'
           id={`${key}_name`}
           className='mb-2'
           size='lg'
           placeholder={getPlaceholder(t, placeholders, 'name')}
           value={name}
-          error={!error ? null : t('Please enter a title for this card')}
+          error={!errors.name ? null : t('Please enter a title for this card')}
           data-id='name'
           onChange={onChange}
           locale={locale}
@@ -135,11 +137,12 @@ export function RecordCardBody ({
         placeholder={getPlaceholder(t, placeholders, 'url')}
         value={url}
         data-id='url'
+        error={!errors.url ? null : t('Please enter a valid url')}
         onChange={onChange}
         disabled={!edit}
         locale={locale}
       />
-      <PassiveRecordField
+      <RecordField
         type='email'
         id={`${key}_username`}
         className='mb-2'
@@ -154,8 +157,8 @@ export function RecordCardBody ({
         <InputGroupAppend>
           <CopyButton id={`${key}_copy-button`} value={username} outline />
         </InputGroupAppend>
-      </PassiveRecordField>
-      <PassiveRecordField
+      </RecordField>
+      <RecordField
         type={cleartext ? 'text' : 'password'}
         id={`${key}_password`}
         className='mb-2'
@@ -186,8 +189,8 @@ export function RecordCardBody ({
             />
           )}
         </InputGroupAppend>
-      </PassiveRecordField>
-      <AutoformatRecordField
+      </RecordField>
+      <SerializedRecordField
         type='csv'
         id={`${key}_keywords`}
         className='mb-2'
@@ -199,7 +202,7 @@ export function RecordCardBody ({
         disabled={!edit}
         locale={locale}
       />
-      <PassiveRecordField
+      <RecordField
         type='textarea'
         id={`${key}_comments`}
         className='mb-2'

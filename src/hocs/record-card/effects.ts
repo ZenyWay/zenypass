@@ -15,6 +15,7 @@
  */
 //
 import { RecordFsmState, ConnectFsmState } from './reducer'
+import isValidRecord from './validators'
 import zenypass, { PouchDoc, ZenypassRecord } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import { Observable, of as observableOf, merge } from 'rxjs'
@@ -48,10 +49,6 @@ const deleteRecordResolved = createActionFactory('DELETE_RECORD_RESOLVED')
 const deleteRecordRejected = createActionFactory('DELETE_RECORD_REJECTED')
 const error = createActionFactory('ERROR')
 
-function isValidRecord (record: ZenypassRecord) {
-  return !!(record && record.name)
-}
-
 export function validateRecordOnChangeOrThumbnail (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
@@ -66,9 +63,10 @@ export function validateRecordOnChangeOrThumbnail (
     pluck('1')
   )
   return merge(thumbnail$, change$).pipe(
-    map(({ props: { record }, changes }) =>
-      isValidRecord({ ...record, ...changes }) ? validRecord() : invalidRecord()
-    )
+    map(({ props: { record }, changes }) => {
+      const errors = isValidRecord({ ...record, ...changes })
+      return errors ? invalidRecord(errors) : validRecord()
+    })
   )
 }
 

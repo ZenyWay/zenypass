@@ -17,16 +17,14 @@
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload, not } from 'utils'
+import { always, forType, mapPayload, mergePayload, not } from 'utils'
 
 export enum RecordFsmState {
   Thumbnail = 'THUMBNAIL',
   ReadonlyConcealed = 'READONLY_CONCEALED',
   ReadonlyCleartext = 'READONLY_CLEARTEXT',
   EditConcealed = 'EDIT_CONCEALED',
-  EditConcealedError = 'EDIT_CONCEALED_ERROR',
   EditCleartext = 'EDIT_CLEARTEXT',
-  EditCleartextError = 'EDIT_CLEARTEXT_ERROR',
   PendingCleartext = 'PENDING_CLEARTEXT',
   PendingEdit = 'PENDING_EDIT',
   PendingCancel = 'PENDING_CANCEL',
@@ -36,18 +34,18 @@ export enum RecordFsmState {
 
 const clearPassword = into('password')(always(void 0))
 const clearChanges = into('changes')(always(void 0))
-const mergePayloadIntoChanges = propCursor('changes')(
-  (changes, { payload }) => ({ ...changes, ...payload })
-)
+const clearErrors = into('errors')(always(void 0))
+const mergePayloadIntoChanges = propCursor('changes')(mergePayload())
+const mergePayloadIntoErrors = propCursor('errors')(mergePayload())
 const toggleRecordDeleted = propCursor('changes')(propCursor('_deleted')(not()))
 const mapPayloadToPassword = into('password')(mapPayload())
 const mapPayloadToError = into('error')(mapPayload())
-const reset = [clearChanges, clearPassword]
+const reset = [clearChanges, clearPassword, clearErrors]
 
 const recordAutomata: AutomataSpec<RecordFsmState> = {
   [RecordFsmState.Thumbnail]: {
     TOGGLE_EXPANDED: RecordFsmState.ReadonlyConcealed,
-    INVALID_RECORD: RecordFsmState.EditCleartextError
+    INVALID_RECORD: [RecordFsmState.EditCleartext, mergePayloadIntoErrors]
   },
   [RecordFsmState.ReadonlyConcealed]: {
     TOGGLE_EXPANDED: RecordFsmState.Thumbnail,
@@ -59,19 +57,10 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
     TOGGLE_CLEARTEXT: [RecordFsmState.ReadonlyConcealed, clearPassword],
     EDIT_RECORD_REQUESTED: RecordFsmState.EditCleartext
   },
-  [RecordFsmState.EditConcealedError]: {
-    CHANGE: mergePayloadIntoChanges,
-    VALID_RECORD: RecordFsmState.EditConcealed,
-    TOGGLE_CLEARTEXT: RecordFsmState.EditCleartextError
-  },
-  [RecordFsmState.EditCleartextError]: {
-    CHANGE: mergePayloadIntoChanges,
-    VALID_RECORD: RecordFsmState.EditCleartext,
-    TOGGLE_CLEARTEXT: RecordFsmState.EditConcealedError
-  },
   [RecordFsmState.EditConcealed]: {
     CHANGE: mergePayloadIntoChanges,
-    INVALID_RECORD: RecordFsmState.EditConcealedError,
+    VALID_RECORD: clearErrors,
+    INVALID_RECORD: mergePayloadIntoErrors,
     TOGGLE_CLEARTEXT: RecordFsmState.EditCleartext,
     TOGGLE_EXPANDED: RecordFsmState.PendingCancel,
     UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,
@@ -79,7 +68,8 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
   },
   [RecordFsmState.EditCleartext]: {
     CHANGE: mergePayloadIntoChanges,
-    INVALID_RECORD: RecordFsmState.EditCleartextError,
+    VALID_RECORD: clearErrors,
+    INVALID_RECORD: mergePayloadIntoErrors,
     TOGGLE_CLEARTEXT: RecordFsmState.EditConcealed,
     TOGGLE_EXPANDED: RecordFsmState.PendingCancel,
     UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,

@@ -13,18 +13,8 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-/** @jsx createElement */
-import { createElement } from 'create-element'
-import {
-  autoformatInput,
-  AutoformatInputProps as GenericAutoformatInputProps
-} from 'hocs'
-import { ControlledInput, ControlledInputProps } from './controlled-input'
 
-export const AutoformatInput = autoformatInput<ControlledInputProps>(
-  (props: ControlledInputProps) => <ControlledInput {...props} />
-)
-
-export type AutoformatInputProps = GenericAutoformatInputProps<
-  ControlledInputProps
+export type Rest<T extends U, U extends {} = {}> = Pick<
+  T,
+  Exclude<keyof T, keyof U>
 >

@@ -15,9 +15,9 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { InputProps, InputGroupText } from 'bootstrap'
+import { InputProps } from 'bootstrap'
 import { IconLabelInputGroup } from '../icon-label-input-group'
-import { Dropdown, DropdownItemSpec } from '../../dropdown'
+import { DropdownItemSpec } from '../../dropdown'
 import { ControlledInput } from '../../controlled-input'
 import createL10ns, { L10nTag } from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))

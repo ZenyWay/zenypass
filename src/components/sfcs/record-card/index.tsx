@@ -21,12 +21,12 @@ import { FAIconButton, FAIcon } from '../fa-icon'
 import { IconLabelInputFormGroup } from '../icon-label-form-group'
 import { InfoModal } from '../info-modal'
 import { ConnectionModal } from '../../connection-modal'
-import { Record, RecordCardBody } from './card-body'
+import { Errors, Record, RecordCardBody } from './card-body'
 import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
-export { Record }
+export { Record, Errors }
 
 export interface RecordCardProps {
   locale: string
@@ -36,7 +36,7 @@ export interface RecordCardProps {
   connect?: boolean
   pending?: PendingState
   cleartext?: boolean
-  error?: boolean
+  errors?: Partial<Errors>
   className?: string
   onToggleConnect?: (event?: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
@@ -64,7 +64,7 @@ export function RecordCard ({
   connect,
   pending,
   cleartext,
-  error,
+  errors = {},
   className,
   onToggleConnect,
   onToggleCleartext,
@@ -77,6 +77,7 @@ export function RecordCard ({
 }: RecordCardProps) {
   const t = l10ns[locale]
   const { _id, name, url, username } = record
+  const valid = !Object.keys(errors).length
   return (
     <Card
       className={classes('col-12 col-md-6 col-xl-4 mt-2 px-0', className)}
@@ -105,7 +106,7 @@ export function RecordCard ({
             edit={edit}
             cleartext={cleartext}
             pending={pending}
-            error={error}
+            errors={errors}
             onChange={onChange}
             onConnectRequest={onToggleConnect}
             onToggleCleartext={onToggleCleartext}
@@ -133,7 +134,7 @@ export function RecordCard ({
             locale={locale}
             _id={_id}
             disabled={!edit}
-            unlimited={!!record.name}
+            unlimited={valid}
             pending={pending}
             onEditRecordRequest={onEditRecordRequest}
             onDeleteRecordRequest={onDeleteRecordRequest}
@@ -144,7 +145,7 @@ export function RecordCard ({
           icon={!expanded ? 'caret-down' : edit ? 'close' : 'caret-up'}
           className={classes(
             'close',
-            (!record.name || !!pending) && 'invisible'
+            (errors.name || !!pending) && 'invisible'
           )}
           onClick={onToggleExpanded}
         />

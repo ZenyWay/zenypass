@@ -18,7 +18,7 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
-import { AutoformatRecordField } from 'components'
+import { SerializedRecordField } from 'components'
 
 const attrs = {
   locale: 'fr',
@@ -27,7 +27,7 @@ const attrs = {
 const onToggleCleartext = action('TOGGLE_CLEARTEXT')
 const onCopyPassword = action('COPY_PASSWORD')
 
-storiesOf('AutoformatRecordField', module)
+storiesOf('SerializedRecordField', module)
   // onChange prop becomes onInput: https://github.com/infernojs/inferno/issues/1263#issuecomment-361710508
   // text inputs with both onChange and onInput handlers will malfunction in Storybook (inferno-compat)
   .add('onchange-issue', () => (
@@ -39,7 +39,7 @@ storiesOf('AutoformatRecordField', module)
     />
   ))
   .add('csv', () => (
-    <AutoformatRecordField
+    <SerializedRecordField
       {...attrs}
       id='csv'
       type='csv'
@@ -47,7 +47,7 @@ storiesOf('AutoformatRecordField', module)
     />
   ))
   .add('email', () => (
-    <AutoformatRecordField
+    <SerializedRecordField
       {...attrs}
       id='email'
       type='email'
@@ -55,7 +55,7 @@ storiesOf('AutoformatRecordField', module)
     />
   ))
   .add('password', () => (
-    <AutoformatRecordField
+    <SerializedRecordField
       {...attrs}
       id='password'
       type='password'
@@ -65,7 +65,7 @@ storiesOf('AutoformatRecordField', module)
     />
   ))
   .add('textarea', () => (
-    <AutoformatRecordField
+    <SerializedRecordField
       {...attrs}
       id='textarea'
       type='textarea'
@@ -73,7 +73,7 @@ storiesOf('AutoformatRecordField', module)
     />
   ))
   .add('url', () => (
-    <AutoformatRecordField
+    <SerializedRecordField
       {...attrs}
       id='url'
       type='url'
@@ -81,7 +81,7 @@ storiesOf('AutoformatRecordField', module)
     />
   ))
   .add('url-copy', () => (
-    <AutoformatRecordField
+    <SerializedRecordField
       {...attrs}
       id='url-copy'
       type='url'
@@ -90,7 +90,7 @@ storiesOf('AutoformatRecordField', module)
     />
   ))
   .add('url-disabled', () => (
-    <AutoformatRecordField
+    <SerializedRecordField
       {...attrs}
       id='url-disabled'
       type='url'
@@ -100,7 +100,7 @@ storiesOf('AutoformatRecordField', module)
   ))
 /*
   .add('url-copy-disabled', () => (
-    <AutoformatRecordField
+    <SerializedRecordField
       {...attrs}
       id='url-copy-disabled'
       type='url'

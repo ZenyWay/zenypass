@@ -15,7 +15,7 @@
  */
 //
 export { Component, ComponentConstructor, SFC } from 'component-from-events'
-export { autoformatInput, AutoformatInputProps } from './autoformat-input'
+export { serializedInput, SerializedInputProps } from './serialized-input'
 export {
   agentAuthorizationCard,
   AgentAuthorizationCardProps

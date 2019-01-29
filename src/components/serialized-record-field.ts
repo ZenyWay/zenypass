@@ -15,16 +15,18 @@
  */
 //
 import {
-  autoformatInput,
-  AutoformatInputProps as AutoformatRecordFieldProps
+  serializedInput,
+  SerializedInputProps as GenericSerializedInputProps
 } from 'hocs'
 import {
   RecordField as RecordFieldSFC,
   RecordFieldProps as RecordFieldSFCProps
 } from './sfcs/record-field'
 
-export const AutoformatRecordField = autoformatInput<RecordFieldSFCProps>(
+export const SerializedRecordField = serializedInput<RecordFieldSFCProps>(
   RecordFieldSFC
 )
 
-export { AutoformatRecordFieldProps }
+export type SerializedRecordFieldProps = GenericSerializedInputProps<
+  RecordFieldSFCProps
+>

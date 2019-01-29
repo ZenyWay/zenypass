@@ -56,7 +56,20 @@ export interface RecordCardSFCState {
   pending: PendingState
   expanded: boolean
   cleartext: boolean
-  error: boolean
+  errors: Partial<RecordCardSFCErrors>
+}
+
+export type RecordCardSFCErrors = {
+  [key in Exclude<
+    keyof ZenypassRecord,
+    | '_id'
+    | '_rev'
+    | '_deleted'
+    | 'unrestricted'
+    | 'favicon'
+    | 'login'
+    | 'timestamp'
+  >]: boolean
 }
 
 export type PendingState =
@@ -82,6 +95,8 @@ interface RecordCardState {
   connect: ConnectFsmState
   password?: string
   changes?: Partial<ZenypassRecord>
+  error?: string
+  errors?: Partial<RecordCardSFCErrors>
 }
 
 const RECORD_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
@@ -91,21 +106,10 @@ const RECORD_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
   [RecordFsmState.ReadonlyConcealed]: { expanded: true },
   [RecordFsmState.ReadonlyCleartext]: { expanded: true, cleartext: true },
   [RecordFsmState.EditConcealed]: { expanded: true, edit: true },
-  [RecordFsmState.EditConcealedError]: {
-    expanded: true,
-    edit: true,
-    error: true
-  },
   [RecordFsmState.EditCleartext]: {
     expanded: true,
     edit: true,
     cleartext: true
-  },
-  [RecordFsmState.EditCleartextError]: {
-    expanded: true,
-    edit: true,
-    cleartext: true,
-    error: true
   },
   [RecordFsmState.PendingCleartext]: { expanded: true, pending: 'cleartext' },
   [RecordFsmState.PendingEdit]: { expanded: true, pending: 'edit' },
@@ -134,6 +138,7 @@ function mapStateToProps ({
   props,
   password,
   changes,
+  errors,
   state: recordFsm,
   connect: connectFsm
 }: RecordCardState): RecordCardSFCProps {
@@ -146,6 +151,7 @@ function mapStateToProps ({
   return {
     ...attrs,
     ...sfcState,
+    errors,
     record: !edit && !cleartext ? record : { ...record, password, ...changes }
   }
 }

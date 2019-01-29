@@ -18,7 +18,7 @@ import { createElement } from 'create-element'
 import { Button, InputGroupAppend } from 'bootstrap'
 import { FAIcon } from './fa-icon'
 import { IconLabelInputGroup } from './icon-label-input-group'
-import { AutoformatInput } from '../autoformat-input'
+import { SerializedInput } from '../serialized-input'
 
 export interface SearchFieldProps {
   tokens?: string[]
@@ -39,7 +39,7 @@ export function SearchField ({
 }: SearchFieldProps) {
   return (
     <IconLabelInputGroup icon='search' {...attrs}>
-      <AutoformatInput
+      <SerializedInput
         innerRef={innerRef}
         type='csv'
         className='form-control'

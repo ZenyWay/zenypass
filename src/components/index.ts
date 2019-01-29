@@ -39,6 +39,10 @@ export {
   AuthenticationModalProps as AuthenticationModalSFCProps
 } from './sfcs/authentication-modal'
 export {
+  AuthenticationPage,
+  AuthenticationPageProps
+} from './authentication-page'
+export {
   AuthenticationPage as AuthenticationPageSFC,
   AuthenticationPageProps as AuthenticationPageSFCProps
 } from './sfcs/authentication-page'
@@ -46,11 +50,6 @@ export {
   AuthorizedAgentCard,
   AuthorizedAgentCardProps
 } from './sfcs/authorized-agent-card'
-export { AutoformatInput, AutoformatInputProps } from './autoformat-input'
-export {
-  AutoformatRecordField,
-  AutoformatRecordFieldProps
-} from './autoformat-record-field'
 export {
   InfoModal as InfoModalSFC,
   InfoModalProps as InfoModalSFCProps
@@ -100,9 +99,10 @@ export {
 } from './sfcs/router'
 export { Router, RouterProps } from './router'
 export { SearchField, SearchFieldProps } from './sfcs/search-field'
+export { SerializedInput, SerializedInputProps } from './serialized-input'
 export {
-  AuthenticationPage,
-  AuthenticationPageProps
-} from './authentication-page'
+  SerializedRecordField,
+  SerializedRecordFieldProps
+} from './serialized-record-field'
 export { SplashCard, SplashCardProps } from './sfcs/splash-card'
 export { withAuthenticationModal } from './sfcs/with-authentication'

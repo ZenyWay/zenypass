@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-export * from './basic'
-export * from './dom'
-export * from './effects'
-export * from './errors'
-export * from './functional'
-export * from './menu'
-export * from './reducers'
-export * from './service-request'
-export * from './types'
-export * from './validators'
+/** @jsx createElement */
+import { createElement } from 'create-element'
+import {
+  serializedInput,
+  SerializedInputProps as GenericSerializedInputProps
+} from 'hocs'
+import { ControlledInput, ControlledInputProps } from './controlled-input'
+
+export const SerializedInput = serializedInput<ControlledInputProps>(
+  (props: ControlledInputProps) => <ControlledInput {...props} />
+)
+
+export type SerializedInputProps = GenericSerializedInputProps<
+  ControlledInputProps
+>
