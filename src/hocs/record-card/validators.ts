@@ -1,7 +1,6 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
- * @author Clement Bonet
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,19 +23,32 @@ const RECORD_FIELD_VALIDATORS: Partial<
   url: isAcceptableUrl
 }
 
-export default function isValidRecord (record: ZenypassRecord) {
+export function isValidRecordEntry (key: string, value): boolean {
+  const isValid = RECORD_FIELD_VALIDATORS[key]
+  return !isValid || isValid(value)
+}
+
+export function errorsFromRecord (
+  record: Partial<ZenypassRecord>
+): Partial<{ [key in keyof ZenypassRecord]: boolean }> {
   let errors: Partial<{ [key in keyof ZenypassRecord]: boolean }>
-  for (const key of Object.keys(RECORD_FIELD_VALIDATORS)) {
+  for (const key in RECORD_FIELD_VALIDATORS) {
     const isValid = RECORD_FIELD_VALIDATORS[key]
-    if (isValid) {
-      if (!isValid(record[key])) {
-        if (!errors) {
-          errors = {}
-        }
-        errors[key] = true
-      }
+    if (isValid && !isValid(record[key])) {
+      errors = withError(errors, key)
     }
   }
+  return errors
+}
+
+/**
+ * WARNING: mutates `errors` if supplied
+ */
+function withError (
+  errors: Partial<{ [key in keyof ZenypassRecord]: boolean }> = {},
+  key: string
+): Partial<{ [key in keyof ZenypassRecord]: boolean }> {
+  errors[key] = true
   return errors
 }
 

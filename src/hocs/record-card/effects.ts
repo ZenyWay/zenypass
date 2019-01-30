@@ -15,7 +15,8 @@
  */
 //
 import { RecordFsmState, ConnectFsmState } from './reducer'
-import isValidRecord from './validators'
+import { errorsFromRecord, isValidRecordEntry } from './validators'
+import formatRecordEntry from './formaters'
 import zenypass, { PouchDoc, ZenypassRecord } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import { Observable, of as observableOf, merge } from 'rxjs'
@@ -27,6 +28,7 @@ import {
   map,
   pluck,
   switchMap,
+  tap,
   withLatestFrom
 } from 'rxjs/operators'
 import {
@@ -36,9 +38,10 @@ import {
   hasHandlerProp,
   toProjection
 } from 'utils'
-import { any } from 'bluebird'
-// const log = (label: string) => console.log.bind(console, label)
+const log = (label: string) => console.log.bind(console, label)
 
+const validChange = createActionFactory('VALID_CHANGE')
+const invalidChange = createActionFactory('INVALID_CHANGE')
 const validRecord = createActionFactory('VALID_RECORD')
 const invalidRecord = createActionFactory('INVALID_RECORD')
 const cleartextResolved = createActionFactory('CLEARTEXT_RESOLVED')
@@ -49,24 +52,45 @@ const deleteRecordResolved = createActionFactory('DELETE_RECORD_RESOLVED')
 const deleteRecordRejected = createActionFactory('DELETE_RECORD_REJECTED')
 const error = createActionFactory('ERROR')
 
-export function validateRecordOnChangeOrThumbnail (
+export function validateRecordOnThumbnail (_: any, state$: Observable<any>) {
+  return state$.pipe(
+    distinctUntilKeyChanged('state'),
+    filter(({ state }) => state === RecordFsmState.Thumbnail),
+    pluck('props', 'record'),
+    map(errorsFromRecord),
+    filter(Boolean),
+    map(errors => invalidRecord(errors))
+  )
+}
+
+export function validateChangeOnChange (
+  event$: Observable<StandardAction<any>>
+) {
+  return event$.pipe(
+    filter(({ type }) => type === 'CHANGE'),
+    pluck('payload'),
+    map(([key, value]) =>
+      isValidRecordEntry(key, value)
+        ? validChange(toChangeError(key, formatRecordEntry(key, value)))
+        : invalidChange(toChangeError(key, value, true))
+    )
+  )
+}
+
+function toChangeError (key: string, value: any, error?: boolean) {
+  return { change: { [key]: value }, error: { [key]: !!error } }
+}
+
+export function validateRecordOnValidChange (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  const thumbnail$ = state$.pipe(
-    distinctUntilKeyChanged('state'),
-    filter(({ state }) => state === RecordFsmState.Thumbnail)
-  )
-  const change$ = event$.pipe(
-    filter(({ type }) => type === 'CHANGE'),
+  return event$.pipe(
+    filter(({ type }) => type === 'VALID_CHANGE'),
     withLatestFrom(state$),
-    pluck('1')
-  )
-  return merge(thumbnail$, change$).pipe(
-    map(({ props: { record }, changes }) => {
-      const errors = isValidRecord({ ...record, ...changes })
-      return errors ? invalidRecord(errors) : validRecord()
-    })
+    pluck('1', 'errors'),
+    filter(errors => !Object.keys(errors).some(key => errors[key])),
+    map(() => validRecord())
   )
 }
 

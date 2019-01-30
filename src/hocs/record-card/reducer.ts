@@ -17,7 +17,7 @@
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload, mergePayload, not } from 'utils'
+import { always, forType, mapPayload, mergePayload, pluck, not } from 'utils'
 
 export enum RecordFsmState {
   Thumbnail = 'THUMBNAIL',
@@ -35,8 +35,10 @@ export enum RecordFsmState {
 const clearPassword = into('password')(always(void 0))
 const clearChanges = into('changes')(always(void 0))
 const clearErrors = into('errors')(always(void 0))
-const mergePayloadIntoChanges = propCursor('changes')(mergePayload())
-const mergePayloadIntoErrors = propCursor('errors')(mergePayload())
+const mergePayloadIntoChanges = <I, O>(project?: (val: I) => O) =>
+  propCursor('changes')(mergePayload(project))
+const mergePayloadIntoErrors = <I, O>(project?: (val: I) => O) =>
+  propCursor('errors')(mergePayload(project))
 const toggleRecordDeleted = propCursor('changes')(propCursor('_deleted')(not()))
 const mapPayloadToPassword = into('password')(mapPayload())
 const mapPayloadToError = into('error')(mapPayload())
@@ -45,7 +47,7 @@ const reset = [clearChanges, clearPassword, clearErrors]
 const recordAutomata: AutomataSpec<RecordFsmState> = {
   [RecordFsmState.Thumbnail]: {
     TOGGLE_EXPANDED: RecordFsmState.ReadonlyConcealed,
-    INVALID_RECORD: [RecordFsmState.EditCleartext, mergePayloadIntoErrors]
+    INVALID_RECORD: [RecordFsmState.EditCleartext, mergePayloadIntoErrors()]
   },
   [RecordFsmState.ReadonlyConcealed]: {
     TOGGLE_EXPANDED: RecordFsmState.Thumbnail,
@@ -58,18 +60,30 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
     EDIT_RECORD_REQUESTED: RecordFsmState.EditCleartext
   },
   [RecordFsmState.EditConcealed]: {
-    CHANGE: mergePayloadIntoChanges,
+    VALID_CHANGE: [
+      mergePayloadIntoChanges(pluck('change')),
+      mergePayloadIntoErrors(pluck('error'))
+    ],
+    INVALID_CHANGE: [
+      mergePayloadIntoChanges(pluck('change')),
+      mergePayloadIntoErrors(pluck('error'))
+    ],
     VALID_RECORD: clearErrors,
-    INVALID_RECORD: mergePayloadIntoErrors,
     TOGGLE_CLEARTEXT: RecordFsmState.EditCleartext,
     TOGGLE_EXPANDED: RecordFsmState.PendingCancel,
     UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,
     DELETE_RECORD_REQUESTED: [RecordFsmState.PendingDelete, toggleRecordDeleted]
   },
   [RecordFsmState.EditCleartext]: {
-    CHANGE: mergePayloadIntoChanges,
+    VALID_CHANGE: [
+      mergePayloadIntoChanges(pluck('change')),
+      mergePayloadIntoErrors(pluck('error'))
+    ],
+    INVALID_CHANGE: [
+      mergePayloadIntoChanges(pluck('change')),
+      mergePayloadIntoErrors(pluck('error'))
+    ],
     VALID_RECORD: clearErrors,
-    INVALID_RECORD: mergePayloadIntoErrors,
     TOGGLE_CLEARTEXT: RecordFsmState.EditConcealed,
     TOGGLE_EXPANDED: RecordFsmState.PendingCancel,
     UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,

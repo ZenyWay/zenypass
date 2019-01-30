@@ -17,8 +17,10 @@
 import { ZenypassRecord } from 'zenypass-service'
 import reducer, { ConnectFsmState, RecordFsmState } from './reducer'
 import {
+  validateRecordOnThumbnail,
+  validateChangeOnChange,
+  validateRecordOnValidChange,
   cleartextOnPendingCleartextOrConnect,
-  validateRecordOnChangeOrThumbnail,
   saveRecordOnPendingSaveOrDeleteRecord
 } from './effects'
 import componentFromEvents, {
@@ -165,9 +167,7 @@ const mapDispatchToProps: (
   onEditRecordRequest: 'EDIT_RECORD_REQUESTED',
   onChange: [
     'CHANGE',
-    (value: string[] | string, input: HTMLElement) => ({
-      [input.dataset.id]: value
-    })
+    (value: string[] | string, input: HTMLElement) => [input.dataset.id, value]
   ],
   onSaveRecordRequest: ['UPDATE_RECORD_REQUESTED', preventDefault],
   onDeleteRecordRequest: 'DELETE_RECORD_REQUESTED'
@@ -182,8 +182,10 @@ export function recordCard<P extends RecordCardSFCProps> (
     redux(
       reducer,
       callHandlerOnEvent('ERROR', ['props', 'onError']),
+      validateRecordOnThumbnail,
+      validateChangeOnChange,
+      validateRecordOnValidChange,
       cleartextOnPendingCleartextOrConnect,
-      validateRecordOnChangeOrThumbnail,
       saveRecordOnPendingSaveOrDeleteRecord
     ),
     () => tap(log('record-card:state:')),

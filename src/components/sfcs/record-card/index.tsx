@@ -64,7 +64,7 @@ export function RecordCard ({
   connect,
   pending,
   cleartext,
-  errors = {},
+  errors,
   className,
   onToggleConnect,
   onToggleCleartext,
@@ -77,7 +77,6 @@ export function RecordCard ({
 }: RecordCardProps) {
   const t = l10ns[locale]
   const { _id, name, url, username } = record
-  const valid = !Object.keys(errors).length
   return (
     <Card
       className={classes('col-12 col-md-6 col-xl-4 mt-2 px-0', className)}
@@ -134,7 +133,7 @@ export function RecordCard ({
             locale={locale}
             _id={_id}
             disabled={!edit}
-            unlimited={valid}
+            unlimited={!errors}
             pending={pending}
             onEditRecordRequest={onEditRecordRequest}
             onDeleteRecordRequest={onDeleteRecordRequest}
@@ -145,7 +144,7 @@ export function RecordCard ({
           icon={!expanded ? 'caret-down' : edit ? 'close' : 'caret-up'}
           className={classes(
             'close',
-            (errors.name || !!pending) && 'invisible'
+            ((errors && errors.name) || !!pending) && 'invisible'
           )}
           onClick={onToggleExpanded}
         />
