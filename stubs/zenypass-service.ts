@@ -31,34 +31,13 @@ import {
   take,
   takeUntil
 } from 'rxjs/operators'
+import {
+  AuthorizationDoc,
+  PouchDoc,
+  ZenypassRecord
+} from '@zenyway/zenypass-service'
 
-export interface ZenypassRecord extends PouchDoc {
-  name: string
-  keywords: string[]
-  url: string
-  username: string
-  password: string
-  favicon: string
-  comments: string
-  login: boolean
-  unrestricted: boolean
-  timestamp: number
-}
-export interface AuthorizationDoc extends PouchDoc, AgentInfo {
-  secret?: string
-}
-export interface AgentInfo {
-  identifier: string
-  certified: number
-}
-export interface PouchDoc extends PouchDocId {
-  _rev?: string
-  _deleted?: boolean
-}
-export interface PouchDocId {
-  _id: string
-}
-
+export { AuthorizationDoc, PouchDoc, ZenypassRecord }
 export type KVMap<V> = { [key: string]: V }
 
 export const USERNAME = 'me@zw.fr'

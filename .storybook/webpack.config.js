@@ -10,14 +10,15 @@ module.exports = (baseConfig, env, config) => {
 
   // typescript
   config.resolve.extensions = (config.resolve.extensions || []).concat(
-    '.ts', '.tsx'
+    '.ts',
+    '.tsx'
   )
 
   config.module.rules.push({
     test: /\.tsx?$/,
     include: [
       path.resolve(__dirname, '../src'),
-      path.resolve(__dirname, '../stubs'),
+      path.resolve(__dirname, '../stubs')
     ],
     loader: 'ts-loader',
     options: {
@@ -25,7 +26,8 @@ module.exports = (baseConfig, env, config) => {
       logLevel: 'info',
       compilerOptions: {
         paths: {
-          "zenypass-service": ["../stubs/zenypass-service"]
+          '@zenyway/zenypass-service': ['../stubs/@zenyway/zenypass-service'],
+          'zenypass-service': ['../stubs/zenypass-service']
         },
         sourceMap: true // https://github.com/TypeStrong/ts-loader#devtool--sourcemaps
       }
@@ -41,9 +43,13 @@ module.exports = (baseConfig, env, config) => {
 
   // replace react with inferno
   config.resolve.alias = Object.assign({}, config.resolve.alias, {
-    'react': 'inferno-compat',
+    react: 'inferno-compat',
     'react-devtools': 'inferno-devtools',
     'react-dom': 'inferno-compat',
+    '@zenyway/zenypass-service': path.resolve(
+      __dirname,
+      '../stubs/@zenyway/zenypass-service'
+    ),
     'zenypass-service': path.resolve(__dirname, '../stubs/zenypass-service')
   })
 
