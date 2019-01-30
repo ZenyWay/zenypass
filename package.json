@@ -63,8 +63,10 @@
     "url": "https://github.com/zenyway/zenypass/issues"
   },
   "homepage": "https://github.com/zenyway/zenypass#readme",
+  "optionalDependencies": {
+    "@zenyway/zenypass-service": "1.0.1"
+  },
   "dependencies": {
-    "@zenyway/zenypass-service": "1.0.1",
     "automata-reducer": "3.2.0",
     "basic-compose": "4.0.1",
     "basic-cursors": "2.2.0",
