@@ -17,7 +17,8 @@ import createComponentFromStreamFactory, {
   ComponentFromStreamConstructor,
   ComponentFromStreamFactory,
   Operator as GenericOperator,
-  OperatorFactory as GenericOperatorFactory
+  OperatorFactory as GenericOperatorFactory,
+  Subscribable
 } from 'component-from-stream'
 import {
   Component,
@@ -55,7 +56,7 @@ export type OperatorFactory<A = void, I = {}, O = I> = GenericOperatorFactory<
 
 const componentFromStream = createComponentFromStreamFactory(
   Component,
-  from
+  from as <T, O extends Subscribable<T>>(stream: Subscribable<T>) => O
 ) as ComponentFromStreamFactory<Component<any, any>, Node>
 
 export default componentFromStream
