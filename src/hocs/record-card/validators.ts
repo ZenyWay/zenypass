@@ -19,7 +19,7 @@ import { ZenypassRecord } from 'zenypass-service'
 const RECORD_FIELD_VALIDATORS: Partial<
   { [key in keyof ZenypassRecord]: (value: any) => boolean }
 > = {
-  name: Boolean,
+  name: isNotEmptyString,
   url: isAcceptableUrl
 }
 
@@ -52,8 +52,13 @@ function withError (
   return errors
 }
 
-const IS_ACCEPTABLE_URL = /^(?:\w+?:\/\/)?(?:[^@/?]+@)?(?:(?:[^.:/?]+\.)+?[^.:/?]{2,})(?::\d{2,5})?(?:[/?].*)?$/ // 1 = protocol, 2 = auth, 3 = domain, 4 = port, 5 = path
+const IS_ACCEPTABLE_URL = /^(?:\w+?:\/\/)?(?:[^@\s/?]+@)?(?:(?:[^.:\s/?]+\.)+?[^.:\s/?]{2,})(?::\d{2,5})?(?:[/?][^\s]*)?$/ // 1 = protocol, 2 = auth, 3 = domain, 4 = port, 5 = path
 
 function isAcceptableUrl (value: string) {
-  return !value || IS_ACCEPTABLE_URL.test(value)
+  const trimmed = value.trim()
+  return !trimmed || IS_ACCEPTABLE_URL.test(trimmed)
+}
+
+function isNotEmptyString (str: string) {
+  return !!str.trim()
 }

@@ -15,10 +15,12 @@
  */
 
 import { ZenypassRecord } from 'zenypass-service'
+import { throwIfEmpty } from 'rxjs/operators'
 
 const RECORD_FIELD_FORMATERS: Partial<
   { [key in keyof ZenypassRecord]: (value: any) => string }
 > = {
+  name: trim,
   url: formatUrl
 }
 
@@ -33,5 +35,10 @@ export default function formatRecordEntry (
 const HAS_PROTOCOL = /^\w+:\/\//
 
 function formatUrl (url: string): string {
-  return HAS_PROTOCOL.test(url) ? url : `https://${url}`
+  const trimmed = url.trim()
+  return !trimmed || HAS_PROTOCOL.test(trimmed) ? trimmed : `https://${trimmed}`
+}
+
+function trim (str: string): string {
+  return str.trim()
 }
