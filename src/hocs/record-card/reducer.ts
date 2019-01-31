@@ -39,6 +39,9 @@ const mergePayloadIntoChanges = <I, O>(project?: (val: I) => O) =>
   propCursor('changes')(mergePayload(project))
 const mergePayloadIntoErrors = <I, O>(project?: (val: I) => O) =>
   propCursor('errors')(mergePayload(project))
+const toggleUnrestricted = propCursor('changes')(
+  propCursor('unrestricted')(not())
+)
 const toggleRecordDeleted = propCursor('changes')(propCursor('_deleted')(not()))
 const mapPayloadToPassword = into('password')(mapPayload())
 const mapPayloadToError = into('error')(mapPayload())
@@ -69,6 +72,7 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
       mergePayloadIntoErrors(pluck('error'))
     ],
     VALID_RECORD: clearErrors,
+    TOGGLE_CHECKBOX: toggleUnrestricted,
     TOGGLE_CLEARTEXT: RecordFsmState.EditCleartext,
     TOGGLE_EXPANDED: RecordFsmState.PendingCancel,
     UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,
@@ -84,6 +88,7 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
       mergePayloadIntoErrors(pluck('error'))
     ],
     VALID_RECORD: clearErrors,
+    TOGGLE_CHECKBOX: toggleUnrestricted,
     TOGGLE_CLEARTEXT: RecordFsmState.EditConcealed,
     TOGGLE_EXPANDED: RecordFsmState.PendingCancel,
     UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,

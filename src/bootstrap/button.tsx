@@ -19,6 +19,10 @@ import { classes } from 'utils'
 import { BasicColor } from './types'
 
 export interface ButtonProps {
+  type?: 'button' | 'reset' | 'submit' | 'checkbox'
+  /**
+   * `checked` for `type === 'checkbox'`
+   */
   active?: boolean
   block?: boolean
   className?: string
@@ -33,6 +37,7 @@ export interface ButtonProps {
 }
 
 export function Button ({
+  type = 'button',
   active,
   block,
   className,
@@ -41,27 +46,34 @@ export function Button ({
   size,
   href,
   disabled,
-  onClick,
+  children,
   ...attrs
 }: ButtonProps) {
   const Tag: any = href ? 'a' : 'button'
+  const classNames = classes(
+    'btn',
+    `btn${outline ? '-outline' : ''}-${color}`,
+    size && `btn-${size}`,
+    block && 'btn-block',
+    active && 'active',
+    disabled && 'disabled',
+    className
+  )
 
-  return (
+  return type !== 'checkbox' ? (
     <Tag
-      type={!href && onClick ? 'button' : void 0}
-      className={classes(
-        'btn',
-        `btn${outline ? '-outline' : ''}-${color}`,
-        size && `btn-${size}`,
-        block && 'btn-block',
-        active && 'active',
-        disabled && 'disabled',
-        className
-      )}
+      type={!href && type}
+      className={classNames}
       href={href}
-      onClick={onClick}
       disabled={disabled}
       {...attrs}
-    />
+    >
+      {children}
+    </Tag>
+  ) : (
+    <label className={classNames}>
+      <input type='checkbox' checked={active} disabled={disabled} {...attrs} />
+      {children}
+    </label>
   )
 }

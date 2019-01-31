@@ -14,11 +14,12 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement, ComponentConstructor } from 'create-element'
+import { createElement } from 'create-element'
 import { InputGroupAppend } from 'bootstrap'
 import { RecordField } from '../record-field'
 import { SerializedRecordField } from '../../serialized-record-field'
 import { CopyButton } from '../../copy-button'
+import { CheckboxRecordField } from '../checkbox-record-field'
 import { FAIconButton } from '../fa-icon'
 import createL10ns, { L10nTag } from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
@@ -50,6 +51,7 @@ export interface RecordCardBodyProps {
   icons?: Partial<RecordCardBodyIcons>
   placeholders?: Partial<RecordCardBodyPlaceholders>
   onChange?: (value: string[] | string, target?: HTMLElement) => void
+  onToggleCheckbox?: (event?: Event) => void
   onConnectRequest?: (event: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
   [prop: string]: unknown
@@ -97,6 +99,7 @@ export function RecordCardBody ({
   icons = DEFAULT_ICONS,
   placeholders = DEFAULT_PLACEHOLDERS,
   onChange,
+  onToggleCheckbox,
   onConnectRequest,
   onToggleCleartext,
   ...attrs
@@ -216,19 +219,15 @@ export function RecordCardBody ({
         disabled={!edit}
         locale={locale}
       />
-      <InputGroupAppend>
-        <FAIconButton
-          color='light'
-          className='border-secondary mb-2'
-          icon='lock'
-          data-id='unrestricted'
-          onChange={onChange}
-          disabled={!edit}
-        />
-        <p className='form-control-static pl-3'>
-          {t(unrestricted ? 'Lock on timeout' : 'Strict lock')}
-        </p>
-      </InputGroupAppend>
+      <CheckboxRecordField
+        id={`${key}_unrestricted`}
+        icon={unrestricted ? 'clock-o' : 'lock'}
+        label={t(unrestricted ? 'Lock on timeout' : 'Strict lock')}
+        value={unrestricted}
+        disabled={!edit}
+        data-id='unrestricted'
+        onClick={onToggleCheckbox}
+      />
     </form>
   )
 }

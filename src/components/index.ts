@@ -54,6 +54,10 @@ export {
   InfoModal as InfoModalSFC,
   InfoModalProps as InfoModalSFCProps
 } from './sfcs/info-modal'
+export {
+  CheckboxRecordField,
+  CheckboxRecordFieldProps
+} from './sfcs/checkbox-record-field'
 export { ConnectionModal, ConnectionModalProps } from './connection-modal'
 export {
   ConnectionModal as ConnectionModalSFC,

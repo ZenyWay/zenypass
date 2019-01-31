@@ -43,6 +43,7 @@ export interface RecordCardProps {
   onToggleExpanded?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
   onChange?: (value: string[] | string, target?: HTMLElement) => void
+  onToggleCheckbox?: (event?: Event) => void
   onSaveRecordRequest?: (event: MouseEvent) => void
   onDeleteRecordRequest?: (event: MouseEvent) => void
   [prop: string]: unknown
@@ -71,6 +72,7 @@ export function RecordCard ({
   onToggleExpanded,
   onEditRecordRequest,
   onChange,
+  onToggleCheckbox,
   onSaveRecordRequest,
   onDeleteRecordRequest,
   ...attrs
@@ -107,6 +109,7 @@ export function RecordCard ({
             pending={pending}
             errors={errors}
             onChange={onChange}
+            onToggleCheckbox={onToggleCheckbox}
             onConnectRequest={onToggleConnect}
             onToggleCleartext={onToggleCleartext}
             onSubmit={onSaveRecordRequest}

@@ -87,6 +87,7 @@ export interface RecordCardSFCHandlerProps {
   onToggleCleartext?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
   onChange?: (value: string[] | string, target: HTMLElement) => void
+  onToggleCheckbox?: (event?: Event) => void
   onSaveRecordRequest?: (event: MouseEvent) => void
   onDeleteRecordRequest?: (event: MouseEvent) => void
 }
@@ -173,6 +174,10 @@ const mapDispatchToProps: (
   onChange: [
     'CHANGE',
     (value: string[] | string, input: HTMLElement) => [input.dataset.id, value]
+  ],
+  onToggleCheckbox: [
+    'TOGGLE_CHECKBOX',
+    (event: Event) => (event.currentTarget as HTMLElement).dataset.id
   ],
   onSaveRecordRequest: ['UPDATE_RECORD_REQUESTED', preventDefault],
   onDeleteRecordRequest: 'DELETE_RECORD_REQUESTED'
