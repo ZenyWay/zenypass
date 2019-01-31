@@ -1,20 +1,20 @@
 {
   "fr": {
-      "Close": "Fermer",
-      "Copy": "Copier",
-      "Login": "Connexion",
-      "Missing url!": "Aucune adresse web renseignée !",
-      "Missing username!": "Aucun nom d'utilisateur renseigné !",
-      "Open Website on Copy": "Ouvrir le site automatiquement",
-      "Close this dialog box to flush your password from the clipboard": "Fermez cette fenêtre de dialogue pour purger votre mot de passe du presse-papier"
+    "Close": "Fermer",
+    "Copy": "Copier",
+    "Login": "Connexion",
+    "Missing url!": "Aucune adresse web renseignée !",
+    "Missing username!": "Aucun nom d'utilisateur renseigné !",
+    "Open Website on Copy": "Ouvrir le site automatiquement",
+    "Close this dialog box to flush your password from the clipboard": "Fermez cette fenêtre de dialogue pour effacer votre mot de passe du presse-papier"
   },
   "en": {
-      "Close": "Close",
-      "Copy": "Copy",
-      "Login": "Login",
-      "Missing url!": "Missing url !",
-      "Missing username!": "Missing username !",
-      "Open Website on Copy": "Open Website on Copy",
-      "Close this dialog box to flush your password from the clipboard": "Close this dialog box to flush your password from the clipboard"
+    "Close": "Close",
+    "Copy": "Copy",
+    "Login": "Login",
+    "Missing url!": "Missing url !",
+    "Missing username!": "Missing username !",
+    "Open Website on Copy": "Open Website on Copy",
+    "Close this dialog box to flush your password from the clipboard": "Close this dialog box to flush your password from the clipboard"
   }
 }
