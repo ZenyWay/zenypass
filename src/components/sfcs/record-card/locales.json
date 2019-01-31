@@ -1,18 +1,32 @@
 {
   "fr": {
+    "Automatic login": "Connexion automatique",
     "Comments": "Commentaires",
+    "Edit": "Modifier",
     "Keywords": "Mots clés",
+    "Lock on timeout": "Verrouillage temporisé",
     "Password": "Mot de passe",
-    "Username": "Identifiant",
+    "Please enter a valid url": "Veuillez saisir une adresse web valide",
+    "Please name this card": "Veuillez nommer cette fiche",
+    "Save": "Sauvegarder",
     "Strict lock": "Verrouillage strict",
-    "Automatic login": "Connexion automatique"
+    "Card Title": "Nom de la fiche",
+    "Username": "Identifiant",
+    "Website URL": "Adresse Web"
   },
   "en": {
+    "Automatic login": "Automatic login",
     "Comments": "Comments",
+    "Edit": "Edit",
     "Keywords": "Keywords",
+    "Lock on timeout": "Lock on timeout",
     "Password": "Password",
-    "Username": "Username",
+    "Please enter a valid url": "Please enter a valid url",
+    "Please name this card": "Please name this card",
+    "Save": "Save",
     "Strict lock": "Strict lock",
-    "Automatic login": "Automatic login"
+    "Card Title": "Card Title",
+    "Username": "Username",
+    "Website URL": "Website URL"
   }
 }

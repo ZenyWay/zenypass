@@ -31,10 +31,11 @@ export const DEFAULT_ICONS: Partial<RecordCardBodyIcons> = {
 }
 
 export const DEFAULT_PLACEHOLDERS: Partial<RecordCardBodyPlaceholders> = {
-  name: 'Title',
+  name: 'Card Title',
   comments: 'Comments',
   keywords: 'Keywords',
   password: 'Password',
+  url: 'Website URL',
   username: 'Username'
 }
 
@@ -123,7 +124,7 @@ export function RecordCardBody ({
           size='lg'
           placeholder={getPlaceholder(t, placeholders, 'name')}
           value={name}
-          error={!errors.name ? null : t('Please enter a title for this card')}
+          error={!errors.name ? null : t('Please name this card')}
           data-id='name'
           onChange={onChange}
           locale={locale}
