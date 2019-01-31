@@ -150,11 +150,16 @@ function mapStateToProps ({
     ...CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE[connectFsm]
   }
   const { cleartext, edit } = sfcState
+  const connect = connectFsm === ConnectFsmState.Connect
   return {
     ...attrs,
     ...sfcState,
     errors,
-    record: !edit && !cleartext ? record : { ...record, password, ...changes }
+    record: !edit
+      ? !connect && !cleartext
+        ? record
+        : { ...record, password }
+      : { ...record, password, ...changes }
   }
 }
 

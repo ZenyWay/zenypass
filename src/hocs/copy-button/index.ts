@@ -40,7 +40,7 @@ export interface CopyButtonControllerProps {
     enabled: string
   }
   onClick?: (event: MouseEvent) => void
-  onCopied?: (success: boolean) => void
+  onCopied?: (success: boolean, target?: HTMLElement) => void
 }
 
 export interface ButtonProps extends ButtonHandlerProps {

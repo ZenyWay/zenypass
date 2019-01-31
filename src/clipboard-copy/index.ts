@@ -39,7 +39,8 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-//
+
+const clipboard = (navigator as any).clipboard
 /**
  * compared to the original 'clipboard-copy' module,
  * this implementation first tries to use the legacy ExecCommand API,
@@ -49,21 +50,19 @@ export default function (text: string): Promise<void> {
   const iframe = document.createElement('iframe')
   iframe.setAttribute('sandbox', 'allow-same-origin')
   document.body.appendChild(iframe)
-
-  const result = copyToClipboard(text, iframe.contentWindow)
-
+  const success = legacyCopyToClipboard(text, iframe.contentWindow)
   document.body.removeChild(iframe)
-  return result
+  return success
+    ? Promise.resolve()
+    : !clipboard
+    ? Promise.reject()
+    : clipboard.writeText(text)
 }
 
-function copyToClipboard (text: string, win = window): Promise<void> {
+function legacyCopyToClipboard (text: string, win = window): boolean {
   const selection = win.getSelection()
   if (!selection) {
-    return win !== window
-      ? copyToClipboard(text)
-      : (navigator as any) && (navigator as any).clipboard
-      ? (navigator as any).clipboard.writeText(text)
-      : Promise.reject()
+    return win !== window && legacyCopyToClipboard(text) // retry from window
   }
   selection.removeAllRanges()
 
@@ -78,10 +77,10 @@ function copyToClipboard (text: string, win = window): Promise<void> {
 
   selection.removeAllRanges()
   win.document.body.removeChild(span)
-  return success ? Promise.resolve() : Promise.reject()
+  return success
 }
 
-function execCommand (command: string, win = window) {
+function execCommand (command: string, win = window): boolean {
   try {
     return win.document.execCommand(command)
   } catch (err) {

@@ -23,7 +23,6 @@ import {
   filter,
   map,
   pluck,
-  skip,
   tap,
   withLatestFrom
 } from 'rxjs/operators'
@@ -39,7 +38,7 @@ const copyError = createActionFactory('COPY_ERROR')
 const clipboardCleared = createActionFactory('CLIPBOARD_CLEARED')
 const cancelled = createActionFactory('CANCELLED')
 
-const log = (label: string) => console.log.bind(console, label)
+// const log = (label: string) => console.log.bind(console, label)
 
 export function clearClipboardOnClearingClipboard (
   _: any,
@@ -63,24 +62,25 @@ export function callOnDoneOnCancelling (_: any, state$: Observable<any>) {
   )
 }
 
-export function openWindowOnClickCopyWhenNotManual (
+export function openWindowOnUsernameOrPasswordCopiedWhenNotManual (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
   return event$.pipe(
-    filter(({ type }) => type === 'CLICK_COPY'),
+    filter(
+      ({ type }) => type === 'USERNAME_COPIED' || type === 'PASSWORD_COPIED'
+    ),
     pluck('payload'),
     withLatestFrom(state$),
     filter(([_, { manual }]) => !manual),
-    map(([event, { windowref }]) => openWindow(event, windowref)),
+    map(([target, { windowref }]) => openWindow(target, windowref)),
     map(ref => (ref ? windowOpenResolved(ref) : windowOpenRejected()))
   )
 }
 
-function openWindow (event, windowref) {
+function openWindow (target, windowref) {
   if (!windowref) {
     // || windowref.closed) {
-    const { target } = event
     if (!target.href) return
     const ref = window.open(target.href, target.target)
     return ref

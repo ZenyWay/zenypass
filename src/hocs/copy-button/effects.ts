@@ -21,9 +21,8 @@ import {
   delay,
   distinctUntilChanged,
   filter,
-  ignoreElements,
+  map,
   pluck,
-  share,
   tap,
   withLatestFrom
 } from 'rxjs/operators'
@@ -48,23 +47,23 @@ export function timeoutAfterDisabled (_, state$) {
 }
 
 export function copyToClipboardAndCallOnClickOnClick (event$, state$) {
-  const click$ = event$.pipe(
+  return event$.pipe(
     filter(ofType('CLICK')),
     withLatestFrom(state$),
-    share()
+    map(([{ payload: event }, { props: { onClick, onCopied, value } }]) => ({
+      event,
+      onClick,
+      onCopied,
+      value
+    })),
+    tap(({ onClick, event }) => onClick && onClick(event)),
+    concatMap(({ event: { currentTarget }, onCopied, value }) =>
+      copyToClipboard(value)
+        .then(() => !(onCopied && onCopied(true, currentTarget)))
+        .catch(() => !!(onCopied && onCopied(false, currentTarget)))
+    ),
+    map(success => copied(success))
   )
-
-  const copy$ = click$.pipe(
-    pluck('1', 'props'),
-    concatMap(copy)
-  )
-
-  const onClick$ = click$.pipe(
-    tap(callOnClick),
-    ignoreElements()
-  )
-
-  return merge(copy$, onClick$)
 }
 
 function equals (v) {
@@ -76,24 +75,5 @@ function equals (v) {
 function ofType (t) {
   return function ({ type }) {
     return type === t
-  }
-}
-
-function callOnClick ([event, { props }]) {
-  const { onClick } = props
-  if (!onClick) return
-  onClick(event.payload)
-}
-
-function copy ({ onCopied, value }) {
-  return copyToClipboard(value)
-    .then(success(true))
-    .catch(success(false))
-
-  function success (val: boolean) {
-    return function () {
-      onCopied && onCopied(val)
-      return copied(val)
-    }
   }
 }

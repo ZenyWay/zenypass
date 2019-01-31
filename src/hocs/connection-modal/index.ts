@@ -19,7 +19,7 @@ import reducer, { AutomataState } from './reducer'
 import {
   callOnDoneOnCancelling,
   clearClipboardOnClearingClipboard,
-  openWindowOnClickCopyWhenNotManual
+  openWindowOnUsernameOrPasswordCopiedWhenNotManual
 } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
@@ -35,7 +35,7 @@ import {
 } from 'basic-fsa-factories'
 import { preventDefault, shallowEqual } from 'utils'
 import { distinctUntilChanged, tap } from 'rxjs/operators'
-const log = (label: string) => console.log.bind(console, label)
+// const log = (label: string) => console.log.bind(console, label)
 
 export type ConnectionModalProps<
   P extends ConnectionModalSFCProps
@@ -58,8 +58,8 @@ export interface ConnectionModalSFCHandlerProps {
   onToggleManual?: (event: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onClickCopy?: (event: MouseEvent) => void
-  onUsernameCopied?: (success: boolean) => void
-  onPasswordCopied?: (success: boolean) => void
+  onUsernameCopied?: (success: boolean, target: HTMLElement) => void
+  onPasswordCopied?: (success: boolean, target: HTMLElement) => void
 }
 
 interface ConnectionModalState {
@@ -114,8 +114,8 @@ const mapDispatchToProps: (
 })
 
 function onFieldCopied (field: 'username' | 'password') {
-  return function (success: boolean) {
-    return success ? copied[field]() : copyError(field)
+  return function (success: boolean, target: HTMLElement) {
+    return success ? copied[field](target) : copyError(field)
   }
 }
 
@@ -124,19 +124,19 @@ export function connectionModal<P extends ConnectionModalSFCProps> (
 ): ComponentConstructor<ConnectionModalProps<P>> {
   return componentFromEvents<ConnectionModalProps<P>, P>(
     ConnectionModal,
-    () => tap(log('controlled-connection-modal:event:')),
+    // () => tap(log('connection-modal:event:')),
     redux(
       reducer,
       callOnDoneOnCancelling,
       clearClipboardOnClearingClipboard,
-      openWindowOnClickCopyWhenNotManual
+      openWindowOnUsernameOrPasswordCopiedWhenNotManual
     ),
-    () => tap(log('controlled-connection-modal:state:')),
+    // () => tap(log('connection-modal:state:')),
     connect<ConnectionModalState, ConnectionModalSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
-    () => distinctUntilChanged(shallowEqual),
-    () => tap(log('controlled-connection-modal:view-props:'))
+    () => distinctUntilChanged(shallowEqual)
+    // () => tap(log('connection-modal:view-props:'))
   )
 }
