@@ -2,6 +2,7 @@
   "fr": {
     "Automatic login": "Connexion automatique",
     "Comments": "Commentaires",
+    "Do you want to cancel your changes": "Voulez-vous annuler vos modifications",
     "Edit": "Modifier",
     "Keywords": "Mots clés",
     "Lock on timeout": "Verrouillage temporisé",
@@ -17,6 +18,7 @@
   "en": {
     "Automatic login": "Automatic login",
     "Comments": "Comments",
+    "Do you want to cancel your changes": "Do you want to cancel your changes",
     "Edit": "Edit",
     "Keywords": "Keywords",
     "Lock on timeout": "Lock on timeout",
