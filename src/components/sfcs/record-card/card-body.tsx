@@ -177,7 +177,7 @@ export function RecordCardBody ({
         locale={locale}
       >
         <InputGroupAppend>
-          {!edit ? (
+          {!edit && !cleartext ? (
             <FAIconButton
               id={`${key}_connexion-button`}
               icon='external-link'
