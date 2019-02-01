@@ -6,7 +6,7 @@
     "Missing url!": "Aucune adresse web renseignée !",
     "Missing username!": "Aucun nom d'utilisateur renseigné !",
     "Open Website on Copy": "Ouvrir le site automatiquement",
-    "Close this dialog box to flush your password from the clipboard": "Fermez cette fenêtre de dialogue pour effacer votre mot de passe du presse-papier"
+    "Close this dialog box to flush the clipboard": "Fermez cette fenêtre de dialogue pour effacer le contenu du presse-papier"
   },
   "en": {
     "Close": "Close",
@@ -15,6 +15,6 @@
     "Missing url!": "Missing url !",
     "Missing username!": "Missing username !",
     "Open Website on Copy": "Open Website on Copy",
-    "Close this dialog box to flush your password from the clipboard": "Close this dialog box to flush your password from the clipboard"
+    "Close this dialog box to flush the clipboard": "Close this dialog box to flush the clipboard"
   }
 }

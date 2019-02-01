@@ -171,9 +171,7 @@ export function ConnectionModal ({
       {copy ? null : (
         <ModalFooter>
           <small class='text-center'>
-            {t(
-              'Close this dialog box to flush your password from the clipboard'
-            )}
+            {t('Close this dialog box to flush the clipboard')}
           </small>
           <Button color='info' onClick={onCancel}>
             {t('Close')}
