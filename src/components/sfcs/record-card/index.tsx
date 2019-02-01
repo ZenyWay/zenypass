@@ -51,7 +51,8 @@ export interface RecordCardProps {
 
 export type PendingState =
   | 'cleartext'
-  | 'cancel'
+  | 'confirm-cancel'
+  | 'confirm-delete'
   | 'edit'
   | 'save'
   | 'delete'
@@ -79,6 +80,7 @@ export function RecordCard ({
 }: RecordCardProps) {
   const t = l10ns[locale]
   const { _id, name, url, username } = record
+  const confirmCancel = pending === 'confirm-cancel'
   return (
     <Card
       className={classes('col-12 col-md-6 col-xl-4 mt-2 px-0', className)}
@@ -154,12 +156,19 @@ export function RecordCard ({
         />
       </CardFooter>
       <InfoModal
-        expanded={pending === 'cancel'}
-        onConfirm={onToggleExpanded}
+        expanded={confirmCancel || pending === 'confirm-delete'}
+        onConfirm={confirmCancel ? onToggleExpanded : onDeleteRecordRequest}
         onCancel={onEditRecordRequest}
         locale={locale}
       >
-        <p>{t('Do you want to cancel your changes')} ?</p>
+        <p>
+          {t(
+            confirmCancel
+              ? 'Do you want to cancel your changes'
+              : 'Do you want to delete this website card'
+          )}{' '}
+          ?
+        </p>
       </InfoModal>
       <ConnectionModal
         open={connect}

@@ -27,7 +27,8 @@ export enum RecordFsmState {
   EditCleartext = 'EDIT_CLEARTEXT',
   PendingCleartext = 'PENDING_CLEARTEXT',
   PendingEdit = 'PENDING_EDIT',
-  PendingCancel = 'PENDING_CANCEL',
+  PendingConfirmCancel = 'PENDING_CONFIRM_CANCEL',
+  PendingConfirmDelete = 'PENDING_CONFIRM_DELETE',
   PendingSave = 'PENDING_SAVE',
   PendingDelete = 'PENDING_DELETE'
 }
@@ -74,9 +75,9 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
     VALID_RECORD: clearErrors,
     TOGGLE_CHECKBOX: toggleUnrestricted,
     TOGGLE_CLEARTEXT: RecordFsmState.EditCleartext,
-    TOGGLE_EXPANDED: RecordFsmState.PendingCancel,
+    TOGGLE_EXPANDED: RecordFsmState.PendingConfirmCancel,
     UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,
-    DELETE_RECORD_REQUESTED: [RecordFsmState.PendingDelete, toggleRecordDeleted]
+    DELETE_RECORD_REQUESTED: RecordFsmState.PendingConfirmDelete
   },
   [RecordFsmState.EditCleartext]: {
     VALID_CHANGE: [
@@ -90,9 +91,9 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
     VALID_RECORD: clearErrors,
     TOGGLE_CHECKBOX: toggleUnrestricted,
     TOGGLE_CLEARTEXT: RecordFsmState.EditConcealed,
-    TOGGLE_EXPANDED: RecordFsmState.PendingCancel,
+    TOGGLE_EXPANDED: RecordFsmState.PendingConfirmCancel,
     UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,
-    DELETE_RECORD_REQUESTED: [RecordFsmState.PendingDelete, toggleRecordDeleted]
+    DELETE_RECORD_REQUESTED: RecordFsmState.PendingConfirmDelete
   },
   [RecordFsmState.PendingCleartext]: {
     CLEARTEXT_REJECTED: [RecordFsmState.ReadonlyConcealed, mapPayloadToError],
@@ -102,9 +103,13 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
     CLEARTEXT_REJECTED: [RecordFsmState.ReadonlyConcealed, mapPayloadToError],
     CLEARTEXT_RESOLVED: [RecordFsmState.EditConcealed, mapPayloadToPassword]
   },
-  [RecordFsmState.PendingCancel]: {
+  [RecordFsmState.PendingConfirmCancel]: {
     EDIT_RECORD_REQUESTED: RecordFsmState.EditConcealed,
     TOGGLE_EXPANDED: [RecordFsmState.Thumbnail, ...reset]
+  },
+  [RecordFsmState.PendingConfirmDelete]: {
+    EDIT_RECORD_REQUESTED: RecordFsmState.EditConcealed,
+    DELETE_RECORD_REQUESTED: [RecordFsmState.PendingDelete, toggleRecordDeleted]
   },
   [RecordFsmState.PendingSave]: {
     UPDATE_RECORD_REJECTED: [RecordFsmState.EditConcealed, mapPayloadToError],

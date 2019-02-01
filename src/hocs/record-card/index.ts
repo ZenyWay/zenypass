@@ -77,7 +77,8 @@ export type RecordCardSFCErrors = {
 export type PendingState =
   | 'cleartext'
   | 'edit'
-  | 'cancel'
+  | 'confirm-cancel'
+  | 'confirm-delete'
   | 'save'
   | 'delete'
   | 'connect'
@@ -116,10 +117,15 @@ const RECORD_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
   },
   [RecordFsmState.PendingCleartext]: { expanded: true, pending: 'cleartext' },
   [RecordFsmState.PendingEdit]: { expanded: true, pending: 'edit' },
-  [RecordFsmState.PendingCancel]: {
+  [RecordFsmState.PendingConfirmCancel]: {
     expanded: true,
     edit: true,
-    pending: 'cancel'
+    pending: 'confirm-cancel'
+  },
+  [RecordFsmState.PendingConfirmDelete]: {
+    expanded: true,
+    edit: true,
+    pending: 'confirm-delete'
   },
   [RecordFsmState.PendingSave]: { expanded: true, edit: true, pending: 'save' },
   [RecordFsmState.PendingDelete]: {
