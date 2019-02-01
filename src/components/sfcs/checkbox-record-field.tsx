@@ -52,7 +52,7 @@ export function CheckboxRecordField ({
           <Button
             type='checkbox'
             id={`${id}_checkbox_input`}
-            active={value}
+            checked={value}
             color='secondary'
             outline
             {...attrs}

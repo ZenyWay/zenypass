@@ -20,10 +20,11 @@ import { BasicColor } from './types'
 
 export interface ButtonProps {
   type?: 'button' | 'reset' | 'submit' | 'checkbox'
-  /**
-   * `checked` for `type === 'checkbox'`
-   */
   active?: boolean
+  /**
+   * for `type === 'checkbox'`
+   */
+  checked?: boolean
   block?: boolean
   className?: string
   color?: BasicColor | 'link' | '' | false
@@ -39,6 +40,7 @@ export interface ButtonProps {
 export function Button ({
   type = 'button',
   active,
+  checked,
   block,
   className,
   color = 'secondary', // primary | secondary | success | info | warning | danger | link
@@ -72,7 +74,7 @@ export function Button ({
     </Tag>
   ) : (
     <label className={classNames}>
-      <input type='checkbox' checked={active} disabled={disabled} {...attrs} />
+      <input type='checkbox' checked={checked} disabled={disabled} {...attrs} />
       {children}
     </label>
   )
