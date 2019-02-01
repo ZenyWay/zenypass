@@ -128,6 +128,7 @@ export function RecordCard ({
         {!expanded ? (
           <CollapsedCardFooter
             _id={_id}
+            unrestricted={record.unrestricted}
             pending={pending === 'connect'}
             onConnectRequest={onToggleConnect}
           />
@@ -175,18 +176,20 @@ export function RecordCard ({
 
 interface CollapsedCardFooterProps {
   _id: string
+  unrestricted?: boolean
   pending?: boolean
   onConnectRequest?: (event?: MouseEvent) => void
 }
 
 function CollapsedCardFooter ({
   _id,
+  unrestricted,
   pending,
   onConnectRequest
 }: CollapsedCardFooterProps) {
   return (
     <Fragment>
-      <span className='py-2 pr-2'>
+      <span className={classes('py-2 pr-2', unrestricted && 'invisible')}>
         <FAIcon icon='lock' fw />
       </span>
       <FAIconButton
