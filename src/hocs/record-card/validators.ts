@@ -55,10 +55,10 @@ function withError (
 const IS_ACCEPTABLE_URL = /^(?:\w+?:\/\/)?(?:[^@\s/?]+@)?(?:(?:[^.:\s/?]+\.)+?[^.:\s/?]{2,})(?::\d{2,5})?(?:[/?][^\s]*)?$/ // 1 = protocol, 2 = auth, 3 = domain, 4 = port, 5 = path
 
 function isAcceptableUrl (value: string) {
-  const trimmed = value.trim()
+  const trimmed = value && value.trim()
   return !trimmed || IS_ACCEPTABLE_URL.test(trimmed)
 }
 
 function isNotEmptyString (str: string) {
-  return !!str.trim()
+  return !!(str && str.trim())
 }
