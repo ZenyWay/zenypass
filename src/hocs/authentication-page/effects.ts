@@ -65,29 +65,6 @@ const authenticated = createActionFactory<void>('AUTHENTICATED')
 const unauthorized = createActionFactory<void>('UNAUTHORIZED')
 const error = createActionFactory<any>('ERROR')
 
-export function focusEmailInputOnMount (
-  event$: Observable<StandardAction<any>>
-) {
-  return event$.pipe(
-    filter(({ type, payload }) => type === 'INPUT_REF' && !!payload.email),
-    tap(({ payload }) => payload.email.focus()),
-    ignoreElements()
-  )
-}
-
-export function focusInputOnEvent (type: string, input: string) {
-  return function focusPasswordInputOnValidEmail (
-    event$: Observable<StandardAction<any>>,
-    state$: Observable<any>
-  ) {
-    return stateOnEvent(hasEntry('type', type))(event$, state$).pipe(
-      pluck<any, HTMLElement>('inputs', input),
-      tap(input => input && input.focus()),
-      ignoreElements()
-    )
-  }
-}
-
 export function callAuthenticationPageTypeHandlerOnStatePagePending (
   _: any,
   state$: Observable<any>

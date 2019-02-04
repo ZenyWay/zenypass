@@ -20,8 +20,8 @@ export function pluck<T> (keys: string[] | string)
 export function pluck<T> (keys: string[] | string, ...rest: string[]) {
   return !Array.isArray(keys)
     ? pluck([keys].concat(rest))
-    : function (obj: any): T {
-        let res = obj
+    : function (...args: any[]): T {
+        let res = args.length > 1 ? args : args[0]
         for (const key of keys) {
           if (!res) return
           res = res[key]

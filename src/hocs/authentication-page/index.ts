@@ -18,8 +18,6 @@ import { reducer, AutomataState } from './reducer'
 import {
   AuthenticationPageType,
   callAuthenticationPageTypeHandlerOnStatePagePending,
-  focusEmailInputOnMount,
-  focusInputOnEvent,
   signupOrSigninOrAuthorizeOnTypePropChange,
   serviceSigninOnSubmitFromSigninSubmitting,
   serviceSignupOnSubmitFromSignupSubmitting,
@@ -38,7 +36,14 @@ import {
   createActionDispatchers,
   createActionFactories
 } from 'basic-fsa-factories'
-import { callHandlerOnEvent, preventDefault, shallowEqual } from 'utils'
+import compose from 'basic-compose'
+import {
+  callHandlerOnEvent,
+  pluck,
+  preventDefault,
+  shallowEqual,
+  tapOnEvent
+} from 'utils'
 import { tap, distinctUntilChanged } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
@@ -207,6 +212,9 @@ function inputRef (field: string) {
   }
 }
 
+const focusInputOnEvent = (type, input) =>
+  tapOnEvent(type, compose.into(0)(focus, pluck('1', 'inputs', input)))
+
 export function authenticationPage<P extends AuthenticationPageSFCProps> (
   AuthenticationPageSFC: SFC<P>
 ): ComponentConstructor<AuthenticationPageProps<P>> {
@@ -220,7 +228,7 @@ export function authenticationPage<P extends AuthenticationPageSFCProps> (
       validateEmailOnEmailPropChange,
       validatePasswordOnChangePassword,
       validateConfirmOnChangeConfirm,
-      focusEmailInputOnMount,
+      tapOnEvent('INPUT_REF', compose.into(0)(focus, pluck('0', 'email'))),
       focusInputOnEvent('INVALID_EMAIL', 'email'),
       focusInputOnEvent('VALID_EMAIL', 'password'),
       focusInputOnEvent('INVALID_PASSWORD', 'password'),
@@ -249,4 +257,8 @@ export function authenticationPage<P extends AuthenticationPageSFCProps> (
     () => distinctUntilChanged(shallowEqual),
     () => tap(log('authentication-page:view-props:'))
   )
+}
+
+function focus (element?: HTMLElement) {
+  element && element.focus()
 }
