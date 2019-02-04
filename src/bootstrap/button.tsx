@@ -34,6 +34,7 @@ export interface ButtonProps {
   disabled?: boolean
   children?: any // TODO
   onClick?: (event: MouseEvent) => void
+  innerRef?: (element?: HTMLElement) => void
   [prop: string]: unknown
 }
 
@@ -49,6 +50,7 @@ export function Button ({
   href,
   disabled,
   children,
+  innerRef,
   ...attrs
 }: ButtonProps) {
   const Tag: any = href ? 'a' : 'button'
@@ -68,13 +70,21 @@ export function Button ({
       className={classNames}
       href={href}
       disabled={disabled}
+      ref={innerRef}
       {...attrs}
     >
       {children}
     </Tag>
   ) : (
     <label className={classNames}>
-      <input type='checkbox' checked={checked} disabled={disabled} {...attrs} />
+      <input
+        type='checkbox'
+        checked={checked}
+        disabled={disabled}
+        autoComplete='off'
+        ref={innerRef}
+        {...attrs}
+      />
       {children}
     </label>
   )

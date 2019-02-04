@@ -33,7 +33,7 @@ import {
   createActionFactory,
   createActionFactories
 } from 'basic-fsa-factories'
-import { preventDefault, shallowEqual } from 'utils'
+import { preventDefault, shallowEqual, tapOnEvent } from 'utils'
 import { distinctUntilChanged, tap } from 'rxjs/operators'
 // const log = (label: string) => console.log.bind(console, label)
 
@@ -60,6 +60,7 @@ export interface ConnectionModalSFCHandlerProps {
   onClickCopy?: (event: MouseEvent) => void
   onUsernameCopied?: (success: boolean, target: HTMLElement) => void
   onPasswordCopied?: (success: boolean, target: HTMLElement) => void
+  onDefaultCopyButtonRef?: (element?: HTMLElement | null) => void
 }
 
 interface ConnectionModalState {
@@ -110,7 +111,8 @@ const mapDispatchToProps: (
   onToggleCleartext: 'TOGGLE_CLEARTEXT',
   onClickCopy: ['CLICK_COPY', preventDefault],
   onUsernameCopied: onFieldCopied('username'),
-  onPasswordCopied: onFieldCopied('password')
+  onPasswordCopied: onFieldCopied('password'),
+  onDefaultCopyButtonRef: 'DEFAULT_COPY_BUTTON_REF'
 })
 
 function onFieldCopied (field: 'username' | 'password') {
@@ -127,6 +129,7 @@ export function connectionModal<P extends ConnectionModalSFCProps> (
     // () => tap(log('connection-modal:event:')),
     redux(
       reducer,
+      tapOnEvent('DEFAULT_COPY_BUTTON_REF', button => button && button.focus()),
       callOnDoneOnCancelling,
       clearClipboardOnClearingClipboard,
       openWindowOnUsernameOrPasswordCopiedWhenNotManual

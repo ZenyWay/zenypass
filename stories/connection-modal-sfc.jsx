@@ -37,7 +37,8 @@ const attrs = {
   onToggleCleartext: action('TOGGLE_CLEARTEXT'),
   onClickCopy: preventDefaultAction('CLICK_COPY'),
   onUsernameCopied: action('USERNAME_COPIED'),
-  onPasswordCopied: action('USERNAME_COPIED')
+  onPasswordCopied: action('USERNAME_COPIED'),
+  onDefaultCopyButtonRef: action('DEFAULT_COPY_BUTTON_REF')
 }
 
 storiesOf('ConnectionModal (SFC)', module)

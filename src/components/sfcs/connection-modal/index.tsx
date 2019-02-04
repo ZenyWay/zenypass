@@ -53,6 +53,7 @@ export interface ConnectionModalProps {
   onClickCopy?: (event: MouseEvent) => void
   onUsernameCopied?: (success: boolean) => void
   onPasswordCopied?: (success: boolean) => void
+  onDefaultCopyButtonRef?: (element?: HTMLElement | null) => void
   [prop: string]: unknown
 }
 
@@ -78,6 +79,7 @@ export function ConnectionModal ({
   onClickCopy,
   onUsernameCopied,
   onPasswordCopied,
+  onDefaultCopyButtonRef,
   ...attrs
 }: ConnectionModalProps) {
   const t = l10ns[locale]
@@ -116,6 +118,7 @@ export function ConnectionModal ({
                 outline={!copyUsername}
                 onClick={onClickCopy}
                 onCopied={onUsernameCopied}
+                innerRef={copyUsername && onDefaultCopyButtonRef}
               >
                 {copyButtonLabel}
               </CopyButton>
@@ -144,6 +147,7 @@ export function ConnectionModal ({
                 color='info'
                 onClick={onClickCopy}
                 onCopied={onPasswordCopied}
+                innerRef={onDefaultCopyButtonRef}
               >
                 {copyButtonLabel}
               </CopyButton>

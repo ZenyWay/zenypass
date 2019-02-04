@@ -41,6 +41,23 @@ export type Effect<S = any> = (
   state$: Observable<S>
 ) => Observable<StandardAction<any>>
 
+export function tapOnEvent (
+  type: string,
+  effect: (payload?: any, state?: any) => void
+) {
+  return function (
+    event$: Observable<StandardAction<any>>,
+    state$: Observable<any>
+  ) {
+    return event$.pipe(
+      filter(event => event.type === type),
+      withLatestFrom(state$),
+      tap(([{ payload }, state]) => effect(payload, state)),
+      ignoreElements()
+    )
+  }
+}
+
 export function stateOnEvent (
   predicate: (event: StandardAction<any>) => boolean
 ) {
