@@ -34,16 +34,6 @@ const authenticated = createActionFactory('AUTHENTICATED')
 const unauthorized = createActionFactory('UNAUTHORIZED')
 const error = createActionFactory<any>('ERROR')
 
-export function focusPasswordInputOnMount (
-  event$: Observable<StandardAction<any>>
-) {
-  return event$.pipe(
-    filter(({ type, payload }) => type === 'INPUT_REF' && !!payload.password),
-    tap(({ payload }) => payload.password.focus()),
-    ignoreElements()
-  )
-}
-
 export function authenticateOnAuthenticating (
   _: any,
   state$: Observable<{

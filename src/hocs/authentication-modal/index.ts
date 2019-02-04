@@ -16,10 +16,7 @@
  */
 //
 import reducer, { AutomataState } from './reducer'
-import {
-  focusPasswordInputOnMount,
-  authenticateOnAuthenticating
-} from './effects'
+import { authenticateOnAuthenticating } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -27,7 +24,7 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { callHandlerOnEvent, preventDefault } from 'utils'
+import { callHandlerOnEvent, preventDefault, tapOnEvent } from 'utils'
 import { createActionDispatchers } from 'basic-fsa-factories'
 // import { tap } from 'rxjs/operators'
 // const log = label => console.log.bind(console, label)
@@ -114,7 +111,10 @@ export function authenticationModal<P extends AuthenticationModalSFCProps> (
     // () => tap(log('authentication-modal:event:')),
     redux(
       reducer,
-      focusPasswordInputOnMount,
+      tapOnEvent(
+        'INPUT_REF',
+        ({ password }) => password && password.focus && password.focus()
+      ),
       authenticateOnAuthenticating,
       callHandlerOnEvent('ERROR', ['props', 'onError']),
       callHandlerOnEvent('CANCEL', ['props', 'onCancelled']),
