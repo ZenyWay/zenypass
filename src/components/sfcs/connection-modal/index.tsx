@@ -31,6 +31,7 @@ import { CopyButton } from '../../copy-button'
 import { IconLabelInputFormGroup } from '../icon-label-form-group'
 import { RecordField } from '../record-field'
 import createL10ns from 'basic-l10n'
+import { Fragment } from 'inferno'
 const debug =
   process.env.NODE_ENV !== 'production' &&
   require('debug')('zenypass:components:access-authorization:')
@@ -64,7 +65,7 @@ const DEFAULT_COPY_BUTTON_ICONS = {
 
 export function ConnectionModal ({
   open,
-  manual,
+  manual: _manual,
   name,
   url,
   username,
@@ -83,6 +84,7 @@ export function ConnectionModal ({
   ...attrs
 }: ConnectionModalProps) {
   const t = l10ns[locale]
+  const manual = !url || _manual
   const icons = !manual ? DEFAULT_COPY_BUTTON_ICONS : void 0
   const copyButtonLabel = t('Copy')
   const copyUsername = copy === 'username'
@@ -94,36 +96,40 @@ export function ConnectionModal ({
         {t('Login')}
       </ModalHeader>
       <ModalBody>
-        <IconLabelInputFormGroup value={name} size='lg' plaintext />
-        {!copy || copy === 'password' ? (
-          <IconLabelInputFormGroup value={username} icon='user' plaintext />
-        ) : (
-          <RecordField
-            id='connection-modal-username-field'
-            locale={locale}
-            type='email'
-            className='mb-2'
-            icon='user'
-            value={username}
-            disabled
-          >
-            <InputGroupAppend>
-              <CopyButton
-                href={href}
-                target='_blank'
-                rel='noopener'
-                icons={icons}
+        {!username ? null : (
+          <Fragment>
+            <IconLabelInputFormGroup value={name} size='lg' plaintext />
+            {!copy || copy === 'password' ? (
+              <IconLabelInputFormGroup value={username} icon='user' plaintext />
+            ) : (
+              <RecordField
+                id='connection-modal-username-field'
+                locale={locale}
+                type='email'
+                className='mb-2'
+                icon='user'
                 value={username}
-                color={copyUsername ? 'info' : 'secondary'}
-                outline={!copyUsername}
-                onClick={onClickCopy}
-                onCopied={onUsernameCopied}
-                innerRef={copyUsername && onDefaultActionButtonRef}
+                disabled
               >
-                {copyButtonLabel}
-              </CopyButton>
-            </InputGroupAppend>
-          </RecordField>
+                <InputGroupAppend>
+                  <CopyButton
+                    href={href}
+                    target='_blank'
+                    rel='noopener'
+                    icons={icons}
+                    value={username}
+                    color={copyUsername ? 'info' : 'secondary'}
+                    outline={!copyUsername}
+                    onClick={onClickCopy}
+                    onCopied={onUsernameCopied}
+                    innerRef={copyUsername && onDefaultActionButtonRef}
+                  >
+                    {copyButtonLabel}
+                  </CopyButton>
+                </InputGroupAppend>
+              </RecordField>
+            )}
+          </Fragment>
         )}
         {!copy || copy === 'username' ? null : (
           <RecordField
@@ -154,15 +160,14 @@ export function ConnectionModal ({
             </InputGroupAppend>
           </RecordField>
         )}
-        {!copy ? null : (
-          <FormGroup check onChange={copy === 'all' ? onToggleManual : void 0}>
+        {copy !== 'all' || !url ? null : (
+          <FormGroup check onChange={onToggleManual}>
             <Label check>
               <Input
                 type='checkbox'
                 className='form-check-input'
                 value='automatic'
                 checked={!manual}
-                disabled={copy !== 'all'}
               />
               {t('Open Website on Copy')}
             </Label>

@@ -42,6 +42,7 @@ export enum ClipboardFsmState {
 const connectionFsm: AutomataSpec<ConnectionFsmState> = {
   [ConnectionFsmState.CopyAny]: {
     CANCEL: ConnectionFsmState.Cancelling,
+    NO_USERNAME: ConnectionFsmState.CopyPassword,
     CLICK_COPY: ConnectionFsmState.CopyingAny
   },
   [ConnectionFsmState.CopyingAny]: {

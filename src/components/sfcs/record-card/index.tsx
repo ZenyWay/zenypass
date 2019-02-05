@@ -130,7 +130,7 @@ export function RecordCard ({
             value={username}
             icon='user'
             plaintext
-            className='mb-0'
+            className={classes('mb-0', !username && 'invisible')}
           />
         )}
       </CardBody>

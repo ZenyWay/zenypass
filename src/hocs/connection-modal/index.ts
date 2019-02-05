@@ -18,6 +18,7 @@
 import reducer, { ConnectionFsmState, ClipboardFsmState } from './reducer'
 import {
   closeOnCancellingOrClosing,
+  hasUsernameOnCopyAny,
   openWindowOnUsernameOrPasswordCopiedWhenNotManual
 } from './effects'
 import componentFromEvents, {
@@ -145,6 +146,7 @@ export function connectionModal<P extends ConnectionModalSFCProps> (
         (_, { payload: { cancel, dirty } }) => [cancel, dirty]
       ),
       closeOnCancellingOrClosing,
+      hasUsernameOnCopyAny,
       openWindowOnUsernameOrPasswordCopiedWhenNotManual
     ),
     () => tap(log('connection-modal:state:')),

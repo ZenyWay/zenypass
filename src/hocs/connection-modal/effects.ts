@@ -30,8 +30,20 @@ import { Observable } from 'rxjs'
 const windowOpenResolved = createActionFactory('WINDOW_OPEN_RESOLVED')
 const windowOpenRejected = createActionFactory('WINDOW_OPEN_REJECTED')
 const close = createActionFactory<{ cancel: boolean; dirty: boolean }>('CLOSE')
+const noUsername = createActionFactory('NO_USERNAME')
 
 // const log = (label: string) => console.log.bind(console, label)
+
+export function hasUsernameOnCopyAny (_: any, state$: Observable<any>) {
+  return state$.pipe(
+    distinctUntilKeyChanged('state'),
+    filter(
+      ({ state, props }) =>
+        state === ConnectionFsmState.CopyAny && !props.username
+    ),
+    map(() => noUsername())
+  )
+}
 
 export function closeOnCancellingOrClosing (_: any, state$: Observable<any>) {
   return state$.pipe(
