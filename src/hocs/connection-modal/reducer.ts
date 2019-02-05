@@ -18,79 +18,92 @@
 import createAutomataReducer, { Reducer, AutomataSpec } from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, mapPayload, not, pluck } from 'utils'
+import { always, mapPayload, not } from 'utils'
 
 const mapPayloadIntoWindowref = into('windowref')(mapPayload())
 const clearWindowRef = into('windowref')(always(void 0))
-const mapPayloadIntoError = into('error')(mapPayload(not(pluck('success'))))
-const clearError = into('error')(always(void 0))
 
-export type AutomataState =
-  | 'copy-any'
-  | 'copying-any'
-  | 'copy-password'
-  | 'copying-password'
-  | 'copy-username'
-  | 'copying-username'
-  | 'clear-clipboard'
-  | 'clearing-clipboard'
-  | 'cancelling'
+export enum ConnectionFsmState {
+  CopyAny = 'COPY_ANY',
+  CopyingAny = 'COPYING_ANY',
+  CopyPassword = 'COPY_PASSWORD',
+  CopyingPassword = 'COPYING_PASSWORD',
+  CopyUsername = 'COPY_USERNAME',
+  CopyingUsername = 'COPYING_USERNAME',
+  Cancelling = 'CANCELLING',
+  Closing = 'CLOSING'
+}
 
-const automata: AutomataSpec<AutomataState> = {
-  'copy-any': {
-    CANCEL: 'cancelling',
-    CLICK_COPY: 'copying-any'
+export enum ClipboardFsmState {
+  Pristine = 'PRISTINE',
+  Dirty = 'DIRTY'
+}
+
+const connectionFsm: AutomataSpec<ConnectionFsmState> = {
+  [ConnectionFsmState.CopyAny]: {
+    CANCEL: ConnectionFsmState.Cancelling,
+    CLICK_COPY: ConnectionFsmState.CopyingAny
   },
-  'copying-any': {
+  [ConnectionFsmState.CopyingAny]: {
+    USERNAME_COPIED: ConnectionFsmState.CopyPassword,
+    PASSWORD_COPIED: ConnectionFsmState.CopyUsername
+  },
+  [ConnectionFsmState.CopyPassword]: {
     WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
-    USERNAME_COPIED: 'copy-password',
-    PASSWORD_COPIED: 'copy-username',
-    COPY_ERROR: clearWindowRef
+    CANCEL: ConnectionFsmState.Cancelling,
+    CLICK_COPY: ConnectionFsmState.CopyingPassword
   },
-  'copy-password': {
-    CANCEL: 'cancelling',
+  [ConnectionFsmState.CopyingPassword]: {
+    USERNAME_COPIED: ConnectionFsmState.CopyPassword,
+    PASSWORD_COPIED: ConnectionFsmState.Closing
+  },
+  [ConnectionFsmState.CopyUsername]: {
     WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
-    CLICK_COPY: 'copying-password'
+    CANCEL: ConnectionFsmState.Cancelling,
+    CLICK_COPY: ConnectionFsmState.CopyingUsername
   },
-  'copying-password': {
-    USERNAME_COPIED: 'copy-password',
-    PASSWORD_COPIED: 'clear-clipboard'
+  [ConnectionFsmState.CopyingUsername]: {
+    PASSWORD_COPIED: ConnectionFsmState.CopyUsername,
+    USERNAME_COPIED: ConnectionFsmState.Closing
   },
-  'copy-username': {
-    CANCEL: 'clearing-clipboard',
-    WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
-    CLICK_COPY: 'copying-username'
+  [ConnectionFsmState.Cancelling]: {
+    CLOSE: ConnectionFsmState.CopyAny
   },
-  'copying-username': {
-    PASSWORD_COPIED: 'copy-username',
-    USERNAME_COPIED: 'cancelling'
+  [ConnectionFsmState.Closing]: {
+    CLOSE: ConnectionFsmState.CopyAny
+  }
+}
+
+const clipboardFsm: AutomataSpec<ClipboardFsmState> = {
+  [ClipboardFsmState.Pristine]: {
+    PASSWORD_COPIED: ClipboardFsmState.Dirty
   },
-  'clear-clipboard': {
-    CANCEL: 'clearing-clipboard'
-  },
-  'clearing-clipboard': {
-    CANCEL: 'cancelling',
-    CLIPBOARD_CLEARED: 'cancelling'
-  },
-  cancelling: {
-    CANCELLED: 'copy-any'
+  [ClipboardFsmState.Dirty]: {
+    USERNAME_COPIED: ClipboardFsmState.Pristine,
+    CLOSE: ClipboardFsmState.Pristine
   }
 }
 
 const common = {
-  WINDOW_OPEN_REJECTED: into('manual')(always(true)),
-  USERNAME_COPIED: clearError,
-  PASSWORD_COPIED: clearError,
-  COPY_ERROR: mapPayloadIntoError,
+  WINDOW_OPEN_REJECTED: compose.into(0)(
+    clearWindowRef,
+    into('manual')(always(true))
+  ),
   TOGGLE_MANUAL: propCursor('manual')(not()),
   TOGGLE_CLEARTEXT: propCursor('cleartext')(not()),
-  CANCEL: clearError,
-  CANCELLED: compose.into(0)(clearWindowRef, into('manual')(always(false))),
+  CLOSE: compose.into(0)(
+    clearWindowRef,
+    into('manual')(always(false)),
+    into('cleartext')(always(false))
+  ),
   PROPS: into('props')(mapPayload())
 }
 
 export default compose.into(0)(
-  createAutomataReducer(automata, 'copy-any'),
+  createAutomataReducer(connectionFsm, ConnectionFsmState.CopyAny),
+  createAutomataReducer(clipboardFsm, ClipboardFsmState.Pristine, {
+    key: 'clipboard'
+  }),
   createReducers(common)
 )
 

@@ -53,7 +53,7 @@ export interface ConnectionModalProps {
   onClickCopy?: (event: MouseEvent) => void
   onUsernameCopied?: (success: boolean) => void
   onPasswordCopied?: (success: boolean) => void
-  onDefaultCopyButtonRef?: (element?: HTMLElement | null) => void
+  onDefaultActionButtonRef?: (element?: HTMLElement | null) => void
   [prop: string]: unknown
 }
 
@@ -79,7 +79,7 @@ export function ConnectionModal ({
   onClickCopy,
   onUsernameCopied,
   onPasswordCopied,
-  onDefaultCopyButtonRef,
+  onDefaultActionButtonRef,
   ...attrs
 }: ConnectionModalProps) {
   const t = l10ns[locale]
@@ -118,7 +118,7 @@ export function ConnectionModal ({
                 outline={!copyUsername}
                 onClick={onClickCopy}
                 onCopied={onUsernameCopied}
-                innerRef={copyUsername && onDefaultCopyButtonRef}
+                innerRef={copyUsername && onDefaultActionButtonRef}
               >
                 {copyButtonLabel}
               </CopyButton>
@@ -147,7 +147,7 @@ export function ConnectionModal ({
                 color='info'
                 onClick={onClickCopy}
                 onCopied={onPasswordCopied}
-                innerRef={onDefaultCopyButtonRef}
+                innerRef={onDefaultActionButtonRef}
               >
                 {copyButtonLabel}
               </CopyButton>
@@ -172,16 +172,6 @@ export function ConnectionModal ({
           <p class='bg-danger text-white text-center'>ERROR: {error} !</p>
         )}
       </ModalBody>
-      {copy ? null : (
-        <ModalFooter>
-          <small class='text-center'>
-            {t('Close this dialog box to flush the clipboard')}
-          </small>
-          <Button color='info' onClick={onCancel}>
-            {t('Close')}
-          </Button>
-        </ModalFooter>
-      )}
     </Modal>
   )
 }

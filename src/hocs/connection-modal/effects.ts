@@ -15,10 +15,9 @@
  * Limitations under the License.
  */
 //
+import { ConnectionFsmState, ClipboardFsmState } from './reducer'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
-  catchError,
-  concatMap,
   distinctUntilKeyChanged,
   filter,
   map,
@@ -26,39 +25,28 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators'
-import { Observable, of as observable } from 'rxjs'
-import { hasEntry } from 'utils'
-import copyToClipboard from 'clipboard-copy'
-
-const CLIPBOARD_CLEARED = 'Clipboard cleared by ZenyPass'
+import { Observable } from 'rxjs'
 
 const windowOpenResolved = createActionFactory('WINDOW_OPEN_RESOLVED')
 const windowOpenRejected = createActionFactory('WINDOW_OPEN_REJECTED')
-const copyError = createActionFactory('COPY_ERROR')
-const clipboardCleared = createActionFactory('CLIPBOARD_CLEARED')
-const cancelled = createActionFactory('CANCELLED')
+const close = createActionFactory<{ cancel: boolean; dirty: boolean }>('CLOSE')
 
 // const log = (label: string) => console.log.bind(console, label)
 
-export function clearClipboardOnClearingClipboard (
-  _: any,
-  state$: Observable<any>
-) {
+export function closeOnCancellingOrClosing (_: any, state$: Observable<any>) {
   return state$.pipe(
     distinctUntilKeyChanged('state'),
-    filter(hasEntry('state', 'clearing-clipboard')),
-    concatMap(() => copyToClipboard(CLIPBOARD_CLEARED)),
-    map(clipboardCleared),
-    catchError(() => observable(copyError('clear-clipboard')))
-  )
-}
-
-export function callOnDoneOnCancelling (_: any, state$: Observable<any>) {
-  return state$.pipe(
-    distinctUntilKeyChanged('state'),
-    filter(hasEntry('state', 'cancelling')),
-    tap(({ props }) => props.onDone && props.onDone()),
-    map(() => cancelled())
+    filter(
+      ({ state }) =>
+        state === ConnectionFsmState.Cancelling ||
+        state === ConnectionFsmState.Closing
+    ),
+    map(({ state, clipboard }) =>
+      close({
+        cancel: state === ConnectionFsmState.Cancelling,
+        dirty: clipboard === ClipboardFsmState.Dirty
+      })
+    )
   )
 }
 

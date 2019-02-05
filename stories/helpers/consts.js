@@ -14,6 +14,8 @@
  * Limitations under the License.
  */
 //
+export const PASSWORD = 'P@ssw0rd!'
+
 export const RECORDS = [
   {
     _id: '1',

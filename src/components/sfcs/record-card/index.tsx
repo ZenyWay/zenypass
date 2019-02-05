@@ -38,7 +38,9 @@ export interface RecordCardProps {
   cleartext?: boolean
   errors?: Partial<Errors>
   className?: string
-  onToggleConnect?: (event?: MouseEvent) => void
+  onClearClipboard?: (event?: MouseEvent) => void
+  onConnectRequest?: (event?: MouseEvent) => void
+  onConnectClose?: (dirty?: boolean) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onToggleExpanded?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
@@ -57,6 +59,7 @@ export type PendingState =
   | 'save'
   | 'delete'
   | 'connect'
+  | 'clear-clipboard'
 
 export function RecordCard ({
   locale,
@@ -68,7 +71,9 @@ export function RecordCard ({
   cleartext,
   errors,
   className,
-  onToggleConnect,
+  onClearClipboard,
+  onConnectRequest,
+  onConnectClose,
   onToggleCleartext,
   onToggleExpanded,
   onEditRecordRequest,
@@ -112,7 +117,7 @@ export function RecordCard ({
             errors={errors}
             onChange={onChange}
             onToggleCheckbox={onToggleCheckbox}
-            onConnectRequest={onToggleConnect}
+            onConnectRequest={onConnectRequest}
             onToggleCleartext={onToggleCleartext}
             onSubmit={onSaveRecordRequest}
           />
@@ -132,7 +137,7 @@ export function RecordCard ({
             _id={_id}
             unrestricted={record.unrestricted}
             pending={pending === 'connect'}
-            onConnectRequest={onToggleConnect}
+            onConnectRequest={onConnectRequest}
           />
         ) : (
           <ExpandedCardFooter
@@ -156,6 +161,19 @@ export function RecordCard ({
         />
       </CardFooter>
       <InfoModal
+        expanded={pending === 'clear-clipboard'}
+        title={t('Security advice')}
+        onCancel={onClearClipboard}
+        locale={locale}
+      >
+        <p>
+          {t(
+            'After pasting your password, close this window to delete the content of the clipboard'
+          )}
+          .
+        </p>
+      </InfoModal>
+      <InfoModal
         expanded={confirmCancel || pending === 'confirm-delete'}
         title={t('Please confirm')}
         confirm={t(confirmCancel ? 'Yes: cancel' : 'Yes: delete')}
@@ -174,7 +192,7 @@ export function RecordCard ({
       </InfoModal>
       <ConnectionModal
         open={connect}
-        onDone={onToggleConnect}
+        onClose={onConnectClose}
         name={record.name}
         url={record.url}
         username={record.username}

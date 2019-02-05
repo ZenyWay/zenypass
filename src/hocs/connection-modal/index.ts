@@ -15,10 +15,9 @@
  * Limitations under the License.
  */
 //
-import reducer, { AutomataState } from './reducer'
+import reducer, { ConnectionFsmState, ClipboardFsmState } from './reducer'
 import {
-  callOnDoneOnCancelling,
-  clearClipboardOnClearingClipboard,
+  closeOnCancellingOrClosing,
   openWindowOnUsernameOrPasswordCopiedWhenNotManual
 } from './effects'
 import componentFromEvents, {
@@ -33,16 +32,21 @@ import {
   createActionFactory,
   createActionFactories
 } from 'basic-fsa-factories'
-import { preventDefault, shallowEqual, tapOnEvent } from 'utils'
+import {
+  applyHandlerOnEvent,
+  preventDefault,
+  shallowEqual,
+  tapOnEvent
+} from 'utils'
 import { distinctUntilChanged, tap } from 'rxjs/operators'
-// const log = (label: string) => console.log.bind(console, label)
+const log = (label: string) => console.log.bind(console, label)
 
 export type ConnectionModalProps<
   P extends ConnectionModalSFCProps
 > = ConnectionModalControllerProps & Rest<P, ConnectionModalSFCProps>
 
 export interface ConnectionModalControllerProps {
-  onDone?: () => void
+  onClose?: (abort?: boolean, dirty?: boolean) => void
 }
 
 export interface ConnectionModalSFCProps
@@ -50,35 +54,40 @@ export interface ConnectionModalSFCProps
   manual?: boolean
   cleartext?: boolean
   error?: boolean
-  copy?: 'all' | 'password' | 'username' | '' | false
+  copy?: CopyState
 }
 
+export type CopyState = 'all' | 'password' | 'username' | '' | false
+
 export interface ConnectionModalSFCHandlerProps {
-  onCancel?: (err?: any) => void
+  onCancel?: () => void
   onToggleManual?: (event: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onClickCopy?: (event: MouseEvent) => void
   onUsernameCopied?: (success: boolean, target: HTMLElement) => void
   onPasswordCopied?: (success: boolean, target: HTMLElement) => void
-  onDefaultCopyButtonRef?: (element?: HTMLElement | null) => void
+  onDefaultActionButtonRef?: (element?: HTMLElement | null) => void
 }
 
 interface ConnectionModalState {
   props: ConnectionModalProps<ConnectionModalSFCProps>
-  state: AutomataState
+  state: ConnectionFsmState
+  clipboard: ClipboardFsmState
   manual?: boolean
   cleartext?: boolean
   error?: boolean
   windowref?: any
 }
 
-const STATE_TO_COPY_PROP = {
-  'copy-any': 'all',
-  'copying-any': 'all',
-  'copy-password': 'password',
-  'copying-password': 'password',
-  'copy-username': 'username',
-  'copying-username': 'username'
+const STATE_TO_COPY_PROP: Partial<
+  { [state in ConnectionFsmState]: CopyState }
+> = {
+  [ConnectionFsmState.CopyAny]: 'all',
+  [ConnectionFsmState.CopyingAny]: 'all',
+  [ConnectionFsmState.CopyPassword]: 'password',
+  [ConnectionFsmState.CopyingPassword]: 'password',
+  [ConnectionFsmState.CopyUsername]: 'username',
+  [ConnectionFsmState.CopyingUsername]: 'username'
 }
 
 function mapStateToProps ({
@@ -92,7 +101,7 @@ function mapStateToProps ({
   ConnectionModalSFCHandlerProps
 > {
   const copy = STATE_TO_COPY_PROP[state]
-  const { onDone, ...attrs } = props
+  const { onClose: onDone, ...attrs } = props
   return { ...attrs, manual, cleartext, error, copy }
 }
 
@@ -112,7 +121,7 @@ const mapDispatchToProps: (
   onClickCopy: ['CLICK_COPY', preventDefault],
   onUsernameCopied: onFieldCopied('username'),
   onPasswordCopied: onFieldCopied('password'),
-  onDefaultCopyButtonRef: 'DEFAULT_COPY_BUTTON_REF'
+  onDefaultActionButtonRef: 'DEFAULT_ACTION_BUTTON_REF'
 })
 
 function onFieldCopied (field: 'username' | 'password') {
@@ -126,20 +135,24 @@ export function connectionModal<P extends ConnectionModalSFCProps> (
 ): ComponentConstructor<ConnectionModalProps<P>> {
   return componentFromEvents<ConnectionModalProps<P>, P>(
     ConnectionModal,
-    // () => tap(log('connection-modal:event:')),
+    () => tap(log('connection-modal:event:')),
     redux(
       reducer,
-      tapOnEvent('DEFAULT_COPY_BUTTON_REF', button => button && button.focus()),
-      callOnDoneOnCancelling,
-      clearClipboardOnClearingClipboard,
+      tapOnEvent('DEFAULT_ACTION_BUTTON_REF', btn => btn && btn.focus()),
+      applyHandlerOnEvent(
+        'CLOSE',
+        ['props', 'onClose'],
+        (_, { payload: { cancel, dirty } }) => [cancel, dirty]
+      ),
+      closeOnCancellingOrClosing,
       openWindowOnUsernameOrPasswordCopiedWhenNotManual
     ),
-    // () => tap(log('connection-modal:state:')),
+    () => tap(log('connection-modal:state:')),
     connect<ConnectionModalState, ConnectionModalSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
-    () => distinctUntilChanged(shallowEqual)
-    // () => tap(log('connection-modal:view-props:'))
+    () => distinctUntilChanged(shallowEqual),
+    () => tap(log('connection-modal:view-props:'))
   )
 }

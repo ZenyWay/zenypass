@@ -20,17 +20,16 @@ import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { ConnectionModalSFC as ConnectionModal } from 'components'
 import { action } from '@storybook/addon-actions'
-import { RECORD } from './helpers/consts'
+import { RECORD, PASSWORD } from './helpers/consts'
 import preventDefaultAction from './helpers/prevent-default'
 
 const { name, username } = RECORD
-const password = 'P@ssw0rd!'
 
 const attrs = {
   open: true,
   name,
   username,
-  password,
+  password: PASSWORD,
   locale: 'fr',
   onCancel: action('CANCELLED'),
   onToggleManual: action('TOGGLE_MANUAL'),
@@ -38,7 +37,7 @@ const attrs = {
   onClickCopy: preventDefaultAction('CLICK_COPY'),
   onUsernameCopied: action('USERNAME_COPIED'),
   onPasswordCopied: action('USERNAME_COPIED'),
-  onDefaultCopyButtonRef: action('DEFAULT_COPY_BUTTON_REF')
+  onDefaultActionButtonRef: action('DEFAULT_ACTION_BUTTON_REF')
 }
 
 storiesOf('ConnectionModal (SFC)', module)
@@ -55,7 +54,6 @@ storiesOf('ConnectionModal (SFC)', module)
   ))
   .add('cleartext', () => <ConnectionModal cleartext copy='all' {...attrs} />)
   .add('manual', () => <ConnectionModal manual copy='all' {...attrs} />)
-  .add('clear-clipboard', () => <ConnectionModal {...attrs} />)
-  .add('clear-clipboard-error', () => (
-    <ConnectionModal error='clear-clipboard' {...attrs} />
+  .add('error', () => (
+    <ConnectionModal error='something went wrong' {...attrs} />
   ))

@@ -17,6 +17,7 @@
 import { ZenypassRecord } from 'zenypass-service'
 import reducer, { ConnectFsmState, RecordFsmState } from './reducer'
 import {
+  clearClipboardOnDirtyConnectCancelOrClearClipboard,
   validateRecordOnThumbnail,
   validateChangeOnChange,
   validateRecordOnValidChange,
@@ -31,7 +32,10 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { callHandlerOnEvent, preventDefault } from 'utils'
-import { createActionDispatchers } from 'basic-fsa-factories'
+import {
+  createActionDispatchers,
+  createActionFactory
+} from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
 import { tap } from 'rxjs/operators'
 const log = (label: string) => console.log.bind(console, label)
@@ -82,9 +86,12 @@ export type PendingState =
   | 'save'
   | 'delete'
   | 'connect'
+  | 'clear-clipboard'
 
 export interface RecordCardSFCHandlerProps {
-  onToggleConnect?: (event: MouseEvent) => void
+  onClearClipboard?: (event: MouseEvent) => void
+  onConnectRequest?: (event: MouseEvent) => void
+  onConnectClose?: (dirty: boolean) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
   onChange?: (value: string[] | string, target: HTMLElement) => void
@@ -138,9 +145,10 @@ const RECORD_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
 const CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
   [state in ConnectFsmState]: Partial<RecordCardSFCState>
 } = {
-  [ConnectFsmState.Locked]: {},
-  [ConnectFsmState.Connect]: { connect: true },
-  [ConnectFsmState.Pending]: { pending: 'connect' }
+  [ConnectFsmState.Idle]: {},
+  [ConnectFsmState.Connecting]: { pending: 'connect', connect: true },
+  [ConnectFsmState.PendingConnect]: { pending: 'connect' },
+  [ConnectFsmState.PendingClearClipboard]: { pending: 'clear-clipboard' }
 }
 
 function mapStateToProps ({
@@ -157,7 +165,7 @@ function mapStateToProps ({
     ...CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE[connectFsm]
   }
   const { cleartext, edit } = sfcState
-  const connect = connectFsm === ConnectFsmState.Connect
+  const connect = connectFsm === ConnectFsmState.Connecting
   return {
     ...attrs,
     ...sfcState,
@@ -170,10 +178,24 @@ function mapStateToProps ({
   }
 }
 
+const cleanConnectCancel = createActionFactory('CLEAN_CONNECT_CANCEL')
+const dirtyConnectCancel = createActionFactory('DIRTY_CONNECT_CANCEL')
+const cleanConnectClose = createActionFactory('CLEAN_CONNECT_CLOSE')
+const dirtyConnectClose = createActionFactory('DIRTY_CONNECT_CLOSE')
+
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => RecordCardSFCHandlerProps = createActionDispatchers({
-  onToggleConnect: 'TOGGLE_CONNECT',
+  onClearClipboard: 'CLEAR_CLIPBOARD',
+  onConnectRequest: 'CONNECT_REQUEST',
+  onConnectClose: (cancel, dirty) =>
+    cancel
+      ? dirty
+        ? dirtyConnectCancel()
+        : cleanConnectCancel()
+      : dirty
+      ? dirtyConnectClose()
+      : cleanConnectClose(),
   onToggleCleartext: 'TOGGLE_CLEARTEXT',
   onToggleExpanded: 'TOGGLE_EXPANDED',
   onEditRecordRequest: 'EDIT_RECORD_REQUESTED',
@@ -198,6 +220,7 @@ export function recordCard<P extends RecordCardSFCProps> (
     redux(
       reducer,
       callHandlerOnEvent('ERROR', ['props', 'onError']),
+      clearClipboardOnDirtyConnectCancelOrClearClipboard,
       validateRecordOnThumbnail,
       validateChangeOnChange,
       validateRecordOnValidChange,

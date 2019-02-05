@@ -131,26 +131,35 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
  */
 export type ConnectAutomataState = 'locked' | 'connect' | 'pending:connect'
 export enum ConnectFsmState {
-  Locked = 'LOCKED',
-  Connect = 'CONNECT',
-  Pending = 'PENDING'
+  Idle = 'IDLE',
+  Connecting = 'CONNECTING',
+  PendingConnect = 'PENDING_CONNECT',
+  PendingClearClipboard = 'PENDING_CLEAR_CLIPBOARD'
 }
 
 const connectAutomata: AutomataSpec<ConnectFsmState> = {
-  [ConnectFsmState.Locked]: {
-    TOGGLE_CONNECT: ConnectFsmState.Pending
+  [ConnectFsmState.Idle]: {
+    CONNECT_REQUEST: ConnectFsmState.PendingConnect
   },
-  [ConnectFsmState.Connect]: {
-    TOGGLE_CONNECT: [ConnectFsmState.Locked, clearPassword]
+  [ConnectFsmState.Connecting]: {
+    CLEAN_CONNECT_CANCEL: [ConnectFsmState.Idle, clearPassword],
+    CLEAN_CONNECT_CLOSE: [ConnectFsmState.Idle, clearPassword],
+    DIRTY_CONNECT_CLOSE: [ConnectFsmState.PendingClearClipboard, clearPassword],
+    CLIPBOARD_CLEARED: [ConnectFsmState.Idle, clearPassword],
+    CLIPBOARD_COPY_ERROR: [ConnectFsmState.PendingClearClipboard, clearPassword]
   },
-  [ConnectFsmState.Pending]: {
-    CLEARTEXT_REJECTED: [ConnectFsmState.Locked, mapPayloadToError],
-    CLEARTEXT_RESOLVED: [ConnectFsmState.Connect, mapPayloadToPassword]
+  [ConnectFsmState.PendingConnect]: {
+    CLEARTEXT_REJECTED: [ConnectFsmState.Idle, mapPayloadToError],
+    CLEARTEXT_RESOLVED: [ConnectFsmState.Connecting, mapPayloadToPassword]
+  },
+  [ConnectFsmState.PendingClearClipboard]: {
+    CLIPBOARD_CLEARED: ConnectFsmState.Idle,
+    CLIPBOARD_COPY_ERROR: ConnectFsmState.Idle // TODO
   }
 }
 
 export default compose.into(0)(
   createAutomataReducer(recordAutomata, RecordFsmState.Thumbnail),
-  createAutomataReducer(connectAutomata, ConnectFsmState.Locked, 'connect'),
+  createAutomataReducer(connectAutomata, ConnectFsmState.Idle, 'connect'),
   forType('PROPS')(into('props')(mapPayload()))
 )

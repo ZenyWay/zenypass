@@ -1,6 +1,8 @@
 {
   "fr": {
+    "After pasting your password, close this window to clear the clipboard": "Après avoir collé votre mot de passe, fermez cette fenêtre pour effacer le contenu du presse-papier",
     "Automatic login": "Connexion automatique",
+    "Card Title": "Nom de la fiche",
     "Comments": "Commentaires",
     "Do you want to cancel your changes": "Voulez-vous annuler vos modifications",
     "Do you want to delete this website card": "Voulez-vous effacer cette fiche de site web",
@@ -12,15 +14,17 @@
     "Please enter a valid url": "Veuillez saisir une adresse web valide",
     "Please name this card": "Veuillez nommer cette fiche",
     "Save": "Sauvegarder",
+    "Security advice": "Conseil de sécurité",
     "Strict lock": "Verrouillage strict",
-    "Card Title": "Nom de la fiche",
     "Username": "Identifiant",
     "Website URL": "Adresse Web",
     "Yes: cancel": "Oui: annuler",
     "Yes: delete": "Oui: effacer"
   },
   "en": {
+    "After pasting your password, close this window to clear the clipboard": "After pasting your password, close this window to clear the clipboard",
     "Automatic login": "Automatic login",
+    "Card Title": "Card Title",
     "Comments": "Comments",
     "Do you want to cancel your changes": "Do you want to cancel your changes",
     "Do you want to delete this website card": "Do you want to delete this website card",
@@ -32,8 +36,8 @@
     "Please enter a valid url": "Please enter a valid url",
     "Please name this card": "Please name this card",
     "Save": "Save",
+    "Security advice": "Security advice",
     "Strict lock": "Strict lock",
-    "Card Title": "Card Title",
     "Username": "Username",
     "Website URL": "Website URL",
     "Yes: cancel": "Yes: cancel",

@@ -22,13 +22,14 @@ import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import { Observable, of as observableOf, merge } from 'rxjs'
 import {
   catchError,
+  concatMap,
   delayWhen,
   distinctUntilKeyChanged,
   filter,
   map,
   pluck,
   switchMap,
-  tap,
+  // tap,
   withLatestFrom
 } from 'rxjs/operators'
 import {
@@ -38,8 +39,13 @@ import {
   hasHandlerProp,
   toProjection
 } from 'utils'
-const log = (label: string) => console.log.bind(console, label)
+import copyToClipboard from 'clipboard-copy'
+// const log = (label: string) => console.log.bind(console, label)
 
+const CLIPBOARD_CLEARED = 'Clipboard cleared by ZenyPass' // TODO localize
+
+const clipboardCleared = createActionFactory('CLIPBOARD_CLEARED')
+const clipboardCopyError = createActionFactory('CLIPBOARD_COPY_ERROR')
 const validChange = createActionFactory('VALID_CHANGE')
 const invalidChange = createActionFactory('INVALID_CHANGE')
 const validRecord = createActionFactory('VALID_RECORD')
@@ -51,6 +57,20 @@ const updateRecordRejected = createActionFactory('UPDATE_RECORD_REJECTED')
 const deleteRecordResolved = createActionFactory('DELETE_RECORD_RESOLVED')
 const deleteRecordRejected = createActionFactory('DELETE_RECORD_REJECTED')
 const error = createActionFactory('ERROR')
+
+export function clearClipboardOnDirtyConnectCancelOrClearClipboard (
+  event$: Observable<StandardAction<any>>
+) {
+  return event$.pipe(
+    filter(
+      ({ type }) =>
+        type === 'CLEAR_CLIPBOARD' || type === 'DIRTY_CONNECT_CANCEL'
+    ),
+    concatMap(() => copyToClipboard(CLIPBOARD_CLEARED)),
+    map(() => clipboardCleared()),
+    catchError(() => observableOf(clipboardCopyError()))
+  )
+}
 
 export function validateRecordOnThumbnail (_: any, state$: Observable<any>) {
   return state$.pipe(
@@ -164,7 +184,7 @@ export function cleartextOnPendingCleartextOrConnect (
   )
   const connect$ = state$.pipe(
     distinctUntilKeyChanged('connect'),
-    filter(hasEntry('connect', ConnectFsmState.Pending))
+    filter(hasEntry('connect', ConnectFsmState.PendingConnect))
   )
   return merge(cleartext$, edit$, connect$).pipe(
     filter<any>(hasHandlerProp('onAuthenticationRequest')),
