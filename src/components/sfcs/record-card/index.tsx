@@ -41,6 +41,7 @@ export interface RecordCardProps {
   onClearClipboard?: (event?: MouseEvent) => void
   onConnectRequest?: (event?: MouseEvent) => void
   onConnectClose?: (dirty?: boolean) => void
+  onCopied?: (success: boolean, target?: HTMLElement) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onToggleExpanded?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
@@ -74,6 +75,7 @@ export function RecordCard ({
   onClearClipboard,
   onConnectRequest,
   onConnectClose,
+  onCopied,
   onToggleCleartext,
   onToggleExpanded,
   onEditRecordRequest,
@@ -116,6 +118,7 @@ export function RecordCard ({
             pending={pending}
             errors={errors}
             onChange={onChange}
+            onCopied={onCopied}
             onToggleCheckbox={onToggleCheckbox}
             onConnectRequest={onConnectRequest}
             onToggleCleartext={onToggleCleartext}
@@ -168,7 +171,7 @@ export function RecordCard ({
       >
         <p>
           {t(
-            'After pasting your password, close this window to delete the content of the clipboard'
+            'After pasting your password, close this window to clear the clipboard'
           )}
           .
         </p>

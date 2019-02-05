@@ -139,7 +139,8 @@ export enum ConnectFsmState {
 
 const connectAutomata: AutomataSpec<ConnectFsmState> = {
   [ConnectFsmState.Idle]: {
-    CONNECT_REQUEST: ConnectFsmState.PendingConnect
+    CONNECT_REQUEST: ConnectFsmState.PendingConnect,
+    PASSWORD_COPIED: ConnectFsmState.PendingClearClipboard
   },
   [ConnectFsmState.Connecting]: {
     CLEAN_CONNECT_CANCEL: [ConnectFsmState.Idle, clearPassword],

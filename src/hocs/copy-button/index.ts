@@ -26,8 +26,8 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-// import { tap } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import { tap } from 'rxjs/operators'
+const log = label => console.log.bind(console, label)
 
 export type CopyButtonProps<P extends ButtonProps> = CopyButtonControllerProps &
   Rest<P, ButtonProps>
@@ -87,14 +87,14 @@ export function copyButton<P extends ButtonProps> (
 ): ComponentConstructor<CopyButtonProps<P>> {
   const CopyButton = componentFromEvents<CopyButtonProps<P>, P>(
     Button,
-    // () => tap(log('copy-button:event:')),
+    () => tap(log('copy-button:event:')),
     redux(reducer, timeoutAfterDisabled, copyToClipboardAndCallOnClickOnClick),
-    // () => tap(log('copy-button:state:')),
+    () => tap(log('copy-button:state:')),
     connect<CopyButtonState, ButtonProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // () => tap(log('copy-button:props:'))
+    ),
+    () => tap(log('copy-button:props:'))
   )
   ;(CopyButton as any).defaultProps = DEFAULT_PROPS as CopyButtonProps<P>
 

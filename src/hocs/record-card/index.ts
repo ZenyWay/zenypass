@@ -34,7 +34,8 @@ import componentFromEvents, {
 import { callHandlerOnEvent, preventDefault } from 'utils'
 import {
   createActionDispatchers,
-  createActionFactory
+  createActionFactory,
+  createActionFactories
 } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
 import { tap } from 'rxjs/operators'
@@ -92,6 +93,7 @@ export interface RecordCardSFCHandlerProps {
   onClearClipboard?: (event: MouseEvent) => void
   onConnectRequest?: (event: MouseEvent) => void
   onConnectClose?: (dirty: boolean) => void
+  onCopied?: (success: boolean, target?: HTMLElement) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
   onChange?: (value: string[] | string, target: HTMLElement) => void
@@ -178,10 +180,26 @@ function mapStateToProps ({
   }
 }
 
-const cleanConnectCancel = createActionFactory('CLEAN_CONNECT_CANCEL')
-const dirtyConnectCancel = createActionFactory('DIRTY_CONNECT_CANCEL')
-const cleanConnectClose = createActionFactory('CLEAN_CONNECT_CLOSE')
-const dirtyConnectClose = createActionFactory('DIRTY_CONNECT_CLOSE')
+const CONNECT_CLOSE_ACTIONS = {
+  cancel: createActionFactories({
+    pristine: 'CLEAN_CONNECT_CANCEL',
+    dirty: 'DIRTY_CONNECT_CANCEL'
+  }),
+  close: createActionFactories({
+    pristine: 'CLEAN_CONNECT_CLOSE',
+    dirty: 'DIRTY_CONNECT_CLOSE'
+  })
+}
+const COPIED_ACTIONS = {
+  success: createActionFactories({
+    username: 'USERNAME_COPIED',
+    password: 'PASSWORD_COPIED'
+  }),
+  error: createActionFactories({
+    username: 'USERNAME_COPY_ERROR',
+    password: 'PASSWORD_COPY_ERROR'
+  })
+}
 
 const mapDispatchToProps: (
   dispatch: (event: any) => void
@@ -189,13 +207,9 @@ const mapDispatchToProps: (
   onClearClipboard: 'CLEAR_CLIPBOARD',
   onConnectRequest: 'CONNECT_REQUEST',
   onConnectClose: (cancel, dirty) =>
-    cancel
-      ? dirty
-        ? dirtyConnectCancel()
-        : cleanConnectCancel()
-      : dirty
-      ? dirtyConnectClose()
-      : cleanConnectClose(),
+    CONNECT_CLOSE_ACTIONS[cancel ? 'cancel' : 'close'][
+      dirty ? 'dirty' : 'pristine'
+    ](),
   onToggleCleartext: 'TOGGLE_CLEARTEXT',
   onToggleExpanded: 'TOGGLE_EXPANDED',
   onEditRecordRequest: 'EDIT_RECORD_REQUESTED',
@@ -203,6 +217,8 @@ const mapDispatchToProps: (
     'CHANGE',
     (value: string[] | string, input: HTMLElement) => [input.dataset.id, value]
   ],
+  onCopied: (success: boolean, btn: HTMLElement) =>
+    COPIED_ACTIONS[success ? 'success' : 'error'][btn.dataset.id](),
   onToggleCheckbox: [
     'TOGGLE_CHECKBOX',
     (event: Event) => (event.currentTarget as HTMLElement).dataset.id

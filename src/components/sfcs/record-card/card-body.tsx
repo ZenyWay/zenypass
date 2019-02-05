@@ -51,6 +51,7 @@ export interface RecordCardBodyProps {
   icons?: Partial<RecordCardBodyIcons>
   placeholders?: Partial<RecordCardBodyPlaceholders>
   onChange?: (value: string[] | string, target?: HTMLElement) => void
+  onCopied?: (success: boolean, target?: HTMLElement) => void
   onToggleCheckbox?: (event?: Event) => void
   onConnectRequest?: (event: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
@@ -99,6 +100,7 @@ export function RecordCardBody ({
   icons = DEFAULT_ICONS,
   placeholders = DEFAULT_PLACEHOLDERS,
   onChange,
+  onCopied,
   onToggleCheckbox,
   onConnectRequest,
   onToggleCleartext,
@@ -159,7 +161,13 @@ export function RecordCardBody ({
         locale={locale}
       >
         <InputGroupAppend>
-          <CopyButton id={`${key}_copy-button`} value={username} outline />
+          <CopyButton
+            id={`${key}_copy-button`}
+            value={username}
+            data-id='username'
+            onCopied={onCopied}
+            outline
+          />
         </InputGroupAppend>
       </RecordField>
       <RecordField
@@ -189,6 +197,8 @@ export function RecordCardBody ({
             <CopyButton
               id={`${key}_password_copy-button`}
               value={password}
+              onCopied={onCopied}
+              data-id='password'
               outline
             />
           )}
