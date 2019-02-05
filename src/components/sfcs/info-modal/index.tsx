@@ -29,7 +29,9 @@ const l10ns = createL10ns(require('./locales.json'))
 export interface InfoModalProps {
   locale: string
   expanded?: boolean
-  progress?: '25' | '50' | '75' | '100' | 'auto' | '' | false
+  title?: string
+  cancel?: string
+  confirm?: string
   children?: any
   onCancel?: (event: MouseEvent) => void
   onConfirm?: (event: MouseEvent) => void
@@ -39,8 +41,9 @@ export interface InfoModalProps {
 export function InfoModal ({
   locale,
   expanded,
-  progress,
-  children,
+  title,
+  cancel,
+  confirm,
   onCancel,
   onConfirm,
   ...attrs
@@ -49,24 +52,21 @@ export function InfoModal ({
 
   return (
     <Modal isOpen={expanded} toggle={onCancel}>
-      <ModalHeader toggle={onCancel} className='bg-info text-white'>
-        {t(onConfirm ? 'Please confirm' : progress ? 'Please wait' : 'Info')}...
-      </ModalHeader>
-      <ModalBody {...attrs}>
-        {children}
-        {!progress ? null : (
-          <ProgressBar ratio={progress} animated striped bg='info' />
-        )}
-      </ModalBody>
+      {!title ? null : (
+        <ModalHeader toggle={onCancel} className='bg-info text-white'>
+          {title}...
+        </ModalHeader>
+      )}
+      <ModalBody {...attrs} />
       {!onConfirm && !onCancel ? null : (
         <ModalFooter className='bg-light'>
           {!onConfirm ? null : (
             <Button color='info' outline onClick={onConfirm}>
-              {t('Yes')}
+              {confirm || t('Yes')}
             </Button>
           )}
           <Button color='info' onClick={onCancel}>
-            {t(!onConfirm ? 'Ok' : 'No')}
+            {(!onConfirm && confirm) || cancel || t(!onConfirm ? 'Ok' : 'No')}
           </Button>
         </ModalFooter>
       )}

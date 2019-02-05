@@ -157,6 +157,8 @@ export function RecordCard ({
       </CardFooter>
       <InfoModal
         expanded={confirmCancel || pending === 'confirm-delete'}
+        title={t('Please confirm')}
+        confirm={t(confirmCancel ? 'Yes: cancel' : 'Yes: delete')}
         onConfirm={confirmCancel ? onToggleExpanded : onDeleteRecordRequest}
         onCancel={onEditRecordRequest}
         locale={locale}

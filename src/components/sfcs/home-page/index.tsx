@@ -20,6 +20,7 @@ import { FAIconButton } from '../fa-icon'
 import { NavbarMenu, MenuSpecs, DropdownItemSpec } from '../../navbar-menu'
 import { FilteredRecordCards, Record } from '../filtered-record-cards'
 import { InfoModal } from '../info-modal'
+import { ProgressBar } from 'bootstrap'
 import { Observer } from 'component-from-props'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
@@ -70,8 +71,8 @@ export function HomePage ({
     <section {...attrs}>
       <InfoModal
         locale={locale}
+        title={t(busy ? 'Please wait' : 'Error')}
         expanded={!!error || !!busy}
-        progress={busy && '100'}
         onCancel={!busy && onCloseModal}
       >
         <p>
@@ -79,6 +80,7 @@ export function HomePage ({
           <br />
           {busy ? null : error}
         </p>
+        <ProgressBar ratio={busy && '100'} animated striped bg='info' />
       </InfoModal>
       <header className='sticky-top'>
         <NavbarMenu menu={menu} onSelectItem={onSelectMenuItem}>

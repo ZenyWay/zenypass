@@ -137,6 +137,9 @@ export function AuthenticationPage ({
       />
       <InfoModal
         locale={locale}
+        title={t('Unrecognized password')}
+        confirm={t('Authorize this browser')}
+        cancel={t('Retry')}
         expanded={retry}
         onCancel={onCancel}
         onConfirm={onSubmit}

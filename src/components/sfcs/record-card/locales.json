@@ -8,13 +8,16 @@
     "Keywords": "Mots clés",
     "Lock on timeout": "Verrouillage temporisé",
     "Password": "Mot de passe",
+    "Please confirm": "Veuillez confirmer",
     "Please enter a valid url": "Veuillez saisir une adresse web valide",
     "Please name this card": "Veuillez nommer cette fiche",
     "Save": "Sauvegarder",
     "Strict lock": "Verrouillage strict",
     "Card Title": "Nom de la fiche",
     "Username": "Identifiant",
-    "Website URL": "Adresse Web"
+    "Website URL": "Adresse Web",
+    "Yes: cancel": "Oui: annuler",
+    "Yes: delete": "Oui: effacer"
   },
   "en": {
     "Automatic login": "Automatic login",
@@ -25,12 +28,15 @@
     "Keywords": "Keywords",
     "Lock on timeout": "Lock on timeout",
     "Password": "Password",
+    "Please confirm": "Please confirm",
     "Please enter a valid url": "Please enter a valid url",
     "Please name this card": "Please name this card",
     "Save": "Save",
     "Strict lock": "Strict lock",
     "Card Title": "Card Title",
     "Username": "Username",
-    "Website URL": "Website URL"
+    "Website URL": "Website URL",
+    "Yes: cancel": "Yes: cancel",
+    "Yes: delete": "Yes: delete"
   }
 }

@@ -57,7 +57,12 @@ export function Router ({
   const t = l10ns[locale]
   return (
     <Fragment>
-      <InfoModal locale={locale} expanded={info} onCancel={onCloseInfo}>
+      <InfoModal
+        locale={locale}
+        expanded={info}
+        title={t('Info')}
+        onCancel={onCloseInfo}
+      >
         <p>
           {t('ZenyPass Help is hosted on Medium')}:<br />
           {t('a dedicated window will open')}
