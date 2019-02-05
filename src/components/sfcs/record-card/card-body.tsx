@@ -166,6 +166,7 @@ export function RecordCardBody ({
             value={username}
             data-id='username'
             onCopied={onCopied}
+            className={!username && 'd-none'}
             outline
           />
         </InputGroupAppend>
@@ -200,6 +201,7 @@ export function RecordCardBody ({
               onCopied={onCopied}
               data-id='password'
               outline
+              className={!password && 'd-none'}
             />
           )}
         </InputGroupAppend>
