@@ -166,6 +166,7 @@ export function RecordCard ({
       <InfoModal
         expanded={pending === 'clear-clipboard'}
         title={t('Security advice')}
+        cancel={t('Close')}
         onCancel={onClearClipboard}
         locale={locale}
       >
