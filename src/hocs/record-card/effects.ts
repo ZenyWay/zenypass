@@ -24,6 +24,7 @@ import {
   catchError,
   concatMap,
   delayWhen,
+  delay,
   distinctUntilKeyChanged,
   filter,
   map,
@@ -42,6 +43,7 @@ import {
 import copyToClipboard from 'clipboard-copy'
 // const log = (label: string) => console.log.bind(console, label)
 
+const CLEARTEXT_TIMEOUT = 60 * 1000 // ms
 const CLIPBOARD_CLEARED = 'Clipboard cleared by ZenyPass' // TODO localize
 
 const clipboardCleared = createActionFactory('CLIPBOARD_CLEARED')
@@ -50,6 +52,7 @@ const validChange = createActionFactory('VALID_CHANGE')
 const invalidChange = createActionFactory('INVALID_CHANGE')
 const validRecord = createActionFactory('VALID_RECORD')
 const invalidRecord = createActionFactory('INVALID_RECORD')
+const toggleCleartext = createActionFactory('TOGGLE_CLEARTEXT')
 const cleartextResolved = createActionFactory('CLEARTEXT_RESOLVED')
 const cleartextRejected = createActionFactory('CLEARTEXT_REJECTED')
 const updateRecordResolved = createActionFactory('UPDATE_RECORD_RESOLVED')
@@ -57,6 +60,21 @@ const updateRecordRejected = createActionFactory('UPDATE_RECORD_REJECTED')
 const deleteRecordResolved = createActionFactory('DELETE_RECORD_RESOLVED')
 const deleteRecordRejected = createActionFactory('DELETE_RECORD_REJECTED')
 const error = createActionFactory('ERROR')
+
+export function timeoutCleartextOnReadonlyCleartext (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return event$.pipe(
+    filter(({ type }) => type === 'CLEARTEXT_RESOLVED'),
+    withLatestFrom(state$),
+    pluck('1'),
+    filter(({ state }) => state === RecordFsmState.ReadonlyCleartext),
+    switchMap(() =>
+      observableOf(toggleCleartext()).pipe(delay(CLEARTEXT_TIMEOUT))
+    )
+  )
+}
 
 export function clearClipboardOnDirtyConnectCancelOrClearClipboard (
   event$: Observable<StandardAction<any>>

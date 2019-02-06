@@ -42,6 +42,7 @@ export interface RecordCardProps {
   onConnectRequest?: (event?: MouseEvent) => void
   onConnectClose?: (dirty?: boolean) => void
   onCopied?: (success: boolean, target?: HTMLElement) => void
+  onDefaultActionButtonRef?: (element: HTMLElement) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onToggleExpanded?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
@@ -76,6 +77,7 @@ export function RecordCard ({
   onConnectRequest,
   onConnectClose,
   onCopied,
+  onDefaultActionButtonRef,
   onToggleCleartext,
   onToggleExpanded,
   onEditRecordRequest,
@@ -168,6 +170,7 @@ export function RecordCard ({
         title={t('Security advice')}
         cancel={t('Close')}
         onCancel={onClearClipboard}
+        onDefaultActionButtonRef={onDefaultActionButtonRef}
         locale={locale}
       >
         <p>

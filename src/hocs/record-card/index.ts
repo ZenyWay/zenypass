@@ -22,6 +22,7 @@ import {
   validateChangeOnChange,
   validateRecordOnValidChange,
   cleartextOnPendingCleartextOrConnect,
+  timeoutCleartextOnReadonlyCleartext,
   saveRecordOnPendingSaveOrDeleteRecord
 } from './effects'
 import componentFromEvents, {
@@ -31,10 +32,9 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { callHandlerOnEvent, preventDefault } from 'utils'
+import { callHandlerOnEvent, preventDefault, tapOnEvent } from 'utils'
 import {
   createActionDispatchers,
-  createActionFactory,
   createActionFactories
 } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
@@ -94,6 +94,7 @@ export interface RecordCardSFCHandlerProps {
   onConnectRequest?: (event: MouseEvent) => void
   onConnectClose?: (dirty: boolean) => void
   onCopied?: (success: boolean, target?: HTMLElement) => void
+  onDefaultActionButtonRef?: (element: HTMLElement) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
   onChange?: (value: string[] | string, target: HTMLElement) => void
@@ -210,6 +211,7 @@ const mapDispatchToProps: (
     CONNECT_CLOSE_ACTIONS[cancel ? 'cancel' : 'close'][
       dirty ? 'dirty' : 'pristine'
     ](),
+  onDefaultActionButtonRef: 'DEFAULT_ACTION_BUTTON_REF',
   onToggleCleartext: 'TOGGLE_CLEARTEXT',
   onToggleExpanded: 'TOGGLE_EXPANDED',
   onEditRecordRequest: 'EDIT_RECORD_REQUESTED',
@@ -236,11 +238,13 @@ export function recordCard<P extends RecordCardSFCProps> (
     redux(
       reducer,
       callHandlerOnEvent('ERROR', ['props', 'onError']),
+      tapOnEvent('DEFAULT_ACTION_BUTTON_REF', btn => btn && btn.focus()),
       clearClipboardOnDirtyConnectCancelOrClearClipboard,
       validateRecordOnThumbnail,
       validateChangeOnChange,
       validateRecordOnValidChange,
       cleartextOnPendingCleartextOrConnect,
+      timeoutCleartextOnReadonlyCleartext,
       saveRecordOnPendingSaveOrDeleteRecord
     ),
     () => tap(log('record-card:state:')),

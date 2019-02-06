@@ -35,6 +35,7 @@ export interface InfoModalProps {
   children?: any
   onCancel?: (event: MouseEvent) => void
   onConfirm?: (event: MouseEvent) => void
+  onDefaultActionButtonRef?: (element: HTMLElement) => void
   [prop: string]: unknown
 }
 
@@ -46,6 +47,7 @@ export function InfoModal ({
   confirm,
   onCancel,
   onConfirm,
+  onDefaultActionButtonRef,
   ...attrs
 }: InfoModalProps) {
   const t = l10ns[locale]
@@ -65,7 +67,11 @@ export function InfoModal ({
               {confirm || t('Yes')}
             </Button>
           )}
-          <Button color='info' onClick={onCancel}>
+          <Button
+            color='info'
+            onClick={onCancel}
+            innerRef={onDefaultActionButtonRef}
+          >
             {(!onConfirm && confirm) || cancel || t(!onConfirm ? 'Ok' : 'No')}
           </Button>
         </ModalFooter>
