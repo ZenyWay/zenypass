@@ -96,40 +96,36 @@ export function ConnectionModal ({
         {t('Login')}
       </ModalHeader>
       <ModalBody>
-        {!username ? null : (
-          <Fragment>
-            <IconLabelInputFormGroup value={name} size='lg' plaintext />
-            {!copy || copy === 'password' ? (
-              <IconLabelInputFormGroup value={username} icon='user' plaintext />
-            ) : (
-              <RecordField
-                id='connection-modal-username-field'
-                locale={locale}
-                type='email'
-                className='mb-2'
-                icon='user'
+        <IconLabelInputFormGroup value={name} size='lg' plaintext />
+        {!username ? null : !copy || copy === 'password' ? (
+          <IconLabelInputFormGroup value={username} icon='user' plaintext />
+        ) : (
+          <RecordField
+            id='connection-modal-username-field'
+            locale={locale}
+            type='email'
+            className='mb-2'
+            icon='user'
+            value={username}
+            disabled
+          >
+            <InputGroupAppend>
+              <CopyButton
+                href={href}
+                target='_blank'
+                rel='noopener'
+                icons={icons}
                 value={username}
-                disabled
+                color={copyUsername ? 'info' : 'secondary'}
+                outline={!copyUsername}
+                onClick={onClickCopy}
+                onCopied={onUsernameCopied}
+                innerRef={copyUsername && onDefaultActionButtonRef}
               >
-                <InputGroupAppend>
-                  <CopyButton
-                    href={href}
-                    target='_blank'
-                    rel='noopener'
-                    icons={icons}
-                    value={username}
-                    color={copyUsername ? 'info' : 'secondary'}
-                    outline={!copyUsername}
-                    onClick={onClickCopy}
-                    onCopied={onUsernameCopied}
-                    innerRef={copyUsername && onDefaultActionButtonRef}
-                  >
-                    {copyButtonLabel}
-                  </CopyButton>
-                </InputGroupAppend>
-              </RecordField>
-            )}
-          </Fragment>
+                {copyButtonLabel}
+              </CopyButton>
+            </InputGroupAppend>
+          </RecordField>
         )}
         {!copy || copy === 'username' ? null : (
           <RecordField
@@ -160,7 +156,7 @@ export function ConnectionModal ({
             </InputGroupAppend>
           </RecordField>
         )}
-        {copy !== 'all' || !url ? null : (
+        {!url || !copy || (!!username && copy !== 'all') ? null : (
           <FormGroup check onChange={onToggleManual}>
             <Label check>
               <Input
