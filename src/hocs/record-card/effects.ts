@@ -41,10 +41,19 @@ import {
   toProjection
 } from 'utils'
 import copyToClipboard from 'clipboard-copy'
+import createL10ns from 'basic-l10n'
 // const log = (label: string) => console.log.bind(console, label)
 
 const CLEARTEXT_TIMEOUT = 60 * 1000 // ms
-const CLIPBOARD_CLEARED = 'Clipboard cleared by ZenyPass' // TODO localize
+const CLIPBOARD_CLEARED = 'Clipboard cleared by ZenyPass'
+const l10ns = createL10ns({
+  fr: {
+    [CLIPBOARD_CLEARED]: 'Presse-papier effacé par ZenyPass'
+  },
+  en: {
+    [CLIPBOARD_CLEARED]: CLIPBOARD_CLEARED
+  }
+})
 
 const clipboardCleared = createActionFactory('CLIPBOARD_CLEARED')
 const clipboardCopyError = createActionFactory('CLIPBOARD_COPY_ERROR')
@@ -77,14 +86,18 @@ export function timeoutCleartextOnReadonlyCleartext (
 }
 
 export function clearClipboardOnDirtyConnectCancelOrClearClipboard (
-  event$: Observable<StandardAction<any>>
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
 ) {
   return event$.pipe(
     filter(
       ({ type }) =>
         type === 'CLEAR_CLIPBOARD' || type === 'DIRTY_CONNECT_CANCEL'
     ),
-    concatMap(() => copyToClipboard(CLIPBOARD_CLEARED)),
+    withLatestFrom(state$),
+    concatMap(([_, { props: { locale } }]) =>
+      copyToClipboard(l10ns[locale](CLIPBOARD_CLEARED))
+    ),
     map(() => clipboardCleared()),
     catchError(() => observableOf(clipboardCopyError()))
   )
