@@ -19,7 +19,7 @@ import { errorsFromRecord, isValidRecordEntry } from './validators'
 import formatRecordEntry from './formaters'
 import zenypass, { PouchDoc, ZenypassRecord } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import { Observable, of as observableOf, merge } from 'rxjs'
+import { EMPTY, Observable, of as observableOf, merge } from 'rxjs'
 import {
   catchError,
   concatMap,
@@ -71,16 +71,15 @@ const deleteRecordRejected = createActionFactory('DELETE_RECORD_REJECTED')
 const error = createActionFactory('ERROR')
 
 export function timeoutCleartextOnReadonlyCleartext (
-  event$: Observable<StandardAction<any>>,
+  _: any,
   state$: Observable<any>
 ) {
-  return event$.pipe(
-    filter(({ type }) => type === 'CLEARTEXT_RESOLVED'),
-    withLatestFrom(state$),
-    pluck('1'),
-    filter(({ state }) => state === RecordFsmState.ReadonlyCleartext),
-    switchMap(() =>
-      observableOf(toggleCleartext()).pipe(delay(CLEARTEXT_TIMEOUT))
+  return state$.pipe(
+    distinctUntilKeyChanged('state'),
+    switchMap(({ state }) =>
+      state === RecordFsmState.ReadonlyCleartext
+        ? observableOf(toggleCleartext()).pipe(delay(CLEARTEXT_TIMEOUT))
+        : EMPTY
     )
   )
 }

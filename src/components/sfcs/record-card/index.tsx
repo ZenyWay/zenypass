@@ -200,7 +200,7 @@ export function RecordCard ({
           ?
         </p>
       </InfoModal>
-      {hasConnectionButton ? null : (
+      {!hasConnectionButton ? null : (
         <ConnectionModal
           open={connect}
           onClose={onConnectClose}

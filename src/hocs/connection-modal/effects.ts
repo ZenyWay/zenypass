@@ -23,14 +23,14 @@ import {
   filter,
   map,
   pluck,
-  tap,
+  // tap,
   withLatestFrom,
-  switchMap,
-  takeUntil
+  switchMap
 } from 'rxjs/operators'
-import { Observable, of as observableOf } from 'rxjs'
+import { EMPTY, Observable, of as observableOf } from 'rxjs'
+// const log = (label: string) => console.log.bind(console, label)
 
-const PASSWORD_COPIED_TIMEOUT = 90 * 1000 // ms
+const COPY_TIMEOUT = 90 * 1000 // ms
 const windowOpenResolved = createActionFactory('WINDOW_OPEN_RESOLVED')
 const windowOpenRejected = createActionFactory('WINDOW_OPEN_REJECTED')
 const timeout = createActionFactory<void>('TIMEOUT')
@@ -38,8 +38,6 @@ const close = createActionFactory<{ cancel: boolean; dirty: boolean }>('CLOSE')
 const open = createActionFactory('OPEN')
 const openNoUsername = createActionFactory('OPEN_NO_USERNAME')
 const openNoPassword = createActionFactory('OPEN_NO_PASSWORD')
-
-// const log = (label: string) => console.log.bind(console, label)
 
 export function openOnOpenProp (_: any, state$: Observable<any>) {
   return state$.pipe(
@@ -54,17 +52,18 @@ export function openOnOpenProp (_: any, state$: Observable<any>) {
   )
 }
 
-export function timeoutAfterPasswordCopied (
-  event$: Observable<StandardAction<any>>
-) {
-  const close$ = event$.pipe(filter(({ type }) => type === 'CLOSE'))
-  return event$.pipe(
-    filter(({ type }) => type === 'PASSWORD_COPIED'),
-    switchMap(() =>
-      observableOf(timeout()).pipe(
-        delay(PASSWORD_COPIED_TIMEOUT),
-        takeUntil(close$)
-      )
+const COPY = [
+  ConnectionFsmState.CopyAny,
+  ConnectionFsmState.CopyPassword,
+  ConnectionFsmState.CopyUsername
+]
+export function timeoutCopy (_: any, state$: Observable<any>) {
+  return state$.pipe(
+    distinctUntilKeyChanged('state'),
+    switchMap(({ state }) =>
+      COPY.indexOf(state) >= 0
+        ? observableOf(timeout()).pipe(delay(COPY_TIMEOUT))
+        : EMPTY
     )
   )
 }

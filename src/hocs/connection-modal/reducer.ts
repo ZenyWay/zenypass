@@ -48,6 +48,7 @@ const connectionFsm: AutomataSpec<ConnectionFsmState> = {
   },
   [ConnectionFsmState.CopyAny]: {
     CANCEL: ConnectionFsmState.Cancelling,
+    TIMEOUT: ConnectionFsmState.Closing,
     CLICK_COPY: ConnectionFsmState.CopyingAny
   },
   [ConnectionFsmState.CopyingAny]: {
@@ -61,6 +62,7 @@ const connectionFsm: AutomataSpec<ConnectionFsmState> = {
       into('manual')(always(true))
     ),
     CANCEL: ConnectionFsmState.Cancelling,
+    TIMEOUT: ConnectionFsmState.Closing,
     CLICK_COPY: ConnectionFsmState.CopyingPassword
   },
   [ConnectionFsmState.CopyingPassword]: {

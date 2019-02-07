@@ -17,7 +17,7 @@
 //
 import reducer, { ConnectionFsmState, ClipboardFsmState } from './reducer'
 import {
-  timeoutAfterPasswordCopied,
+  timeoutCopy,
   closeOnCancellingOrClosing,
   openOnOpenProp,
   openWindowOnUsernameOrPasswordCopiedWhenNotManual
@@ -148,7 +148,7 @@ export function connectionModal<P extends ConnectionModalSFCProps> (
         ['props', 'onClose'],
         (_, { payload: { cancel, dirty } }) => [cancel, dirty]
       ),
-      timeoutAfterPasswordCopied,
+      timeoutCopy,
       closeOnCancellingOrClosing,
       openOnOpenProp,
       openWindowOnUsernameOrPasswordCopiedWhenNotManual
