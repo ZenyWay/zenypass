@@ -70,7 +70,7 @@ export function RecordCard ({
   edit,
   connect,
   pending,
-  cleartext,
+  cleartext: _cleartext,
   errors,
   className,
   onClearClipboard,
@@ -88,7 +88,9 @@ export function RecordCard ({
   ...attrs
 }: RecordCardProps) {
   const t = l10ns[locale]
-  const { _id, name, url, username } = record
+  const { _id, name, url, username, password } = record
+  const hasConnectionButton = password !== '' || !!(url && username)
+  const cleartext = _cleartext || password === ''
   const confirmCancel = pending === 'confirm-cancel'
   return (
     <Card
@@ -140,7 +142,7 @@ export function RecordCard ({
         {!expanded ? (
           <CollapsedCardFooter
             _id={_id}
-            connect={record.password !== ''}
+            hasConnectionButton={hasConnectionButton}
             unrestricted={record.unrestricted}
             pending={pending === 'connect'}
             onConnectRequest={onConnectRequest}
@@ -198,22 +200,24 @@ export function RecordCard ({
           ?
         </p>
       </InfoModal>
-      <ConnectionModal
-        open={connect}
-        onClose={onConnectClose}
-        name={record.name}
-        url={record.url}
-        username={record.username}
-        password={record.password}
-        locale={locale}
-      />
+      {hasConnectionButton ? null : (
+        <ConnectionModal
+          open={connect}
+          onClose={onConnectClose}
+          name={record.name}
+          url={record.url}
+          username={record.username}
+          password={record.password}
+          locale={locale}
+        />
+      )}
     </Card>
   )
 }
 
 interface CollapsedCardFooterProps {
   _id: string
-  connect?: boolean
+  hasConnectionButton?: boolean
   unrestricted?: boolean
   pending?: boolean
   onConnectRequest?: (event?: MouseEvent) => void
@@ -221,7 +225,7 @@ interface CollapsedCardFooterProps {
 
 function CollapsedCardFooter ({
   _id,
-  connect,
+  hasConnectionButton,
   unrestricted,
   pending,
   onConnectRequest
@@ -237,7 +241,7 @@ function CollapsedCardFooter ({
         pending={pending}
         outline
         onClick={onConnectRequest}
-        className={!connect && 'invisible'}
+        className={!hasConnectionButton && 'invisible'}
       />
     </Fragment>
   )

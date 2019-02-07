@@ -156,7 +156,7 @@ const CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
 
 function mapStateToProps ({
   props,
-  password,
+  password: _password,
   changes,
   errors,
   state: recordFsm,
@@ -169,6 +169,7 @@ function mapStateToProps ({
   }
   const { cleartext, edit } = sfcState
   const connect = connectFsm === ConnectFsmState.Connecting
+  const password = _password === void 0 ? record.password : _password
   return {
     ...attrs,
     ...sfcState,

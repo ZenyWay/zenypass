@@ -181,7 +181,7 @@ export function RecordCardBody ({
         value={cleartext ? password : '*****'}
         data-id='password'
         onChange={onChange}
-        onIconClick={onToggleCleartext}
+        onIconClick={password !== '' && onToggleCleartext}
         disabled={!edit || !cleartext}
         locale={locale}
       >

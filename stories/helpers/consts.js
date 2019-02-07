@@ -80,10 +80,11 @@ export const RECORDS = [
 }))
 
 export const EMPTY_RECORD = {
-  _id: '4',
+  _id: '99',
   name: '',
   url: '',
   username: '',
+  password: '',
   keywords: [],
   comments: ''
 }
