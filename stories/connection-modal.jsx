@@ -20,20 +20,23 @@ import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { ConnectionModal } from 'components'
 import { action } from '@storybook/addon-actions'
-import { RECORD, PASSWORD } from './helpers/consts'
+import { RECORDS, PASSWORD } from './helpers/consts'
 
-const { name, url, username } = RECORD
-
-const attrs = {
-  open: true,
+const connections = RECORDS.map(({ name, url, username, password }) => ({
   name,
   url,
   username,
-  password: PASSWORD,
+  password: password === '' ? '' : PASSWORD
+}))
+
+const attrs = {
+  open: true,
   locale: 'fr',
   onClose: action('CLOSE')
 }
 
-storiesOf('ConnectionModal', module).add('default', () => (
-  <ConnectionModal {...attrs} />
-))
+for (const connection of connections) {
+  storiesOf('ConnectionModal', module).add(connection.name, () => (
+    <ConnectionModal {...attrs} {...connection} />
+  ))
+}

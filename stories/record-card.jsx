@@ -22,17 +22,19 @@ import {
   withAuthenticationModal
 } from 'components'
 import { withAuthentication } from 'hocs'
-import { RECORD, EMPTY_RECORD } from './helpers/consts'
+import { RECORDS, EMPTY_RECORD } from './helpers/consts'
 import { USERNAME } from '../stubs/zenypass-service'
 
 const RecordCard = withAuthentication(
   withAuthenticationModal(PrivilegedRecordCard)
 )
 
-storiesOf('RecordCard', module)
-  .add('default', () => (
-    <RecordCard record={RECORD} locale='fr' session={USERNAME} />
+for (const record of RECORDS) {
+  storiesOf('RecordCard', module).add(record.name, () => (
+    <RecordCard record={record} locale='fr' session={USERNAME} />
   ))
-  .add('empty', () => (
-    <RecordCard record={EMPTY_RECORD} locale='fr' session={USERNAME} />
-  ))
+}
+
+storiesOf('RecordCard', module).add('empty', () => (
+  <RecordCard record={EMPTY_RECORD} locale='fr' session={USERNAME} />
+))

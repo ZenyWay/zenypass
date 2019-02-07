@@ -18,30 +18,66 @@ export const PASSWORD = 'P@ssw0rd!'
 
 export const RECORDS = [
   {
-    _id: '1',
-    name: 'Example',
-    url: 'https://example.com',
-    username: 'john.doe@example.com',
+    name: '8-ZenyWay',
+    url: 'https://zenyway.com',
+    username: 'me@zenyway.com',
     keywords: ['comma', 'separated', 'values'],
     comments: '42 is *'
   },
   {
-    _id: '2',
-    name: 'ZenyWay',
-    url: 'https://zenyway.com',
-    username: 'me@zenyway.com',
-    keywords: [],
-    comments: ''
+    name: '1-Note',
+    password: '',
+    comments: 'bla bla bla'
   },
   {
-    _id: '2',
+    name: '2-Wifi',
+    comments:
+      'wifi password, tablet or smartphone password, code for a vault or facility access'
+  },
+  {
+    name: '3-???',
+    username: 'john.doe@example.com',
+    password: '',
+    comments: 'not sure what this combination would be used for...'
+  },
+  {
+    name: '4-Visa',
+    username: 'XXXX XXXX XXXX XXXX',
+    comments: 'csv: 123, expires: 12/42'
+  },
+  {
+    name: '5-Bookmark',
+    url: 'https://zenyway.com',
+    password: ''
+  },
+  {
+    name: '6-???',
+    url: 'https://zenyway.com',
+    comments: 'not sure what this combination would be used for...'
+  },
+  {
+    name: '7-Medium',
+    url: 'https://medium.com',
+    username: 'john.doe@example.com',
+    password: '',
+    comments: 'password-less online account'
+  },
+  {
     name: 'HSVC',
     url: 'https://hvsc.c64.org/',
     username: 'rob.hubbard@hsvc.org',
     keywords: ['sid', 'music', 'collection'],
     comments: 'Rob says wow !'
   }
-]
+].map((record, index) => ({
+  _id: `${index}`,
+  _rev: '1',
+  url: '',
+  username: '',
+  keywords: [],
+  comment: '',
+  ...record
+}))
 
 export const EMPTY_RECORD = {
   _id: '4',
