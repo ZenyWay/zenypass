@@ -116,7 +116,7 @@ export function RecordCard ({
           <RecordCardBody
             locale={locale}
             record={record}
-            id={record._id}
+            id={_id}
             edit={edit}
             cleartext={cleartext}
             pending={pending}

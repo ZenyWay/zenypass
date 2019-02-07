@@ -20,7 +20,6 @@ import {
   clearClipboardOnDirtyConnectCancelOrClearClipboard,
   validateRecordOnThumbnail,
   validateChangeOnChange,
-  validateRecordOnValidChange,
   cleartextOnPendingCleartextOrConnect,
   timeoutCleartextOnReadonlyCleartext,
   saveRecordOnPendingSaveOrDeleteRecord
@@ -243,7 +242,6 @@ export function recordCard<P extends RecordCardSFCProps> (
       clearClipboardOnDirtyConnectCancelOrClearClipboard,
       validateRecordOnThumbnail,
       validateChangeOnChange,
-      validateRecordOnValidChange,
       cleartextOnPendingCleartextOrConnect,
       timeoutCleartextOnReadonlyCleartext,
       saveRecordOnPendingSaveOrDeleteRecord

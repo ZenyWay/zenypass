@@ -59,7 +59,6 @@ const clipboardCleared = createActionFactory('CLIPBOARD_CLEARED')
 const clipboardCopyError = createActionFactory('CLIPBOARD_COPY_ERROR')
 const validChange = createActionFactory('VALID_CHANGE')
 const invalidChange = createActionFactory('INVALID_CHANGE')
-const validRecord = createActionFactory('VALID_RECORD')
 const invalidRecord = createActionFactory('INVALID_RECORD')
 const toggleCleartext = createActionFactory('TOGGLE_CLEARTEXT')
 const cleartextResolved = createActionFactory('CLEARTEXT_RESOLVED')
@@ -129,19 +128,6 @@ export function validateChangeOnChange (
 
 function toChangeError (key: string, value: any, error?: boolean) {
   return { change: { [key]: value }, error: { [key]: !!error } }
-}
-
-export function validateRecordOnValidChange (
-  event$: Observable<StandardAction<any>>,
-  state$: Observable<any>
-) {
-  return event$.pipe(
-    filter(({ type }) => type === 'VALID_CHANGE'),
-    withLatestFrom(state$),
-    pluck('1', 'errors'),
-    filter(errors => !Object.keys(errors).some(key => errors[key])),
-    map(() => validRecord())
-  )
 }
 
 const updateRecord = createPrivilegedRequest(

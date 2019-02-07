@@ -14,10 +14,19 @@
  * Limitations under the License.
  */
 //
+import { ZenypassRecord } from 'zenypass-service'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload, mergePayload, pluck, not } from 'utils'
+import {
+  always,
+  forType,
+  identity,
+  mapPayload,
+  mergePayload,
+  pluck,
+  not
+} from 'utils'
 
 /**
  * type                           url   identifier   password   action after decrypting password   example
@@ -50,7 +59,7 @@ const clearErrors = into('errors')(always(void 0))
 const mergePayloadIntoChanges = <I, O>(project?: (val: I) => O) =>
   propCursor('changes')(mergePayload(project))
 const mergePayloadIntoErrors = <I, O>(project?: (val: I) => O) =>
-  propCursor('errors')(mergePayload(project))
+  propCursor('errors')(updateErrors(project))
 const toggleUnrestricted = propCursor('changes')(
   propCursor('unrestricted')(not())
 )
@@ -83,7 +92,6 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
       mergePayloadIntoChanges(pluck('change')),
       mergePayloadIntoErrors(pluck('error'))
     ],
-    VALID_RECORD: clearErrors,
     TOGGLE_CHECKBOX: toggleUnrestricted,
     TOGGLE_CLEARTEXT: RecordFsmState.EditCleartext,
     TOGGLE_EXPANDED: RecordFsmState.PendingConfirmCancel,
@@ -99,7 +107,6 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
       mergePayloadIntoChanges(pluck('change')),
       mergePayloadIntoErrors(pluck('error'))
     ],
-    VALID_RECORD: clearErrors,
     TOGGLE_CHECKBOX: toggleUnrestricted,
     TOGGLE_CLEARTEXT: RecordFsmState.EditConcealed,
     TOGGLE_EXPANDED: RecordFsmState.PendingConfirmCancel,
@@ -167,6 +174,38 @@ const connectAutomata: AutomataSpec<ConnectFsmState> = {
   [ConnectFsmState.PendingClearClipboard]: {
     CLIPBOARD_CLEARED: ConnectFsmState.Idle,
     CLIPBOARD_COPY_ERROR: ConnectFsmState.Idle // TODO
+  }
+}
+
+type Errors = { [id in keyof ZenypassRecord]: boolean }
+
+/**
+ * @return a reducer that only returns a new `errors` object
+ * when the updates projected from the payload effectively do change its content.
+ * the returned `errors` object only includes props that are `true` if any,
+ * is `undefined` otherwise.
+ */
+function updateErrors<I, O> (project = identity as (val: I) => O) {
+  return function (errors: Partial<Errors>, { payload }) {
+    const _errors = errors || {}
+    const updates = project(payload) || {}
+    let updated = false
+    const result = {}
+    for (const id in updates) {
+      const update = updates[id]
+      if (!_errors[id] !== !update) {
+        if (!updated) {
+          Object.assign(result, errors)
+        } // lazy
+        if (!update) {
+          delete result[id]
+        } else {
+          result[id] = true
+        }
+        updated = true
+      }
+    }
+    return !updated ? errors : Object.keys(result).length ? result : void 0
   }
 }
 
