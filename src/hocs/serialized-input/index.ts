@@ -23,8 +23,8 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { applyHandlerOnEvent, forType, mapPayload, shallowEqual } from 'utils'
-import { tap, distinctUntilChanged } from 'rxjs/operators'
-const log = label => console.log.bind(console, label)
+import { distinctUntilChanged /*, tap */ } from 'rxjs/operators'
+// const log = label => console.log.bind(console, label)
 
 export type SerializedInputProps<
   P extends ControlledInputProps
@@ -77,7 +77,7 @@ export function serializedInput<P extends ControlledInputProps> (
 ): ComponentConstructor<SerializedInputProps<P>> {
   return componentFromEvents<SerializedInputProps<P>, P>(
     ControlledInput,
-    () => tap(log('serialized-input:EVENT:')),
+    // () => tap(log('serialized-input:EVENT:')),
     redux(
       forType('PROPS')(into('props')(mapPayload())),
       applyHandlerOnEvent(
@@ -89,12 +89,12 @@ export function serializedInput<P extends ControlledInputProps> (
         ]
       )
     ),
-    () => tap(log('serialized-input:STATE:')),
+    // () => tap(log('serialized-input:STATE:')),
     connect<SerializedInputState, ControlledInputProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
-    () => distinctUntilChanged(shallowEqual),
-    () => tap(log('serialized-input:VIEW_PROPS:'))
+    () => distinctUntilChanged(shallowEqual)
+    // () => tap(log('serialized-input:VIEW_PROPS:'))
   )
 }
