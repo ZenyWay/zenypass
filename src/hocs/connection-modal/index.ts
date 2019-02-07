@@ -17,8 +17,9 @@
 //
 import reducer, { ConnectionFsmState, ClipboardFsmState } from './reducer'
 import {
+  timeoutAfterPasswordCopied,
   closeOnCancellingOrClosing,
-  hasUsernameOnCopyAny,
+  openOnOpenProp,
   openWindowOnUsernameOrPasswordCopiedWhenNotManual
 } from './effects'
 import componentFromEvents, {
@@ -47,11 +48,13 @@ export type ConnectionModalProps<
 > = ConnectionModalControllerProps & Rest<P, ConnectionModalSFCProps>
 
 export interface ConnectionModalControllerProps {
+  open?: boolean
   onClose?: (abort?: boolean, dirty?: boolean) => void
 }
 
 export interface ConnectionModalSFCProps
   extends ConnectionModalSFCHandlerProps {
+  open?: boolean
   manual?: boolean
   cleartext?: boolean
   error?: boolean
@@ -145,8 +148,9 @@ export function connectionModal<P extends ConnectionModalSFCProps> (
         ['props', 'onClose'],
         (_, { payload: { cancel, dirty } }) => [cancel, dirty]
       ),
+      timeoutAfterPasswordCopied,
       closeOnCancellingOrClosing,
-      hasUsernameOnCopyAny,
+      openOnOpenProp,
       openWindowOnUsernameOrPasswordCopiedWhenNotManual
     ),
     () => tap(log('connection-modal:state:')),

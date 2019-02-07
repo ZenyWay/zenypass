@@ -18,30 +18,54 @@
 import { ConnectionFsmState, ClipboardFsmState } from './reducer'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
+  delay,
   distinctUntilKeyChanged,
   filter,
   map,
   pluck,
   tap,
-  withLatestFrom
+  withLatestFrom,
+  switchMap,
+  takeUntil
 } from 'rxjs/operators'
-import { Observable } from 'rxjs'
+import { Observable, of as observableOf } from 'rxjs'
 
+const PASSWORD_COPIED_TIMEOUT = 90 * 1000 // ms
 const windowOpenResolved = createActionFactory('WINDOW_OPEN_RESOLVED')
 const windowOpenRejected = createActionFactory('WINDOW_OPEN_REJECTED')
+const timeout = createActionFactory<void>('TIMEOUT')
 const close = createActionFactory<{ cancel: boolean; dirty: boolean }>('CLOSE')
-const noUsername = createActionFactory('NO_USERNAME')
+const open = createActionFactory('OPEN')
+const openNoUsername = createActionFactory('OPEN_NO_USERNAME')
+const openNoPassword = createActionFactory('OPEN_NO_PASSWORD')
 
 // const log = (label: string) => console.log.bind(console, label)
 
-export function hasUsernameOnCopyAny (_: any, state$: Observable<any>) {
+export function openOnOpenProp (_: any, state$: Observable<any>) {
   return state$.pipe(
-    distinctUntilKeyChanged('state'),
-    filter(
-      ({ state, props }) =>
-        state === ConnectionFsmState.CopyAny && !props.username
-    ),
-    map(() => noUsername())
+    pluck('props'),
+    distinctUntilKeyChanged('open'),
+    filter(({ open }) => !!open),
+    // assume at most only one of both is missing:
+    // why open the connection-modal if both are ?
+    map(({ username, password }) =>
+      !username ? openNoUsername() : !password ? openNoPassword() : open()
+    )
+  )
+}
+
+export function timeoutAfterPasswordCopied (
+  event$: Observable<StandardAction<any>>
+) {
+  const close$ = event$.pipe(filter(({ type }) => type === 'CLOSE'))
+  return event$.pipe(
+    filter(({ type }) => type === 'PASSWORD_COPIED'),
+    switchMap(() =>
+      observableOf(timeout()).pipe(
+        delay(PASSWORD_COPIED_TIMEOUT),
+        takeUntil(close$)
+      )
+    )
   )
 }
 

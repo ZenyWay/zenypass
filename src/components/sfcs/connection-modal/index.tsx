@@ -88,7 +88,7 @@ export function ConnectionModal ({
   const icons = !manual ? DEFAULT_COPY_BUTTON_ICONS : void 0
   const copyButtonLabel = t('Copy')
   const copyUsername = copy === 'username'
-  const href = copy === 'all' ? url : void 0
+  const href = copy ? url : void 0
 
   return (
     <Modal isOpen={open} toggle={onCancel} {...attrs}>

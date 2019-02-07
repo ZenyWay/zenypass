@@ -140,6 +140,7 @@ export function RecordCard ({
         {!expanded ? (
           <CollapsedCardFooter
             _id={_id}
+            connect={record.password !== ''}
             unrestricted={record.unrestricted}
             pending={pending === 'connect'}
             onConnectRequest={onConnectRequest}
@@ -212,6 +213,7 @@ export function RecordCard ({
 
 interface CollapsedCardFooterProps {
   _id: string
+  connect?: boolean
   unrestricted?: boolean
   pending?: boolean
   onConnectRequest?: (event?: MouseEvent) => void
@@ -219,6 +221,7 @@ interface CollapsedCardFooterProps {
 
 function CollapsedCardFooter ({
   _id,
+  connect,
   unrestricted,
   pending,
   onConnectRequest
@@ -234,6 +237,7 @@ function CollapsedCardFooter ({
         pending={pending}
         outline
         onClick={onConnectRequest}
+        className={!connect && 'invisible'}
       />
     </Fragment>
   )

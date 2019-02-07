@@ -19,6 +19,17 @@ import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
 import { always, forType, mapPayload, mergePayload, pluck, not } from 'utils'
 
+/**
+ * type                           url   identifier   password   action after decrypting password   example
+ * note                           no    no           no         no action
+ * access code                    no    no           yes        open connection modal              wifi password, tablet or smartphone password, code for a vault or facility access
+ * ???                            no    yes          no         no action
+ * credentials                    no    yes          yes        open connection modal              credit card, desktop app
+ * bookmark                       yes   no           no         no action
+ * ???                            yes   no           yes        open connection modal
+ * password-less online account   yes   yes          no         open connection modal              medium
+ * standard online account        yes   yes          yes        open connection modal
+ */
 export enum RecordFsmState {
   Thumbnail = 'THUMBNAIL',
   ReadonlyConcealed = 'READONLY_CONCEALED',

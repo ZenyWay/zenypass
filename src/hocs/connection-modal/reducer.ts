@@ -24,6 +24,7 @@ const mapPayloadIntoWindowref = into('windowref')(mapPayload())
 const clearWindowRef = into('windowref')(always(void 0))
 
 export enum ConnectionFsmState {
+  Closed = 'CLOSED',
   CopyAny = 'COPY_ANY',
   CopyingAny = 'COPYING_ANY',
   CopyPassword = 'COPY_PASSWORD',
@@ -40,9 +41,13 @@ export enum ClipboardFsmState {
 }
 
 const connectionFsm: AutomataSpec<ConnectionFsmState> = {
+  [ConnectionFsmState.Closed]: {
+    OPEN: ConnectionFsmState.CopyAny,
+    OPEN_NO_USERNAME: ConnectionFsmState.CopyPassword,
+    OPEN_NO_PASSWORD: ConnectionFsmState.CopyUsername
+  },
   [ConnectionFsmState.CopyAny]: {
     CANCEL: ConnectionFsmState.Cancelling,
-    NO_USERNAME: ConnectionFsmState.CopyPassword,
     CLICK_COPY: ConnectionFsmState.CopyingAny
   },
   [ConnectionFsmState.CopyingAny]: {
@@ -51,6 +56,10 @@ const connectionFsm: AutomataSpec<ConnectionFsmState> = {
   },
   [ConnectionFsmState.CopyPassword]: {
     WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
+    WINDOW_OPEN_REJECTED: compose.into(0)(
+      clearWindowRef,
+      into('manual')(always(true))
+    ),
     CANCEL: ConnectionFsmState.Cancelling,
     CLICK_COPY: ConnectionFsmState.CopyingPassword
   },
@@ -60,7 +69,12 @@ const connectionFsm: AutomataSpec<ConnectionFsmState> = {
   },
   [ConnectionFsmState.CopyUsername]: {
     WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
+    WINDOW_OPEN_REJECTED: compose.into(0)(
+      clearWindowRef,
+      into('manual')(always(true))
+    ),
     CANCEL: ConnectionFsmState.Cancelling,
+    TIMEOUT: ConnectionFsmState.Closing,
     CLICK_COPY: ConnectionFsmState.CopyingUsername
   },
   [ConnectionFsmState.CopyingUsername]: {
@@ -68,10 +82,10 @@ const connectionFsm: AutomataSpec<ConnectionFsmState> = {
     USERNAME_COPIED: ConnectionFsmState.Closing
   },
   [ConnectionFsmState.Cancelling]: {
-    CLOSE: ConnectionFsmState.CopyAny
+    CLOSE: ConnectionFsmState.Closed
   },
   [ConnectionFsmState.Closing]: {
-    CLOSE: ConnectionFsmState.CopyAny
+    CLOSE: ConnectionFsmState.Closed
   }
 }
 
@@ -86,10 +100,6 @@ const clipboardFsm: AutomataSpec<ClipboardFsmState> = {
 }
 
 const common = {
-  WINDOW_OPEN_REJECTED: compose.into(0)(
-    clearWindowRef,
-    into('manual')(always(true))
-  ),
   TOGGLE_MANUAL: propCursor('manual')(not()),
   TOGGLE_CLEARTEXT: propCursor('cleartext')(not()),
   CLOSE: compose.into(0)(
@@ -101,7 +111,7 @@ const common = {
 }
 
 export default compose.into(0)(
-  createAutomataReducer(connectionFsm, ConnectionFsmState.CopyAny),
+  createAutomataReducer(connectionFsm, ConnectionFsmState.Closed),
   createAutomataReducer(clipboardFsm, ClipboardFsmState.Pristine, {
     key: 'clipboard'
   }),
