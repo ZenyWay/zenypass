@@ -15,7 +15,7 @@
  */
 //
 import { ZenypassRecord } from 'zenypass-service'
-import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
+import createAutomataReducer, { AutomataSpec, Reducer } from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
 import {
@@ -63,11 +63,18 @@ export enum RecordFsmState {
   PendingDelete = 'PENDING_DELETE'
 }
 
-const clearPassword = into('password')(always(void 0))
+const inChanges = prop =>
+  compose<Reducer<any>>(
+    propCursor('changes'),
+    propCursor(prop)
+  )
+const clearPassword = inChanges('password')(always(void 0))
 const clearChanges = into('changes')(always(void 0))
 const clearErrors = into('errors')(always(void 0))
-const mergePayloadIntoChanges = <I, O>(project?: (val: I) => O) =>
-  propCursor('changes')(mergePayload(project))
+const mergePayloadIntoChanges = compose<Reducer<any>>(
+  propCursor('changes'),
+  mergePayload
+)
 const mergePayloadIntoErrors = <I, O>(project?: (val: I) => O) =>
   propCursor('errors')(
     compose(
@@ -75,11 +82,9 @@ const mergePayloadIntoErrors = <I, O>(project?: (val: I) => O) =>
       mapPayload(project)
     )
   )
-const toggleUnrestricted = propCursor('changes')(
-  propCursor('unrestricted')(not())
-)
-const toggleRecordDeleted = propCursor('changes')(propCursor('_deleted')(not()))
-const mapPayloadToPassword = into('password')(mapPayload(alt('')))
+const toggleUnrestricted = inChanges('unrestricted')(not())
+const toggleRecordDeleted = inChanges('_deleted')(not())
+const mapPayloadToPassword = inChanges('password')(mapPayload(alt('')))
 const mapPayloadToError = into('error')(mapPayload())
 const reset = [clearChanges, clearPassword, clearErrors]
 

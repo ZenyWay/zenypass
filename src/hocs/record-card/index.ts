@@ -106,7 +106,6 @@ interface RecordCardState {
   props: RecordCardProps<RecordCardSFCProps>
   state: RecordFsmState
   connect: ConnectFsmState
-  password?: string
   changes?: Partial<ZenypassRecord>
   error?: string
   errors?: Partial<RecordCardSFCErrors>
@@ -155,8 +154,7 @@ const CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
 
 function mapStateToProps ({
   props,
-  password,
-  changes,
+  changes = {},
   errors,
   state: recordFsm,
   connect: connectFsm
@@ -177,12 +175,12 @@ function mapStateToProps ({
         ? record
         : {
             ...record,
-            password: orDefaultString(record.password, password)
+            password: orDefaultString(record.password, changes.password)
           }
       : {
           ...record,
           ...changes,
-          password: orDefaultString(record.password, password)
+          password: orDefaultString(record.password, changes.password)
         }
   }
 }

@@ -150,14 +150,9 @@ export function saveRecordOnPendingSaveOrDeleteRecord (
     ),
     filter<any>(hasHandlerProp('onAuthenticationRequest')),
     switchMap(
-      ({
-        props: { onAuthenticationRequest, session, record },
-        password,
-        changes = {}
-      }) =>
+      ({ props: { onAuthenticationRequest, session, record }, changes = {} }) =>
         updateRecord(toProjection(onAuthenticationRequest), session, true, {
           ...record,
-          password,
           ...changes
         }).pipe(
           delayWhen(recordInProps),
