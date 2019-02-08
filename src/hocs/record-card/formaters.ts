@@ -15,7 +15,6 @@
  */
 
 import { ZenypassRecord } from 'zenypass-service'
-import { throwIfEmpty } from 'rxjs/operators'
 
 const RECORD_FIELD_FORMATERS: Partial<
   { [key in keyof ZenypassRecord]: (value: any) => string }

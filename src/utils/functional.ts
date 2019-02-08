@@ -33,9 +33,21 @@ export function pluck<T> (keys: string[] | string, ...rest: string[]) {
       }
 }
 
+export function alt<T> (alt: T) {
+  return function (val?: T): T {
+    return typeof val === 'undefined' ? alt : val
+  }
+}
+
 export function always<T> (value?: T) {
   return function (): T {
     return value
+  }
+}
+
+export function assign<A extends object> (alt: A) {
+  return function<T extends object> (obj: T): A & T {
+    return Object.assign({}, alt, obj)
   }
 }
 

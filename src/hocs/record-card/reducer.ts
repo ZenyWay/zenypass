@@ -19,14 +19,24 @@ import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
 import {
+  alt,
   always,
+  assign,
   forType,
-  identity,
   mapPayload,
   mergePayload,
   pluck,
   not
 } from 'utils'
+
+const DEFAULT_RECORD_FIELDS: Partial<ZenypassRecord> = {
+  name: '',
+  keywords: [],
+  username: '',
+  // no default for password, handled by service to distinguish between empty or concealed
+  comments: '',
+  unrestricted: false
+}
 
 /**
  * type                           url   identifier   password   action after decrypting password   example
@@ -59,19 +69,28 @@ const clearErrors = into('errors')(always(void 0))
 const mergePayloadIntoChanges = <I, O>(project?: (val: I) => O) =>
   propCursor('changes')(mergePayload(project))
 const mergePayloadIntoErrors = <I, O>(project?: (val: I) => O) =>
-  propCursor('errors')(updateErrors(project))
+  propCursor('errors')(
+    compose(
+      updateErrors,
+      mapPayload(project)
+    )
+  )
 const toggleUnrestricted = propCursor('changes')(
   propCursor('unrestricted')(not())
 )
 const toggleRecordDeleted = propCursor('changes')(propCursor('_deleted')(not()))
-const mapPayloadToPassword = into('password')(mapPayload())
+const mapPayloadToPassword = into('password')(mapPayload(alt('')))
 const mapPayloadToError = into('error')(mapPayload())
 const reset = [clearChanges, clearPassword, clearErrors]
 
 const recordAutomata: AutomataSpec<RecordFsmState> = {
   [RecordFsmState.Thumbnail]: {
     TOGGLE_EXPANDED: RecordFsmState.ReadonlyConcealed,
-    INVALID_RECORD: [RecordFsmState.EditCleartext, mergePayloadIntoErrors()]
+    INVALID_RECORD: [
+      RecordFsmState.EditCleartext,
+      propCursor('password')(alt('')),
+      mergePayloadIntoErrors()
+    ]
   },
   [RecordFsmState.ReadonlyConcealed]: {
     TOGGLE_EXPANDED: RecordFsmState.Thumbnail,
@@ -185,32 +204,33 @@ type Errors = { [id in keyof ZenypassRecord]: boolean }
  * the returned `errors` object only includes props that are `true` if any,
  * is `undefined` otherwise.
  */
-function updateErrors<I, O> (project = identity as (val: I) => O) {
-  return function (errors: Partial<Errors>, { payload }) {
-    const _errors = errors || {}
-    const updates = project(payload) || {}
-    let updated = false
-    const result = {}
-    for (const id in updates) {
-      const update = updates[id]
-      if (!_errors[id] !== !update) {
-        if (!updated) {
-          Object.assign(result, errors)
-        } // lazy
-        if (!update) {
-          delete result[id]
-        } else {
-          result[id] = true
-        }
+function updateErrors (errors: Partial<Errors>, updates = {}) {
+  const _errors = errors || {}
+  let updated = false
+  const result = {}
+  for (const id in updates) {
+    const update = updates[id]
+    if (!_errors[id] !== !update) {
+      if (!updated) {
+        Object.assign(result, errors) // lazy
         updated = true
       }
+      if (!update) {
+        delete result[id]
+      } else {
+        result[id] = true
+      }
     }
-    return !updated ? errors : Object.keys(result).length ? result : void 0
   }
+  return !updated ? errors : Object.keys(result).length ? result : void 0
 }
 
 export default compose.into(0)(
   createAutomataReducer(recordAutomata, RecordFsmState.Thumbnail),
   createAutomataReducer(connectAutomata, ConnectFsmState.Idle, 'connect'),
-  forType('PROPS')(into('props')(mapPayload()))
+  forType('PROPS')(
+    into('props')(
+      mapPayload(propCursor('record')(assign(DEFAULT_RECORD_FIELDS)))
+    )
+  )
 )
