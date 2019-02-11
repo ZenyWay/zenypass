@@ -224,7 +224,12 @@ export function AuthenticationForm ({
         {!info ? null : (
           <small>
             {t(info.message)}.<br />
-            <a href={t(info.link)} target='_blank' className='text-info'>
+            <a
+              href={t(info.link)}
+              target='_blank'
+              rel='noopener noreferer'
+              className='text-info'
+            >
               {t('More information')}...
             </a>
           </small>

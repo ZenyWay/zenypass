@@ -109,10 +109,20 @@ export function DropdownItem ({
   const classNames = classes('dropdown-item', active && 'active', className)
   return !Tag ? (
     <li>
-      <a className={classNames} href={orDefaultHref('a', href)} {...attrs} />
+      <a
+        className={classNames}
+        href={orDefaultHref('a', href)}
+        rel='noopener noreferer'
+        {...attrs}
+      />
     </li>
   ) : (
-    <Tag className={classNames} href={href} {...attrs} />
+    <Tag
+      className={classNames}
+      href={href}
+      rel='noopener noreferer'
+      {...attrs}
+    />
   )
 }
 

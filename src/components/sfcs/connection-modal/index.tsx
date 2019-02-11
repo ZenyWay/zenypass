@@ -113,7 +113,7 @@ export function ConnectionModal ({
               <CopyButton
                 href={href}
                 target='_blank'
-                rel='noopener'
+                rel='noopener noreferer'
                 icons={icons}
                 value={username}
                 color={copyUsername ? 'info' : 'secondary'}
@@ -143,7 +143,7 @@ export function ConnectionModal ({
               <CopyButton
                 href={href}
                 target='_blank'
-                rel='noopener'
+                rel='noopener noreferer'
                 icons={icons}
                 value={password}
                 color='info'

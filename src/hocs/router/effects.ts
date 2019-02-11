@@ -68,8 +68,10 @@ export function openLinkOnCloseInfo (
   )
 }
 
-function openItemLink ({ target, href }: HTMLLinkElement) {
-  window.open(href, target)
+function openItemLink ({ href }: HTMLLinkElement) {
+  const win = window.open()
+  win.opener = null
+  win.location.href = href
 }
 
 export function injectParamsFromUrl () {

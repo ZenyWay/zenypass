@@ -103,6 +103,7 @@ export function RecordCard ({
             id={`collapsed-record-card:${_id}:name`}
             href={url}
             target='_blank'
+            rel='noopener noreferer'
             size='lg'
             color='light'
             disabled={!url}

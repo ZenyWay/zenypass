@@ -108,7 +108,7 @@ export function ConsentsModal ({
                 }}
               />
             </div>
-            <a target='_blank' href={t('tnc-link')}>
+            <a href={t('tnc-link')} target='_blank' rel='noopener noreferer'>
               <small>{t('View the T&Cs online')}</small>
             </a>
           </div>
@@ -130,11 +130,15 @@ export function ConsentsModal ({
           >
             <small className='form-text text-muted'>
               {`${t('Also follow ZenyPass on')} `}
-              <a target='_blank' href={t('info-link')}>
+              <a href={t('info-link')} target='_blank' rel='noopener noreferer'>
                 Medium
               </a>
               {` ${t('and')} `}
-              <a target='_blank' href={t('facebook-link')}>
+              <a
+                href={t('facebook-link')}
+                target='_blank'
+                rel='noopener noreferer'
+              >
                 Facebook
               </a>
               .

@@ -24,6 +24,14 @@ if (process.env.NODE_ENV !== 'production') {
   initDevTools()
 }
 
+/**
+ * warning on unwanted/unsolicited redirect
+ */
+window.addEventListener('beforeunload', function (event) {
+  event.preventDefault()
+  event.returnValue = ''
+})
+
 render(<App />, app)
 
 function removeChildNodes (node: HTMLElement): HTMLElement {

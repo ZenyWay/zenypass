@@ -105,7 +105,9 @@ function openWindow (target, windowref) {
   if (!windowref) {
     // || windowref.closed) {
     if (!target.href) return
-    const ref = window.open(target.href, target.target)
+    const ref = window.open(target.href, target.target || '_blank')
+    // TODO mitigate reverse tab-nabbing (https://www.owasp.org/index.php/Reverse_Tabnabbing)
+    // `ref.opener = null` unfortunately prevents subsequent windowref.focus()
     return ref
   }
   windowref.focus()

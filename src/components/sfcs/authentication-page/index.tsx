@@ -201,7 +201,12 @@ export function AuthenticationPage ({
         </SplashCard>
       </Row>
       <Row className='justify-content-center'>
-        <a href={t('help-link')} target='_blank' className='text-info'>
+        <a
+          href={t('help-link')}
+          target='_blank'
+          rel='noopener noreferer'
+          className='text-info'
+        >
           <small>{t('Online-help')}</small>
         </a>
       </Row>

@@ -107,6 +107,7 @@ function DropdownMenuItems ({
         className={className}
         onClick={onClickItem}
         target={attrs.href && '_blank'}
+        rel='noopener noreferer'
         {...attrs}
       >
         <MenuItemIcon icon={icon} />
