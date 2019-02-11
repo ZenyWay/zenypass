@@ -52,6 +52,10 @@ Limitations under the License.
       /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
     }
 
+    .contain-overscroll-y {
+      overscroll-behavior-y: contain;
+    }
+
     .splash-screen {
       background: radial-gradient(#31c0da, #21A0B7);
       color: white;
@@ -81,7 +85,7 @@ Limitations under the License.
     integrity="sha256-D+ZpDJjhGxa5ffyQkuTvwii4AntFGBZa4jUhSpdlhjM=" crossorigin="anonymous" />
 </head>
 
-<body>
+<body class="contain-overscroll-y">
   <div id="app">
     <div class="splash-screen">
       <div class="container center">
