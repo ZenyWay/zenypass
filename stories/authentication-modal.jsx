@@ -18,16 +18,17 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import withL10n from 'zenyway-storybook-addon-l10n'
 import { AuthenticationModal } from 'components'
 
 const attrs = {
   authenticate: true,
-  locale: 'fr',
   onCancelled: action('CANCEL'),
   onAuthenticated: action('SUBMIT')
 }
 
 storiesOf('AuthenticationModal', module)
-  // onChange prop becomes onInput: https://github.com/infernojs/inferno/issues/1263#issuecomment-361710508
-  // text inputs with both onChange and onInput handlers will malfunction in Storybook (inferno-compat)
-  .add('default', () => <AuthenticationModal {...attrs} />)
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('default', () => ({ locale }) => (
+    <AuthenticationModal locale={locale} {...attrs} />
+  ))

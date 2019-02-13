@@ -18,6 +18,7 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import withL10n from 'zenyway-storybook-addon-l10n'
 import { RecordCardSFC as RecordCard } from 'components'
 import { RECORD } from './helpers/consts'
 
@@ -27,7 +28,6 @@ const privateRecord = {
 }
 
 const attrs = {
-  locale: 'fr',
   onConnectRequest: action('CONNECT_REQUEST'),
   onToggleExpanded: action('TOGGLE_EXPANDED'),
   onToggleCleartext: action('TOGGLE_CLEARTEXT'),
@@ -38,12 +38,16 @@ const attrs = {
 }
 
 storiesOf('RecordCard (SFC)', module)
-  .add('disabled', () => <RecordCard record={RECORD} {...attrs} disabled />)
-  .add('expanded-disabled', () => (
-    <RecordCard record={RECORD} {...attrs} expanded disabled />
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('disabled', () => ({ locale }) => (
+    <RecordCard locale={locale} record={RECORD} {...attrs} disabled />
   ))
-  .add('expanded-disabled-pending-cleartext', () => (
+  .add('expanded-disabled', () => ({ locale }) => (
+    <RecordCard locale={locale} record={RECORD} {...attrs} expanded disabled />
+  ))
+  .add('expanded-disabled-pending-cleartext', () => ({ locale }) => (
     <RecordCard
+      locale={locale}
       record={privateRecord}
       {...attrs}
       expanded
@@ -51,11 +55,19 @@ storiesOf('RecordCard (SFC)', module)
       pending='cleartext'
     />
   ))
-  .add('expanded-disabled-cleartext', () => (
-    <RecordCard record={privateRecord} {...attrs} expanded disabled cleartext />
-  ))
-  .add('expanded-disabled-pending-edit', () => (
+  .add('expanded-disabled-cleartext', () => ({ locale }) => (
     <RecordCard
+      locale={locale}
+      record={privateRecord}
+      {...attrs}
+      expanded
+      disabled
+      cleartext
+    />
+  ))
+  .add('expanded-disabled-pending-edit', () => ({ locale }) => (
+    <RecordCard
+      locale={locale}
       record={privateRecord}
       {...attrs}
       expanded
@@ -63,18 +75,42 @@ storiesOf('RecordCard (SFC)', module)
       pending='edit'
     />
   ))
-  .add('expanded', () => (
-    <RecordCard record={privateRecord} {...attrs} expanded />
+  .add('expanded', () => ({ locale }) => (
+    <RecordCard locale={locale} record={privateRecord} {...attrs} expanded />
   ))
-  .add('expanded-cleartext', () => (
-    <RecordCard record={privateRecord} {...attrs} expanded cleartext />
+  .add('expanded-cleartext', () => ({ locale }) => (
+    <RecordCard
+      locale={locale}
+      record={privateRecord}
+      {...attrs}
+      expanded
+      cleartext
+    />
   ))
-  .add('expanded-pending-save', () => (
-    <RecordCard record={privateRecord} {...attrs} expanded pending='save' />
+  .add('expanded-pending-save', () => ({ locale }) => (
+    <RecordCard
+      locale={locale}
+      record={privateRecord}
+      {...attrs}
+      expanded
+      pending='save'
+    />
   ))
-  .add('expanded-pending-delete', () => (
-    <RecordCard record={privateRecord} {...attrs} expanded pending='delete' />
+  .add('expanded-pending-delete', () => ({ locale }) => (
+    <RecordCard
+      locale={locale}
+      record={privateRecord}
+      {...attrs}
+      expanded
+      pending='delete'
+    />
   ))
-  .add('expanded-pending-cancel', () => (
-    <RecordCard record={privateRecord} {...attrs} expanded pending='cancel' />
+  .add('expanded-pending-cancel', () => ({ locale }) => (
+    <RecordCard
+      locale={locale}
+      record={privateRecord}
+      {...attrs}
+      expanded
+      pending='cancel'
+    />
   ))

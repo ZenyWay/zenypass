@@ -18,6 +18,7 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import withL10n from 'zenyway-storybook-addon-l10n'
 import {
   HomePage as PrivilegedHomePage,
   withAuthenticationModal
@@ -27,7 +28,6 @@ import { MENU } from './helpers/consts'
 import { USERNAME } from '../stubs/zenypass-service'
 
 const attrs = {
-  locale: 'fr',
   session: USERNAME,
   menu: MENU.slice(1), // remove entry from home-page
   onLogout: action('LOGOUT'),
@@ -36,4 +36,6 @@ const attrs = {
 
 const HomePage = withAuthentication(withAuthenticationModal(PrivilegedHomePage))
 
-storiesOf('HomePage', module).add('default', () => <HomePage {...attrs} />)
+storiesOf('HomePage', module)
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('default', () => ({ locale }) => <HomePage locale={locale} {...attrs} />)

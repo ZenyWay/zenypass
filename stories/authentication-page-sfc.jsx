@@ -4,6 +4,7 @@ import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { AuthenticationPageSFC as AuthenticationPage } from 'components'
 import { action } from '@storybook/addon-actions'
+import withL10n from 'zenyway-storybook-addon-l10n'
 import preventDefaultAction from './helpers/prevent-default'
 import { LANG_MENU } from './helpers/consts'
 
@@ -11,7 +12,6 @@ const locales = LANG_MENU.slice()
 delete locales[0].label // remove label of dropdown toggle
 
 const attrs = {
-  locale: 'fr',
   locales: LANG_MENU,
   onCancel: action('CANCEL'),
   onChange: action('CHANGE'),
@@ -41,17 +41,22 @@ const emails = ['jane.doe@example.com', 'rob@hvsc.org']
 const password = 'P@ssw0rd!'
 
 storiesOf('AuthenticationPage (SFC)', module)
-  .add('signup', () => <AuthenticationPage type='signup' {...attrs} />)
-  .add('signup_enabled-email', () => (
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('signup', () => ({ locale }) => (
+    <AuthenticationPage locale={locale} type='signup' {...attrs} />
+  ))
+  .add('signup_enabled-email', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='signup'
       email={emails[0].label}
       enabled='email'
       {...attrs}
     />
   ))
-  .add('signup_error-email', () => (
+  .add('signup_error-email', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='signup'
       email={emails[0].label}
       enabled='email'
@@ -59,16 +64,18 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('signup_enabled-password', () => (
+  .add('signup_enabled-password', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='signup'
       email={emails[0].label}
       enabled='password'
       {...attrs}
     />
   ))
-  .add('signup_error-password', () => (
+  .add('signup_error-password', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='signup'
       email={emails[0].label}
       enabled='password'
@@ -76,8 +83,9 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('signup_enabled', () => (
+  .add('signup_enabled', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='signup'
       email={emails[0].label}
       password={password}
@@ -85,8 +93,9 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('signup_error-confirm', () => (
+  .add('signup_error-confirm', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='signup'
       email={emails[0].label}
       password={password}
@@ -95,8 +104,9 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('signup_consents', () => (
+  .add('signup_consents', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='signup'
       consents
       email={emails[0].label}
@@ -105,8 +115,9 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('signup_consents-terms-checked', () => (
+  .add('signup_consents-terms-checked', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='signup'
       consents
       email={emails[0].label}
@@ -116,8 +127,9 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('signup_pending', () => (
+  .add('signup_pending', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='signup'
       email={emails[0].label}
       password={password}
@@ -126,11 +138,16 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('signin', () => (
-    <AuthenticationPage email={emails[0].label} {...attrs} />
+  .add('signin', () => ({ locale }) => (
+    <AuthenticationPage locale={locale} email={emails[0].label} {...attrs} />
   ))
-  .add('signin_enabled-email', () => (
-    <AuthenticationPage email={emails[0].label} enabled='email' {...attrs} />
+  .add('signin_enabled-email', () => ({ locale }) => (
+    <AuthenticationPage
+      locale={locale}
+      email={emails[0].label}
+      enabled='email'
+      {...attrs}
+    />
   ))
   /*
   .add('signin_enabled-emails', () => (
@@ -142,73 +159,97 @@ storiesOf('AuthenticationPage (SFC)', module)
     />
   ))
   */
-  .add('signin_error-email', () => (
+  .add('signin_error-email', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       email={emails[0].label}
       enabled='email'
       error='email'
       {...attrs}
     />
   ))
-  .add('signin_enabled', () => (
-    <AuthenticationPage email={emails[0].label} enabled {...attrs} />
-  ))
-  .add('signin_created', () => (
-    <AuthenticationPage email={emails[0].label} created enabled {...attrs} />
-  ))
-  .add('signin_error-password', () => (
+  .add('signin_enabled', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
+      email={emails[0].label}
+      enabled
+      {...attrs}
+    />
+  ))
+  .add('signin_created', () => ({ locale }) => (
+    <AuthenticationPage
+      locale={locale}
+      email={emails[0].label}
+      created
+      enabled
+      {...attrs}
+    />
+  ))
+  .add('signin_error-password', () => ({ locale }) => (
+    <AuthenticationPage
+      locale={locale}
       email={emails[0].label}
       enabled
       error='password'
       {...attrs}
     />
   ))
-  .add('signin_error-submit', () => (
+  .add('signin_error-submit', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       email={emails[0].label}
       enabled
       error='submit'
       {...attrs}
     />
   ))
-  .add('signin_error-submit-retry', () => (
+  .add('signin_error-submit-retry', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       email={emails[0].label}
       retry
       error='submit'
       {...attrs}
     />
   ))
-  .add('signin_pending', () => (
+  .add('signin_pending', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       email={emails[0].label}
       password={password}
       pending
       {...attrs}
     />
   ))
-  .add('authorize', () => (
-    <AuthenticationPage type='authorize' email={emails[0].label} {...attrs} />
-  ))
-  .add('authorize_enabled-email', () => (
+  .add('authorize', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
+      type='authorize'
+      email={emails[0].label}
+      {...attrs}
+    />
+  ))
+  .add('authorize_enabled-email', () => ({ locale }) => (
+    <AuthenticationPage
+      locale={locale}
       type='authorize'
       email={emails[0].label}
       enabled='email'
       {...attrs}
     />
   ))
-  .add('authorize_enabled-password', () => (
+  .add('authorize_enabled-password', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='authorize'
       email={emails[0].label}
       enabled='password'
       {...attrs}
     />
   ))
-  .add('authorize_error-password', () => (
+  .add('authorize_error-password', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='authorize'
       email={emails[0].label}
       enabled='password'
@@ -216,8 +257,9 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('authorize_enabled', () => (
+  .add('authorize_enabled', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='authorize'
       email={emails[0].label}
       password={password}
@@ -225,8 +267,9 @@ storiesOf('AuthenticationPage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('authorize_error-token', () => (
+  .add('authorize_error-token', () => ({ locale }) => (
     <AuthenticationPage
+      locale={locale}
       type='authorize'
       email={emails[0].label}
       password={password}

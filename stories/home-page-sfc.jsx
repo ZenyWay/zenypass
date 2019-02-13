@@ -18,13 +18,13 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import withL10n from 'zenyway-storybook-addon-l10n'
 import { RECORDS, MENU } from './helpers/consts'
 import preventDefaultAction from './helpers/prevent-default'
 import { HomePageSFC, withAuthenticationModal } from 'components'
 import { withAuthentication } from 'hocs'
 
 const attrs = {
-  locale: 'fr',
   menu: MENU,
   records: RECORDS,
   onAuthenticationRequest: action('AUTHENTICATION_REQUESTED'),
@@ -38,9 +38,19 @@ const attrs = {
 const HomePage = withAuthentication(withAuthenticationModal(HomePageSFC))
 
 storiesOf('HomePage (SFC)', module)
-  .add('default', () => <HomePage {...attrs} />)
-  .add('filter', () => (
-    <HomePage filter={[false, true, false]} tokens='com zen' {...attrs} />
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('default', () => ({ locale }) => <HomePage locale={locale} {...attrs} />)
+  .add('filter', () => ({ locale }) => (
+    <HomePage
+      locale={locale}
+      filter={[false, true, false]}
+      tokens='com zen'
+      {...attrs}
+    />
   ))
-  .add('busy', () => <HomePage busy {...attrs} />)
-  .add('error', () => <HomePage error='ouch !' {...attrs} />)
+  .add('busy', () => ({ locale }) => (
+    <HomePage locale={locale} busy {...attrs} />
+  ))
+  .add('error', () => ({ locale }) => (
+    <HomePage locale={locale} error='ouch !' {...attrs} />
+  ))

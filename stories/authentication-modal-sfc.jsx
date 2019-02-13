@@ -19,23 +19,32 @@
 import { createElement, Component } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { AuthenticationModalSFC as AuthenticationModal } from 'components'
+import withL10n from 'zenyway-storybook-addon-l10n'
 import { action } from '@storybook/addon-actions'
 import preventDefaultAction from './helpers/prevent-default'
 import { Button, Modal, ModalBody, ModalHeader, ModalFooter } from 'bootstrap'
 
 const attrs = {
   open: true,
-  locale: 'fr',
   onChange: action('CHANGE'),
   onSubmit: preventDefaultAction('SUBMIT'),
   onCancel: action('CANCEL')
 }
 
 storiesOf('AuthenticationModal (SFC)', module)
-  .add('modal-password', () => <AuthenticationModal {...attrs} />)
-  .add('wrong-password', () => <AuthenticationModal {...attrs} error />)
-  .add('pending', () => <AuthenticationModal {...attrs} pending />)
-  .add('modal example', () => <ModalExample buttonLabel='open modal' />)
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('modal-password', () => ({ locale }) => (
+    <AuthenticationModal locale={locale} {...attrs} />
+  ))
+  .add('wrong-password', () => ({ locale }) => (
+    <AuthenticationModal locale={locale} {...attrs} error />
+  ))
+  .add('pending', () => ({ locale }) => (
+    <AuthenticationModal locale={locale} {...attrs} pending />
+  ))
+  .add('modal example', () => ({ locale }) => (
+    <ModalExample locale={locale} buttonLabel='open modal' />
+  ))
 
 // from https://reactstrap.github.io/components/modals/
 class ModalExample extends Component {

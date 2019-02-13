@@ -20,6 +20,7 @@ import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { ConnectionModal } from 'components'
 import { action } from '@storybook/addon-actions'
+import withL10n from 'zenyway-storybook-addon-l10n'
 import { RECORDS, PASSWORD } from './helpers/consts'
 
 const connections = RECORDS.map(({ name, url, username, password }) => ({
@@ -31,12 +32,13 @@ const connections = RECORDS.map(({ name, url, username, password }) => ({
 
 const attrs = {
   open: true,
-  locale: 'fr',
   onClose: action('CLOSE')
 }
 
 for (const connection of connections) {
-  storiesOf('ConnectionModal', module).add(connection.name, () => (
-    <ConnectionModal {...attrs} {...connection} />
-  ))
+  storiesOf('ConnectionModal', module)
+    .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+    .add(connection.name, () => ({ locale }) => (
+      <ConnectionModal locale={locale} {...attrs} {...connection} />
+    ))
 }

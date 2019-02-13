@@ -23,10 +23,10 @@ initDevTools()
 
 addDecorator(withOptions({ theme: dark }))
 
-const stories = require.context('../stories', true, /\.jsx$/)
+const stories = require.context('../stories', false, /\.jsx$/)
 
-function loadStories() {
-  stories.keys().forEach((filename) => stories(filename))
+function loadStories () {
+  stories.keys().forEach(filename => stories(filename))
 }
 
 configure(loadStories, module)

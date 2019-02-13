@@ -20,6 +20,7 @@ import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { ConnectionModalSFC as ConnectionModal } from 'components'
 import { action } from '@storybook/addon-actions'
+import withL10n from 'zenyway-storybook-addon-l10n'
 import { RECORD, PASSWORD } from './helpers/consts'
 import preventDefaultAction from './helpers/prevent-default'
 
@@ -30,7 +31,6 @@ const attrs = {
   name,
   username,
   password: PASSWORD,
-  locale: 'fr',
   onCancel: action('CANCELLED'),
   onToggleManual: action('TOGGLE_MANUAL'),
   onToggleCleartext: action('TOGGLE_CLEARTEXT'),
@@ -41,19 +41,32 @@ const attrs = {
 }
 
 storiesOf('ConnectionModal (SFC)', module)
-  .add('copy-all', () => <ConnectionModal copy='all' {...attrs} />)
-  .add('copy-username', () => (
-    <ConnectionModal warning='password-first' copy='username' {...attrs} />
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('copy-all', () => ({ locale }) => (
+    <ConnectionModal locale={locale} copy='all' {...attrs} />
   ))
-  .add('copy-password', () => (
+  .add('copy-username', () => ({ locale }) => (
     <ConnectionModal
+      locale={locale}
+      warning='password-first'
+      copy='username'
+      {...attrs}
+    />
+  ))
+  .add('copy-password', () => ({ locale }) => (
+    <ConnectionModal
+      locale={locale}
       warning='clipboard-contaminated'
       copy='password'
       {...attrs}
     />
   ))
-  .add('cleartext', () => <ConnectionModal cleartext copy='all' {...attrs} />)
-  .add('manual', () => <ConnectionModal manual copy='all' {...attrs} />)
-  .add('error', () => (
-    <ConnectionModal error='something went wrong' {...attrs} />
+  .add('cleartext', () => ({ locale }) => (
+    <ConnectionModal locale={locale} cleartext copy='all' {...attrs} />
+  ))
+  .add('manual', () => ({ locale }) => (
+    <ConnectionModal locale={locale} manual copy='all' {...attrs} />
+  ))
+  .add('error', () => ({ locale }) => (
+    <ConnectionModal locale={locale} error='something went wrong' {...attrs} />
   ))

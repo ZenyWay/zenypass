@@ -17,6 +17,7 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
+import withL10n from 'zenyway-storybook-addon-l10n'
 import {
   RecordCard as PrivilegedRecordCard,
   withAuthenticationModal
@@ -29,12 +30,18 @@ const RecordCard = withAuthentication(
   withAuthenticationModal(PrivilegedRecordCard)
 )
 
+storiesOf('RecordCard', module)
+
 for (const record of RECORDS) {
-  storiesOf('RecordCard', module).add(record.name, () => (
-    <RecordCard record={record} locale='fr' session={USERNAME} />
-  ))
+  storiesOf('RecordCard', module)
+    .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+    .add(record.name, () => ({ locale }) => (
+      <RecordCard record={record} locale={locale} session={USERNAME} />
+    ))
 }
 
-storiesOf('RecordCard', module).add('empty', () => (
-  <RecordCard record={EMPTY_RECORD} locale='fr' session={USERNAME} />
-))
+storiesOf('RecordCard', module)
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('empty', () => ({ locale }) => (
+    <RecordCard record={EMPTY_RECORD} locale={locale} session={USERNAME} />
+  ))

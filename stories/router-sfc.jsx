@@ -18,12 +18,12 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import withL10n from 'zenyway-storybook-addon-l10n'
 import { RouterSFC, withAuthenticationModal } from 'components'
 import { withAuthentication } from 'hocs'
 import { LANG_MENU, MENU } from './helpers/consts'
 
 const attrs = {
-  locale: 'fr',
   onAuthenticated: action('AUTHENTICATED'),
   onAuthenticationPageType: action('AUTHENTICATION_PAGE_TYPE'),
   onEmailChange: action('EMAIL_CHANGE'),
@@ -37,19 +37,27 @@ INTERNAL_ERROR.status = 500
 const Router = withAuthentication(withAuthenticationModal(RouterSFC))
 
 storiesOf('Router (SFC)', module)
-  .add('/', () => (
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('/', () => ({ locale }) => (
     <Router
+      locale={locale}
       path='/'
       menu={MENU.slice(1) /* remove entry from home-page */}
       {...attrs}
     />
   ))
-  .add('/authorize', () => (
-    <Router path='/authorize' menu={LANG_MENU} {...attrs} />
+  .add('/authorize', () => ({ locale }) => (
+    <Router locale={locale} path='/authorize' menu={LANG_MENU} {...attrs} />
   ))
-  .add('/signup', () => <Router path='/signup' menu={LANG_MENU} {...attrs} />)
-  .add('/signin', () => <Router path='/signin' menu={LANG_MENU} {...attrs} />)
-  .add('/fatal', () => (
-    <Router path='/fatal' error={INTERNAL_ERROR} {...attrs} />
+  .add('/signup', () => ({ locale }) => (
+    <Router locale={locale} path='/signup' menu={LANG_MENU} {...attrs} />
   ))
-  .add('/unknown/route', () => <Router path='/unknown/route' {...attrs} />)
+  .add('/signin', () => ({ locale }) => (
+    <Router locale={locale} path='/signin' menu={LANG_MENU} {...attrs} />
+  ))
+  .add('/fatal', () => ({ locale }) => (
+    <Router locale={locale} path='/fatal' error={INTERNAL_ERROR} {...attrs} />
+  ))
+  .add('/unknown/route', () => ({ locale }) => (
+    <Router locale={locale} path='/unknown/route' {...attrs} />
+  ))

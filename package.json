@@ -4,19 +4,6 @@
   "version": "2.0.0-alpha.10",
   "description": "zero-knowledge open source password manager web-app that syncs and runs everywhere",
   "main": "dist/index.js",
-  "browser": {
-    "bootstrap": "./src/bootstrap",
-    "clipboard-copy": "./src/clipboard-copy",
-    "component-from-events": "./src/component-from-events",
-    "component-from-props": "./src/component-from-props",
-    "components": "./src/components",
-    "create-element": "./src/create-element",
-    "hocs": "./src/hocs",
-    "react-devtools": "inferno-devtools",
-    "static": "./src/static",
-    "utils": "./src/utils",
-    "zenypass-service": "./src/zenypass-service"
-  },
   "scripts": {
     "stage": "bin/git-stage git.zenyway.com:staging-v2.zenypass.git dist staging",
     "deploy": "bin/git-deploy git.zenyway.com:production.zenypass.git dist production",
@@ -65,6 +52,19 @@
   "homepage": "https://github.com/zenyway/zenypass#readme",
   "optionalDependencies": {
     "@zenyway/zenypass-service": "1.0.1"
+  },
+  "browser": {
+    "bootstrap": "./src/bootstrap",
+    "clipboard-copy": "./src/clipboard-copy",
+    "component-from-events": "./src/component-from-events",
+    "component-from-props": "./src/component-from-props",
+    "components": "./src/components",
+    "create-element": "./src/create-element",
+    "hocs": "./src/hocs",
+    "react-devtools": "inferno-devtools",
+    "static": "./src/static",
+    "utils": "./src/utils",
+    "zenypass-service": "./src/zenypass-service"
   },
   "dependencies": {
     "automata-reducer": "3.2.0",
@@ -143,7 +143,8 @@
     "typescript": "3.3.3",
     "uglifyify": "5.0.1",
     "undebuggify": "1.1.0",
-    "watchify": "3.11.0"
+    "watchify": "3.11.0",
+    "zenyway-storybook-addon-l10n": "1.0.1"
   },
   "aliasify": {
     "aliases": {}

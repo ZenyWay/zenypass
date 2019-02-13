@@ -33,6 +33,25 @@ export function pluck<T> (keys: string[] | string, ...rest: string[]) {
       }
 }
 
+export function exclude<T> (...keys: string[])
+export function exclude<T> (keys: string[] | string)
+export function exclude<T> (keys: string[] | string, ...rest: string[]) {
+  return !Array.isArray(keys)
+    ? exclude([keys].concat(rest))
+    : function<O extends T> (obj: O): T {
+        if (arguments.length > 1) {
+          return exclude(keys.slice(1))(arguments[keys[0]])
+        }
+        let res = {} as T
+        for (const key of Object.keys(obj)) {
+          if (keys.indexOf(key) < 0) {
+            res[key] = obj[key]
+          }
+        }
+        return res
+      }
+}
+
 export function alt<T> (alt: T) {
   return function (val?: T): T {
     return typeof val === 'undefined' ? alt : val
