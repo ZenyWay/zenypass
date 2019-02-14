@@ -69,5 +69,10 @@ function compareRecordNames (
   a: Partial<ZenypassRecord>,
   b: Partial<ZenypassRecord>
 ) {
-  return a.name === b.name ? 0 : a.name > b.name ? 1 : -1
+  if (a.name === b.name) {
+    return 0
+  }
+  const aname = a.name.toLowerCase()
+  const bname = b.name.toLowerCase()
+  return aname === bname ? (a.name > b.name ? 1 : -1) : aname > bname ? 1 : -1
 }
