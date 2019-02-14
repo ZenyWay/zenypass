@@ -52,7 +52,7 @@ function withError (
   return errors
 }
 
-const IS_ACCEPTABLE_URL = /^(?:\w+?:\/\/)?(?:[^@\s/?]+@)?(?:(?:[^.:\s/?]+\.)+?[^.:\s/?]{2,})(?::\d{2,5})?(?:[/?][^\s]*)?$/ // 1 = protocol, 2 = auth, 3 = domain, 4 = port, 5 = path
+const IS_ACCEPTABLE_URL = /^(?:\w+?:\/\/)?(?:[^@\s/?]+@)?(?:(?:[^.:\s/?]+\.)+?[^.:\s/?]+)(?::\d{2,5})?(?:[/?][^\s]*)?$/ // 1 = protocol, 2 = auth, 3 = domain, 4 = port, 5 = path
 
 function isAcceptableUrl (value: string) {
   const trimmed = value && value.trim()
