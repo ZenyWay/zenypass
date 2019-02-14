@@ -80,29 +80,31 @@ export function HomePage ({
         </p>
         <ProgressBar ratio={busy && '100'} animated striped bg='info' />
       </InfoModal>
-      <header className='sticky-top'>
-        <NavbarMenu menu={menu} onSelectItem={onSelectMenuItem} />
+      <section>
+        <header className='sticky-top'>
+          <NavbarMenu menu={menu} onSelectItem={onSelectMenuItem} />
+          <div className='container bg-light'>
+            <div className='row justify-content-center'>
+              <SearchField
+                innerRef={onSearchFieldRef}
+                className='col-12 col-xl-6 px-0 mt-1 bg-white'
+                tokens={tokens}
+                debounce={debounce}
+                onChange={onTokensChange}
+                onClear={onTokensClear}
+              />
+            </div>
+          </div>
+        </header>
         <div className='container'>
-          <div className='row justify-content-center'>
-            <SearchField
-              innerRef={onSearchFieldRef}
-              className='col-12 col-xl-6 px-0 mt-1 bg-white'
-              tokens={tokens}
-              debounce={debounce}
-              onChange={onTokensChange}
-              onClear={onTokensClear}
+          <div className={classes('row align-items-start', className)}>
+            <FilteredRecordCards
+              locale={locale}
+              records={records}
+              filter={filter}
+              {...attrs}
             />
           </div>
-        </div>
-      </header>
-      <section className='container'>
-        <div className={classes('row align-items-start', className)}>
-          <FilteredRecordCards
-            locale={locale}
-            records={records}
-            filter={filter}
-            {...attrs}
-          />
         </div>
       </section>
     </Fragment>

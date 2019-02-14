@@ -56,10 +56,13 @@ Limitations under the License.
       overscroll-behavior-y: contain;
     }
 
-    .splash-screen {
-      background: radial-gradient(#31c0da, #21A0B7);
-      color: white;
+    .fullscreen {
       height: 100vh;
+    }
+
+    .splash-screen {
+      background: radial-gradient(#31c0da, #21A0B7) !important;
+      color: white;
     }
 
     .logo {
@@ -77,23 +80,24 @@ Limitations under the License.
       transform: translate(-50%, -50%);
     }
   </style>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
-    crossorigin="anonymous">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
     integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css"
     integrity="sha256-D+ZpDJjhGxa5ffyQkuTvwii4AntFGBZa4jUhSpdlhjM=" crossorigin="anonymous" />
 </head>
 
-<body class="contain-overscroll-y">
-  <div id="app">
+<body class="contain-overscroll-y quicksand">
+  <div id="app" class="bg-light fullscreen">
     <div class="splash-screen">
       <div class="container center">
-        <div class="text-center center quicksand">
+        <div class="text-center center">
           <img src="zenypass-icon-white.svg" class="logo mx-5 mb-2" alt="ZenyPass Logo" />
           <h1 class="mb-5">ZenyPass</h1>
           <noscript>
-            <a class="btn btn-warning font-weight-bold" href="http://www.enable-javascript.com/" target="_blank" rel="noopener noreferer">Please
+            <a class="btn btn-warning font-weight-bold" href="http://www.enable-javascript.com/" target="_blank"
+              rel="noopener noreferer">Please
               enable Javascript</a>
           </noscript>
           <div class="jsonly">

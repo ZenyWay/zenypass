@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement } from 'create-element'
+import { createElement, Fragment } from 'create-element'
 import {
   AuthenticationPageType,
   AuthenticationForm,
@@ -125,7 +125,7 @@ export function AuthenticationPage ({
     isSignup ? 'Already have an account' : "You don't have an account"
   )
   return (
-    <section className='container' {...attrs}>
+    <Fragment>
       <ConsentsModal
         locale={locale}
         display={consents}
@@ -151,77 +151,83 @@ export function AuthenticationPage ({
           {t('Try to authorize this browser to access your account')}.
         </p>
       </InfoModal>
-      <Row className='justify-content-center'>
-        <SplashCard>
-          <CardTitle className='mt-3'>{title}</CardTitle>
-          <CardBody className='px-0'>
-            <AuthenticationForm
-              id='authentication-form'
-              type={type}
-              email={email}
-              password={password}
-              confirm={confirm}
-              token={token}
-              cleartext={cleartext}
-              created={created}
-              error={error}
-              enabled={enabled}
-              locale={locale}
-              onChange={onChange}
-              onEmailInputRef={onEmailInputRef}
-              onPasswordInputRef={onPasswordInputRef}
-              onConfirmInputRef={onConfirmInputRef}
-              onTokenInputRef={onTokenInputRef}
-              onSubmit={onSubmit}
-            />
-            <Dropdown
-              icon={locales[0].icon}
-              outline
-              items={locales.slice(1)}
-              onSelectItem={onSelectLocale}
-              className='float-left'
-            />
-            <Button
-              type='submit'
-              form='authentication-form'
-              color='info'
-              disabled={
-                !enabled ||
-                enabled === 'email' ||
-                (type !== 'signin' && enabled === 'password')
-              }
-              className='float-right'
-            >
-              {!pending ? null : (
-                <FAIcon icon='spinner' animate='spin' className='mr-1' />
-              )}
-              {t(SUBMIT_ACTIONS[type])}
-            </Button>
-          </CardBody>
-        </SplashCard>
-      </Row>
-      <Row className='justify-content-center'>
-        <a
-          href={t('help-link')}
-          target='_blank'
-          rel='noopener noreferer'
-          className='text-info'
-        >
-          <small>{t('Online-help')}</small>
-        </a>
-      </Row>
-      <Row className='justify-content-center'>
-        <SplashFooterCard>
-          <CardBody>
-            <p>
-              <small>{question} ?</small>
-            </p>
-            <Button color='info' onClick={onTogglePageType} disabled={pending}>
-              {t(isSignup ? 'Login' : 'Create your account')}
-            </Button>
-          </CardBody>
-        </SplashFooterCard>
-      </Row>
-    </section>
+      <section className='container' {...attrs}>
+        <Row className='justify-content-center'>
+          <SplashCard>
+            <CardTitle className='mt-3'>{title}</CardTitle>
+            <CardBody className='px-0'>
+              <AuthenticationForm
+                id='authentication-form'
+                type={type}
+                email={email}
+                password={password}
+                confirm={confirm}
+                token={token}
+                cleartext={cleartext}
+                created={created}
+                error={error}
+                enabled={enabled}
+                locale={locale}
+                onChange={onChange}
+                onEmailInputRef={onEmailInputRef}
+                onPasswordInputRef={onPasswordInputRef}
+                onConfirmInputRef={onConfirmInputRef}
+                onTokenInputRef={onTokenInputRef}
+                onSubmit={onSubmit}
+              />
+              <Dropdown
+                icon={locales[0].icon}
+                outline
+                items={locales.slice(1)}
+                onSelectItem={onSelectLocale}
+                className='float-left'
+              />
+              <Button
+                type='submit'
+                form='authentication-form'
+                color='info'
+                disabled={
+                  !enabled ||
+                  enabled === 'email' ||
+                  (type !== 'signin' && enabled === 'password')
+                }
+                className='float-right'
+              >
+                {!pending ? null : (
+                  <FAIcon icon='spinner' animate='spin' className='mr-1' />
+                )}
+                {t(SUBMIT_ACTIONS[type])}
+              </Button>
+            </CardBody>
+          </SplashCard>
+        </Row>
+        <Row className='justify-content-center'>
+          <a
+            href={t('help-link')}
+            target='_blank'
+            rel='noopener noreferer'
+            className='text-info'
+          >
+            <small>{t('Online-help')}</small>
+          </a>
+        </Row>
+        <Row className='justify-content-center'>
+          <SplashFooterCard>
+            <CardBody>
+              <p>
+                <small>{question} ?</small>
+              </p>
+              <Button
+                color='info'
+                onClick={onTogglePageType}
+                disabled={pending}
+              >
+                {t(isSignup ? 'Login' : 'Create your account')}
+              </Button>
+            </CardBody>
+          </SplashFooterCard>
+        </Row>
+      </section>
+    </Fragment>
   )
 }
