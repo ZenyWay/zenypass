@@ -15,44 +15,39 @@
  */
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
-import { RecordCard, Record } from '../record-card'
+import { RecordCard, Record, RecordCardProps } from '../record-card'
 import { classes } from 'utils'
-import { Observer } from 'component-from-props'
 
 export { Record }
 
-export interface FilteredRecordCardsProps {
-  locale: string
-  session: string
+export interface FilteredRecordCardsProps
+  extends Pick<RecordCardProps, Exclude<keyof RecordCardProps, 'record'>> {
   records?: Record[]
   filter?: string[]
   className?: string
-  onAuthenticationRequest?: (res$: Observer<string>) => void
 }
 
 export function FilteredRecordCards ({
-  locale,
-  session,
   records = [],
   filter,
   className,
-  onAuthenticationRequest,
   ...attrs
 }: FilteredRecordCardsProps & { [prop: string]: unknown }) {
   let i = records.length
   if (!i) return null
   const cards = new Array<JSX.Element>(i)
-  const classNames = classes('pl-0', className)
   while (i--) {
     const record = records[i]
+    const classNames = classes(
+      filter && filter[i] === record._id && 'd-none',
+      className
+    )
     cards[i] = (
       <RecordCard
         key={record._id}
-        className={filter && filter[i] === record._id ? 'd-none' : 'd-block'}
-        locale={locale}
-        session={session}
+        className={classNames}
         record={records[i]}
-        onAuthenticationRequest={onAuthenticationRequest}
+        {...attrs}
       />
     )
   }

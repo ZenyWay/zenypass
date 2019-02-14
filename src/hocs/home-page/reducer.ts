@@ -72,7 +72,7 @@ function compareRecordNames (
   if (a.name === b.name) {
     return 0
   }
-  const aname = a.name.toLowerCase()
-  const bname = b.name.toLowerCase()
+  const aname = a.name && a.name.toLowerCase()
+  const bname = b.name && b.name.toLowerCase()
   return aname === bname ? (a.name > b.name ? 1 : -1) : aname > bname ? 1 : -1
 }

@@ -14,29 +14,32 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement } from 'create-element'
+import { createElement, Fragment } from 'create-element'
 import { SearchField } from '../search-field'
 import { NavbarMenu, MenuSpecs, DropdownItemSpec } from '../../navbar-menu'
-import { FilteredRecordCards, Record } from '../filtered-record-cards'
+import {
+  FilteredRecordCards,
+  FilteredRecordCardsProps,
+  Record
+} from '../filtered-record-cards'
 import { InfoModal } from '../info-modal'
 import { ProgressBar } from 'bootstrap'
-import { Observer } from 'component-from-props'
+import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
 export { Record, MenuSpecs, DropdownItemSpec }
 
-export interface HomePageProps {
+export interface HomePageProps extends FilteredRecordCardsProps {
   locale: string
   menu: MenuSpecs
   records?: Record[]
   busy?: boolean
   error?: string
-  session?: string
   filter?: string[]
   tokens?: string[]
   debounce?: string | number
-  onAuthenticationRequest?: (res$: Observer<string>) => void
+  className?: string
   onSelectMenuItem?: (target: HTMLElement) => void
   onSearchFieldRef?: (ref: HTMLElement) => void
   onTokensChange?: (tokens: string[]) => void
@@ -51,10 +54,9 @@ export function HomePage ({
   busy,
   error,
   filter,
-  session,
   tokens,
   debounce,
-  onAuthenticationRequest,
+  className,
   onSelectMenuItem,
   onSearchFieldRef,
   onTokensChange,
@@ -63,9 +65,8 @@ export function HomePage ({
   ...attrs
 }: HomePageProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
-
   return (
-    <section {...attrs}>
+    <Fragment>
       <InfoModal
         locale={locale}
         title={t(busy ? 'Please wait' : 'Error')}
@@ -81,22 +82,29 @@ export function HomePage ({
       </InfoModal>
       <header className='sticky-top'>
         <NavbarMenu menu={menu} onSelectItem={onSelectMenuItem} />
-        <SearchField
-          innerRef={onSearchFieldRef}
-          className='col-12 col-md-6 col-xl-4 px-0 py-1 bg-white'
-          tokens={tokens}
-          debounce={debounce}
-          onChange={onTokensChange}
-          onClear={onTokensClear}
-        />
+        <div className='container'>
+          <div className='row justify-content-center'>
+            <SearchField
+              innerRef={onSearchFieldRef}
+              className='col-12 col-xl-6 px-0 mt-1 bg-white'
+              tokens={tokens}
+              debounce={debounce}
+              onChange={onTokensChange}
+              onClear={onTokensClear}
+            />
+          </div>
+        </div>
       </header>
-      <FilteredRecordCards
-        locale={locale}
-        records={records}
-        filter={filter}
-        session={session}
-        onAuthenticationRequest={onAuthenticationRequest}
-      />
-    </section>
+      <section className='container'>
+        <div className={classes('row align-items-start', className)}>
+          <FilteredRecordCards
+            locale={locale}
+            records={records}
+            filter={filter}
+            {...attrs}
+          />
+        </div>
+      </section>
+    </Fragment>
   )
 }

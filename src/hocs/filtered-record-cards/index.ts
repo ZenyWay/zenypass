@@ -46,7 +46,7 @@ export interface FilteredRecordCardsHocProps {
 }
 
 export interface FilteredRecordCardsSFCProps
-  extends FilteredRecordCardsSFCHandlerProps {
+  extends Partial<FilteredRecordCardsSFCHandlerProps> {
   filter?: string[]
   tokens?: string[]
   debounce?: string | number

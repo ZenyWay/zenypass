@@ -45,14 +45,15 @@ export type RecordCardProps<P extends RecordCardSFCProps> = RecordCardHocProps &
 
 export interface RecordCardHocProps {
   record: Partial<ZenypassRecord>
-  session: string
+  session?: string
+  unrestricted?: boolean
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onError?: (error: any) => void
 }
 
 export interface RecordCardSFCProps
   extends Partial<RecordCardSFCState>,
-    RecordCardSFCHandlerProps {
+    Partial<RecordCardSFCHandlerProps> {
   record: Partial<ZenypassRecord>
 }
 

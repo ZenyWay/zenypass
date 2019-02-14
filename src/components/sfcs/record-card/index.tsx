@@ -50,7 +50,6 @@ export interface RecordCardProps {
   onToggleCheckbox?: (event?: Event) => void
   onSaveRecordRequest?: (event: MouseEvent) => void
   onDeleteRecordRequest?: (event: MouseEvent) => void
-  [prop: string]: unknown
 }
 
 export type PendingState =
@@ -94,7 +93,7 @@ export function RecordCard ({
   const confirmCancel = pending === 'confirm-cancel'
   return (
     <Card
-      className={classes('col-12 col-md-6 col-xl-4 mt-2 px-0', className)}
+      className={classes('col-12 col-md-6 col-xl-4 mt-1 px-0', className)}
       {...attrs}
     >
       <CardHeader className='border-0 bg-white pb-0'>
