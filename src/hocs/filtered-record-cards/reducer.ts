@@ -15,34 +15,21 @@
  */
 
 import getFilterList from './filter'
-import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
 import { always, forType, mapPayload } from 'utils'
 import compose from 'basic-compose'
 
-export type AutomataState = 'disabled' | 'enabled'
-
-const clearFilter = into('filter')(always())
 const updateFilter = into('filter')(({ props, tokens }) =>
   getFilterList(tokens, props.records)
 )
-const clearTokens = into('tokens')(always())
-const mapPayloadIntoTokens = into('tokens')(mapPayload())
-
-const automata: AutomataSpec<AutomataState> = {
-  disabled: {
-    TOGGLE_FILTER: ['enabled', updateFilter]
-  },
-  enabled: {
-    UPDATE: updateFilter,
-    TOKENS: [updateFilter, mapPayloadIntoTokens],
-    CLEAR: [updateFilter, clearTokens],
-    TOGGLE_FILTER: ['disabled', clearFilter, clearTokens]
-  }
-}
 
 export default compose.into(0)(
-  createAutomataReducer(automata, 'disabled'),
-  forType('SEARCH_FIELD_REF')(into('searchField')(mapPayload())),
-  forType('PROPS')(into('props')(mapPayload()))
+  forType('CLEAR')(
+    compose.into(0)(into('tokens')(always()), into('filter')(always()))
+  ),
+  forType('TOKENS')(
+    compose.into(0)(updateFilter, into('tokens')(mapPayload()))
+  ),
+  forType('UPDATE')(compose.into(0)(updateFilter, into('props')(mapPayload()))),
+  forType('SEARCH_FIELD_REF')(into('searchField')(mapPayload()))
 )

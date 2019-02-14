@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement } from 'create-element'
+import { createElement, Fragment } from 'create-element'
 import { RecordCard, Record } from '../record-card'
 import { classes } from 'utils'
 import { Observer } from 'component-from-props'
@@ -25,7 +25,7 @@ export interface FilteredRecordCardsProps {
   locale: string
   session: string
   records?: Record[]
-  filter?: boolean[]
+  filter?: string[]
   className?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
 }
@@ -48,7 +48,7 @@ export function FilteredRecordCards ({
     cards[i] = (
       <RecordCard
         key={record._id}
-        className={filter && filter[i] ? 'd-none' : ''}
+        className={filter && filter[i] === record._id ? 'd-none' : 'd-block'}
         locale={locale}
         session={session}
         record={records[i]}
@@ -56,9 +56,5 @@ export function FilteredRecordCards ({
       />
     )
   }
-  return (
-    <ul {...attrs} className={classNames}>
-      {cards}
-    </ul>
-  )
+  return <Fragment>{cards}</Fragment>
 }

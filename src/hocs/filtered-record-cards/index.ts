@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 
-import reducer, { AutomataState } from './reducer'
+import reducer from './reducer'
 import {
   updateOnNewRecordsProp,
   focusSearchFieldOnMountOrEnable
@@ -28,8 +28,8 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { callHandlerOnEvent } from 'utils'
-// import { tap } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import { tap } from 'rxjs/operators'
+const log = label => console.log.bind(console, label)
 
 const DEFAULT_PROPS: Partial<
   FilteredRecordCardsProps<FilteredRecordCardsSFCProps>
@@ -42,14 +42,12 @@ export type FilteredRecordCardsProps<
 > = FilteredRecordCardsHocProps & Rest<P, FilteredRecordCardsSFCProps>
 
 export interface FilteredRecordCardsHocProps {
-  filter?: boolean
   debounce?: string | number
-  onFilterCancel?: (event: MouseEvent) => void
 }
 
 export interface FilteredRecordCardsSFCProps
   extends FilteredRecordCardsSFCHandlerProps {
-  filter?: boolean[]
+  filter?: string[]
   tokens?: string[]
   debounce?: string | number
 }
@@ -57,31 +55,27 @@ export interface FilteredRecordCardsSFCProps
 export interface FilteredRecordCardsSFCHandlerProps {
   onTokensChange?: (tokens: string[]) => void
   onTokensClear?: (event: MouseEvent) => void
-  onToggleFilter?: (event: MouseEvent) => void
   onSearchFieldRef?: (ref: HTMLElement) => void
 }
 
 interface FilteredRecordCardsState {
   props: FilteredRecordCardsProps<FilteredRecordCardsSFCProps>
-  state: AutomataState
   tokens?: string[]
-  filter?: boolean[]
+  filter?: string[]
 }
 
 function mapStateToProps ({
   props,
-  state,
   tokens,
   filter
 }: FilteredRecordCardsState): Rest<
   FilteredRecordCardsSFCProps,
   FilteredRecordCardsSFCHandlerProps
 > {
-  const { onFilterCancel, ...attrs } = props
   return {
-    ...attrs,
+    ...props,
     tokens,
-    filter: state === 'enabled' ? filter || [] : void 0
+    filter
   }
 }
 
@@ -90,7 +84,6 @@ const mapDispatchToProps: (
 ) => Partial<FilteredRecordCardsSFCHandlerProps> = createActionDispatchers({
   onTokensChange: 'TOKENS',
   onTokensClear: 'CLEAR',
-  onToggleFilter: 'TOGGLE_FILTER',
   onSearchFieldRef: 'SEARCH_FIELD_REF'
 })
 
@@ -102,19 +95,19 @@ export function filteredRecordCards<P extends FilteredRecordCardsSFCProps> (
     P
   >(
     FilteredRecordCardsSFC,
-    // () => tap(log('filtered-record-cards:event:')),
+    () => tap(log('filtered-record-cards:event:')),
     redux(
       reducer,
       focusSearchFieldOnMountOrEnable,
       updateOnNewRecordsProp,
       callHandlerOnEvent('CLEAR', ['props', 'onFilterCancel'])
     ),
-    // () => tap(log('filtered-record-cards:state:')),
+    () => tap(log('filtered-record-cards:state:')),
     connect<FilteredRecordCardsState, FilteredRecordCardsSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // () => tap(log('filtered-record-cards:view-props:'))
+    ),
+    () => tap(log('filtered-record-cards:view-props:'))
   )
   ;(FilteredRecordCards as any).defaultProps = DEFAULT_PROPS as Partial<
     FilteredRecordCardsProps<P>

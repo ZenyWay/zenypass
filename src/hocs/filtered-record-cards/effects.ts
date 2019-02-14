@@ -16,7 +16,7 @@
 
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
-  distinctUntilChanged,
+  distinctUntilKeyChanged,
   filter,
   ignoreElements,
   map,
@@ -47,9 +47,9 @@ export function updateOnNewRecordsProp (
   event$: Observable<StandardAction<any>>
 ) {
   return event$.pipe(
-    filter(({ type, payload }) => type === 'PROPS' && payload.filter),
-    pluck('payload', 'records'),
-    distinctUntilChanged(),
-    map(() => update())
+    filter(({ type }) => type === 'PROPS'),
+    pluck('payload'),
+    distinctUntilKeyChanged('records'),
+    map(props => update(props))
   )
 }

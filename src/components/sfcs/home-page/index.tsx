@@ -16,7 +16,6 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { SearchField } from '../search-field'
-import { FAIconButton } from '../fa-icon'
 import { NavbarMenu, MenuSpecs, DropdownItemSpec } from '../../navbar-menu'
 import { FilteredRecordCards, Record } from '../filtered-record-cards'
 import { InfoModal } from '../info-modal'
@@ -34,7 +33,7 @@ export interface HomePageProps {
   busy?: boolean
   error?: string
   session?: string
-  filter?: boolean[]
+  filter?: string[]
   tokens?: string[]
   debounce?: string | number
   onAuthenticationRequest?: (res$: Observer<string>) => void
@@ -42,7 +41,6 @@ export interface HomePageProps {
   onSearchFieldRef?: (ref: HTMLElement) => void
   onTokensChange?: (tokens: string[]) => void
   onTokensClear?: (event: MouseEvent) => void
-  onToggleFilter?: (event: MouseEvent) => void
   onCloseModal?: (event: MouseEvent) => void
 }
 
@@ -61,7 +59,6 @@ export function HomePage ({
   onSearchFieldRef,
   onTokensChange,
   onTokensClear,
-  onToggleFilter,
   onCloseModal,
   ...attrs
 }: HomePageProps & { [prop: string]: unknown }) {
@@ -83,24 +80,15 @@ export function HomePage ({
         <ProgressBar ratio={busy && '100'} animated striped bg='info' />
       </InfoModal>
       <header className='sticky-top'>
-        <NavbarMenu menu={menu} onSelectItem={onSelectMenuItem}>
-          <FAIconButton
-            icon='search'
-            color='info'
-            onClick={onToggleFilter}
-            active={!!filter}
-          />
-        </NavbarMenu>
-        {!filter ? null : (
-          <SearchField
-            innerRef={onSearchFieldRef}
-            className='col-12 col-md-6 col-xl-4 px-0 py-1 bg-white'
-            tokens={tokens}
-            debounce={debounce}
-            onChange={onTokensChange}
-            onClear={onTokensClear}
-          />
-        )}
+        <NavbarMenu menu={menu} onSelectItem={onSelectMenuItem} />
+        <SearchField
+          innerRef={onSearchFieldRef}
+          className='col-12 col-md-6 col-xl-4 px-0 py-1 bg-white'
+          tokens={tokens}
+          debounce={debounce}
+          onChange={onTokensChange}
+          onClear={onTokensClear}
+        />
       </header>
       <FilteredRecordCards
         locale={locale}
@@ -108,7 +96,6 @@ export function HomePage ({
         filter={filter}
         session={session}
         onAuthenticationRequest={onAuthenticationRequest}
-        onFilterCancel={onToggleFilter}
       />
     </section>
   )
