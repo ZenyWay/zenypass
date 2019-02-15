@@ -113,7 +113,10 @@ export function RecordCard ({
             size='lg'
             color='light'
             disabled={!url}
-            className='text-truncate mw-100'
+            className={classes(
+              'mw-100',
+              expanded ? 'text-break' : 'text-truncate'
+            )}
           >
             {name}
           </Button>
