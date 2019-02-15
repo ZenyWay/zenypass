@@ -56,8 +56,12 @@ Limitations under the License.
       overscroll-behavior-y: contain;
     }
 
-    .fullscreen {
+    .max-visible-height {
       height: 100vh;
+    }
+
+    .fixed-background {
+      background-attachment: fixed;
     }
 
     .splash-screen {
@@ -88,9 +92,9 @@ Limitations under the License.
     integrity="sha256-D+ZpDJjhGxa5ffyQkuTvwii4AntFGBZa4jUhSpdlhjM=" crossorigin="anonymous" />
 </head>
 
-<body class="contain-overscroll-y quicksand">
-  <div id="app" class="bg-light fullscreen">
-    <div class="splash-screen">
+<body class="contain-overscroll-y quicksand bg-light">
+  <div id="app">
+    <div class="splash-screen max-visible-height">
       <div class="container center">
         <div class="text-center center">
           <img src="zenypass-icon-white.svg" class="logo mx-5 mb-2" alt="ZenyPass Logo" />
