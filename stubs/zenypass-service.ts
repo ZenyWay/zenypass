@@ -65,26 +65,62 @@ const AUTHORIZATIONS = [
   },
   {} as KVMap<AuthorizationDoc>
 )
-const RECORD_PASSWORD = 'p@ssW0rd!'
+const RECORD_PASSWORD = 'p@ssW0rd!012345678#012345678990123456789'
 const RECORDS = [
   {
-    _id: '1',
-    name: 'Example',
-    url: 'https://example.com',
-    username: 'john.doe@example.com',
+    name: '8-ZenyWay',
+    url: 'https://zenyway.com',
+    username: 'me@zenyway.com',
     keywords: ['comma', 'separated', 'values'],
     comments: '42 is *'
   },
   {
-    _id: '2',
-    name: 'ZenyWay',
-    url: 'https://zenyway.com',
-    username: 'me@zenyway.com',
-    keywords: [],
-    comments: ''
+    name: '1-Note',
+    password: '',
+    comments: 'bla bla bla'
   },
   {
-    _id: '3',
+    name: '2-Wifi',
+    comments:
+      'wifi password, tablet or smartphone password, code for a vault or facility access'
+  },
+  {
+    name: '3-???',
+    username: 'john.doe@example.com',
+    password: '',
+    comments: 'not sure what this combination would be used for...'
+  },
+  {
+    name: '4-Visa',
+    username: 'XXXX XXXX XXXX XXXX',
+    comments: 'csv: 123, expires: 12/42'
+  },
+  {
+    name: '5-Bookmark',
+    url: 'https://zenyway.com',
+    password: ''
+  },
+  {
+    name: '6-???',
+    url: 'https://zenyway.com',
+    comments: 'not sure what this combination would be used for...'
+  },
+  {
+    name: '7-Medium',
+    url: 'https://medium.com',
+    username: 'john.doe@example.com',
+    password: '',
+    comments: 'password-less online account'
+  },
+  {
+    name: 'Overflow 01234567890123456789 01234567890123456789',
+    url: 'https://overflow.com/01234567890123456789/01234567890123456789',
+    username: 'user012345678901234567890123456789@overflow.com',
+    keywords: ['0123456789', 'abcdefghij', 'klmnopqrst', 'uvwxyz0123456789'],
+    comments:
+      '0123456789 01234567890123456789 0123456789 01234567890123456789 0123456789 01234567890123456789'
+  },
+  {
     name: 'HSVC',
     url: 'https://hvsc.c64.org/',
     username: 'rob.hubbard@hsvc.org',
@@ -92,6 +128,10 @@ const RECORDS = [
     comments: 'Rob says wow !'
   }
 ]
+  .map((record: Partial<ZenypassRecord>, index: number) => ({
+    ...record,
+    _id: '' + index
+  }))
   .map(incrementRecordRevision)
   .reduce(
     function (records, record) {

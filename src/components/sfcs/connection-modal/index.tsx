@@ -28,10 +28,8 @@ import {
   ModalHeader
 } from 'bootstrap'
 import { CopyButton } from '../../copy-button'
-import { IconLabelInputFormGroup } from '../icon-label-form-group'
 import { RecordField } from '../record-field'
 import createL10ns from 'basic-l10n'
-import { Fragment } from 'inferno'
 const debug =
   process.env.NODE_ENV !== 'production' &&
   require('debug')('zenypass:components:access-authorization:')
@@ -96,10 +94,18 @@ export function ConnectionModal ({
         {t('Login')}
       </ModalHeader>
       <ModalBody>
-        <IconLabelInputFormGroup value={name} size='lg' plaintext />
-        {!username ? null : !copy || copy === 'password' ? (
-          <IconLabelInputFormGroup value={username} icon='user' plaintext />
-        ) : (
+        <Button
+          href={url}
+          target='_blank'
+          rel='noopener noreferer'
+          size='lg'
+          color='light'
+          disabled={!url}
+          className='text-truncate mw-100 mb-3'
+        >
+          {name}
+        </Button>
+        {!username ? null : (
           <RecordField
             id='connection-modal-username-field'
             locale={locale}
@@ -109,22 +115,24 @@ export function ConnectionModal ({
             value={username}
             disabled
           >
-            <InputGroupAppend>
-              <CopyButton
-                href={href}
-                target='_blank'
-                rel='noopener noreferer'
-                icons={icons}
-                value={username}
-                color={copyUsername ? 'info' : 'secondary'}
-                outline={!copyUsername}
-                onClick={onClickCopy}
-                onCopied={onUsernameCopied}
-                innerRef={copyUsername && onDefaultActionButtonRef}
-              >
-                {copyButtonLabel}
-              </CopyButton>
-            </InputGroupAppend>
+            {!copy || copy === 'password' ? null : (
+              <InputGroupAppend>
+                <CopyButton
+                  href={href}
+                  target='_blank'
+                  rel='noopener noreferer'
+                  icons={icons}
+                  value={username}
+                  color={copyUsername ? 'info' : 'secondary'}
+                  outline={!copyUsername}
+                  onClick={onClickCopy}
+                  onCopied={onUsernameCopied}
+                  innerRef={copyUsername && onDefaultActionButtonRef}
+                >
+                  {copyButtonLabel}
+                </CopyButton>
+              </InputGroupAppend>
+            )}
           </RecordField>
         )}
         {!copy || copy === 'username' ? null : (

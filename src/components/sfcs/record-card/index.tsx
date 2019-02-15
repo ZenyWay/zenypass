@@ -16,9 +16,16 @@
  */
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
-import { Button, Card, CardHeader, CardBody, CardFooter } from 'bootstrap'
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  InputGroup,
+  Label
+} from 'bootstrap'
 import { FAIconButton, FAIcon } from '../fa-icon'
-import { IconLabelInputFormGroup } from '../icon-label-form-group'
 import { InfoModal } from '../info-modal'
 import { ConnectionModal } from '../../connection-modal'
 import { Errors, Record, RecordCardBody } from './card-body'
@@ -106,6 +113,7 @@ export function RecordCard ({
             size='lg'
             color='light'
             disabled={!url}
+            className='text-truncate mw-100'
           >
             {name}
           </Button>
@@ -129,13 +137,17 @@ export function RecordCard ({
             onSubmit={onSaveRecordRequest}
           />
         ) : (
-          <IconLabelInputFormGroup
+          <InputGroup
             id={`collapsed-record-card:${_id}:username`}
-            value={username}
-            icon='user'
-            plaintext
-            className={classes('mb-0', !username && 'invisible')}
-          />
+            className={classes(!username && 'invisible')}
+          >
+            <Label className='ml-1'>
+              <FAIcon icon='user' />
+            </Label>
+            <span className='form-control form-control-plaintext text-truncate'>
+              {username}
+            </span>
+          </InputGroup>
         )}
       </CardBody>
       <CardFooter className='border-0 bg-white pt-0'>
