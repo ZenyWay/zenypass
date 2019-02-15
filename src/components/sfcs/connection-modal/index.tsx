@@ -181,6 +181,17 @@ export function ConnectionModal ({
           <p class='bg-danger text-white text-center'>ERROR: {error} !</p>
         )}
       </ModalBody>
+      {!url || copy !== 'all' ? null : (
+        <ModalFooter className='justify-content-start'>
+          <small>
+            {t('Tip')}:{' '}
+            {t(
+              'If the website permits, copy your password before your username'
+            )}
+            .
+          </small>
+        </ModalFooter>
+      )}
     </Modal>
   )
 }

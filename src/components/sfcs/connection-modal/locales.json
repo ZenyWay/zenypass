@@ -1,20 +1,24 @@
 {
   "fr": {
     "Close": "Fermer",
+    "Close this dialog box to flush the clipboard": "Fermez cette fenêtre de dialogue pour effacer le contenu du presse-papier",
     "Copy": "Copier",
+    "If the website permits, copy your password before your username": "Si le site le permet, copiez votre mot de passe avant votre identifiant",
     "Login": "Connexion",
     "Missing url!": "Aucune adresse web renseignée !",
     "Missing username!": "Aucun nom d'utilisateur renseigné !",
     "Open Website on Copy": "Ouvrir le site automatiquement",
-    "Close this dialog box to flush the clipboard": "Fermez cette fenêtre de dialogue pour effacer le contenu du presse-papier"
+    "Tip": "Astuce"
   },
   "en": {
     "Close": "Close",
+    "Close this dialog box to flush the clipboard": "Close this dialog box to flush the clipboard",
     "Copy": "Copy",
+    "If the website permits, copy your password before your username": "If the website permits, copy your password before your username",
     "Login": "Login",
     "Missing url!": "Missing url !",
     "Missing username!": "Missing username !",
     "Open Website on Copy": "Open Website on Copy",
-    "Close this dialog box to flush the clipboard": "Close this dialog box to flush the clipboard"
+    "Tip": "Tip"
   }
 }
