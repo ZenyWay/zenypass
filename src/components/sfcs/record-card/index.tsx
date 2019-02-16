@@ -101,7 +101,7 @@ export function RecordCard ({
   const cleartext = _cleartext || password === ''
   const confirmCancel = pending === 'confirm-cancel'
   return (
-    <article className='col-12 col-sm-6 col-lg-4 col-xl-3 p-1'>
+    <article className='col-12 col-sm-6 col-lg-4 col-xl-3 py-1 px-0 px-sm-1'>
       <Card className={classes('px-0 shadow-sm', className)} {...attrs}>
         {edit ? null : (
           <CardHeader className='border-0 bg-white pb-1'>
