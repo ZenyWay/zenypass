@@ -101,142 +101,138 @@ export function RecordCard ({
   const cleartext = _cleartext || password === ''
   const confirmCancel = pending === 'confirm-cancel'
   return (
-    <Card
-      className={classes(
-        'col-12 col-sm-6 col-lg-4 col-xl-3 mt-1 px-0 shadow-sm',
-        className
-      )}
-      {...attrs}
-    >
-      {edit ? null : (
-        <CardHeader className='border-0 bg-white pb-1'>
-          <ButtonGroup className='w-100'>
-            <Button
-              id={`collapsed-record-card:${_id}:name`}
-              href={url}
-              target='_blank'
-              rel='noopener noreferer'
-              outline
-              color={url ? 'info' : 'dark'}
-              disabled={!url}
-              className='flex-fill text-truncate text-left'
-            >
-              <strong>{name}</strong>
-            </Button>
-            {expanded || !hasConnectionButton ? null : (
+    <article className='col-12 col-sm-6 col-lg-4 col-xl-3 p-1'>
+      <Card className={classes('px-0 shadow-sm', className)} {...attrs}>
+        {edit ? null : (
+          <CardHeader className='border-0 bg-white pb-1'>
+            <div className='d-flex'>
               <Button
-                id={`collapsed-record-card:${_id}:connect`}
+                id={`collapsed-record-card:${_id}:name`}
+                href={url}
+                target='_blank'
+                rel='noopener noreferer'
                 outline
-                color='info'
-                onClick={onConnectRequest}
-                className='flex-grow-0 flex-shrink-0 px-2'
+                color={url ? 'info' : 'dark'}
+                disabled={!url}
+                className='border-0 flex-fill mr-2 text-truncate text-left'
               >
-                <FAIcon
-                  icon='lock'
-                  className={classes('mr-1', record.unrestricted && 'd-none')}
-                />
-                <FAIcon
-                  icon={!connecting ? 'external-link' : 'spinner'}
-                  animate={connecting && 'spin'}
-                />
+                <strong>{name}</strong>
               </Button>
-            )}
-          </ButtonGroup>
-        </CardHeader>
-      )}
-      {!expanded ? null : (
-        <CardBody className='py-2'>
-          <RecordCardBody
-            locale={locale}
-            record={record}
-            id={_id}
-            edit={edit}
-            cleartext={cleartext}
-            pending={pending}
-            errors={errors}
-            onChange={onChange}
-            onCopied={onCopied}
-            onToggleCheckbox={onToggleCheckbox}
-            onConnectRequest={onConnectRequest}
-            onToggleCleartext={onToggleCleartext}
-            onSubmit={onSaveRecordRequest}
-          />
-        </CardBody>
-      )}
-      <CardFooter className='border-0 bg-white pt-0'>
-        {!expanded ? (
-          <CollapsedCardFooter
-            _id={_id}
-            username={username}
-            pending={pending}
-            onToggleExpanded={onToggleExpanded}
-          />
-        ) : (
-          <Fragment>
-            <ExpandedCardFooter
+              {expanded || !hasConnectionButton ? null : (
+                <Button
+                  id={`collapsed-record-card:${_id}:connect`}
+                  outline
+                  color='info'
+                  onClick={onConnectRequest}
+                  className='border-0 flex-grow-0 flex-shrink-0 px-2'
+                >
+                  <FAIcon
+                    icon='lock'
+                    className={classes('mr-1', record.unrestricted && 'd-none')}
+                  />
+                  <FAIcon
+                    icon={!connecting ? 'external-link' : 'spinner'}
+                    animate={connecting && 'spin'}
+                  />
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+        )}
+        {!expanded ? null : (
+          <CardBody className='py-2'>
+            <RecordCardBody
               locale={locale}
-              _id={_id}
-              disabled={!edit}
-              unlimited={!errors}
-              pending={pending}
-              onEditRecordRequest={onEditRecordRequest}
-              onDeleteRecordRequest={onDeleteRecordRequest}
-            />
-            <ToggleButton
-              _id={_id}
-              expanded
+              record={record}
+              id={_id}
               edit={edit}
+              cleartext={cleartext}
               pending={pending}
               errors={errors}
+              onChange={onChange}
+              onCopied={onCopied}
+              onToggleCheckbox={onToggleCheckbox}
+              onConnectRequest={onConnectRequest}
+              onToggleCleartext={onToggleCleartext}
+              onSubmit={onSaveRecordRequest}
+            />
+          </CardBody>
+        )}
+        <CardFooter className='border-0 bg-white pt-0'>
+          {!expanded ? (
+            <CollapsedCardFooter
+              _id={_id}
+              username={username}
+              pending={pending}
               onToggleExpanded={onToggleExpanded}
             />
-          </Fragment>
-        )}
-      </CardFooter>
-      <InfoModal
-        expanded={pending === 'clear-clipboard'}
-        title={t('Security advice')}
-        cancel={t('Close')}
-        onCancel={onClearClipboard}
-        onDefaultActionButtonRef={onDefaultActionButtonRef}
-        locale={locale}
-      >
-        <p>
-          {t(
-            'After pasting your password, close this window to clear the clipboard'
+          ) : (
+            <Fragment>
+              <ExpandedCardFooter
+                locale={locale}
+                _id={_id}
+                disabled={!edit}
+                unlimited={!errors}
+                pending={pending}
+                onEditRecordRequest={onEditRecordRequest}
+                onDeleteRecordRequest={onDeleteRecordRequest}
+              />
+              <ToggleButton
+                _id={_id}
+                expanded
+                edit={edit}
+                pending={pending}
+                errors={errors}
+                onToggleExpanded={onToggleExpanded}
+              />
+            </Fragment>
           )}
-          .
-        </p>
-      </InfoModal>
-      <InfoModal
-        expanded={confirmCancel || pending === 'confirm-delete'}
-        title={t('Please confirm')}
-        confirm={t(confirmCancel ? 'Yes: cancel' : 'Yes: delete')}
-        onConfirm={confirmCancel ? onToggleExpanded : onDeleteRecordRequest}
-        onCancel={onEditRecordRequest}
-        locale={locale}
-      >
-        <p>
-          {t(
-            confirmCancel
-              ? 'Do you want to cancel your changes'
-              : 'Do you want to delete this website card'
-          )}{' '}
-          ?
-        </p>
-      </InfoModal>
-      {!hasConnectionButton ? null : (
-        <ConnectionModal
-          open={connect}
-          onClose={onConnectClose}
-          name={record.name}
-          url={record.url}
-          username={record.username}
-          password={record.password}
+        </CardFooter>
+        <InfoModal
+          expanded={pending === 'clear-clipboard'}
+          title={t('Security advice')}
+          cancel={t('Close')}
+          onCancel={onClearClipboard}
+          onDefaultActionButtonRef={onDefaultActionButtonRef}
           locale={locale}
-        />
-      )}
-    </Card>
+        >
+          <p>
+            {t(
+              'After pasting your password, close this window to clear the clipboard'
+            )}
+            .
+          </p>
+        </InfoModal>
+        <InfoModal
+          expanded={confirmCancel || pending === 'confirm-delete'}
+          title={t('Please confirm')}
+          confirm={t(confirmCancel ? 'Yes: cancel' : 'Yes: delete')}
+          onConfirm={confirmCancel ? onToggleExpanded : onDeleteRecordRequest}
+          onCancel={onEditRecordRequest}
+          locale={locale}
+        >
+          <p>
+            {t(
+              confirmCancel
+                ? 'Do you want to cancel your changes'
+                : 'Do you want to delete this website card'
+            )}{' '}
+            ?
+          </p>
+        </InfoModal>
+        {!hasConnectionButton ? null : (
+          <ConnectionModal
+            open={connect}
+            onClose={onConnectClose}
+            name={record.name}
+            url={record.url}
+            username={record.username}
+            password={record.password}
+            locale={locale}
+          />
+        )}
+      </Card>
+    </article>
   )
 }
 

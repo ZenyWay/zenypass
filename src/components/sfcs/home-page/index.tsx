@@ -82,7 +82,11 @@ export function HomePage ({
       </InfoModal>
       <section>
         <header className='sticky-top'>
-          <NavbarMenu menu={menu} onSelectItem={onSelectMenuItem} />
+          <NavbarMenu
+            menu={menu}
+            onSelectItem={onSelectMenuItem}
+            className='shadow'
+          />
           <div className='container-fluid bg-light'>
             <div className='row justify-content-center'>
               <SearchField
@@ -96,7 +100,7 @@ export function HomePage ({
             </div>
           </div>
         </header>
-        <div className='container-fluid'>
+        <div className='container-fluid mt-1'>
           <div
             className={classes(
               'row align-items-start justify-content-center',

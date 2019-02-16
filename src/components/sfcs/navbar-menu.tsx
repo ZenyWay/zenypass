@@ -56,7 +56,7 @@ export function NavbarMenu ({
   ...attrs
 }: NavbarMenuProps) {
   return (
-    <Navbar color='info' dark expand='md' innerRef={innerRef}>
+    <Navbar color='info' dark expand='md' innerRef={innerRef} {...attrs}>
       <NavbarBrand>
         <img height='32' src={ZENYPASS_LOGO_WHITE_SVG} />
         <small>&nbsp;ZenyPass</small>
