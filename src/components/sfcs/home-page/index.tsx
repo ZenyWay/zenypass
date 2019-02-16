@@ -83,11 +83,11 @@ export function HomePage ({
       <section>
         <header className='sticky-top'>
           <NavbarMenu menu={menu} onSelectItem={onSelectMenuItem} />
-          <div className='container bg-light'>
+          <div className='container-fluid bg-light'>
             <div className='row justify-content-center'>
               <SearchField
                 innerRef={onSearchFieldRef}
-                className='col-12 col-xl-6 px-0 mt-1 bg-white'
+                className='col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 px-0 mt-1 shadow-sm'
                 tokens={tokens}
                 debounce={debounce}
                 onChange={onTokensChange}
@@ -96,8 +96,13 @@ export function HomePage ({
             </div>
           </div>
         </header>
-        <div className='container'>
-          <div className={classes('row align-items-start', className)}>
+        <div className='container-fluid'>
+          <div
+            className={classes(
+              'row align-items-start justify-content-center',
+              className
+            )}
+          >
             <FilteredRecordCards
               locale={locale}
               records={records}

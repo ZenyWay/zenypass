@@ -22,6 +22,7 @@ import { CopyButton } from '../../copy-button'
 import { CheckboxRecordField } from '../checkbox-record-field'
 import { FAIconButton } from '../fa-icon'
 import createL10ns, { L10nTag } from 'basic-l10n'
+import { classes } from 'utils'
 const l10ns = createL10ns(require('./locales.json'))
 
 export const DEFAULT_ICONS: Partial<RecordCardBodyIcons> = {
@@ -50,6 +51,7 @@ export interface RecordCardBodyProps {
   errors?: Partial<Errors>
   icons?: Partial<RecordCardBodyIcons>
   placeholders?: Partial<RecordCardBodyPlaceholders>
+  className?: string
   onChange?: (value: string[] | string, target?: HTMLElement) => void
   onCopied?: (success: boolean, target?: HTMLElement) => void
   onToggleCheckbox?: (event?: Event) => void
@@ -125,8 +127,8 @@ export function RecordCardBody ({
         <RecordField
           type='text'
           id={`${key}_name`}
-          className='mb-2'
-          size='lg'
+          className='mt-1 mb-2'
+          bold
           placeholder={getPlaceholder(t, placeholders, 'name')}
           value={name}
           error={!errors.name ? null : t('Please name this card')}
@@ -168,6 +170,7 @@ export function RecordCardBody ({
             onCopied={onCopied}
             className={!username && 'd-none'}
             outline
+            color='info'
           />
         </InputGroupAppend>
       </RecordField>
@@ -192,6 +195,7 @@ export function RecordCardBody ({
               icon='external-link'
               pending={pending === 'connect'}
               outline
+              color='info'
               onClick={onConnectRequest}
             />
           ) : (
@@ -201,6 +205,7 @@ export function RecordCardBody ({
               onCopied={onCopied}
               data-id='password'
               outline
+              color='info'
               className={!password && 'd-none'}
             />
           )}

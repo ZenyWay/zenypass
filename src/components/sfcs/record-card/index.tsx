@@ -18,6 +18,7 @@
 import { createElement, Fragment } from 'create-element'
 import {
   Button,
+  ButtonGroup,
   Card,
   CardHeader,
   CardBody,
@@ -96,34 +97,55 @@ export function RecordCard ({
   const t = l10ns[locale]
   const { _id, name, url, username, password } = record
   const hasConnectionButton = password !== '' || !!(url && username)
+  const connecting = pending === 'connect'
   const cleartext = _cleartext || password === ''
   const confirmCancel = pending === 'confirm-cancel'
   return (
     <Card
-      className={classes('col-12 col-md-6 col-xl-4 mt-1 px-0', className)}
+      className={classes(
+        'col-12 col-sm-6 col-lg-4 col-xl-3 mt-1 px-0 shadow-sm',
+        className
+      )}
       {...attrs}
     >
-      <CardHeader className='border-0 bg-white pb-0'>
-        {edit ? null : (
-          <Button
-            id={`collapsed-record-card:${_id}:name`}
-            href={url}
-            target='_blank'
-            rel='noopener noreferer'
-            size='lg'
-            color='light'
-            disabled={!url}
-            className={classes(
-              'mw-100',
-              expanded ? 'text-break' : 'text-truncate'
+      {edit ? null : (
+        <CardHeader className='border-0 bg-white pb-1'>
+          <ButtonGroup className='w-100'>
+            <Button
+              id={`collapsed-record-card:${_id}:name`}
+              href={url}
+              target='_blank'
+              rel='noopener noreferer'
+              outline
+              color={url ? 'info' : 'dark'}
+              disabled={!url}
+              className='flex-fill text-truncate text-left'
+            >
+              <strong>{name}</strong>
+            </Button>
+            {expanded || !hasConnectionButton ? null : (
+              <Button
+                id={`collapsed-record-card:${_id}:connect`}
+                outline
+                color='info'
+                onClick={onConnectRequest}
+                className='flex-grow-0 flex-shrink-0 px-2'
+              >
+                <FAIcon
+                  icon='lock'
+                  className={classes('mr-1', record.unrestricted && 'd-none')}
+                />
+                <FAIcon
+                  icon={!connecting ? 'external-link' : 'spinner'}
+                  animate={connecting && 'spin'}
+                />
+              </Button>
             )}
-          >
-            {name}
-          </Button>
-        )}
-      </CardHeader>
-      <CardBody className='py-2'>
-        {expanded ? (
+          </ButtonGroup>
+        </CardHeader>
+      )}
+      {!expanded ? null : (
+        <CardBody className='py-2'>
           <RecordCardBody
             locale={locale}
             record={record}
@@ -139,49 +161,37 @@ export function RecordCard ({
             onToggleCleartext={onToggleCleartext}
             onSubmit={onSaveRecordRequest}
           />
-        ) : (
-          <InputGroup
-            id={`collapsed-record-card:${_id}:username`}
-            className={classes(!username && 'invisible')}
-          >
-            <Label className='ml-1'>
-              <FAIcon icon='user' />
-            </Label>
-            <span className='form-control form-control-plaintext text-truncate'>
-              {username}
-            </span>
-          </InputGroup>
-        )}
-      </CardBody>
+        </CardBody>
+      )}
       <CardFooter className='border-0 bg-white pt-0'>
         {!expanded ? (
           <CollapsedCardFooter
             _id={_id}
-            hasConnectionButton={hasConnectionButton}
-            unrestricted={record.unrestricted}
-            pending={pending === 'connect'}
-            onConnectRequest={onConnectRequest}
+            username={username}
+            pending={pending}
+            onToggleExpanded={onToggleExpanded}
           />
         ) : (
-          <ExpandedCardFooter
-            locale={locale}
-            _id={_id}
-            disabled={!edit}
-            unlimited={!errors}
-            pending={pending}
-            onEditRecordRequest={onEditRecordRequest}
-            onDeleteRecordRequest={onDeleteRecordRequest}
-          />
+          <Fragment>
+            <ExpandedCardFooter
+              locale={locale}
+              _id={_id}
+              disabled={!edit}
+              unlimited={!errors}
+              pending={pending}
+              onEditRecordRequest={onEditRecordRequest}
+              onDeleteRecordRequest={onDeleteRecordRequest}
+            />
+            <ToggleButton
+              _id={_id}
+              expanded
+              edit={edit}
+              pending={pending}
+              errors={errors}
+              onToggleExpanded={onToggleExpanded}
+            />
+          </Fragment>
         )}
-        <FAIconButton
-          id={`collapsed-record-card:${_id}:toggle-expand`}
-          icon={!expanded ? 'caret-down' : edit ? 'close' : 'caret-up'}
-          className={classes(
-            'close',
-            ((errors && errors.name) || !!pending) && 'invisible'
-          )}
-          onClick={onToggleExpanded}
-        />
       </CardFooter>
       <InfoModal
         expanded={pending === 'clear-clipboard'}
@@ -232,33 +242,67 @@ export function RecordCard ({
 
 interface CollapsedCardFooterProps {
   _id: string
-  hasConnectionButton?: boolean
-  unrestricted?: boolean
-  pending?: boolean
-  onConnectRequest?: (event?: MouseEvent) => void
+  username: string
+  pending?: PendingState
+  onToggleExpanded?: (event?: MouseEvent) => void
 }
 
 function CollapsedCardFooter ({
   _id,
-  hasConnectionButton,
-  unrestricted,
+  username,
   pending,
-  onConnectRequest
+  onToggleExpanded
 }: CollapsedCardFooterProps) {
+  const invisible = !username && 'invisible'
   return (
-    <Fragment>
-      <span className={classes('py-2 pr-2', unrestricted && 'invisible')}>
-        <FAIcon icon='lock' fw />
+    <InputGroup id={`collapsed-record-card:${_id}:username`}>
+      <Label className={classes('ml-1', invisible)}>
+        <FAIcon icon='user' />
+      </Label>
+      <span
+        className={classes(
+          'form-control form-control-plaintext text-truncate',
+          invisible
+        )}
+      >
+        {username}
       </span>
-      <FAIconButton
-        id={`collapsed-record-card:${_id}:connect`}
-        icon='external-link'
+      <ToggleButton
+        _id={_id}
         pending={pending}
-        outline
-        onClick={onConnectRequest}
-        className={!hasConnectionButton && 'invisible'}
+        onToggleExpanded={onToggleExpanded}
       />
-    </Fragment>
+    </InputGroup>
+  )
+}
+
+interface ToggleButtonProps {
+  _id: string
+  expanded?: boolean
+  edit?: boolean
+  pending?: PendingState
+  errors?: Partial<Errors>
+  onToggleExpanded?: (event?: MouseEvent) => void
+}
+
+function ToggleButton ({
+  _id,
+  expanded,
+  edit,
+  pending,
+  errors,
+  onToggleExpanded
+}: ToggleButtonProps) {
+  return (
+    <FAIconButton
+      id={`collapsed-record-card:${_id}:toggle-expand`}
+      icon={!expanded ? 'caret-down' : edit ? 'close' : 'caret-up'}
+      className={classes(
+        'close py-2',
+        ((errors && errors.name) || !!pending) && 'invisible'
+      )}
+      onClick={onToggleExpanded}
+    />
   )
 }
 
@@ -286,9 +330,10 @@ function ExpandedCardFooter ({
     <FAIconButton
       id={`expanded-record-card:${_id}:edit`}
       icon='edit'
-      pending={!!pending}
+      pending={pending === 'edit'}
+      disabled={!!pending}
       outline
-      className='border-secondary'
+      color={!pending ? 'info' : 'dark'}
       onClick={onEditRecordRequest}
     >
       &nbsp;{t('Edit')}
@@ -301,9 +346,11 @@ function ExpandedCardFooter ({
           form={_id}
           id={`expanded-record-card:${_id}:save`}
           icon='download'
-          pending={!!pending}
+          pending={pending === 'save'}
+          disabled={!!pending}
           outline
-          className='border-secondary mr-2'
+          color={!pending ? 'info' : 'dark'}
+          className='mr-2'
         >
           &nbsp;{t('Save')}
         </FAIconButton>
@@ -311,10 +358,10 @@ function ExpandedCardFooter ({
       <FAIconButton
         id={`expanded-record-card:${_id}:delete`}
         icon='trash'
-        pending={!!pending}
+        pending={pending === 'delete'}
+        disabled={!!pending}
         outline
         color='danger'
-        className='border-secondary'
         onClick={onDeleteRecordRequest}
       />
     </Fragment>

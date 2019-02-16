@@ -20,6 +20,7 @@ import { IconLabelInputGroup } from '../icon-label-input-group'
 import { DropdownItemSpec } from '../../dropdown'
 import { ControlledInput } from '../../controlled-input'
 import createL10ns, { L10nTag } from 'basic-l10n'
+import { classes } from 'utils'
 const l10ns = createL10ns(require('./locales.json'))
 
 export const DEFAULT_ICONS = {
@@ -50,6 +51,7 @@ export interface RecordFieldProps extends InputProps {
   flip?: 'horizontal' | 'vertical' | '' | false
   animate?: 'spin' | 'pulse' | '' | false
   pending?: boolean
+  bold?: boolean
   className?: string
   size?: 'sm' | 'lg' | '' | false
   autocomplete?: 'off' | 'on' | '' | false
@@ -73,6 +75,7 @@ export function RecordField ({
   flip,
   animate,
   pending,
+  bold,
   className,
   size,
   autocomplete = 'off',
@@ -103,7 +106,7 @@ export function RecordField ({
       <ControlledInput
         type={type}
         id={`${id}${type ? `_${type}` : ''}_input`}
-        className='form-control'
+        className={classes('form-control', bold && 'font-weight-bold')}
         invalid={!!error}
         value={value}
         placeholder={

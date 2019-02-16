@@ -30,6 +30,7 @@ export interface CheckboxRecordFieldProps {
   animate?: 'spin' | 'pulse' | '' | false
   label: string
   id: string
+  disabled?: boolean
   className?: string
   [prop: string]: unknown
 }
@@ -42,6 +43,7 @@ export function CheckboxRecordField ({
   animate,
   label,
   id,
+  disabled,
   className,
   ...attrs
 }: CheckboxRecordFieldProps) {
@@ -53,8 +55,9 @@ export function CheckboxRecordField ({
             type='checkbox'
             id={`${id}_checkbox_input`}
             checked={value}
-            color='secondary'
+            color={disabled ? 'dark' : 'info'}
             outline
+            disabled={disabled}
             {...attrs}
           >
             <FAIcon
