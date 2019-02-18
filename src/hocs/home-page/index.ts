@@ -16,7 +16,7 @@
 
 import reducer, { AutomataState } from './reducer'
 import {
-  createRecordOnCreateRecordRequested,
+  createRecordAndScrollToTopOnCreateRecordRequested,
   injectRecordsFromService,
   IndexedRecordEntry
 } from './effects'
@@ -125,7 +125,7 @@ export function homePage<P extends HomePageSFCProps> (
     redux(
       reducer,
       injectRecordsFromService,
-      createRecordOnCreateRecordRequested,
+      createRecordAndScrollToTopOnCreateRecordRequested,
       callHandlerOnEvent('SELECT_MENU_ITEM', ['props', 'onSelectMenuItem']),
       callHandlerOnEvent('ERROR', ['props', 'onError'])
     ),

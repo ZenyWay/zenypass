@@ -53,3 +53,15 @@ export function updateOnNewRecordsProp (
     map(() => update())
   )
 }
+
+export function scrollToTopOnDefinedTokens (
+  event$: Observable<StandardAction<any>>
+) {
+  return event$.pipe(
+    filter(
+      ({ type, payload }) => type === 'TOKENS' && payload && payload.length
+    ),
+    tap(() => scrollTo(0, 0)),
+    ignoreElements()
+  )
+}

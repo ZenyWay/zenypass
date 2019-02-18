@@ -24,6 +24,7 @@ import {
   map,
   pluck,
   switchMap,
+  tap,
   withLatestFrom
 } from 'rxjs/operators'
 import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
@@ -40,7 +41,7 @@ const createRecordRejected = createActionFactory<any>('CREATE_RECORD_REJECTED')
 const updateRecords = createActionFactory('UPDATE_RECORDS')
 const error = createActionFactory('ERROR')
 
-export function createRecordOnCreateRecordRequested (
+export function createRecordAndScrollToTopOnCreateRecordRequested (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -55,6 +56,7 @@ export function createRecordOnCreateRecordRequested (
         true // unrestricted
       ).pipe(
         map(() => createRecordResolved()),
+        tap(() => window.scrollTo(0, 0)),
         catchError(err => observableOf(createRecordRejected(err)))
       )
     ),

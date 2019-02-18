@@ -17,9 +17,9 @@
 import reducer, { FilteredRecordEntry, IndexedRecordEntry } from './reducer'
 import {
   updateOnNewRecordsProp,
-  focusSearchFieldOnMountOrEnable
+  focusSearchFieldOnMountOrEnable,
+  scrollToTopOnDefinedTokens
 } from './effects'
-import { ZenypassRecord } from 'zenypass-service'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -102,6 +102,7 @@ export function filteredRecordCards<P extends FilteredRecordCardsSFCProps> (
       reducer,
       focusSearchFieldOnMountOrEnable,
       updateOnNewRecordsProp,
+      scrollToTopOnDefinedTokens,
       callHandlerOnEvent('CLEAR', ['props', 'onFilterCancel'])
     ),
     () => tap(log('filtered-record-cards:state:')),
