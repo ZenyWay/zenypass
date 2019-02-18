@@ -35,7 +35,7 @@ export interface HomePageProps extends FilteredRecordCardsProps {
   locale: string
   menu: MenuSpecs
   records?: FilteredRecordEntry[]
-  busy?: 'creating-new-records' | 'loading-records'
+  busy?: BusyState
   error?: string
   tokens?: string[]
   debounce?: string | number
@@ -46,6 +46,11 @@ export interface HomePageProps extends FilteredRecordCardsProps {
   onTokensClear?: (event: MouseEvent) => void
   onCloseModal?: (event: MouseEvent) => void
   onModalToggled?: () => void
+}
+
+export enum BusyState {
+  CreatingNewRecord = 'creating-new-record',
+  LoadingRecords = 'loading-records'
 }
 
 export function HomePage ({

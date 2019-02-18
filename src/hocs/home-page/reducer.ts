@@ -21,33 +21,39 @@ import { always, forType, localizeMenu, mapPayload } from 'utils'
 import compose from 'basic-compose'
 import createL10ns from 'basic-l10n'
 
-export type AutomataState = 'idle' | 'busy' | 'error'
+export enum HomePageFsmState {
+  Idle = 'IDLE',
+  PendingRecords = 'PENDING_RECORDS',
+  PendingNewRecord = 'PENDING_NEW_RECORD',
+  NewRecordError = 'NEW_RECORD_ERROR'
+}
 
 const homemenu = localizeMenu(
   createL10ns(require('./locales.json')),
   require('./options.json')
 )
 
-const setBusyCreatingNewRecord = into('busy')(always('creating-new-record'))
-const clearBusy = into('busy')(always())
 const mapPayloadToError = into('error')(mapPayload())
 const clearError = into('error')(always())
 
-const newRecordAutomata: AutomataSpec<AutomataState> = {
-  idle: {
-    CREATE_RECORD_REQUESTED: ['busy', setBusyCreatingNewRecord]
+const automata: AutomataSpec<HomePageFsmState> = {
+  [HomePageFsmState.PendingRecords]: {
+    UPDATE_RECORDS: HomePageFsmState.Idle
   },
-  busy: {
-    CREATE_RECORD_RESOLVED: ['idle', clearBusy],
-    CREATE_RECORD_REJECTED: ['error', clearBusy, mapPayloadToError]
+  [HomePageFsmState.Idle]: {
+    CREATE_RECORD_REQUESTED: HomePageFsmState.PendingNewRecord
   },
-  error: {
-    CANCEL: ['idle', clearError]
+  [HomePageFsmState.PendingNewRecord]: {
+    CREATE_RECORD_RESOLVED: HomePageFsmState.Idle,
+    CREATE_RECORD_REJECTED: [HomePageFsmState.NewRecordError, mapPayloadToError]
+  },
+  [HomePageFsmState.NewRecordError]: {
+    CANCEL: [HomePageFsmState.Idle, clearError]
   }
 }
 
 export default compose.into(0)(
-  createAutomataReducer(newRecordAutomata, 'idle'),
+  createAutomataReducer(automata, HomePageFsmState.PendingRecords),
   forType('UPDATE_RECORDS')(
     into('records')(mapPayload(sortIndexedRecordsByName))
   ),

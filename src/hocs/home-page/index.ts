@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 
-import reducer, { AutomataState } from './reducer'
+import reducer, { HomePageFsmState } from './reducer'
 import {
   createRecordAndScrollToTopOnCreateRecordRequested,
   injectRecordsFromService,
@@ -58,8 +58,13 @@ export interface HomePageSFCProps extends HomePageSFCHandlerProps {
    * an undefined record is pending decypher.
    */
   records?: IndexedRecordEntry[]
-  busy?: string | false
+  busy?: BusyState
   error?: string
+}
+
+export enum BusyState {
+  CreatingNewRecord = 'creating-new-record',
+  LoadingRecords = 'loading-records'
 }
 
 export interface HomePageSFCHandlerProps {
@@ -71,27 +76,30 @@ export interface HomePageSFCHandlerProps {
 interface HomePageState {
   props: HomePageProps<HomePageSFCProps>
   menu: MenuSpec
-  state: AutomataState
+  state: HomePageFsmState
   records?: IndexedRecordEntry[]
-  busy?: BusyState
   error?: string
 }
 
-type BusyState = 'creating-new-record' | 'loading-records'
+const HOME_PAGE_FSM_STATE_TO_BUSY_STATE: {
+  [state in HomePageFsmState]?: BusyState
+} = {
+  [HomePageFsmState.PendingNewRecord]: BusyState.CreatingNewRecord,
+  [HomePageFsmState.PendingRecords]: BusyState.LoadingRecords
+}
 
 function mapStateToProps ({
   props,
   state,
   menu,
   records,
-  busy,
   error
 }: HomePageState): Rest<HomePageSFCProps, HomePageSFCHandlerProps> {
   return {
     ...props, // menu and onSelectMenuItem from props are both overwritten
     menu,
     records,
-    busy: state === 'busy' && busy,
+    busy: HOME_PAGE_FSM_STATE_TO_BUSY_STATE[state],
     error
   }
 }

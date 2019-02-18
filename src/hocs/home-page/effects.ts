@@ -16,7 +16,12 @@
 //
 import zenypass, { ZenypassRecord } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import { createPrivilegedRequest, toProjection, isFunction } from 'utils'
+import {
+  createPrivilegedRequest,
+  toProjection,
+  isFunction,
+  hasEntry
+} from 'utils'
 import {
   catchError,
   distinctUntilKeyChanged,
@@ -33,13 +38,22 @@ import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
 export interface IndexedRecordEntry {
   _id: string
-  record?: ZenypassRecord
+  record?: Partial<ZenypassRecord>
 }
 
 const createRecordResolved = createActionFactory<any>('CREATE_RECORD_RESOLVED')
 const createRecordRejected = createActionFactory<any>('CREATE_RECORD_REJECTED')
 const updateRecords = createActionFactory('UPDATE_RECORDS')
 const error = createActionFactory('ERROR')
+
+const createRecord$ = createPrivilegedRequest<ZenypassRecord>(
+  (username: string) =>
+    observableFrom(
+      zenypass.then(({ getService }) =>
+        getService(username).records.newRecord()
+      )
+    )
+)
 
 export function createRecordAndScrollToTopOnCreateRecordRequested (
   event$: Observable<StandardAction<any>>,
@@ -55,6 +69,14 @@ export function createRecordAndScrollToTopOnCreateRecordRequested (
         username,
         true // unrestricted
       ).pipe(
+        switchMap((record: ZenypassRecord) =>
+          event$.pipe(
+            filter(
+              ({ type, payload }) =>
+                type === 'UPDATE_RECORDS' && includesRecord(payload, record)
+            )
+          )
+        ),
         map(() => createRecordResolved()),
         tap(() => window.scrollTo(0, 0)),
         catchError(err => observableOf(createRecordRejected(err)))
@@ -64,14 +86,17 @@ export function createRecordAndScrollToTopOnCreateRecordRequested (
   )
 }
 
-const createRecord$ = createPrivilegedRequest<ZenypassRecord>(
-  (username: string) =>
-    observableFrom(
-      zenypass.then(({ getService }) =>
-        getService(username).records.newRecord()
-      )
-    )
-)
+function includesRecord (
+  records: IndexedRecordEntry[],
+  record: ZenypassRecord
+) {
+  for (const entry of records) {
+    if (entry._id === record._id) {
+      return true
+    }
+  }
+  return false
+}
 
 const getRecords$ = createPrivilegedRequest((username: string) =>
   observableFrom(zenypass.then(({ getService }) => getService(username))).pipe(
