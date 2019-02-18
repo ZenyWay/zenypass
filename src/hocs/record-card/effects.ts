@@ -101,11 +101,16 @@ export function clearClipboardOnDirtyConnectCancelOrClearClipboard (
   )
 }
 
-export function validateRecordOnThumbnail (_: any, state$: Observable<any>) {
+export function validateRecordOnThumbnailWhenNotPendingContent (
+  _: any,
+  state$: Observable<any>
+) {
   return state$.pipe(
     distinctUntilKeyChanged('state'),
     filter(({ state }) => state === RecordFsmState.Thumbnail),
-    pluck('props', 'record'),
+    pluck('props'),
+    filter(({ pending }) => !pending),
+    pluck('record'),
     map(errorsFromRecord),
     filter(Boolean),
     map(errors => invalidRecord(errors))

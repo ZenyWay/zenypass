@@ -61,6 +61,7 @@ export interface RecordCardProps {
 }
 
 export type PendingState =
+  | 'record'
   | 'cleartext'
   | 'confirm-cancel'
   | 'confirm-delete'
@@ -97,7 +98,9 @@ export function RecordCard ({
   const t = l10ns[locale]
   const { _id, name, url, username, password } = record
   const hasConnectionButton = password !== '' || !!(url && username)
+  const pendingRecord = pending === 'record'
   const connecting = pending === 'connect'
+  const connectingOrPendingRecord = connecting || pendingRecord
   const cleartext = _cleartext || password === ''
   const confirmCancel = pending === 'confirm-cancel'
   return (
@@ -134,11 +137,16 @@ export function RecordCard ({
                 >
                   <FAIcon
                     icon='lock'
-                    className={classes('mr-1', record.unrestricted && 'd-none')}
+                    className={classes(
+                      'mr-1',
+                      (pendingRecord || record.unrestricted) && 'd-none'
+                    )}
                   />
                   <FAIcon
-                    icon={!connecting ? 'external-link' : 'spinner'}
-                    animate={connecting && 'spin'}
+                    icon={
+                      connectingOrPendingRecord ? 'spinner' : 'external-link'
+                    }
+                    animate={connectingOrPendingRecord && 'spin'}
                   />
                 </Button>
               )}
@@ -295,14 +303,16 @@ function ToggleButton ({
   errors,
   onToggleExpanded
 }: ToggleButtonProps) {
+  const icon = !expanded ? 'caret-down' : edit ? 'close' : 'caret-up'
+  const classNames = classes(
+    'close py-2',
+    ((errors && errors.name) || !!pending) && 'invisible'
+  )
   return (
     <FAIconButton
       id={`collapsed-record-card:${_id}:toggle-expand`}
-      icon={!expanded ? 'caret-down' : edit ? 'close' : 'caret-up'}
-      className={classes(
-        'close py-2',
-        ((errors && errors.name) || !!pending) && 'invisible'
-      )}
+      icon={icon}
+      className={classNames}
       onClick={onToggleExpanded}
     />
   )

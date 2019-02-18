@@ -56,6 +56,10 @@ export function isBoolean (v: any): v is Boolean | boolean {
   return typeof (v && v.valueOf()) === 'boolean'
 }
 
+export function isUndefined (v: any): v is void {
+  return typeof v === 'undefined'
+}
+
 export function identity (v: any): typeof v {
   return v
 }

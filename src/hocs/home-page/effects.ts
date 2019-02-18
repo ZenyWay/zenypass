@@ -23,7 +23,6 @@ import {
   filter,
   map,
   pluck,
-  startWith,
   switchMap,
   withLatestFrom
 } from 'rxjs/operators'
@@ -31,23 +30,22 @@ import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
 // const log = (label: string) => console.log.bind(console, label)
 
-const createRecordRequested = createActionFactory<void>(
-  'CREATE_RECORD_REQUESTED'
-)
-const createRecordResolved = createActionFactory<ZenypassRecord>(
-  'CREATE_RECORD_RESOLVED'
-)
+export interface IndexedRecordEntry {
+  _id: string
+  record?: ZenypassRecord
+}
+
+const createRecordResolved = createActionFactory<any>('CREATE_RECORD_RESOLVED')
 const createRecordRejected = createActionFactory<any>('CREATE_RECORD_REJECTED')
 const updateRecords = createActionFactory('UPDATE_RECORDS')
 const error = createActionFactory('ERROR')
 
-export function createRecordOnSelectNewRecordMenuItem (
+export function createRecordOnCreateRecordRequested (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
   return event$.pipe(
-    filter(({ type }) => type === 'SELECT_MENU_ITEM'),
-    filter(({ payload }) => payload.dataset.id === 'new-entry'),
+    filter(({ type }) => type === 'CREATE_RECORD_REQUESTED'),
     withLatestFrom(state$),
     pluck('1', 'props'),
     switchMap(({ onAuthenticationRequest, session: username }) =>
@@ -56,9 +54,8 @@ export function createRecordOnSelectNewRecordMenuItem (
         username,
         true // unrestricted
       ).pipe(
-        map(createRecordResolved),
-        catchError(err => observableOf(createRecordRejected(err))),
-        startWith(createRecordRequested())
+        map(() => createRecordResolved()),
+        catchError(err => observableOf(createRecordRejected(err)))
       )
     ),
     catchError(err => observableOf(error(err)))
@@ -93,10 +90,28 @@ export function injectRecordsFromService (_: any, state$: Observable<any>) {
         username,
         true // unrestricted
       ).pipe(
-        map(updateRecords),
+        map((records: IndexedMap<ZenypassRecord>) =>
+          updateRecords(toIndexedRecordsArray(records))
+        ),
         catchError(err => observableOf(error(err)))
       )
     ),
     catchError(err => observableOf(error(err)))
   )
+}
+
+type IndexedMap<T> = { [key: string]: T }
+
+function toIndexedRecordsArray (
+  records: IndexedMap<ZenypassRecord>
+): IndexedRecordEntry[] {
+  const _ids = Object.keys(records)
+  let i = _ids.length
+  const result = new Array(i) as IndexedRecordEntry[]
+  while (i--) {
+    const _id = _ids[i]
+    const record = records[_id]
+    result[i] = { _id, record }
+  }
+  return result
 }

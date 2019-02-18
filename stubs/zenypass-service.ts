@@ -27,15 +27,18 @@ import {
   first,
   map,
   scan,
+  share,
   switchMap,
   take,
-  takeUntil
+  takeUntil,
+  tap
 } from 'rxjs/operators'
 import {
   AuthorizationDoc,
   PouchDoc,
   ZenypassRecord
 } from '@zenyway/zenypass-service'
+const log = label => console.log.bind(console, label)
 
 export { AuthorizationDoc, PouchDoc, ZenypassRecord }
 export type KVMap<V> = { [key: string]: V }
@@ -141,7 +144,7 @@ const RECORDS = [
     {} as KVMap<Partial<ZenypassRecord>>
   )
 
-const EMPTY_RECORD = incrementRecordRevision({ _id: '4' } as ZenypassRecord)
+const EMPTY_RECORD = incrementRecordRevision({ _id: '999' } as ZenypassRecord)
 
 export default Promise.resolve({
   signup,
@@ -220,7 +223,8 @@ const records$ = recordsUpdate$.pipe(
   scan<RecordsUpdate, KVMap<Partial<ZenypassRecord>>>(
     (records, update) => update(records),
     {}
-  )
+  ),
+  share()
 )
 
 const getRecord = accessRecordService<PouchDoc, ZenypassRecord>(({ _id }) =>
@@ -242,12 +246,20 @@ function updateRecords (
 }
 
 const newRecord = accessRecordService<void, ZenypassRecord>(function () {
-  updateRecords(records => ({
-    ...records,
-    [EMPTY_RECORD._id]: EMPTY_RECORD
-  }))
-  return Promise.resolve(EMPTY_RECORD)
+  updateRecords(function (records) {
+    const _id = '' + (getMaxId(records) + 1)
+    const empty = incrementRecordRevision({ _id } as ZenypassRecord)
+    return { ...records, [_id]: empty }
+  })
+  return Promise.resolve() as Promise<any>
 })
+
+function getMaxId (records: KVMap<Partial<ZenypassRecord>>): number {
+  const _ids = Object.keys(records)
+    .map(_id => Number.parseInt(_id))
+    .sort()
+  return _ids[_ids.length - 1]
+}
 
 const putRecord = accessRecordService<ZenypassRecord, ZenypassRecord>(function (
   record

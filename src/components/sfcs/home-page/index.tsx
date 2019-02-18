@@ -20,6 +20,7 @@ import { NavbarMenu, MenuSpecs, DropdownItemSpec } from '../../navbar-menu'
 import {
   FilteredRecordCards,
   FilteredRecordCardsProps,
+  FilteredRecordEntry,
   Record
 } from '../filtered-record-cards'
 import { InfoModal } from '../info-modal'
@@ -28,15 +29,14 @@ import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
-export { Record, MenuSpecs, DropdownItemSpec }
+export { FilteredRecordEntry, Record, MenuSpecs, DropdownItemSpec }
 
 export interface HomePageProps extends FilteredRecordCardsProps {
   locale: string
   menu: MenuSpecs
-  records?: Record[]
-  busy?: boolean
+  records?: FilteredRecordEntry[]
+  busy?: 'creating-new-records' | 'loading-records'
   error?: string
-  filter?: string[]
   tokens?: string[]
   debounce?: string | number
   className?: string
@@ -45,6 +45,7 @@ export interface HomePageProps extends FilteredRecordCardsProps {
   onTokensChange?: (tokens: string[]) => void
   onTokensClear?: (event: MouseEvent) => void
   onCloseModal?: (event: MouseEvent) => void
+  onModalToggled?: () => void
 }
 
 export function HomePage ({
@@ -53,7 +54,6 @@ export function HomePage ({
   records = [],
   busy,
   error,
-  filter,
   tokens,
   debounce,
   className,
@@ -62,6 +62,7 @@ export function HomePage ({
   onTokensChange,
   onTokensClear,
   onCloseModal,
+  onModalToggled,
   ...attrs
 }: HomePageProps & { [prop: string]: unknown }) {
   const t = l10ns[locale]
@@ -72,13 +73,21 @@ export function HomePage ({
         title={t(busy ? 'Please wait' : 'Error')}
         expanded={!!error || !!busy}
         onCancel={!busy && onCloseModal}
+        onOpened={onModalToggled}
+        onClosed={onModalToggled}
       >
-        <p>
-          {t(busy ? 'Creating new card' : 'Sorry, something went wrong')}...
-          <br />
-          {busy ? null : error}
-        </p>
-        <ProgressBar ratio={busy && '100'} animated striped bg='info' />
+        {busy ? (
+          <Fragment>
+            <p>{t(busy)}</p>
+            <ProgressBar ratio={'100'} animated striped bg='info' />
+          </Fragment>
+        ) : (
+          <p>
+            {t('Sorry, something went wrong')}
+            <br />
+            {error}
+          </p>
+        )}
       </InfoModal>
       <section>
         <header className='sticky-top'>
@@ -107,12 +116,7 @@ export function HomePage ({
               className
             )}
           >
-            <FilteredRecordCards
-              locale={locale}
-              records={records}
-              filter={filter}
-              {...attrs}
-            />
+            <FilteredRecordCards locale={locale} records={records} {...attrs} />
           </div>
         </div>
       </section>

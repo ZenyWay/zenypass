@@ -15,14 +15,7 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import {
-  Button,
-  ProgressBar,
-  Modal,
-  ModalBody,
-  ModalFooter,
-  ModalHeader
-} from 'bootstrap'
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'bootstrap'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
@@ -35,6 +28,8 @@ export interface InfoModalProps {
   children?: any
   onCancel?: (event: MouseEvent) => void
   onConfirm?: (event: MouseEvent) => void
+  onOpened?: () => void
+  onClosed?: () => void
   onDefaultActionButtonRef?: (element: HTMLElement) => void
   [prop: string]: unknown
 }
@@ -47,13 +42,20 @@ export function InfoModal ({
   confirm,
   onCancel,
   onConfirm,
+  onOpened,
+  onClosed,
   onDefaultActionButtonRef,
   ...attrs
 }: InfoModalProps) {
   const t = l10ns[locale]
 
   return (
-    <Modal isOpen={expanded} toggle={onCancel}>
+    <Modal
+      isOpen={expanded}
+      toggle={onCancel}
+      onOpened={onOpened}
+      onClosed={onClosed}
+    >
       {!title ? null : (
         <ModalHeader toggle={onCancel} className='bg-info text-white'>
           {title}...

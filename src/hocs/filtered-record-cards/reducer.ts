@@ -14,22 +14,27 @@
  * Limitations under the License.
  */
 
-import getFilterList from './filter'
+import getFilteredRecords, {
+  FilteredRecordEntry,
+  IndexedRecordEntry
+} from './filter'
 import { into } from 'basic-cursors'
 import { always, forType, mapPayload } from 'utils'
 import compose from 'basic-compose'
 
-const updateFilter = into('filter')(({ props, tokens }) =>
-  getFilterList(tokens, props.records)
-)
+export { FilteredRecordEntry, IndexedRecordEntry }
+
+const updateFilter = ({ props, tokens }: any) =>
+  getFilteredRecords(tokens, props.records)
 
 export default compose.into(0)(
   forType('CLEAR')(
-    compose.into(0)(into('tokens')(always()), into('filter')(always()))
+    compose.into(0)(into('tokens')(always()), into('records')(always()))
   ),
   forType('TOKENS')(
-    compose.into(0)(updateFilter, into('tokens')(mapPayload()))
+    compose.into(0)(into('records')(updateFilter), into('tokens')(mapPayload()))
   ),
-  forType('UPDATE')(compose.into(0)(updateFilter, into('props')(mapPayload()))),
+  forType('UPDATE')(into('records')(updateFilter)),
+  forType('PROPS')(into('props')(mapPayload())),
   forType('SEARCH_FIELD_REF')(into('searchField')(mapPayload()))
 )

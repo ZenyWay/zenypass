@@ -14,11 +14,12 @@
  * Limitations under the License.
  */
 
-import reducer from './reducer'
+import reducer, { FilteredRecordEntry, IndexedRecordEntry } from './reducer'
 import {
   updateOnNewRecordsProp,
   focusSearchFieldOnMountOrEnable
 } from './effects'
+import { ZenypassRecord } from 'zenypass-service'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -43,13 +44,14 @@ export type FilteredRecordCardsProps<
 
 export interface FilteredRecordCardsHocProps {
   debounce?: string | number
+  records?: IndexedRecordEntry[]
 }
 
 export interface FilteredRecordCardsSFCProps
   extends Partial<FilteredRecordCardsSFCHandlerProps> {
-  filter?: string[]
   tokens?: string[]
   debounce?: string | number
+  records?: FilteredRecordEntry[]
 }
 
 export interface FilteredRecordCardsSFCHandlerProps {
@@ -61,13 +63,13 @@ export interface FilteredRecordCardsSFCHandlerProps {
 interface FilteredRecordCardsState {
   props: FilteredRecordCardsProps<FilteredRecordCardsSFCProps>
   tokens?: string[]
-  filter?: string[]
+  records?: FilteredRecordEntry[]
 }
 
 function mapStateToProps ({
   props,
   tokens,
-  filter
+  records
 }: FilteredRecordCardsState): Rest<
   FilteredRecordCardsSFCProps,
   FilteredRecordCardsSFCHandlerProps
@@ -75,7 +77,7 @@ function mapStateToProps ({
   return {
     ...props,
     tokens,
-    filter
+    records: records || props.records
   }
 }
 

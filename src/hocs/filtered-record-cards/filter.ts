@@ -18,6 +18,15 @@ import { ZenypassRecord } from 'zenypass-service'
 
 export { ZenypassRecord }
 
+export interface FilteredRecordEntry extends IndexedRecordEntry {
+  exclude?: boolean
+}
+
+export interface IndexedRecordEntry {
+  _id: string
+  record?: Partial<ZenypassRecord>
+}
+
 const TARGET_RECORD_FIELDS: [
   'name',
   'url',
@@ -28,19 +37,17 @@ const TARGET_RECORD_FIELDS: [
 
 export default function (
   tokens: string[],
-  records: Partial<ZenypassRecord>[]
-): string[] {
-  if (!records) {
-    return
-  }
+  records: IndexedRecordEntry[]
+): FilteredRecordEntry[] {
+  if (!records) return
   let i = records.length
-  const result = new Array(i) as string[]
-  if (!tokens || !tokens.length) return result
+  if (!i || !tokens || !tokens.length) return records
+  const result = new Array(i) as FilteredRecordEntry[]
   while (i--) {
-    const record = records[i]
-    if (record.name && !recordIncludesAllTokens(tokens, records[i])) {
-      result[i] = record._id
-    }
+    const { _id, record } = records[i]
+    const exclude =
+      !!record && !!record.name && !recordIncludesAllTokens(tokens, record)
+    result[i] = { _id, record, exclude }
   }
   return result
 }

@@ -21,22 +21,12 @@ import compose from 'basic-compose'
 import {
   alt,
   always,
-  assign,
   forType,
   mapPayload,
   mergePayload,
   pluck,
   not
 } from 'utils'
-
-const DEFAULT_RECORD_FIELDS: Partial<ZenypassRecord> = {
-  name: '',
-  keywords: [],
-  username: '',
-  // no default for password, handled by service to distinguish between empty or concealed
-  comments: '',
-  unrestricted: false
-}
 
 /**
  * type                           url   identifier   password   action after decrypting password   example
@@ -50,6 +40,7 @@ const DEFAULT_RECORD_FIELDS: Partial<ZenypassRecord> = {
  * standard online account        yes   yes          yes        open connection modal
  */
 export enum RecordFsmState {
+  PendingRecord = 'PENDING_RECORD',
   Thumbnail = 'THUMBNAIL',
   ReadonlyConcealed = 'READONLY_CONCEALED',
   ReadonlyCleartext = 'READONLY_CLEARTEXT',
@@ -89,6 +80,10 @@ const mapPayloadToError = into('error')(mapPayload())
 const reset = [clearChanges, clearPassword, clearErrors]
 
 const recordAutomata: AutomataSpec<RecordFsmState> = {
+  [RecordFsmState.PendingRecord]: {
+    PROPS_PENDING_RECORD: into('props')(mapPayload()),
+    PROPS: RecordFsmState.Thumbnail
+  },
   [RecordFsmState.Thumbnail]: {
     TOGGLE_EXPANDED: RecordFsmState.ReadonlyConcealed,
     INVALID_RECORD: [
@@ -231,11 +226,7 @@ function updateErrors (errors: Partial<Errors>, updates = {}) {
 }
 
 export default compose.into(0)(
-  createAutomataReducer(recordAutomata, RecordFsmState.Thumbnail),
+  createAutomataReducer(recordAutomata, RecordFsmState.PendingRecord),
   createAutomataReducer(connectAutomata, ConnectFsmState.Idle, 'connect'),
-  forType('PROPS')(
-    into('props')(
-      mapPayload(propCursor('record')(assign(DEFAULT_RECORD_FIELDS)))
-    )
-  )
+  forType('PROPS')(into('props')(mapPayload()))
 )

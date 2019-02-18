@@ -22,9 +22,14 @@ export { Record }
 
 export interface FilteredRecordCardsProps
   extends Pick<RecordCardProps, Exclude<keyof RecordCardProps, 'record'>> {
-  records?: Record[]
-  filter?: string[]
+  records?: FilteredRecordEntry[]
   className?: string
+}
+
+export interface FilteredRecordEntry {
+  _id: string
+  exclude?: boolean
+  record?: Partial<Record>
 }
 
 export function FilteredRecordCards ({
@@ -37,16 +42,14 @@ export function FilteredRecordCards ({
   if (!i) return null
   const cards = new Array<JSX.Element>(i)
   while (i--) {
-    const record = records[i]
-    const classNames = classes(
-      filter && filter[i] === record._id && 'd-none',
-      className
-    )
+    const { _id, record, exclude } = records[i]
+    const classNames = exclude ? classes('d-none', className) : className
     cards[i] = (
       <RecordCard
-        key={record._id}
+        key={_id}
         className={classNames}
-        record={records[i]}
+        record={record || { _id }}
+        pending={!record}
         {...attrs}
       />
     )

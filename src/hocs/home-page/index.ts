@@ -16,8 +16,9 @@
 
 import reducer, { AutomataState } from './reducer'
 import {
-  createRecordOnSelectNewRecordMenuItem,
-  injectRecordsFromService
+  createRecordOnCreateRecordRequested,
+  injectRecordsFromService,
+  IndexedRecordEntry
 } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
@@ -26,8 +27,11 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { ZenypassRecord } from 'zenypass-service'
-import { createActionDispatchers } from 'basic-fsa-factories'
+import {
+  createActionFactory,
+  createActionDispatchers,
+  StandardAction
+} from 'basic-fsa-factories'
 import { callHandlerOnEvent, MenuSpec } from 'utils'
 import { Observer } from 'rxjs'
 import { tap } from 'rxjs/operators'
@@ -49,36 +53,45 @@ export interface HomePageSFCProps extends HomePageSFCHandlerProps {
   locale: string
   menu: MenuSpec
   session?: string
-  records?: Partial<ZenypassRecord>[]
-  busy?: boolean
+  /**
+   * array of [_id: string, record?: ZenypassRecord]
+   * an undefined record is pending decypher.
+   */
+  records?: IndexedRecordEntry[]
+  busy?: string | false
   error?: string
 }
 
 export interface HomePageSFCHandlerProps {
   onSelectMenuItem?: (target: HTMLElement) => void
   onCancel?: (event?: MouseEvent) => void
+  onModalToggled?: () => void
 }
 
 interface HomePageState {
   props: HomePageProps<HomePageSFCProps>
   menu: MenuSpec
   state: AutomataState
-  records?: Partial<ZenypassRecord>[]
+  records?: IndexedRecordEntry[]
+  busy?: BusyState
   error?: string
 }
+
+type BusyState = 'creating-new-record' | 'loading-records'
 
 function mapStateToProps ({
   props,
   state,
   menu,
   records,
+  busy,
   error
 }: HomePageState): Rest<HomePageSFCProps, HomePageSFCHandlerProps> {
   return {
     ...props, // menu and onSelectMenuItem from props are both overwritten
     menu,
     records,
-    busy: state === 'busy',
+    busy: state === 'busy' && busy,
     error
   }
 }
@@ -86,9 +99,22 @@ function mapStateToProps ({
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => HomePageSFCHandlerProps = createActionDispatchers({
-  onSelectMenuItem: 'SELECT_MENU_ITEM',
-  onCancel: 'CANCEL'
+  onSelectMenuItem,
+  onCancel: 'CANCEL',
+  onModalToggled: 'MODAL_TOGGLED'
 })
+
+const createRecordRequested = createActionFactory<void>(
+  'CREATE_RECORD_REQUESTED'
+)
+
+const selectMenuItem = createActionFactory('SELECT_MENU_ITEM')
+
+function onSelectMenuItem (item: HTMLElement): StandardAction<any> {
+  return item && item.dataset.id === 'new-entry'
+    ? createRecordRequested()
+    : selectMenuItem(item)
+}
 
 export function homePage<P extends HomePageSFCProps> (
   HomePageSFC: SFC<P>
@@ -99,7 +125,7 @@ export function homePage<P extends HomePageSFCProps> (
     redux(
       reducer,
       injectRecordsFromService,
-      createRecordOnSelectNewRecordMenuItem,
+      createRecordOnCreateRecordRequested,
       callHandlerOnEvent('SELECT_MENU_ITEM', ['props', 'onSelectMenuItem']),
       callHandlerOnEvent('ERROR', ['props', 'onError'])
     ),

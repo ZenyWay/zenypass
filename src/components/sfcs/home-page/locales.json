@@ -1,14 +1,16 @@
 {
   "fr": {
-    "Creating new card": "Creation d'une nouvelle fiche",
     "Error": "Erreur",
     "Please wait": "Veuillez patienter",
-    "Sorry, something went wrong": "Désolé, il y a eu un problème"
+    "Sorry, something went wrong": "Désolé, il y a eu un problème",
+    "creating-new-record": "Creation d'une nouvelle fiche de site",
+    "loading-records": "Chargement des fiches de site"
   },
   "en": {
-    "Creating new card": "Creating new card",
     "Error": "Error",
     "Please wait": "Please wait",
-    "Sorry, something went wrong": "Sorry, something went wrong"
+    "Sorry, something went wrong": "Sorry, something went wrong",
+    "creating-new-record": "Creating new website card",
+    "loading-records": "Loading website cards"
   }
 }

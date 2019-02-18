@@ -14,12 +14,12 @@
  * Limitations under the License.
  */
 
+import sortIndexedRecordsByName from './sort'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
-import { always, forType, localizeMenu, mapPayload, values } from 'utils'
+import { always, forType, localizeMenu, mapPayload } from 'utils'
 import compose from 'basic-compose'
 import createL10ns from 'basic-l10n'
-import { ZenypassRecord } from 'zenypass-service'
 
 export type AutomataState = 'idle' | 'busy' | 'error'
 
@@ -48,7 +48,9 @@ const newRecordAutomata: AutomataSpec<AutomataState> = {
 
 export default compose.into(0)(
   createAutomataReducer(newRecordAutomata, 'idle'),
-  forType('UPDATE_RECORDS')(into('records')(mapPayload(sortRecordsByName))),
+  forType('UPDATE_RECORDS')(
+    into('records')(mapPayload(sortIndexedRecordsByName))
+  ),
   forType('PROPS')(
     compose.into(0)(
       into('menu')(({ props }) => homemenu[props.locale].concat(props.menu)),
@@ -56,23 +58,3 @@ export default compose.into(0)(
     )
   )
 )
-
-function sortRecordsByName (records: {
-  [id: string]: Partial<ZenypassRecord>
-}): Partial<ZenypassRecord>[] {
-  return values(records)
-    .filter(Boolean)
-    .sort(compareRecordNames)
-}
-
-function compareRecordNames (
-  a: Partial<ZenypassRecord>,
-  b: Partial<ZenypassRecord>
-) {
-  if (a.name === b.name) {
-    return 0
-  }
-  const aname = a.name && a.name.toLowerCase()
-  const bname = b.name && b.name.toLowerCase()
-  return aname === bname ? (a.name > b.name ? 1 : -1) : aname > bname ? 1 : -1
-}

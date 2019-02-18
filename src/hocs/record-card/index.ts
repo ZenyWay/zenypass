@@ -18,13 +18,14 @@ import { ZenypassRecord } from 'zenypass-service'
 import reducer, { ConnectFsmState, RecordFsmState } from './reducer'
 import {
   clearClipboardOnDirtyConnectCancelOrClearClipboard,
-  validateRecordOnThumbnail,
+  validateRecordOnThumbnailWhenNotPendingContent,
   validateChangeOnChange,
   cleartextOnPendingCleartextOrConnect,
   timeoutCleartextOnReadonlyCleartext,
   saveRecordOnPendingSaveOrDeleteRecord
 } from './effects'
-import componentFromEvents, {
+import componentFromStream from 'component-from-props'
+import {
   ComponentConstructor,
   Rest,
   SFC,
@@ -34,7 +35,9 @@ import componentFromEvents, {
 import { callHandlerOnEvent, isString, preventDefault, tapOnEvent } from 'utils'
 import {
   createActionDispatchers,
-  createActionFactories
+  createActionFactories,
+  createActionFactory,
+  StandardAction
 } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
 import { tap } from 'rxjs/operators'
@@ -45,6 +48,7 @@ export type RecordCardProps<P extends RecordCardSFCProps> = RecordCardHocProps &
 
 export interface RecordCardHocProps {
   record: Partial<ZenypassRecord>
+  pending?: boolean
   session?: string
   unrestricted?: boolean
   onAuthenticationRequest?: (res$: Observer<string>) => void
@@ -80,6 +84,7 @@ export type RecordCardSFCErrors = {
 }
 
 export type PendingState =
+  | 'record'
   | 'cleartext'
   | 'edit'
   | 'confirm-cancel'
@@ -104,7 +109,10 @@ export interface RecordCardSFCHandlerProps {
 }
 
 interface RecordCardState {
-  props: RecordCardProps<RecordCardSFCProps>
+  props: Pick<
+    RecordCardProps<RecordCardSFCProps>,
+    Exclude<keyof RecordCardProps<RecordCardSFCProps>, 'pending'>
+  >
   state: RecordFsmState
   connect: ConnectFsmState
   changes?: Partial<ZenypassRecord>
@@ -115,6 +123,7 @@ interface RecordCardState {
 const RECORD_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
   [state in RecordFsmState]: Partial<RecordCardSFCState>
 } = {
+  [RecordFsmState.PendingRecord]: { pending: 'record' },
   [RecordFsmState.Thumbnail]: {},
   [RecordFsmState.ReadonlyConcealed]: { expanded: true },
   [RecordFsmState.ReadonlyCleartext]: { expanded: true, cleartext: true },
@@ -238,18 +247,25 @@ const mapDispatchToProps: (
   onDeleteRecordRequest: 'DELETE_RECORD_REQUESTED'
 })
 
+const propsPendingRecord = createActionFactory<RecordCardProps<any>>(
+  'PROPS_PENDING_RECORD'
+)
+const props = createActionFactory<RecordCardProps<any>>('PROPS')
+
 export function recordCard<P extends RecordCardSFCProps> (
   RecordCardSFC: SFC<P>
 ): ComponentConstructor<RecordCardProps<P>> {
-  return componentFromEvents<RecordCardProps<P>, P>(
+  return componentFromStream(
     RecordCardSFC,
+    ({ pending, ...attrs }: RecordCardProps<P>) =>
+      (pending ? propsPendingRecord : props)(attrs),
     () => tap(log('record-card:event:')),
     redux(
       reducer,
       callHandlerOnEvent('ERROR', ['props', 'onError']),
       tapOnEvent('DEFAULT_ACTION_BUTTON_REF', btn => btn && btn.focus()),
       clearClipboardOnDirtyConnectCancelOrClearClipboard,
-      validateRecordOnThumbnail,
+      validateRecordOnThumbnailWhenNotPendingContent,
       validateChangeOnChange,
       cleartextOnPendingCleartextOrConnect,
       timeoutCleartextOnReadonlyCleartext,
