@@ -19,6 +19,7 @@ import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import withL10n from 'zenyway-storybook-addon-l10n'
+import preventDefaultAction from './helpers/prevent-default'
 import { RecordCardSFC as RecordCard } from 'components'
 import { RECORD } from './helpers/consts'
 
@@ -28,89 +29,119 @@ const privateRecord = {
 }
 
 const attrs = {
+  onClearClipboard: action('CLEAR_CLIPBOARD'),
   onConnectRequest: action('CONNECT_REQUEST'),
-  onToggleExpanded: action('TOGGLE_EXPANDED'),
+  onConnectClose: action('CONNECT_CLOSE'),
+  onCopied: action('COPIED'),
+  onDefaultActionButtonRef: action('DEFAULT_ACTION_BUTTON_REF'),
   onToggleCleartext: action('TOGGLE_CLEARTEXT'),
+  onToggleExpanded: action('TOGGLE_EXPANDED'),
   onEditRecordRequest: action('EDIT_RECORD_REQUEST'),
   onChange: action('CHANGE'),
-  onUpdateRecordRequest: action('UPDATE_RECORD_REQUEST'),
+  onToggleCheckbox: action('TOGGLE_CHECKBOX'),
+  onSaveRecordRequest: preventDefaultAction('SAVE_RECORD_REQUEST'),
   onDeleteRecordRequest: action('DELETE_RECORD_REQUEST')
 }
 
 storiesOf('RecordCard (SFC)', module)
   .addDecorator(withL10n({ locales: ['fr', 'en'] }))
-  .add('disabled', () => ({ locale }) => (
-    <RecordCard locale={locale} record={RECORD} {...attrs} disabled />
+  .add('thumbnail-pending-record', () => ({ locale }) => (
+    <RecordCard
+      locale={locale}
+      record={{ _id: RECORD._id }}
+      {...attrs}
+      pending='record'
+    />
   ))
-  .add('expanded-disabled', () => ({ locale }) => (
-    <RecordCard locale={locale} record={RECORD} {...attrs} expanded disabled />
+  .add('thumbnail', () => ({ locale }) => (
+    <RecordCard locale={locale} record={RECORD} {...attrs} />
   ))
-  .add('expanded-disabled-pending-cleartext', () => ({ locale }) => (
+  .add('expanded-readonly', () => ({ locale }) => (
+    <RecordCard locale={locale} record={RECORD} {...attrs} expanded />
+  ))
+  .add('expanded-readonly-pending-cleartext', () => ({ locale }) => (
     <RecordCard
       locale={locale}
       record={privateRecord}
       {...attrs}
       expanded
-      disabled
       pending='cleartext'
     />
   ))
-  .add('expanded-disabled-cleartext', () => ({ locale }) => (
+  .add('expanded-readonly-cleartext', () => ({ locale }) => (
     <RecordCard
       locale={locale}
       record={privateRecord}
       {...attrs}
       expanded
-      disabled
       cleartext
     />
   ))
-  .add('expanded-disabled-pending-edit', () => ({ locale }) => (
+  .add('expanded-readonly-pending-edit', () => ({ locale }) => (
     <RecordCard
       locale={locale}
       record={privateRecord}
       {...attrs}
       expanded
-      disabled
       pending='edit'
     />
   ))
-  .add('expanded', () => ({ locale }) => (
-    <RecordCard locale={locale} record={privateRecord} {...attrs} expanded />
-  ))
-  .add('expanded-cleartext', () => ({ locale }) => (
+  .add('expanded-edit', () => ({ locale }) => (
     <RecordCard
       locale={locale}
       record={privateRecord}
       {...attrs}
       expanded
+      edit
+    />
+  ))
+  .add('expanded-edit-cleartext', () => ({ locale }) => (
+    <RecordCard
+      locale={locale}
+      record={privateRecord}
+      {...attrs}
+      expanded
+      edit
       cleartext
     />
   ))
-  .add('expanded-pending-save', () => ({ locale }) => (
+  .add('expanded-edit-pending-save', () => ({ locale }) => (
     <RecordCard
       locale={locale}
       record={privateRecord}
       {...attrs}
       expanded
+      edit
       pending='save'
     />
   ))
-  .add('expanded-pending-delete', () => ({ locale }) => (
+  .add('expanded-edit-pending-delete', () => ({ locale }) => (
     <RecordCard
       locale={locale}
       record={privateRecord}
       {...attrs}
       expanded
+      edit
       pending='delete'
     />
   ))
-  .add('expanded-pending-cancel', () => ({ locale }) => (
+  .add('expanded-edit-pending-confirm-cancel', () => ({ locale }) => (
     <RecordCard
       locale={locale}
       record={privateRecord}
       {...attrs}
       expanded
-      pending='cancel'
+      edit
+      pending='confirm-cancel'
+    />
+  ))
+  .add('expanded-edit-pending-confirm-delete', () => ({ locale }) => (
+    <RecordCard
+      locale={locale}
+      record={privateRecord}
+      {...attrs}
+      expanded
+      edit
+      pending='confirm-delete'
     />
   ))
