@@ -40,6 +40,7 @@ export interface HomePageProps extends FilteredRecordCardsProps {
   tokens?: string[]
   debounce?: string | number
   className?: string
+  onKeyDown?: (event: KeyboardEvent) => void
   onSelectMenuItem?: (target: HTMLElement) => void
   onSearchFieldRef?: (ref: HTMLElement) => void
   onTokensChange?: (tokens: string[]) => void
@@ -62,6 +63,7 @@ export function HomePage ({
   tokens,
   debounce,
   className,
+  onKeyDown,
   onSelectMenuItem,
   onSearchFieldRef,
   onTokensChange,
@@ -110,6 +112,7 @@ export function HomePage ({
                 debounce={debounce}
                 onChange={onTokensChange}
                 onClear={onTokensClear}
+                onKeyDown={onKeyDown}
               />
             </div>
           </div>

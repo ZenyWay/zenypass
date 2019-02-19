@@ -3,14 +3,14 @@
     "Error": "Erreur",
     "Please wait": "Veuillez patienter",
     "Sorry, something went wrong": "Désolé, il y a eu un problème",
-    "creating-new-record": "Creation d'une nouvelle fiche de site",
-    "loading-records": "Chargement des fiches de site"
+    "creating-new-record": "Creation d'une nouvelle fiche",
+    "loading-records": "Déchiffrement de vos données"
   },
   "en": {
     "Error": "Error",
     "Please wait": "Please wait",
     "Sorry, something went wrong": "Sorry, something went wrong",
-    "creating-new-record": "Creating new website card",
-    "loading-records": "Loading website cards"
+    "creating-new-record": "Creating a new card",
+    "loading-records": "Decrypting your data"
   }
 }

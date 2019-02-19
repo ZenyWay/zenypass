@@ -131,7 +131,7 @@ export function RecordCardBody ({
           bold
           placeholder={getPlaceholder(t, placeholders, 'name')}
           value={name}
-          error={!errors.name ? null : t('Please name this card')}
+          error={!errors.name ? null : t('Please provide a name for this card')}
           data-id='name'
           onChange={onChange}
           locale={locale}

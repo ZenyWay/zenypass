@@ -220,7 +220,8 @@ export function RecordCard ({
         <InfoModal
           expanded={confirmCancel || pending === 'confirm-delete'}
           title={t('Please confirm')}
-          confirm={t(confirmCancel ? 'Yes: cancel' : 'Yes: delete')}
+          cancel={!confirmCancel && t('Cancel')}
+          confirm={!confirmCancel && t('Delete')}
           onConfirm={confirmCancel ? onToggleExpanded : onDeleteRecordRequest}
           onCancel={onEditRecordRequest}
           locale={locale}
@@ -229,7 +230,7 @@ export function RecordCard ({
             {t(
               confirmCancel
                 ? 'Do you want to cancel your changes'
-                : 'Do you want to delete this website card'
+                : 'Do you want to delete this card'
             )}{' '}
             ?
           </p>
