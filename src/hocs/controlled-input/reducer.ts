@@ -28,6 +28,7 @@ const intoValue = into('value')
 const mapInputValueIntoValue = intoValue(
   mapPayload(pluck('currentTarget', 'value'))
 )
+const clearValue = intoValue(always(''))
 
 const automata: AutomataSpec<ControlledInputFsmState> = {
   [ControlledInputFsmState.Pristine]: {
@@ -42,7 +43,8 @@ const automata: AutomataSpec<ControlledInputFsmState> = {
 
 export default compose.into(0)(
   createAutomataReducer(automata, ControlledInputFsmState.Pristine),
-  forType('ESCAPE_KEY')(intoValue(always(''))),
+  forType('ESCAPE_KEY')(clearValue),
+  forType('CLEAR')(clearValue),
   forType('PROPS')(
     compose.into(0)(
       intoProps(

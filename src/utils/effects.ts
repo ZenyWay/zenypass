@@ -41,17 +41,15 @@ export type Effect<S = any> = (
   state$: Observable<S>
 ) => Observable<StandardAction<any>>
 
-export function tapOnEvent (
-  type: string,
+export function tapOnEvent<S = any> (
+  type: string | string[] | ((state: S, event: StandardAction<any>) => boolean),
   effect: (payload?: any, state?: any) => void
 ) {
   return function (
     event$: Observable<StandardAction<any>>,
-    state$: Observable<any>
+    state$: Observable<S>
   ) {
-    return event$.pipe(
-      filter(event => event.type === type),
-      withLatestFrom(state$),
+    return getTrigger$Factory(type)(event$, state$).pipe(
       tap(([{ payload }, state]) => effect(payload, state)),
       ignoreElements()
     )
@@ -112,20 +110,7 @@ export function applyHandlerOnEvent<S = any> (
         event$: Observable<StandardAction<any>>,
         state$: Observable<S>
       ) {
-        const trigger$ = isFunction(type)
-          ? event$.pipe(
-              withLatestFrom(state$),
-              filter(([event, state]) => type(state, event))
-            )
-          : event$.pipe(
-              filter(
-                Array.isArray(type)
-                  ? event => type.indexOf(event.type) >= 0
-                  : event => event.type === type
-              ),
-              withLatestFrom(state$)
-            )
-        return trigger$.pipe(
+        return getTrigger$Factory(type)(event$, state$).pipe(
           map(([event, state]) => ({ event, state, handler: handler(state) })),
           filter(({ handler }) => isFunction(handler)),
           tap(({ event, state, handler }) =>
@@ -134,6 +119,29 @@ export function applyHandlerOnEvent<S = any> (
           ignoreElements()
         )
       }
+}
+
+function getTrigger$Factory<S = any> (
+  type: string | string[] | ((state: S, event: StandardAction<any>) => boolean)
+) {
+  return function (
+    event$: Observable<StandardAction<any>>,
+    state$: Observable<S>
+  ) {
+    return isFunction(type)
+      ? event$.pipe(
+          withLatestFrom(state$),
+          filter(([event, state]) => type(state, event))
+        )
+      : event$.pipe(
+          filter(
+            Array.isArray(type)
+              ? event => type.indexOf(event.type) >= 0
+              : event => event.type === type
+          ),
+          withLatestFrom(state$)
+        )
+  }
 }
 
 export function toProjection<I, O> (

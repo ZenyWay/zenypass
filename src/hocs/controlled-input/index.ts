@@ -117,7 +117,7 @@ const mapDispatchToProps: (
   inputRef: 'INPUT_REF',
   clearIconRef: 'CLEAR_ICON_REF',
   onBlur: 'BLUR', // https://github.com/infernojs/inferno/issues/1361
-  onClickClear: 'ESCAPE_KEY',
+  onClickClear: 'CLEAR',
   onInput: 'INPUT',
   onKeyDown: (event: KeyboardEvent) =>
     (SPECIAL_KEY_ACTIONS[event.key] || keyDown)(event)
@@ -132,14 +132,16 @@ export function controlledInput<P extends InputProps> (
     redux(
       reducer,
       applyHandlerOnEvent(
-        isDebounceOrEscapeKeyOrControlledInputBlur,
+        isDebounceOrClearOrEscapeKeyOrControlledInputBlur,
         'onChange',
-        pluckValueFromStateAndTargetFromEvent
+        ({ value, input }) => [value, input]
       ),
       callHandlerOnEvent(isControlledInputBlur, 'onBlur'),
       callHandlerOnEvent(['KEY_DOWN', 'ESCAPE_KEY', 'ENTER_KEY'], 'onKeyDown'),
-      tapOnEvent('ESCAPE_KEY', compose.into(0)(focus, pluck('1', 'input'))),
-      tapOnEvent('ENTER_KEY', compose.into(0)(blur, pluck('1', 'input'))),
+      tapOnEvent(
+        ['ESCAPE_KEY', 'CLEAR'],
+        compose.into(0)(focus, pluck('1', 'input'))
+      ),
       callHandlerOnEvent('INPUT_REF', 'innerRef'),
       debounceInputWhenDebounce
     ),
@@ -158,12 +160,13 @@ export function controlledInput<P extends InputProps> (
   return ControlledInput
 }
 
-function isDebounceOrEscapeKeyOrControlledInputBlur (
+function isDebounceOrClearOrEscapeKeyOrControlledInputBlur (
   state: ControlledInputState,
   event: StandardAction<FocusEvent>
 ): boolean {
   return (
     event.type === 'DEBOUNCE' ||
+    event.type === 'CLEAR' ||
     event.type === 'ESCAPE_KEY' ||
     isControlledInputBlur(state, event)
   )
@@ -174,17 +177,6 @@ function isControlledInputBlur (
   { type, payload: { relatedTarget } }: StandardAction<FocusEvent>
 ): boolean {
   return type === 'BLUR' && relatedTarget !== input && relatedTarget !== icon
-}
-
-function pluckValueFromStateAndTargetFromEvent (
-  { value }: ControlledInputState,
-  { payload }: StandardAction<Event>
-) {
-  return [value, payload.target]
-}
-
-function blur (element?: HTMLElement) {
-  element && element.blur()
 }
 
 function focus (element?: HTMLElement) {
