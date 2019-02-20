@@ -28,30 +28,20 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import compose from 'basic-compose'
-import { callHandlerOnEvent, pluck, tapOnEvent } from 'utils'
 import { tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
-
-const DEFAULT_PROPS: Partial<
-  FilteredRecordCardsProps<FilteredRecordCardsSFCProps>
-> = {
-  debounce: 300 // ms
-}
 
 export type FilteredRecordCardsProps<
   P extends FilteredRecordCardsSFCProps
 > = FilteredRecordCardsHocProps & Rest<P, FilteredRecordCardsSFCProps>
 
 export interface FilteredRecordCardsHocProps {
-  debounce?: string | number
   records?: IndexedRecordEntry[]
 }
 
 export interface FilteredRecordCardsSFCProps
   extends Partial<FilteredRecordCardsSFCHandlerProps> {
   tokens?: string[]
-  debounce?: string | number
   records?: FilteredRecordEntry[]
 }
 
@@ -91,10 +81,7 @@ const mapDispatchToProps: (
 export function filteredRecordCards<P extends FilteredRecordCardsSFCProps> (
   FilteredRecordCardsSFC: SFC<P>
 ): ComponentConstructor<FilteredRecordCardsProps<P>> {
-  const FilteredRecordCards = componentFromEvents<
-    FilteredRecordCardsProps<P>,
-    P
-  >(
+  return componentFromEvents<FilteredRecordCardsProps<P>, P>(
     FilteredRecordCardsSFC,
     () => tap(log('filtered-record-cards:event:')),
     redux(
@@ -110,9 +97,4 @@ export function filteredRecordCards<P extends FilteredRecordCardsSFCProps> (
     ),
     () => tap(log('filtered-record-cards:view-props:'))
   )
-  ;(FilteredRecordCards as any).defaultProps = DEFAULT_PROPS as Partial<
-    FilteredRecordCardsProps<P>
-  >
-
-  return FilteredRecordCards
 }

@@ -15,7 +15,8 @@
  */
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
-import { SearchField } from '../search-field'
+import { IconLabelInputGroup } from '../icon-label-input-group'
+import { SerializedInput } from '../../serialized-input'
 import { NavbarMenu, MenuSpecs, DropdownItemSpec } from '../../navbar-menu'
 import {
   FilteredRecordCards,
@@ -24,12 +25,14 @@ import {
   Record
 } from '../filtered-record-cards'
 import { InfoModal } from '../info-modal'
-import { ProgressBar } from 'bootstrap'
+import { ProgressBar, InputGroup } from 'bootstrap'
 import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
 export { FilteredRecordEntry, Record, MenuSpecs, DropdownItemSpec }
+
+const DEFAULT_DEBOUNCE = 300 // ms
 
 export interface HomePageProps extends FilteredRecordCardsProps {
   locale: string
@@ -59,7 +62,7 @@ export function HomePage ({
   busy,
   error,
   tokens,
-  debounce,
+  debounce = DEFAULT_DEBOUNCE,
   className,
   onSelectMenuItem,
   onSearchFieldRef,
@@ -101,13 +104,19 @@ export function HomePage ({
           />
           <div className='container-fluid bg-light'>
             <div className='row justify-content-center'>
-              <SearchField
-                innerRef={onSearchFieldRef}
+              <IconLabelInputGroup
+                icon='search'
                 className='col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 px-0 mt-1 shadow-sm'
-                tokens={tokens}
-                debounce={debounce}
-                onChange={onTokensChange}
-              />
+              >
+                <SerializedInput
+                  innerRef={onSearchFieldRef}
+                  type='csv'
+                  className='form-control'
+                  value={tokens}
+                  debounce={debounce}
+                  onChange={onTokensChange}
+                />
+              </IconLabelInputGroup>
             </div>
           </div>
         </header>

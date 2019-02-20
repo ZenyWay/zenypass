@@ -102,7 +102,6 @@ export {
   RouterProps as RouterSFCProps
 } from './sfcs/router'
 export { Router, RouterProps } from './router'
-export { SearchField, SearchFieldProps } from './sfcs/search-field'
 export { SerializedInput, SerializedInputProps } from './serialized-input'
 export {
   SerializedRecordField,
