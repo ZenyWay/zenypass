@@ -24,9 +24,11 @@ import preventDefaultAction from './helpers/prevent-default'
 import { HomePageSFC, withAuthenticationModal } from 'components'
 import { withAuthentication } from 'hocs'
 
+const records = RECORDS.map(record => ({ _id: record._id, record }))
+const randomFilter = entry => ({ ...entry, exclude: Math.random() > 0.33 })
+
 const attrs = {
   menu: MENU,
-  records: RECORDS,
   onAuthenticationRequest: action('AUTHENTICATION_REQUESTED'),
   onSelectMenuItem: preventDefaultAction('MENU_ITEM_SELECTED'),
   onSearchFieldRef: action('SEARCH_FIELD_REF'),
@@ -39,18 +41,33 @@ const HomePage = withAuthentication(withAuthenticationModal(HomePageSFC))
 
 storiesOf('HomePage (SFC)', module)
   .addDecorator(withL10n({ locales: ['fr', 'en'] }))
-  .add('default', () => ({ locale }) => <HomePage locale={locale} {...attrs} />)
+  .add('default', () => ({ locale }) => (
+    <HomePage locale={locale} records={records} {...attrs} />
+  ))
   .add('filter', () => ({ locale }) => (
     <HomePage
       locale={locale}
-      filter={[false, true, false]}
-      tokens='com zen'
+      records={records.map(randomFilter)}
+      tokens={['com', 'zen']}
       {...attrs}
     />
   ))
-  .add('busy', () => ({ locale }) => (
-    <HomePage locale={locale} busy {...attrs} />
+  .add('creating-new-record', () => ({ locale }) => (
+    <HomePage
+      locale={locale}
+      records={records}
+      busy='creating-new-record'
+      {...attrs}
+    />
+  ))
+  .add('loading-records', () => ({ locale }) => (
+    <HomePage
+      locale={locale}
+      records={records}
+      busy='loading-records'
+      {...attrs}
+    />
   ))
   .add('error', () => ({ locale }) => (
-    <HomePage locale={locale} error='ouch !' {...attrs} />
+    <HomePage locale={locale} records={records} error='ouch !' {...attrs} />
   ))
