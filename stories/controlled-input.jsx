@@ -19,13 +19,23 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { ControlledInput } from 'components'
+import { InputGroup } from 'bootstrap'
 import { action } from '@storybook/addon-actions'
 
 const attrs = {
-  onChange: action('CHANGE')
+  innerRef: action('INNER_REF'),
+  onChange: action('CHANGE'),
+  onKeyDown: action('KEY_DOWN')
 }
 
+const WrappedInput = props => (
+  <InputGroup>
+    <ControlledInput {...props} {...attrs} />
+  </InputGroup>
+)
+
 storiesOf('ControlledInput', module)
-  .add('default', () => <ControlledInput {...attrs} />)
-  .add('debounce 300ms', () => <ControlledInput {...attrs} debounce='300' />)
-  .add('blurOnEnterKey', () => <ControlledInput {...attrs} blurOnEnterKey />)
+  .add('default', () => <WrappedInput />)
+  .add('debounce 300ms', () => <WrappedInput debounce='300' />)
+  .add('blurOnEnterKey', () => <WrappedInput blurOnEnterKey />)
+  .add('disabled', () => <WrappedInput disabled />)

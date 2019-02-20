@@ -18,24 +18,26 @@ import { createElement } from 'create-element'
 import { classes } from 'utils'
 
 export interface InputProps {
+  id?: string
   type?: string
   value?: string
+  checked?: boolean
+  placeholder?: string
+  rows?: string
+  autoFocus?: boolean
   autocomplete?: 'off' | 'on' | '' | false
   autocorrect?: 'off' | 'on' | '' | false
+  disabled?: boolean
   invalid?: boolean
   className?: string
-  blurOnEnterKey?: boolean
   innerRef?: (ref: HTMLElement) => void
-  [prop: string]: unknown
+  onInput?: (event?: Event) => void
 }
-
-const onKeyPress = ({ target, key }) => key === 'Enter' && target.blur()
 
 export function Input ({
   type,
   invalid,
   className,
-  blurOnEnterKey,
   innerRef,
   ...attrs
 }: InputProps) {
@@ -45,7 +47,6 @@ export function Input ({
       ref={innerRef}
       type={type}
       className={classes(invalid && 'is-invalid', className)}
-      onKeyPress={blurOnEnterKey && onKeyPress}
       {...attrs}
     />
   )

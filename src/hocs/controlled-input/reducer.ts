@@ -16,28 +16,53 @@
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
-import { forType, mapPayload, pluck } from 'utils'
+import { always, exclude, forType, mapPayload, pluck } from 'utils'
 
-export type AutomataState = 'pristine' | 'dirty'
+export enum ControlledInputFsmState {
+  Pristine = 'PRISTINE',
+  Dirty = 'DIRTY'
+}
 
 const intoProps = into('props')
 const intoValue = into('value')
-const putValueFromInputIntoValue = intoValue(
-  mapPayload(pluck('target', 'value'))
+const mapInputValueIntoValue = intoValue(
+  mapPayload(pluck('currentTarget', 'value'))
 )
 
-const automata: AutomataSpec<AutomataState> = {
-  pristine: {
+const automata: AutomataSpec<ControlledInputFsmState> = {
+  [ControlledInputFsmState.Pristine]: {
     PROPS: intoValue(mapPayload(pluck('value'))),
-    INPUT: ['dirty', putValueFromInputIntoValue]
+    INPUT: [ControlledInputFsmState.Dirty, mapInputValueIntoValue]
   },
-  dirty: {
-    INPUT: putValueFromInputIntoValue,
-    BLUR: 'pristine'
+  [ControlledInputFsmState.Dirty]: {
+    INPUT: mapInputValueIntoValue,
+    BLUR: ControlledInputFsmState.Pristine
   }
 }
 
 export default compose.into(0)(
-  createAutomataReducer(automata, 'pristine'),
-  forType('PROPS')(intoProps(mapPayload()))
+  createAutomataReducer(automata, ControlledInputFsmState.Pristine),
+  forType('ESCAPE_KEY')(intoValue(always(''))),
+  forType('PROPS')(
+    compose.into(0)(
+      intoProps(
+        mapPayload(
+          exclude(
+            'debounce',
+            'blurOnEnterKey',
+            'innerRef',
+            'onChange',
+            'onKeyPress'
+          )
+        )
+      ),
+      into('debounce')(mapPayload(pluck('debounce'))),
+      into('blurOnEnterKey')(mapPayload(pluck('blurOnEnterKey'))),
+      into('innerRef')(mapPayload(pluck('innerRef'))),
+      into('onChange')(mapPayload(pluck('onChange'))),
+      into('onKeyPress')(mapPayload(pluck('onKeyPress')))
+    )
+  ),
+  forType('INPUT_REF')(into('input')(mapPayload())),
+  forType('CLEAR_ICON_REF')(into('icon')(mapPayload()))
 )

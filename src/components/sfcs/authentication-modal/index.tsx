@@ -18,6 +18,7 @@
 import { createElement } from 'create-element'
 import {
   Form,
+  InputGroup,
   Label,
   Modal,
   ModalBody,
@@ -65,18 +66,20 @@ export function AuthenticationModal ({
       <ModalBody>
         <Form id='PasswordModalForm' onSubmit={onSubmit}>
           <Label>{t('Please enter your ZenyPass password')}</Label>
-          <ControlledInput
-            placeholder={t('ZenyPass password')}
-            type='password'
-            className={`border-${
-              error ? 'danger' : 'info'
-            } rounded form-control`}
-            value={value}
-            onChange={onChange}
-            innerRef={onPasswordInputRef}
-            blurOnEnterKey
-            autoFocus
-          />
+          <InputGroup>
+            <ControlledInput
+              placeholder={t('ZenyPass password')}
+              type='password'
+              className={`border-${
+                error ? 'danger' : 'info'
+              } rounded form-control`}
+              value={value}
+              onChange={onChange}
+              innerRef={onPasswordInputRef}
+              blurOnEnterKey
+              autoFocus
+            />
+          </InputGroup>
         </Form>
         {error ? <p className='text-danger'>{t('Invalid password')}</p> : null}
       </ModalBody>

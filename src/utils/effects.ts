@@ -89,7 +89,7 @@ export function eventOnStateEntryChange<S = any, P = any> (
 }
 
 export function callHandlerOnEvent<S = any> (
-  type: string,
+  type: string | string[] | ((state: S, event: StandardAction<any>) => boolean),
   handler: string | string[] | ((state: S) => Handler),
   payload = mapPayload() as (state: S, event: StandardAction<any>) => any
 ) {
@@ -99,7 +99,7 @@ export function callHandlerOnEvent<S = any> (
 }
 
 export function applyHandlerOnEvent<S = any> (
-  type: string,
+  type: string | string[] | ((state: S, event: StandardAction<any>) => boolean),
   handler: string | string[] | ((state: S) => Handler),
   payload = mapPayload(v => [v]) as (
     state: S,
@@ -112,12 +112,25 @@ export function applyHandlerOnEvent<S = any> (
         event$: Observable<StandardAction<any>>,
         state$: Observable<S>
       ) {
-        return event$.pipe(
-          filter(event => event.type === type),
-          withLatestFrom(state$),
+        const trigger$ = isFunction(type)
+          ? event$.pipe(
+              withLatestFrom(state$),
+              filter(([event, state]) => type(state, event))
+            )
+          : event$.pipe(
+              filter(
+                Array.isArray(type)
+                  ? event => type.indexOf(event.type) >= 0
+                  : event => event.type === type
+              ),
+              withLatestFrom(state$)
+            )
+        return trigger$.pipe(
           map(([event, state]) => ({ event, state, handler: handler(state) })),
           filter(({ handler }) => isFunction(handler)),
-          tap(({ event, state, handler }) => handler(...payload(state, event))),
+          tap(({ event, state, handler }) =>
+            Promise.resolve().then(() => handler(...payload(state, event)))
+          ),
           ignoreElements()
         )
       }

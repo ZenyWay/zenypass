@@ -13,11 +13,8 @@
  * Limitations under the License.
  */
 //
-import reducer, { AutomataState } from './reducer'
-import {
-  callChangeHandlerOnDebounceOrBlurWhenIsChange,
-  debounceInputWhenDebounce
-} from './effects'
+import reducer, { ControlledInputFsmState } from './reducer'
+import { debounceInputWhenDebounce } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -25,10 +22,22 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { createActionDispatchers } from 'basic-fsa-factories'
-import { callHandlerOnEvent /*, shallowEqual */ } from 'utils'
-// import { /* distinctUntilChanged,*/ tap } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import {
+  createActionDispatchers,
+  StandardAction,
+  createActionFactory,
+  createActionFactories
+} from 'basic-fsa-factories'
+import compose from 'basic-compose'
+import {
+  applyHandlerOnEvent,
+  callHandlerOnEvent,
+  pluck,
+  shallowEqual,
+  tapOnEvent
+} from 'utils'
+import { distinctUntilChanged, tap } from 'rxjs/operators'
+const log = label => console.log.bind(console, label)
 
 export type ControlledInputProps<
   P extends InputProps
@@ -37,47 +46,81 @@ export type ControlledInputProps<
 export interface ControlledInputControllerProps {
   value?: string
   debounce?: string | number
+  blurOnEnterKey?: boolean
   autocorrect?: 'off' | 'on' | '' | false
   autocomplete?: 'off' | 'on' | '' | false
+  spellcheck?: 'true' | 'false' | '' | false
+  innerRef?: (ref: HTMLElement) => void
   onChange?: (value: string, item?: HTMLElement) => void
+  onKeyDown?: (event: KeyboardEvent) => void
 }
 
 export interface InputProps extends InputHandlerProps {
   value?: string
   autocorrect?: 'off' | 'on' | '' | false
   autocomplete?: 'off' | 'on' | '' | false
+  spellcheck?: 'true' | 'false' | '' | false
 }
 
 export interface InputHandlerProps {
+  inputRef?: (ref: HTMLElement) => void
+  clearIconRef?: (ref: HTMLElement) => void
   onBlur?: (event: TextEvent) => void
+  onClickClear?: (event?: MouseEvent) => void
   onInput?: (event: TextEvent) => void
+  onKeyDown?: (event: KeyboardEvent) => void
 }
 
 const DEFAULT_PROPS: ControlledInputProps<InputProps> = {
   value: '',
   autocomplete: 'off', // autocomplete should be 'off' for proper operation
-  autocorrect: 'off' // ibid
+  autocorrect: 'off', // ibid
+  spellcheck: 'false'
 }
 
 interface ControlledInputState {
-  props: Partial<ControlledInputProps<InputProps>>
-  state: AutomataState
+  props: Partial<
+    Pick<
+      ControlledInputProps<InputProps>,
+      Exclude<
+        keyof ControlledInputProps<InputProps>,
+        'debounce' | 'blurOnEnterKey' | 'innerRef' | 'onChange' | 'onKeyDown'
+      >
+    >
+  >
+  state: ControlledInputFsmState
   value?: string
+  blurOnEnterKey?: boolean
+  debounce?: string | number
+  icon?: HTMLElement
+  input?: HTMLElement
+  onChange?: (value: string, item?: HTMLElement) => void
+  onKeyDown?: (event: KeyboardEvent) => void
 }
 
 function mapStateToProps ({
   props,
   value
 }: ControlledInputState): Rest<InputProps, InputHandlerProps> {
-  const { debounce, onChange, ...attrs } = props
-  return { ...attrs, value }
+  return { ...props, value }
 }
+
+const keyDown = createActionFactory('KEY_DOWN')
+const SPECIAL_KEY_ACTIONS = createActionFactories({
+  Escape: 'ESCAPE_KEY',
+  Enter: 'ENTER_KEY'
+})
 
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => InputHandlerProps = createActionDispatchers({
+  inputRef: 'INPUT_REF',
+  clearIconRef: 'CLEAR_ICON_REF',
   onBlur: 'BLUR', // https://github.com/infernojs/inferno/issues/1361
-  onInput: 'INPUT'
+  onClickClear: 'ESCAPE_KEY',
+  onInput: 'INPUT',
+  onKeyDown: (event: KeyboardEvent) =>
+    (SPECIAL_KEY_ACTIONS[event.key] || keyDown)(event)
 })
 
 export function controlledInput<P extends InputProps> (
@@ -85,24 +128,65 @@ export function controlledInput<P extends InputProps> (
 ): ComponentConstructor<ControlledInputProps<P>> {
   const ControlledInput = componentFromEvents<ControlledInputProps<P>, P>(
     Input,
-    // () => tap(log('controlled-input:EVENT:')),
+    () => tap(log('controlled-input:event:')),
     redux(
       reducer,
-      callHandlerOnEvent('BLUR', ['props', 'onBlur']),
-      debounceInputWhenDebounce,
-      callChangeHandlerOnDebounceOrBlurWhenIsChange
+      applyHandlerOnEvent(
+        isDebounceOrEscapeKeyOrControlledInputBlur,
+        'onChange',
+        pluckValueFromStateAndTargetFromEvent
+      ),
+      callHandlerOnEvent(isControlledInputBlur, 'onBlur'),
+      callHandlerOnEvent(['KEY_DOWN', 'ESCAPE_KEY', 'ENTER_KEY'], 'onKeyDown'),
+      tapOnEvent('ESCAPE_KEY', compose.into(0)(focus, pluck('1', 'input'))),
+      tapOnEvent('ENTER_KEY', compose.into(0)(blur, pluck('1', 'input'))),
+      callHandlerOnEvent('INPUT_REF', 'innerRef'),
+      debounceInputWhenDebounce
     ),
-    // () => tap(log('controlled-input:STATE:')),
+    () => tap(log('controlled-input:state:')),
     connect<ControlledInputState, InputProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // () => distinctUntilChanged(shallowEqual),
-    // () => tap(log('controlled-input:PROPS:'))
+    ),
+    () => distinctUntilChanged(shallowEqual),
+    () => tap(log('controlled-input:view-props:'))
   )
   ;(ControlledInput as any).defaultProps = DEFAULT_PROPS as ControlledInputProps<
     P
   >
 
   return ControlledInput
+}
+
+function isDebounceOrEscapeKeyOrControlledInputBlur (
+  state: ControlledInputState,
+  event: StandardAction<FocusEvent>
+): boolean {
+  return (
+    event.type === 'DEBOUNCE' ||
+    event.type === 'ESCAPE_KEY' ||
+    isControlledInputBlur(state, event)
+  )
+}
+
+function isControlledInputBlur (
+  { input, icon }: ControlledInputState,
+  { type, payload: { relatedTarget } }: StandardAction<FocusEvent>
+): boolean {
+  return type === 'BLUR' && relatedTarget !== input && relatedTarget !== icon
+}
+
+function pluckValueFromStateAndTargetFromEvent (
+  { value }: ControlledInputState,
+  { payload }: StandardAction<Event>
+) {
+  return [value, payload.target]
+}
+
+function blur (element?: HTMLElement) {
+  element && element.blur()
+}
+
+function focus (element?: HTMLElement) {
+  element && element.focus()
 }

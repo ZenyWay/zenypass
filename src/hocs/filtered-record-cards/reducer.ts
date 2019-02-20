@@ -19,7 +19,7 @@ import getFilteredRecords, {
   IndexedRecordEntry
 } from './filter'
 import { into } from 'basic-cursors'
-import { always, forType, mapPayload } from 'utils'
+import { forType, mapPayload } from 'utils'
 import compose from 'basic-compose'
 
 export { FilteredRecordEntry, IndexedRecordEntry }
@@ -28,9 +28,6 @@ const updateFilter = ({ props, tokens }: any) =>
   getFilteredRecords(tokens, props.records)
 
 export default compose.into(0)(
-  forType('CLEAR')(
-    compose.into(0)(into('tokens')(always()), into('records')(always()))
-  ),
   forType('TOKENS')(
     compose.into(0)(into('records')(updateFilter), into('tokens')(mapPayload()))
   ),

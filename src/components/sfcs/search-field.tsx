@@ -15,8 +15,6 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Button, InputGroupAppend } from 'bootstrap'
-import { FAIcon } from './fa-icon'
 import { IconLabelInputGroup } from './icon-label-input-group'
 import { SerializedInput } from '../serialized-input'
 
@@ -25,7 +23,6 @@ export interface SearchFieldProps {
   debounce?: string | number
   className?: string
   onChange?: (tokens: string[]) => void
-  onClear?: (event: MouseEvent) => void
   innerRef?: (ref: HTMLElement) => void
 }
 
@@ -33,7 +30,6 @@ export function SearchField ({
   tokens,
   debounce,
   onChange,
-  onClear,
   innerRef,
   ...attrs
 }: SearchFieldProps) {
@@ -47,11 +43,6 @@ export function SearchField ({
         debounce={debounce}
         onChange={onChange}
       />
-      <InputGroupAppend>
-        <Button outline onClick={onClear}>
-          <FAIcon icon='times' />
-        </Button>
-      </InputGroupAppend>
     </IconLabelInputGroup>
   )
 }

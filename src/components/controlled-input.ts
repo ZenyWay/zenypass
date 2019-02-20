@@ -18,8 +18,12 @@ import {
   controlledInput,
   ControlledInputProps as GenericControlledInputProps
 } from 'hocs'
-import { Input as InputSFC, InputProps as InputSFCProps } from 'bootstrap'
+import { ClearableInput, ClearableInputProps } from './sfcs/clearable-input'
 
-export const ControlledInput = controlledInput<InputSFCProps>(InputSFC)
+export const ControlledInput = controlledInput<ClearableInputProps>(
+  ClearableInput
+)
 
-export type ControlledInputProps = GenericControlledInputProps<InputSFCProps>
+export type ControlledInputProps = GenericControlledInputProps<
+  ClearableInputProps
+>

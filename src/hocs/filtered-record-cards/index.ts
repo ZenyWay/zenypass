@@ -28,7 +28,8 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { callHandlerOnEvent } from 'utils'
+import compose from 'basic-compose'
+import { callHandlerOnEvent, pluck, tapOnEvent } from 'utils'
 import { tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
@@ -56,7 +57,6 @@ export interface FilteredRecordCardsSFCProps
 
 export interface FilteredRecordCardsSFCHandlerProps {
   onTokensChange?: (tokens: string[]) => void
-  onTokensClear?: (event: MouseEvent) => void
   onSearchFieldRef?: (ref: HTMLElement) => void
 }
 
@@ -85,7 +85,6 @@ const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => Partial<FilteredRecordCardsSFCHandlerProps> = createActionDispatchers({
   onTokensChange: 'TOKENS',
-  onTokensClear: 'CLEAR',
   onSearchFieldRef: 'SEARCH_FIELD_REF'
 })
 
@@ -102,8 +101,7 @@ export function filteredRecordCards<P extends FilteredRecordCardsSFCProps> (
       reducer,
       focusSearchFieldOnMountOrEnable,
       updateOnNewRecordsProp,
-      scrollToTopOnDefinedTokens,
-      callHandlerOnEvent('CLEAR', ['props', 'onFilterCancel'])
+      scrollToTopOnDefinedTokens
     ),
     () => tap(log('filtered-record-cards:state:')),
     connect<FilteredRecordCardsState, FilteredRecordCardsSFCProps>(

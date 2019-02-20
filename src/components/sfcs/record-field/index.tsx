@@ -15,10 +15,9 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { InputProps } from 'bootstrap'
 import { IconLabelInputGroup } from '../icon-label-input-group'
 import { DropdownItemSpec } from '../../dropdown'
-import { ControlledInput } from '../../controlled-input'
+import { ControlledInput, ControlledInputProps } from '../../controlled-input'
 import createL10ns, { L10nTag } from 'basic-l10n'
 import { classes } from 'utils'
 const l10ns = createL10ns(require('./locales.json'))
@@ -37,7 +36,7 @@ export const DEFAULT_PLACEHOLDERS = {
   url: 'Url'
 }
 
-export interface RecordFieldProps extends InputProps {
+export interface RecordFieldProps extends ControlledInputProps {
   id: string
   locale: string
   type?: string

@@ -32,6 +32,11 @@ window.addEventListener('beforeunload', function (event) {
   event.returnValue = ''
 })
 
+window.addEventListener('touchstart', function isTouchDevice () {
+  document.body.className += ' is-touch-device'
+  window.removeEventListener('touchstart', isTouchDevice)
+})
+
 render(<App />, app)
 
 function removeChildNodes (node: HTMLElement): HTMLElement {

@@ -28,6 +28,7 @@ export interface FAIconProps {
   pull?: 'left' | 'right' | '' | false
   fw?: boolean
   className?: string
+  innerRef?: (ref: HTMLElement) => void
   [prop: string]: unknown
 }
 
@@ -41,6 +42,7 @@ export function FAIcon ({
   pull,
   fw,
   className,
+  innerRef,
   ...attrs
 }: FAIconProps) {
   if (!icon) return null
@@ -56,7 +58,7 @@ export function FAIcon ({
     fw && 'fa-fw',
     className
   )
-  return <i className={classNames} {...attrs} />
+  return <i ref={innerRef} className={classNames} {...attrs} />
 }
 
 export interface FAIconButtonProps extends ButtonProps {
