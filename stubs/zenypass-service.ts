@@ -13,9 +13,9 @@
  * Limitations under the License.
  */
 import {
-  BehaviorSubject,
   Observable,
   NEVER,
+  Subject,
   interval,
   from as observableFrom,
   of as observableOf,
@@ -27,11 +27,12 @@ import {
   first,
   map,
   scan,
-  share,
   switchMap,
   take,
   takeUntil,
-  tap
+  tap,
+  publishBehavior,
+  refCount
 } from 'rxjs/operators'
 import {
   AuthorizationDoc,
@@ -144,8 +145,6 @@ const RECORDS = [
     {} as KVMap<Partial<ZenypassRecord>>
   )
 
-const EMPTY_RECORD = incrementRecordRevision({ _id: '999' } as ZenypassRecord)
-
 export default Promise.resolve({
   signup,
   signin,
@@ -213,7 +212,7 @@ export function getAuthorizations$ (
     : throwError(UNAUTHORIZED)
 }
 
-const recordsUpdate$ = new BehaviorSubject<RecordsUpdate>(() => RECORDS)
+const recordsUpdate$ = new Subject<RecordsUpdate>()
 
 interface RecordsUpdate {
   (records: KVMap<Partial<ZenypassRecord>>): KVMap<Partial<ZenypassRecord>>
@@ -222,9 +221,11 @@ interface RecordsUpdate {
 const records$ = recordsUpdate$.pipe(
   scan<RecordsUpdate, KVMap<Partial<ZenypassRecord>>>(
     (records, update) => update(records),
-    {}
+    RECORDS
   ),
-  share()
+  tap(log('stub/zenypass-service:records:')),
+  publishBehavior(RECORDS),
+  refCount()
 )
 
 const getRecord = accessRecordService<PouchDoc, ZenypassRecord>(({ _id }) =>
@@ -246,18 +247,24 @@ function updateRecords (
 }
 
 const newRecord = accessRecordService<void, ZenypassRecord>(function () {
+  const record = records$
+    .pipe(
+      first(),
+      map(records => records[getMaxId(records)] as ZenypassRecord)
+    )
+    .toPromise()
   updateRecords(function (records) {
     const _id = '' + (getMaxId(records) + 1)
     const empty = incrementRecordRevision({ _id } as ZenypassRecord)
     return { ...records, [_id]: empty }
   })
-  return Promise.resolve() as Promise<any>
+  return record
 })
 
 function getMaxId (records: KVMap<Partial<ZenypassRecord>>): number {
   const _ids = Object.keys(records)
     .map(_id => Number.parseInt(_id))
-    .sort()
+    .sort((a, b) => a - b)
   return _ids[_ids.length - 1]
 }
 

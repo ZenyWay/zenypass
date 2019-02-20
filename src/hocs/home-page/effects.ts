@@ -16,16 +16,13 @@
 //
 import zenypass, { ZenypassRecord } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import {
-  createPrivilegedRequest,
-  toProjection,
-  isFunction,
-  hasEntry
-} from 'utils'
+import { createPrivilegedRequest, toProjection, isFunction } from 'utils'
 import {
   catchError,
+  distinctUntilChanged,
   distinctUntilKeyChanged,
   filter,
+  first,
   map,
   pluck,
   switchMap,
@@ -55,10 +52,14 @@ const createRecord$ = createPrivilegedRequest<ZenypassRecord>(
     )
 )
 
-export function createRecordAndScrollToTopOnCreateRecordRequested (
+export function createRecordOnCreateRecordRequested (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
+  const records$ = state$.pipe(
+    pluck('records'),
+    distinctUntilChanged()
+  )
   return event$.pipe(
     filter(({ type }) => type === 'CREATE_RECORD_REQUESTED'),
     withLatestFrom(state$),
@@ -70,15 +71,12 @@ export function createRecordAndScrollToTopOnCreateRecordRequested (
         true // unrestricted
       ).pipe(
         switchMap((record: ZenypassRecord) =>
-          event$.pipe(
-            filter(
-              ({ type, payload }) =>
-                type === 'UPDATE_RECORDS' && includesRecord(payload, record)
-            )
+          records$.pipe(
+            filter(includesDefinedRecord(record)),
+            first()
           )
         ),
         map(() => createRecordResolved()),
-        tap(() => window.scrollTo(0, 0)),
         catchError(err => observableOf(createRecordRejected(err)))
       )
     ),
@@ -86,16 +84,15 @@ export function createRecordAndScrollToTopOnCreateRecordRequested (
   )
 }
 
-function includesRecord (
-  records: IndexedRecordEntry[],
-  record: ZenypassRecord
-) {
-  for (const entry of records) {
-    if (entry._id === record._id) {
-      return true
+function includesDefinedRecord (record: ZenypassRecord) {
+  return function (entries: IndexedRecordEntry[]) {
+    for (const entry of entries) {
+      if (entry.record && entry.record._id === record._id) {
+        return true
+      }
     }
+    return false
   }
-  return false
 }
 
 const getRecords$ = createPrivilegedRequest((username: string) =>

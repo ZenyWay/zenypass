@@ -15,7 +15,6 @@
  */
 
 import { IndexedRecordEntry } from './effects'
-import { ZenypassRecord } from 'zenypass-service'
 import { isUndefined } from 'utils'
 
 export default function sortIndexedRecordsByName (
@@ -25,8 +24,12 @@ export default function sortIndexedRecordsByName (
 }
 
 /**
- * if both `record` props are undefined, return the comparison of `_id` props.
- * otherwise compare record names, first case insensitive,
+ * if both `record` props are undefined, compare `_id` props.
+ * if only one of both `record` props is undefined,
+ * it is considered greater than the defined `record` prop.
+ * otherwise compare record `name` props:
+ * if both record `name` props are undefined, compare `_id` props.
+ * otherwise, first compare `name` ignoring case,
  * then if equal, with case.
  * undefined is always less than a string.
  */
@@ -34,11 +37,15 @@ function compareIndexedRecordEntries (
   a: IndexedRecordEntry,
   b: IndexedRecordEntry
 ) {
-  const aname = a.record && a.record.name
-  const bname = b.record && b.record.name
-  return !aname && !bname
+  return !a.record || !b.record
+    ? !a.record && !b.record
+      ? compareIds(a._id, b._id)
+      : !a.record
+      ? 1
+      : -1
+    : !a.record.name && !b.record.name
     ? compareIds(a._id, b._id)
-    : compareStrings(aname, bname)
+    : compareStrings(a.record.name, b.record.name)
 }
 
 /**

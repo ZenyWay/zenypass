@@ -19,10 +19,11 @@ import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import withL10n from 'zenyway-storybook-addon-l10n'
-import { RECORDS, MENU } from './helpers/consts'
+import { RECORDS, EMPTY_RECORD, MENU } from './helpers/consts'
 import preventDefaultAction from './helpers/prevent-default'
 import { HomePageSFC, withAuthenticationModal } from 'components'
 import { withAuthentication } from 'hocs'
+import { concat } from 'rxjs'
 
 const records = RECORDS.map(record => ({ _id: record._id, record }))
 const randomFilter = entry => ({ ...entry, exclude: Math.random() > 0.33 })
@@ -52,6 +53,14 @@ storiesOf('HomePage (SFC)', module)
       {...attrs}
     />
   ))
+  .add('loading-records', () => ({ locale }) => (
+    <HomePage
+      locale={locale}
+      records={records}
+      busy='loading-records'
+      {...attrs}
+    />
+  ))
   .add('creating-new-record', () => ({ locale }) => (
     <HomePage
       locale={locale}
@@ -60,11 +69,10 @@ storiesOf('HomePage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('loading-records', () => ({ locale }) => (
+  .add('pending-record', () => ({ locale }) => (
     <HomePage
       locale={locale}
-      records={records}
-      busy='loading-records'
+      records={records.slice(0, 2).concat([{ _id: EMPTY_RECORD._id }])}
       {...attrs}
     />
   ))

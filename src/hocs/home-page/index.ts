@@ -16,7 +16,7 @@
 
 import reducer, { HomePageFsmState } from './reducer'
 import {
-  createRecordAndScrollToTopOnCreateRecordRequested,
+  createRecordOnCreateRecordRequested,
   injectRecordsFromService,
   IndexedRecordEntry
 } from './effects'
@@ -32,7 +32,7 @@ import {
   createActionDispatchers,
   StandardAction
 } from 'basic-fsa-factories'
-import { callHandlerOnEvent, MenuSpec } from 'utils'
+import { callHandlerOnEvent, MenuSpec, tapOnEvent } from 'utils'
 import { Observer } from 'rxjs'
 import { tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
@@ -133,7 +133,8 @@ export function homePage<P extends HomePageSFCProps> (
     redux(
       reducer,
       injectRecordsFromService,
-      createRecordAndScrollToTopOnCreateRecordRequested,
+      createRecordOnCreateRecordRequested,
+      tapOnEvent('CREATE_RECORD_RESOLVED', () => window.scrollTo(0, 0)),
       callHandlerOnEvent('SELECT_MENU_ITEM', ['props', 'onSelectMenuItem']),
       callHandlerOnEvent('ERROR', ['props', 'onError'])
     ),
