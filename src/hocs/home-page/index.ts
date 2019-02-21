@@ -28,6 +28,7 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import {
+  createActionFactories,
   createActionFactory,
   createActionDispatchers,
   StandardAction
@@ -104,25 +105,23 @@ function mapStateToProps ({
   }
 }
 
+const selectMenuItem = createActionFactory<HTMLElement>('SELECT_MENU_ITEM')
+
+const MENU_ACTIONS = createActionFactories({
+  'new-entry': 'CREATE_RECORD_REQUESTED',
+  'help/first-steps': 'FIRST_STEPS'
+})
+
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => HomePageSFCHandlerProps = createActionDispatchers({
-  onSelectMenuItem,
   onCancel: 'CANCEL',
-  onModalToggled: 'MODAL_TOGGLED'
+  onModalToggled: 'MODAL_TOGGLED',
+  onSelectMenuItem (item: HTMLElement): StandardAction<any> {
+    const action = MENU_ACTIONS[item.dataset.id] || selectMenuItem
+    return action(item)
+  }
 })
-
-const createRecordRequested = createActionFactory<void>(
-  'CREATE_RECORD_REQUESTED'
-)
-
-const selectMenuItem = createActionFactory('SELECT_MENU_ITEM')
-
-function onSelectMenuItem (item: HTMLElement): StandardAction<any> {
-  return item && item.dataset.id === 'new-entry'
-    ? createRecordRequested()
-    : selectMenuItem(item)
-}
 
 export function homePage<P extends HomePageSFCProps> (
   HomePageSFC: SFC<P>

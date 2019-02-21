@@ -17,7 +17,7 @@
 import sortIndexedRecordsByName from './sort'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
-import { always, forType, localizeMenu, mapPayload } from 'utils'
+import { always, forType, localizeMenu, mapPayload, mergeMenus } from 'utils'
 import compose from 'basic-compose'
 import createL10ns from 'basic-l10n'
 
@@ -59,7 +59,9 @@ export default compose.into(0)(
   ),
   forType('PROPS')(
     compose.into(0)(
-      into('menu')(({ props }) => homemenu[props.locale].concat(props.menu)),
+      into('menu')(({ props: { menu, locale } }) =>
+        mergeMenus(menu, homemenu[locale])
+      ),
       into('props')(mapPayload())
     )
   )

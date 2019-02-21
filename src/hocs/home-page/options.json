@@ -3,5 +3,17 @@
     "data-id": "new-entry",
     "label": "new-entry",
     "icon": "fa fa-plus"
-  }
+  },
+  [
+    {
+      "data-id": "help",
+      "label": "help",
+      "icon": "fa fa-question-circle"
+    },
+    {
+      "data-id": "help/first-steps",
+      "label": "first-steps",
+      "icon": "fa fa-fast-forward"
+    }
+  ]
 ]

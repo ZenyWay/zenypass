@@ -53,3 +53,62 @@ export function localizeMenu (
     {} as KVs<MenuSpec>
   )
 }
+
+export function mergeLocalizedMenus (
+  menu: KVs<MenuSpec>,
+  ...menus: KVs<MenuSpec>[]
+): KVs<MenuSpec> {
+  const result = {} as KVs<MenuSpec>
+  for (const lang of Object.keys(menu)) {
+    result[lang] = menu[lang]
+    for (const other of menus) {
+      result[lang] = mergeMenus(menu[lang], other[lang])
+    }
+  }
+  return result
+}
+
+export function mergeMenus (dst: MenuSpec, src: MenuSpec): MenuSpec {
+  return src.reduce(mergeItemIntoMenu, dst)
+}
+
+function mergeItemIntoMenu (
+  menu: MenuSpec,
+  item: MenuItemSpec[] | MenuItemSpec
+) {
+  const index = findItemIndex(menu, item)
+  return index < 0 ? [item].concat(menu) : mergeItemIntoIndex(menu, item, index)
+}
+
+function mergeItemIntoIndex (
+  menu: MenuSpec,
+  item: MenuItemSpec[] | MenuItemSpec,
+  index: number
+) {
+  const result = menu.slice()
+  result[index] = mergeItems(menu[index], item)
+  return result
+}
+
+function mergeItems (
+  dst: MenuItemSpec[] | MenuItemSpec,
+  src: MenuItemSpec[] | MenuItemSpec
+): MenuItemSpec[] | MenuItemSpec {
+  return !Array.isArray(dst) || !Array.isArray(src)
+    ? src
+    : src.concat(dst.slice(1))
+}
+
+function findItemIndex (menu: MenuSpec, item: MenuItemSpec[] | MenuItemSpec) {
+  const itemId = getItemId(item)
+  let i = menu.length
+  while (i--) {
+    const entry = menu[i]
+    if (getItemId(entry) === itemId) return i
+  }
+  return -1
+}
+
+function getItemId (item: MenuItemSpec[] | MenuItemSpec) {
+  return !Array.isArray(item) ? item['data-id'] : getItemId(item[0])
+}
