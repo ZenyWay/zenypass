@@ -23,7 +23,6 @@ export enum ControlledInputFsmState {
   Dirty = 'DIRTY'
 }
 
-const intoProps = into('props')
 const intoValue = into('value')
 const mapInputValueIntoValue = intoValue(
   mapPayload(pluck('currentTarget', 'value'))
@@ -47,14 +46,14 @@ export default compose.into(0)(
   forType('CLEAR')(clearValue),
   forType('PROPS')(
     compose.into(0)(
-      intoProps(
+      into('props')(
         mapPayload(
           exclude(
             'debounce',
             'blurOnEnterKey',
             'innerRef',
             'onChange',
-            'onKeyPress'
+            'onKeyDown'
           )
         )
       ),
@@ -62,7 +61,7 @@ export default compose.into(0)(
       into('blurOnEnterKey')(mapPayload(pluck('blurOnEnterKey'))),
       into('innerRef')(mapPayload(pluck('innerRef'))),
       into('onChange')(mapPayload(pluck('onChange'))),
-      into('onKeyPress')(mapPayload(pluck('onKeyPress')))
+      into('onKeyDown')(mapPayload(pluck('onKeyDown')))
     )
   ),
   forType('INPUT_REF')(into('input')(mapPayload())),

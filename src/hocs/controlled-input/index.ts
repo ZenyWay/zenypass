@@ -36,8 +36,11 @@ import {
   shallowEqual,
   tapOnEvent
 } from 'utils'
-import { distinctUntilChanged, tap } from 'rxjs/operators'
-const log = label => console.log.bind(console, label)
+import {
+  distinctUntilChanged
+  // tap
+} from 'rxjs/operators'
+// const log = label => console.log.bind(console, label)
 
 export type ControlledInputProps<
   P extends InputProps
@@ -128,11 +131,11 @@ export function controlledInput<P extends InputProps> (
 ): ComponentConstructor<ControlledInputProps<P>> {
   const ControlledInput = componentFromEvents<ControlledInputProps<P>, P>(
     Input,
-    () => tap(log('controlled-input:event:')),
+    // () => tap(log('controlled-input:event:')),
     redux(
       reducer,
       applyHandlerOnEvent(
-        isDebounceOrClearOrEscapeKeyOrControlledInputBlur,
+        isChangeTriggerEventOrControlledInputBlur,
         'onChange',
         ({ value, input }) => [value, input]
       ),
@@ -145,13 +148,13 @@ export function controlledInput<P extends InputProps> (
       callHandlerOnEvent('INPUT_REF', 'innerRef'),
       debounceInputWhenDebounce
     ),
-    () => tap(log('controlled-input:state:')),
+    // () => tap(log('controlled-input:state:')),
     connect<ControlledInputState, InputProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
-    () => distinctUntilChanged(shallowEqual),
-    () => tap(log('controlled-input:view-props:'))
+    () => distinctUntilChanged(shallowEqual)
+    // () => tap(log('controlled-input:view-props:'))
   )
   ;(ControlledInput as any).defaultProps = DEFAULT_PROPS as ControlledInputProps<
     P
@@ -160,14 +163,14 @@ export function controlledInput<P extends InputProps> (
   return ControlledInput
 }
 
-function isDebounceOrClearOrEscapeKeyOrControlledInputBlur (
+const CHANGE_TRIGGER_EVENTS = ['DEBOUNCE', 'CLEAR', 'ESCAPE_KEY', 'ENTER_KEY']
+
+function isChangeTriggerEventOrControlledInputBlur (
   state: ControlledInputState,
   event: StandardAction<FocusEvent>
 ): boolean {
   return (
-    event.type === 'DEBOUNCE' ||
-    event.type === 'CLEAR' ||
-    event.type === 'ESCAPE_KEY' ||
+    CHANGE_TRIGGER_EVENTS.indexOf(event.type) >= 0 ||
     isControlledInputBlur(state, event)
   )
 }

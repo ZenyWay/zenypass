@@ -15,6 +15,7 @@
  * Limitations under the License.
  */
 //
+import { AuthenticationFsmState } from './reducer'
 import zenypass from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import { ERROR_STATUS } from 'utils'
@@ -22,9 +23,8 @@ import {
   catchError,
   distinctUntilKeyChanged,
   filter,
-  ignoreElements,
-  switchMap,
-  tap
+  switchMap
+  //tap
 } from 'rxjs/operators'
 import { Observable, of as observableOf } from 'rxjs'
 
@@ -37,23 +37,20 @@ const error = createActionFactory<any>('ERROR')
 export function authenticateOnAuthenticating (
   _: any,
   state$: Observable<{
-    state: string
+    state: AuthenticationFsmState
     value: string
-    props: { session: string }
+    session: string
   }>
 ) {
   return state$.pipe(
     distinctUntilKeyChanged('state'),
-    filter(({ state }) => state === 'authenticating'),
+    filter(({ state }) => state === AuthenticationFsmState.Authenticating),
     switchMap(authenticate),
     catchError(err => observableOf(error(err)))
   )
 }
 
-function authenticate ({
-  value,
-  props: { session }
-}): Promise<StandardAction<any>> {
+function authenticate ({ value, session }): Promise<StandardAction<any>> {
   return zenypass
     .then(({ getService }) => getService(session).unlock(value))
     .then(() => authenticated(session))

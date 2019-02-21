@@ -16,32 +16,49 @@
  */
 //
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
-import { propCursor, into } from 'basic-cursors'
-import { always, forType, mapPayload } from 'utils'
+import { into } from 'basic-cursors'
+import { always, exclude, forType, mapPayload, pluck } from 'utils'
 import compose from 'basic-compose'
 
-export type AutomataState = 'pristine' | 'dirty' | 'authenticating'
+export enum AuthenticationFsmState {
+  Idle = 'IDLE',
+  Authenticating = 'AUTHENTICATING'
+}
 
 const mapPayloadIntoValue = into('value')(mapPayload())
 const clearValue = into('value')(always(void 0))
 const clearError = into('error')(always(void 0))
 
-const automata: AutomataSpec<AutomataState> = {
-  pristine: {
-    CHANGE: ['dirty', mapPayloadIntoValue]
-  },
-  dirty: {
-    CANCEL: ['pristine', clearValue, clearError],
+const automata: AutomataSpec<AuthenticationFsmState> = {
+  [AuthenticationFsmState.Idle]: {
+    CANCEL: [clearValue, clearError],
     CHANGE: [clearError, mapPayloadIntoValue],
-    SUBMIT: 'authenticating'
+    SUBMIT: AuthenticationFsmState.Authenticating
   },
-  authenticating: {
-    UNAUTHORIZED: ['dirty', into('error')(mapPayload())],
-    AUTHENTICATED: ['pristine', clearValue, clearError]
+  [AuthenticationFsmState.Authenticating]: {
+    UNAUTHORIZED: [
+      AuthenticationFsmState.Idle,
+      clearValue,
+      into('error')(mapPayload())
+    ],
+    AUTHENTICATED: [AuthenticationFsmState.Idle, clearValue]
   }
 }
 
 export default compose.into(0)(
-  createAutomataReducer(automata, 'pristine'),
-  forType('PROPS')(propCursor('props')(mapPayload()))
+  createAutomataReducer(automata, AuthenticationFsmState.Idle),
+  forType('PROPS')(
+    compose.into(0)(
+      into('props')(
+        mapPayload(
+          exclude('onError', 'onAuthenticated', 'onCancelled', 'session')
+        )
+      ),
+      into('onError')(mapPayload(pluck('onError'))),
+      into('onAuthenticated')(mapPayload(pluck('onAuthenticated'))),
+      into('onCancelled')(mapPayload(pluck('onCancelled'))),
+      into('session')(mapPayload(pluck('session')))
+    )
+  ),
+  forType('INPUT_REF')(into('input')(mapPayload()))
 )

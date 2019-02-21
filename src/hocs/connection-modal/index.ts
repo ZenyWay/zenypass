@@ -142,7 +142,7 @@ export function connectionModal<P extends ConnectionModalSFCProps> (
     () => tap(log('connection-modal:event:')),
     redux(
       reducer,
-      tapOnEvent('DEFAULT_ACTION_BUTTON_REF', btn => btn && btn.focus()),
+      tapOnEvent('DEFAULT_ACTION_BUTTON_REF', focus),
       applyHandlerOnEvent(
         'CLOSE',
         ['props', 'onClose'],
@@ -161,4 +161,8 @@ export function connectionModal<P extends ConnectionModalSFCProps> (
     () => distinctUntilChanged(shallowEqual),
     () => tap(log('connection-modal:view-props:'))
   )
+}
+
+function focus (element?: HTMLElement) {
+  element && element.focus()
 }

@@ -28,7 +28,8 @@ const attrs = {
   open: true,
   onChange: action('CHANGE'),
   onSubmit: preventDefaultAction('SUBMIT'),
-  onCancel: action('CANCEL')
+  onCancel: action('CANCEL'),
+  onInputRef: action('INPUT_REF')
 }
 
 storiesOf('AuthenticationModal (SFC)', module)
@@ -40,7 +41,7 @@ storiesOf('AuthenticationModal (SFC)', module)
     <AuthenticationModal locale={locale} {...attrs} error />
   ))
   .add('pending', () => ({ locale }) => (
-    <AuthenticationModal locale={locale} {...attrs} pending />
+    <AuthenticationModal locale={locale} value='P@ssw0rd!' {...attrs} pending />
   ))
   .add('modal example', () => ({ locale }) => (
     <ModalExample locale={locale} buttonLabel='open modal' />

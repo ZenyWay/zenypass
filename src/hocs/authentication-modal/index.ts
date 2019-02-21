@@ -15,7 +15,7 @@
  * Limitations under the License.
  */
 //
-import reducer, { AutomataState } from './reducer'
+import reducer, { AuthenticationFsmState } from './reducer'
 import { authenticateOnAuthenticating } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
@@ -26,8 +26,8 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { callHandlerOnEvent, preventDefault, tapOnEvent } from 'utils'
 import { createActionDispatchers } from 'basic-fsa-factories'
-// import { tap } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import { tap } from 'rxjs/operators'
+const log = label => console.log.bind(console, label)
 
 export type AuthenticationModalProps<
   P extends AuthenticationModalSFCProps
@@ -52,15 +52,28 @@ export interface AuthenticationModalSFCProps
 export interface AuthenticationModalSFCHandlerProps {
   onChange?: (value: string) => void
   onCancel?: (event: Event) => void
-  onPasswordInputRef?: (target: HTMLElement) => void
+  onInputRef?: (target: HTMLElement) => void
   onSubmit?: (event: Event) => void
 }
 
 interface AuthenticationModalState {
-  props: AuthenticationModalHocProps & { [prop: string]: unknown }
-  state: AutomataState
+  props: Partial<
+    Pick<
+      AuthenticationModalProps<AuthenticationModalSFCProps>,
+      Exclude<
+        keyof AuthenticationModalProps<AuthenticationModalSFCProps>,
+        'onError' | 'onAuthenticated' | 'onCancelled' | 'session'
+      >
+    >
+  >
+  state: AuthenticationFsmState
   value?: string
   error?: string
+  session?: string
+  input?: HTMLElement
+  onError?: (error: any) => void
+  onCancelled?: () => void
+  onAuthenticated?: (sessionId: string) => void
 }
 
 function mapStateToProps ({
@@ -72,19 +85,13 @@ function mapStateToProps ({
   AuthenticationModalSFCProps,
   AuthenticationModalSFCHandlerProps
 > {
-  const {
-    authenticate: open,
-    onCancelled,
-    onAuthenticated,
-    session,
-    ...attrs
-  } = props
+  const { authenticate: open, ...attrs } = props
   return {
     ...attrs,
     open,
     value,
     error: !!error,
-    pending: state === 'authenticating'
+    pending: state === AuthenticationFsmState.Authenticating
   }
 }
 
@@ -93,38 +100,33 @@ const mapDispatchToProps: (
 ) => AuthenticationModalSFCHandlerProps = createActionDispatchers({
   onChange: 'CHANGE',
   onCancel: 'CANCEL',
-  onPasswordInputRef: ['INPUT_REF', inputRef('password')],
+  onInputRef: 'INPUT_REF',
   onSubmit: ['SUBMIT', preventDefault]
 })
-
-function inputRef (field: string) {
-  return function (input: HTMLElement) {
-    return { [field]: input } // input may be null (on component unmount)
-  }
-}
 
 export function authenticationModal<P extends AuthenticationModalSFCProps> (
   Modal: SFC<P>
 ): ComponentConstructor<AuthenticationModalProps<P>> {
   return componentFromEvents<AuthenticationModalProps<P>, P>(
     Modal,
-    // () => tap(log('authentication-modal:event:')),
+    () => tap(log('authentication-modal:event:')),
     redux(
       reducer,
-      tapOnEvent(
-        'INPUT_REF',
-        ({ password }) => password && password.focus && password.focus()
-      ),
+      tapOnEvent('INPUT_REF', focus),
       authenticateOnAuthenticating,
-      callHandlerOnEvent('ERROR', ['props', 'onError']),
-      callHandlerOnEvent('CANCEL', ['props', 'onCancelled']),
-      callHandlerOnEvent('AUTHENTICATED', ['props', 'onAuthenticated'])
+      callHandlerOnEvent('ERROR', 'onError'),
+      callHandlerOnEvent('CANCEL', 'onCancelled'),
+      callHandlerOnEvent('AUTHENTICATED', 'onAuthenticated')
     ),
-    // () => tap(log('authentication-modal:state:')),
+    () => tap(log('authentication-modal:state:')),
     connect<AuthenticationModalState, AuthenticationModalSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // () => tap(log('authentication-modal:view-props:'))
+    ),
+    () => tap(log('authentication-modal:view-props:'))
   )
+}
+
+function focus (element?: HTMLElement) {
+  element && element.focus()
 }

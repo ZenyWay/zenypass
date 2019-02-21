@@ -37,5 +37,4 @@ const WrappedInput = props => (
 storiesOf('ControlledInput', module)
   .add('default', () => <WrappedInput />)
   .add('debounce 300ms', () => <WrappedInput debounce='300' />)
-  .add('blurOnEnterKey', () => <WrappedInput blurOnEnterKey />)
   .add('disabled', () => <WrappedInput disabled />)

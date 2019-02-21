@@ -41,7 +41,7 @@ export interface AuthenticationModalProps {
   locale: string
   onChange?: (value: string) => void
   onCancel?: (event: Event) => void
-  onPasswordInputRef?: (target: HTMLElement) => void
+  onInputRef?: (target: HTMLElement) => void
   onSubmit?: (event: Event) => void
 }
 
@@ -53,7 +53,7 @@ export function AuthenticationModal ({
   locale,
   onChange,
   onSubmit,
-  onPasswordInputRef,
+  onInputRef,
   onCancel
 }: AuthenticationModalProps) {
   const t = l10ns[locale]
@@ -75,8 +75,8 @@ export function AuthenticationModal ({
               } rounded form-control`}
               value={value}
               onChange={onChange}
-              innerRef={onPasswordInputRef}
-              blurOnEnterKey
+              onKeyDown={stopPropagationOnEscapeKeyDown}
+              innerRef={onInputRef}
               autoFocus
             />
           </InputGroup>
@@ -95,4 +95,10 @@ export function AuthenticationModal ({
       </ModalFooter>
     </Modal>
   )
+}
+
+function stopPropagationOnEscapeKeyDown (event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    event.stopPropagation()
+  }
 }
