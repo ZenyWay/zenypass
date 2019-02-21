@@ -114,6 +114,7 @@ export function HomePage ({
                   className='form-control'
                   value={tokens}
                   debounce={debounce}
+                  autoFocus
                   onChange={onTokensChange}
                 />
               </IconLabelInputGroup>

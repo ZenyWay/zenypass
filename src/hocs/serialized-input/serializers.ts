@@ -27,7 +27,7 @@ function stringifyCsv (arr: string[]) {
 
 function parseCsv (str: string = '') {
   return !str
-    ? ''
+    ? []
     : str
         .split(CSV_SEPARATOR_REGEXP)
         .map(trim)

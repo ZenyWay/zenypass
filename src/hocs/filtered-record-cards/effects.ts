@@ -18,30 +18,14 @@ import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   distinctUntilChanged,
   filter,
-  ignoreElements,
   map,
-  pluck,
-  tap,
-  withLatestFrom
+  pluck
+  // tap
 } from 'rxjs/operators'
 import { Observable, merge } from 'rxjs'
 // const log = label => console.log.bind(console, label)
 
 const update = createActionFactory('UPDATE')
-
-export function focusSearchFieldOnMountOrEnable (
-  event$: Observable<StandardAction<any>>,
-  state$: Observable<any>
-) {
-  const enable$ = event$.pipe(filter(({ type }) => type === 'ENABLE'))
-  const mount$ = event$.pipe(filter(({ type }) => type === 'SEARCH_FIELD_REF'))
-
-  return merge(enable$, mount$).pipe(
-    withLatestFrom(state$),
-    tap(([_, { searchField }]) => searchField && searchField.focus()),
-    ignoreElements()
-  )
-}
 
 export function updateOnNewRecordsProp (
   event$: Observable<StandardAction<any>>
@@ -51,17 +35,5 @@ export function updateOnNewRecordsProp (
     pluck('payload', 'records'),
     distinctUntilChanged(),
     map(() => update())
-  )
-}
-
-export function scrollToTopOnDefinedTokens (
-  event$: Observable<StandardAction<any>>
-) {
-  return event$.pipe(
-    filter(
-      ({ type, payload }) => type === 'TOKENS' && payload && payload.length
-    ),
-    tap(() => scrollTo(0, 0)),
-    ignoreElements()
   )
 }

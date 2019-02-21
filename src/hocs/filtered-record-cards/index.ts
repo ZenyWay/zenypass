@@ -15,11 +15,7 @@
  */
 
 import reducer, { FilteredRecordEntry, IndexedRecordEntry } from './reducer'
-import {
-  updateOnNewRecordsProp,
-  focusSearchFieldOnMountOrEnable,
-  scrollToTopOnDefinedTokens
-} from './effects'
+import { updateOnNewRecordsProp } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -28,6 +24,7 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
+import { tapOnEvent } from 'utils'
 import { tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
@@ -86,9 +83,8 @@ export function filteredRecordCards<P extends FilteredRecordCardsSFCProps> (
     () => tap(log('filtered-record-cards:event:')),
     redux(
       reducer,
-      focusSearchFieldOnMountOrEnable,
-      updateOnNewRecordsProp,
-      scrollToTopOnDefinedTokens
+      tapOnEvent('TOKENS', () => window.scrollTo(0, 0)),
+      updateOnNewRecordsProp
     ),
     () => tap(log('filtered-record-cards:state:')),
     connect<FilteredRecordCardsState, FilteredRecordCardsSFCProps>(
