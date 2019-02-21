@@ -113,9 +113,7 @@ export function applyHandlerOnEvent<S = any> (
         return getTrigger$Factory(type)(event$, state$).pipe(
           map(([event, state]) => ({ event, state, handler: handler(state) })),
           filter(({ handler }) => isFunction(handler)),
-          tap(({ event, state, handler }) =>
-            Promise.resolve().then(() => handler(...payload(state, event)))
-          ),
+          tap(({ event, state, handler }) => handler(...payload(state, event))),
           ignoreElements()
         )
       }
