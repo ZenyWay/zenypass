@@ -75,7 +75,6 @@ export function AuthenticationModal ({
               } rounded form-control`}
               value={value}
               onChange={onChange}
-              onKeyDown={stopPropagationOnEscapeKeyDown}
               innerRef={onInputRef}
               autoFocus
             />
@@ -95,10 +94,4 @@ export function AuthenticationModal ({
       </ModalFooter>
     </Modal>
   )
-}
-
-function stopPropagationOnEscapeKeyDown (event: KeyboardEvent) {
-  if (event.key === 'Escape') {
-    event.stopPropagation()
-  }
 }

@@ -32,6 +32,7 @@ import compose from 'basic-compose'
 import {
   applyHandlerOnEvent,
   callHandlerOnEvent,
+  focus,
   pluck,
   shallowEqual,
   tapOnEvent
@@ -49,7 +50,7 @@ export type ControlledInputProps<
 export interface ControlledInputControllerProps {
   value?: string
   debounce?: string | number
-  blurOnEnterKey?: boolean
+  autoFocus?: boolean
   autocorrect?: 'off' | 'on' | '' | false
   autocomplete?: 'off' | 'on' | '' | false
   spellcheck?: 'true' | 'false' | '' | false
@@ -60,6 +61,7 @@ export interface ControlledInputControllerProps {
 
 export interface InputProps extends InputHandlerProps {
   value?: string
+  autoFocus?: boolean
   autocorrect?: 'off' | 'on' | '' | false
   autocomplete?: 'off' | 'on' | '' | false
   spellcheck?: 'true' | 'false' | '' | false
@@ -122,8 +124,12 @@ const mapDispatchToProps: (
   onBlur: 'BLUR', // https://github.com/infernojs/inferno/issues/1361
   onClickClear: 'CLEAR',
   onInput: 'INPUT',
-  onKeyDown: (event: KeyboardEvent) =>
-    (SPECIAL_KEY_ACTIONS[event.key] || keyDown)(event)
+  onKeyDown (event: KeyboardEvent) {
+    const { key } = event
+    if (key === 'Escape') event.stopImmediatePropagation()
+    const action = SPECIAL_KEY_ACTIONS[event.key] || keyDown
+    return action(event)
+  }
 })
 
 export function controlledInput<P extends InputProps> (
@@ -144,6 +150,10 @@ export function controlledInput<P extends InputProps> (
       tapOnEvent(
         ['ESCAPE_KEY', 'CLEAR'],
         compose.into(0)(focus, pluck('1', 'input'))
+      ),
+      tapOnEvent(
+        ({ props }, { type }) => props.autoFocus && type === 'INPUT_REF',
+        focus
       ),
       callHandlerOnEvent('INPUT_REF', 'innerRef'),
       debounceInputWhenDebounce
@@ -180,8 +190,4 @@ function isControlledInputBlur (
   { type, payload: { relatedTarget } }: StandardAction<FocusEvent>
 ): boolean {
   return type === 'BLUR' && relatedTarget !== input && relatedTarget !== icon
-}
-
-function focus (element?: HTMLElement) {
-  element && element.focus()
 }

@@ -24,8 +24,15 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { callHandlerOnEvent, preventDefault, tapOnEvent } from 'utils'
 import { createActionDispatchers } from 'basic-fsa-factories'
+import compose from 'basic-compose'
+import {
+  callHandlerOnEvent,
+  focus,
+  pluck,
+  preventDefault,
+  tapOnEvent
+} from 'utils'
 import { tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
@@ -112,11 +119,11 @@ export function authenticationModal<P extends AuthenticationModalSFCProps> (
     () => tap(log('authentication-modal:event:')),
     redux(
       reducer,
-      tapOnEvent('INPUT_REF', focus),
       authenticateOnAuthenticating,
       callHandlerOnEvent('ERROR', 'onError'),
       callHandlerOnEvent('CANCEL', 'onCancelled'),
-      callHandlerOnEvent('AUTHENTICATED', 'onAuthenticated')
+      callHandlerOnEvent('AUTHENTICATED', 'onAuthenticated'),
+      tapOnEvent('UNAUTHORIZED', compose.into(0)(focus, pluck('1', 'input')))
     ),
     () => tap(log('authentication-modal:state:')),
     connect<AuthenticationModalState, AuthenticationModalSFCProps>(
@@ -125,8 +132,4 @@ export function authenticationModal<P extends AuthenticationModalSFCProps> (
     ),
     () => tap(log('authentication-modal:view-props:'))
   )
-}
-
-function focus (element?: HTMLElement) {
-  element && element.focus()
 }

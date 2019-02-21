@@ -145,7 +145,6 @@ export function AuthenticationForm ({
       <PassiveRecordField
         type='email'
         id='email'
-        blurOnEnterKey
         className='mb-2'
         options={emails}
         icon={dropdown ? 'fa fa-user' : 'user'}
@@ -161,7 +160,6 @@ export function AuthenticationForm ({
       <PassiveRecordField
         type={cleartext ? 'text' : 'password'}
         id='password'
-        blurOnEnterKey
         className='mb-2'
         icon='lock'
         placeholder={passwordEnabled && t('Enter your password')}
@@ -177,7 +175,6 @@ export function AuthenticationForm ({
         <PassiveRecordField
           type='text'
           id='token'
-          blurOnEnterKey
           className='mb-2'
           icon='key'
           flip='vertical'
@@ -198,7 +195,6 @@ export function AuthenticationForm ({
         <PassiveRecordField
           type={cleartext ? 'text' : 'password'}
           id='confirm'
-          blurOnEnterKey
           className='mb-2'
           icon='lock'
           placeholder={!confirmEnabled ? null : t('Confirm your password')}

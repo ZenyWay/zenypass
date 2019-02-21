@@ -22,3 +22,16 @@ export function preventDefault (event: Event) {
   event.preventDefault()
   return event
 }
+
+export function stopPropagation (event: Event) {
+  event.stopPropagation()
+  return event
+}
+
+export function focus (element?: HTMLElement) {
+  element && element.focus()
+}
+
+export function blur (element?: HTMLElement) {
+  element && element.blur()
+}

@@ -32,12 +32,17 @@ import {
   connect,
   redux
 } from 'component-from-events'
-import { callHandlerOnEvent, isString, preventDefault, tapOnEvent } from 'utils'
+import {
+  callHandlerOnEvent,
+  isString,
+  focus,
+  preventDefault,
+  tapOnEvent
+} from 'utils'
 import {
   createActionDispatchers,
   createActionFactories,
-  createActionFactory,
-  StandardAction
+  createActionFactory
 } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
 import { tap } from 'rxjs/operators'
@@ -263,7 +268,7 @@ export function recordCard<P extends RecordCardSFCProps> (
     redux(
       reducer,
       callHandlerOnEvent('ERROR', ['props', 'onError']),
-      tapOnEvent('DEFAULT_ACTION_BUTTON_REF', btn => btn && btn.focus()),
+      tapOnEvent('DEFAULT_ACTION_BUTTON_REF', focus),
       clearClipboardOnDirtyConnectCancelOrClearClipboard,
       validateRecordOnThumbnailWhenNotPendingContent,
       validateChangeOnChange,
