@@ -33,20 +33,29 @@ export function pluck<T> (keys: string[] | string, ...rest: string[]) {
       }
 }
 
+export function select<T> (...keys: string[])
+export function select<T> (keys: string[] | string)
+export function select<T> (keys: string[] | string, ...rest: string[]) {
+  return !Array.isArray(keys)
+    ? select([keys].concat(rest))
+    : function<O extends T> (obj: O): T {
+        let res = {} as T
+        for (const key of keys) {
+          if (key in obj) res[key] = obj[key]
+        }
+        return res
+      }
+}
+
 export function exclude<T> (...keys: string[])
 export function exclude<T> (keys: string[] | string)
 export function exclude<T> (keys: string[] | string, ...rest: string[]) {
   return !Array.isArray(keys)
     ? exclude([keys].concat(rest))
     : function<O extends T> (obj: O): T {
-        if (arguments.length > 1) {
-          return exclude(keys.slice(1))(arguments[keys[0]])
-        }
         let res = {} as T
         for (const key of Object.keys(obj)) {
-          if (keys.indexOf(key) < 0) {
-            res[key] = obj[key]
-          }
+          if (keys.indexOf(key) < 0) res[key] = obj[key]
         }
         return res
       }

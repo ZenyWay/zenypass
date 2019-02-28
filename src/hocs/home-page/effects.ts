@@ -14,22 +14,39 @@
  * Limitations under the License.
  */
 //
-import zenypass, { ZenypassRecord } from 'zenypass-service'
-import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import { createPrivilegedRequest, toProjection, isFunction } from 'utils'
+import zenypass, {
+  PouchDoc,
+  PouchVaultChange,
+  ZenypassRecord
+} from 'zenypass-service'
+import {
+  createActionFactory,
+  StandardAction,
+  createActionFactories
+} from 'basic-fsa-factories'
+import { createPrivilegedRequest, entries, toProjection } from 'utils'
 import {
   catchError,
+  concatMap,
+  defaultIfEmpty,
   distinctUntilChanged,
   distinctUntilKeyChanged,
   filter,
   first,
+  last,
   map,
   pluck,
+  startWith,
   switchMap,
-  tap,
+  // tap,
   withLatestFrom
 } from 'rxjs/operators'
-import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
+import {
+  Observable,
+  from as observableFrom,
+  identity,
+  of as observableOf
+} from 'rxjs'
 
 // const log = (label: string) => console.log.bind(console, label)
 
@@ -38,17 +55,24 @@ export interface IndexedRecordEntry {
   record?: Partial<ZenypassRecord>
 }
 
+export interface SettingsDoc extends PouchDoc {
+  lang?: string
+  noOnboarding?: boolean
+}
+
+const SETTINGS_DOC_ID = 'settings'
+const updateSetting = createActionFactory<any>('UPDATE_SETTING')
 const createRecordResolved = createActionFactory<any>('CREATE_RECORD_RESOLVED')
 const createRecordRejected = createActionFactory<any>('CREATE_RECORD_REJECTED')
 const updateRecords = createActionFactory('UPDATE_RECORDS')
 const error = createActionFactory('ERROR')
 
+const zenypass$ = observableFrom(zenypass)
+
 const createRecord$ = createPrivilegedRequest<ZenypassRecord>(
   (username: string) =>
-    observableFrom(
-      zenypass.then(({ getService }) =>
-        getService(username).records.newRecord()
-      )
+    zenypass$.pipe(
+      switchMap(({ getService }) => getService(username).records.newRecord())
     )
 )
 
@@ -63,7 +87,7 @@ export function createRecordOnCreateRecordRequested (
   return event$.pipe(
     filter(({ type }) => type === 'CREATE_RECORD_REQUESTED'),
     withLatestFrom(state$),
-    pluck('1', 'props'),
+    pluck('1'),
     switchMap(({ onAuthenticationRequest, session: username }) =>
       createRecord$(
         toProjection(onAuthenticationRequest),
@@ -96,22 +120,18 @@ function includesDefinedRecord (record: ZenypassRecord) {
 }
 
 const getRecords$ = createPrivilegedRequest((username: string) =>
-  observableFrom(zenypass.then(({ getService }) => getService(username))).pipe(
-    switchMap(({ records }) => records.records$)
+  zenypass$.pipe(
+    switchMap(({ getService }) => getService(username).records.records$)
   )
 )
 
 export function injectRecordsFromService (_: any, state$: Observable<any>) {
   return state$.pipe(
-    pluck<any, any>('props'),
-    distinctUntilKeyChanged('onAuthenticationRequest'),
-    filter(({ onAuthenticationRequest }) =>
-      isFunction(onAuthenticationRequest)
-    ),
-    switchMap(({ onAuthenticationRequest, session: username }) =>
+    distinctUntilKeyChanged('session'),
+    switchMap(({ onAuthenticationRequest, session }) =>
       getRecords$(
         toProjection(onAuthenticationRequest),
-        username,
+        session,
         true // unrestricted
       ).pipe(
         map((records: IndexedMap<ZenypassRecord>) =>
@@ -138,4 +158,57 @@ function toIndexedRecordsArray (
     result[i] = { _id, record }
   }
   return result
+}
+
+const getSettings$ = createPrivilegedRequest<SettingsDoc>((username: string) =>
+  zenypass$.pipe(
+    map(({ getService }) => getService(username).meta),
+    switchMap(meta =>
+      observableFrom(
+        meta.getChange$<SettingsDoc>({
+          doc_ids: [SETTINGS_DOC_ID],
+          since: 0,
+          include_docs: true
+        })
+      ).pipe(
+        defaultIfEmpty<PouchVaultChange<SettingsDoc>>(void 0),
+        last<PouchVaultChange<SettingsDoc>>(),
+        filter<PouchVaultChange<SettingsDoc>>(Boolean),
+        concatMap(change =>
+          observableFrom(
+            meta.getChange$({
+              doc_ids: [SETTINGS_DOC_ID],
+              include_docs: true,
+              live: true,
+              since: (change && change.seq) || 0
+            })
+          ).pipe(
+            pluck<PouchVaultChange<SettingsDoc>, SettingsDoc>('doc'),
+            change && change.doc ? startWith(change.doc) : identity
+          )
+        )
+      )
+    )
+  )
+)
+
+export function settings$FromService (_: any, state$: Observable<any>) {
+  return state$.pipe(
+    distinctUntilKeyChanged('session'),
+    switchMap(({ onAuthenticationRequest, session }) =>
+      getSettings$(
+        toProjection(onAuthenticationRequest),
+        session,
+        true // unrestricted
+      ).pipe(
+        filter(({ _deleted }) => !_deleted),
+        concatMap(({ _id, _rev, _deleted, ...settings }: SettingsDoc) =>
+          entries(settings)
+        ),
+        map(setting => updateSetting(setting)),
+        catchError(err => observableOf(error(err)))
+      )
+    ),
+    catchError(err => observableOf(error(err)))
+  )
 }

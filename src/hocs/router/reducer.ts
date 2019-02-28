@@ -19,69 +19,75 @@ import { into } from 'basic-cursors'
 import compose from 'basic-compose'
 import { always, forType, mapPayload, pluck } from 'utils'
 
-export type RouteAutomataState =
-  | '/'
-  | '/signup'
-  | '/signin'
-  | '/authorize'
-  | '/devices'
-  | '/storage'
-  | '/fatal'
-export type LinkAutomataState = 'idle' | 'info'
+export enum RouteAutomataState {
+  Homepage = '/',
+  Signup = '/signup',
+  Signin = '/signin',
+  Authorize = '/authorize',
+  Devices = '/devices',
+  Storage = '/storage',
+  Fatal = '/fatal'
+}
+
+export enum LinkAutomataState {
+  Idle = 'idle',
+  Info = 'info'
+}
 
 const mapPayloadIntoError = into('error')(mapPayload())
 const mapPayloadIntoEmail = into('email')(mapPayload())
 
 const routeAutomata: AutomataSpec<RouteAutomataState> = {
-  '/': {
+  [RouteAutomataState.Homepage]: {
     // TODO remove comments when corresponding pages are available
     // DEVICES: '/devices',
     // STORAGE: '/storage',
-    SIGNED_OUT: ['/signin', into('session')(always())],
-    FATAL: ['/fatal', mapPayloadIntoError]
+    SIGNED_OUT: [RouteAutomataState.Signin, into('session')(always())],
+    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
   },
-  '/signup': {
-    SIGNIN: '/signin',
+  [RouteAutomataState.Signup]: {
+    SIGNIN: RouteAutomataState.Signin,
     EMAIL: mapPayloadIntoEmail,
-    FATAL: ['/fatal', mapPayloadIntoError]
+    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
   },
-  '/signin': {
-    AUTHORIZE: '/authorize',
-    SIGNUP: '/signup',
+  [RouteAutomataState.Signin]: {
+    AUTHORIZE: RouteAutomataState.Authorize,
+    SIGNUP: RouteAutomataState.Signup,
     EMAIL: mapPayloadIntoEmail,
-    AUTHENTICATED: ['/', into('session')(mapPayload())],
-    FATAL: ['/fatal', mapPayloadIntoError]
+    AUTHENTICATED: [RouteAutomataState.Homepage, into('session')(mapPayload())],
+    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
   },
-  '/authorize': {
-    SIGNUP: '/signup',
+  [RouteAutomataState.Authorize]: {
+    SIGNUP: RouteAutomataState.Signup,
     EMAIL: mapPayloadIntoEmail,
-    FATAL: ['/fatal', mapPayloadIntoError]
+    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
   },
-  '/devices': {
-    CLOSE: '/',
-    FATAL: ['/fatal', mapPayloadIntoError]
+  [RouteAutomataState.Devices]: {
+    CLOSE: RouteAutomataState.Homepage,
+    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
   },
-  '/storage': {
-    CLOSE: '/',
-    FATAL: ['/fatal', mapPayloadIntoError]
+  [RouteAutomataState.Storage]: {
+    CLOSE: RouteAutomataState.Homepage,
+    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
   },
-  '/fatal': {
+  [RouteAutomataState.Fatal]: {
     // DEAD-END
   }
 }
 
 const linkAutomata: AutomataSpec<LinkAutomataState> = {
-  idle: {
-    LINK: ['info', into('link')(mapPayload())]
+  [LinkAutomataState.Idle]: {
+    LINK: [LinkAutomataState.Info, into('link')(mapPayload())]
   },
-  info: {
-    CLOSE_INFO: 'idle'
+  [LinkAutomataState.Info]: {
+    CLOSE_INFO: LinkAutomataState.Idle
   }
 }
 
 export default compose.into(0)(
-  createAutomataReducer(routeAutomata, '/signin', 'path'),
-  createAutomataReducer(linkAutomata, 'idle', 'info'),
+  createAutomataReducer(routeAutomata, RouteAutomataState.Signin, 'path'),
+  createAutomataReducer(linkAutomata, LinkAutomataState.Idle, 'info'),
+  forType('ONBOARDING')(into('onboarding')(mapPayload())),
   forType('LOCALE')(into('locale')(mapPayload())),
   forType('PROPS')(into('props')(mapPayload()))
 )

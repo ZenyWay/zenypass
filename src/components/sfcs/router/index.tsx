@@ -39,6 +39,7 @@ export interface CoreRouterProps {
   email?: string
   session?: string
   error?: any
+  onboarding?: boolean
   children?: any
   onAuthenticated?: (session?: string) => void
   onAuthenticationPageType?: (type?: AuthenticationPageType) => void
@@ -46,6 +47,7 @@ export interface CoreRouterProps {
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
+  onUpdateSetting?: (key?: string, value?: any) => void
 }
 
 export function Router ({
@@ -85,6 +87,7 @@ function CoreRouter ({
   session,
   path,
   menu,
+  onboarding,
   error,
   children = null,
   onAuthenticated,
@@ -93,6 +96,7 @@ function CoreRouter ({
   onEmailChange,
   onError,
   onSelectMenuItem,
+  onUpdateSetting,
   attrs
 }: CoreRouterProps & { [prop: string]: unknown }) {
   switch (path) {
@@ -102,9 +106,11 @@ function CoreRouter ({
           locale={locale}
           session={session}
           menu={menu}
+          onboarding={onboarding}
           onAuthenticationRequest={onAuthenticationRequest}
           onError={onError}
           onSelectMenuItem={onSelectMenuItem}
+          onUpdateSetting={onUpdateSetting}
         />
       )
     case '/authorize':

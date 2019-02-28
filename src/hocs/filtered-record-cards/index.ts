@@ -25,8 +25,8 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { tapOnEvent } from 'utils'
-import { tap } from 'rxjs/operators'
-const log = label => console.log.bind(console, label)
+// import { tap } from 'rxjs/operators'
+// const log = label => console.log.bind(console, label)
 
 export type FilteredRecordCardsProps<
   P extends FilteredRecordCardsSFCProps
@@ -80,17 +80,17 @@ export function filteredRecordCards<P extends FilteredRecordCardsSFCProps> (
 ): ComponentConstructor<FilteredRecordCardsProps<P>> {
   return componentFromEvents<FilteredRecordCardsProps<P>, P>(
     FilteredRecordCardsSFC,
-    () => tap(log('filtered-record-cards:event:')),
+    // () => tap(log('filtered-record-cards:event:')),
     redux(
       reducer,
       tapOnEvent('TOKENS', () => window.scrollTo(0, 0)),
       updateOnNewRecordsProp
     ),
-    () => tap(log('filtered-record-cards:state:')),
+    // () => tap(log('filtered-record-cards:state:')),
     connect<FilteredRecordCardsState, FilteredRecordCardsSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    ),
-    () => tap(log('filtered-record-cards:view-props:'))
+    )
+    // () => tap(log('filtered-record-cards:view-props:'))
   )
 }

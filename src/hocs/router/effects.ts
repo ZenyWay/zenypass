@@ -16,27 +16,44 @@
 //
 import zenypass from 'zenypass-service'
 import { LOCALES } from './options'
-import { StandardAction, createActionFactory } from 'basic-fsa-factories'
-import * as qs from 'query-string'
 import {
-  ignoreElements,
+  StandardAction,
+  createActionFactories,
+  createActionFactory
+} from 'basic-fsa-factories'
+import {
+  catchError,
+  concatMap,
   filter,
   pluck,
   map,
-  share,
   startWith,
   tap,
   withLatestFrom
 } from 'rxjs/operators'
-import { Observable, fromEvent, merge } from 'rxjs'
-import { isBoolean, isString } from 'utils'
-// const log = (label: string) => console.log.bind(console, label)
+import { Observable, fromEvent, of as observableOf } from 'rxjs'
+import { isInvalidEmail, not } from 'utils'
+const log = (label: string) => console.log.bind(console, label)
 
-const signedOut = createActionFactory('SIGNED_OUT')
-const email = createActionFactory('EMAIL')
-const locale = createActionFactory('LOCALE')
+const QS_PARAM_VALIDATORS = {
+  email: not(isInvalidEmail),
+  lang: lang => LOCALES.indexOf(lang) >= 0,
+  signup: isValidBoolean,
+  onboarding: isValidBoolean
+}
+
+const fatal = createActionFactory('FATAL')
 const signup = createActionFactory('SIGNUP')
 const signin = createActionFactory('SIGNIN')
+
+const QS_PARAM_ACTIONS = createActionFactories({
+  email: 'EMAIL',
+  lang: 'LOCALE',
+  signup: val => (val === 'true' ? signup() : signin()),
+  onboarding: ['ONBOARDING', val => val === 'true']
+})
+
+const signedOut = createActionFactory('SIGNED_OUT')
 
 export function signoutOnLogout (
   event$: Observable<StandardAction<any>>,
@@ -55,82 +72,47 @@ function signout (username: string): Promise<void> {
   return zenypass.then(({ getService }) => getService(username).signout())
 }
 
-export function openLinkOnCloseInfo (
-  event$: Observable<StandardAction<any>>,
-  state$: Observable<any>
-) {
-  return event$.pipe(
-    filter(({ type }) => type === 'CLOSE_INFO'),
-    withLatestFrom(state$),
-    pluck('1', 'link'),
-    tap(openItemLink),
-    ignoreElements()
-  )
-}
+const win = window.top
 
-function openItemLink ({ href }: HTMLLinkElement) {
-  const win = window.open()
-  win.opener = null
-  win.location.href = href
-}
-
-export function injectParamsFromUrl () {
+export function injectQueryParamsFromLocationHash () {
   // support url hash in storybook (iframe in development mode)
-  const win = process.env.NODE_ENV === 'development' ? window.top : window
-  const hash$ = fromEvent(win, 'hashchange').pipe(
-    map(() => parseQsParamsFromLocationHash(win)),
-    share(),
-    startWith(parseQsParamsFromLocationHash(win))
+  return fromEvent(win, 'hashchange').pipe(
+    concatMap(() => parseQueryParamsFromLocationHash()),
+    startWith(...parseQueryParamsFromLocationHash()),
+    map(({ key, value }) => QS_PARAM_ACTIONS[key](value)),
+    catchError(err => observableOf(fatal(err)))
   )
-  const email$ = hash$.pipe(
-    pluck('email'),
-    map(sanitizeEmail),
-    filter(Boolean),
-    map(email)
-  )
-  const locale$ = hash$.pipe(
-    pluck('lang'),
-    map(sanitizeLang),
-    filter(Boolean),
-    map(locale)
-  )
-  const signup$ = hash$.pipe(
-    pluck('signup'),
-    map(sanitizeSignup),
-    filter(isBoolean),
-    map(isSignup => (isSignup ? signup() : signin()))
-  )
-  return merge(email$, locale$, signup$)
 }
 
-const INVALID_EMAIL = /^(?:[^@]+|.*[\n(){}\/\\<>]+.*)$/m
-function sanitizeEmail (email: unknown) {
-  return !isString(email) || INVALID_EMAIL.test(email.valueOf())
-    ? void 0
-    : email
+function isValidBoolean (value: string) {
+  return value === 'true' || value === 'false'
 }
 
-function sanitizeLang (lang: unknown) {
-  if (!isString(lang)) return void 0
-  const i = LOCALES.indexOf(lang.trim().toLowerCase())
-  return i < 0 ? void 0 : LOCALES[i]
+const QS_PARAM_KEYS = Object.keys(QS_PARAM_VALIDATORS)
+
+interface Entry<V> {
+  key: string
+  value: V
 }
 
-function sanitizeSignup (signup: unknown) {
-  return isString(signup)
-    ? signup.trim().toLowerCase() === 'true'
-    : isBoolean(signup)
-    ? signup
-    : void 0
+function parseQueryParamsFromLocationHash (): Entry<any>[] {
+  const params = new URLSearchParams(win.location.hash.slice(1)) // remove leading hash
+  const parsed = [] as Entry<any>[]
+  for (const key of QS_PARAM_KEYS) {
+    if (params.has(key)) {
+      const value = params
+        .get(key)
+        .trim()
+        .toLowerCase()
+      const isValid = QS_PARAM_VALIDATORS[key]
+      if (isValid(value)) parsed.push({ key, value })
+    }
+  }
+  return parsed
 }
 
-function parseQsParamsFromLocationHash (win: Window) {
-  const { hash } = win.location
-  return qs.parse(getQueryString(hash))
-}
-
-const QS_REGEXP = /\?(.*)$/
-function getQueryString (url: string) {
-  const qs = QS_REGEXP.exec(url)
-  return (qs && qs[1]) || ''
+export function udpateLocationHashQueryParam (key: string, value: any) {
+  const params = new URLSearchParams(win.location.hash.slice(1)) // remove leading hash
+  params.set(key, '' + value)
+  win.location.hash = '#?' + params.toString()
 }

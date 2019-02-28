@@ -17,9 +17,31 @@
 import sortIndexedRecordsByName from './sort'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
-import { always, forType, localizeMenu, mapPayload, mergeMenus } from 'utils'
+import {
+  MenuSpec,
+  always,
+  exclude,
+  forType,
+  localizeMenu,
+  mapPayload,
+  mergePayload,
+  mergeMenus,
+  select
+} from 'utils'
 import compose from 'basic-compose'
 import createL10ns from 'basic-l10n'
+import { Observer } from 'rxjs'
+
+export interface HomePageHocProps {
+  locale: string
+  menu: MenuSpec
+  onboarding?: boolean
+  session?: string
+  onAuthenticationRequest?: (res$: Observer<string>) => void
+  onError?: (error?: any) => void
+  onSelectMenuItem?: (target: HTMLElement) => void
+  onUpdateSetting?: (key?: string, value?: any) => void
+}
 
 export enum HomePageFsmState {
   Idle = 'IDLE',
@@ -52,6 +74,17 @@ const automata: AutomataSpec<HomePageFsmState> = {
   }
 }
 
+const SELECTED_PROPS: (keyof HomePageHocProps)[] = [
+  'locale',
+  'menu',
+  'session',
+  'onboarding',
+  'onAuthenticationRequest',
+  'onError',
+  'onSelectMenuItem',
+  'onUpdateSetting'
+]
+
 export default compose.into(0)(
   createAutomataReducer(automata, HomePageFsmState.PendingRecords),
   forType('UPDATE_RECORDS')(
@@ -59,10 +92,11 @@ export default compose.into(0)(
   ),
   forType('PROPS')(
     compose.into(0)(
-      into('menu')(({ props: { menu, locale } }) =>
-        mergeMenus(menu, homemenu[locale])
+      into('menu')(
+        mapPayload(({ menu, locale }) => mergeMenus(menu, homemenu[locale]))
       ),
-      into('props')(mapPayload())
+      mergePayload(select(SELECTED_PROPS)),
+      into('attrs')(mapPayload(exclude(SELECTED_PROPS)))
     )
   )
 )

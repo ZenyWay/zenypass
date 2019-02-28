@@ -35,3 +35,9 @@ export function focus (element?: HTMLElement) {
 export function blur (element?: HTMLElement) {
   element && element.blur()
 }
+
+export function openItemLink ({ href }: HTMLLinkElement) {
+  const win = window.open()
+  win.opener = null
+  win.location.href = href
+}

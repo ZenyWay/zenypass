@@ -147,7 +147,9 @@ export function toProjection<I, O> (
 ) {
   return function (req?: I): Observable<O> {
     const res$ = new Subject<O>()
-    Promise.resolve().then(() => handler(res$, req)) // asap
+    Promise.resolve()
+      .then(() => handler(res$, req)) // asap
+      .catch(err => res$.error(err))
     return res$
   }
 }

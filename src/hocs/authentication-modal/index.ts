@@ -33,8 +33,8 @@ import {
   preventDefault,
   tapOnEvent
 } from 'utils'
-import { tap } from 'rxjs/operators'
-const log = label => console.log.bind(console, label)
+// import { tap } from 'rxjs/operators'
+// const log = label => console.log.bind(console, label)
 
 export type AuthenticationModalProps<
   P extends AuthenticationModalSFCProps
@@ -116,7 +116,7 @@ export function authenticationModal<P extends AuthenticationModalSFCProps> (
 ): ComponentConstructor<AuthenticationModalProps<P>> {
   return componentFromEvents<AuthenticationModalProps<P>, P>(
     Modal,
-    () => tap(log('authentication-modal:event:')),
+    // () => tap(log('authentication-modal:event:')),
     redux(
       reducer,
       authenticateOnAuthenticating,
@@ -125,11 +125,11 @@ export function authenticationModal<P extends AuthenticationModalSFCProps> (
       callHandlerOnEvent('AUTHENTICATED', 'onAuthenticated'),
       tapOnEvent('UNAUTHORIZED', compose.into(0)(focus, pluck('1', 'input')))
     ),
-    () => tap(log('authentication-modal:state:')),
+    // () => tap(log('authentication-modal:state:')),
     connect<AuthenticationModalState, AuthenticationModalSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    ),
-    () => tap(log('authentication-modal:view-props:'))
+    )
+    // () => tap(log('authentication-modal:view-props:'))
   )
 }

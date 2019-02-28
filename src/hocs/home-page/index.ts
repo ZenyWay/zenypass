@@ -14,10 +14,11 @@
  * Limitations under the License.
  */
 
-import reducer, { HomePageFsmState } from './reducer'
+import reducer, { HomePageFsmState, HomePageHocProps } from './reducer'
 import {
   createRecordOnCreateRecordRequested,
   injectRecordsFromService,
+  settings$FromService,
   IndexedRecordEntry
 } from './effects'
 import componentFromEvents, {
@@ -33,7 +34,13 @@ import {
   createActionDispatchers,
   StandardAction
 } from 'basic-fsa-factories'
-import { callHandlerOnEvent, MenuSpec, tapOnEvent } from 'utils'
+import {
+  MenuSpec,
+  applyHandlerOnEvent,
+  callHandlerOnEvent,
+  mapPayload,
+  tapOnEvent
+} from 'utils'
 import { Observer } from 'rxjs'
 import { tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
@@ -41,23 +48,10 @@ const log = label => console.log.bind(console, label)
 export type HomePageProps<P extends HomePageSFCProps> = HomePageHocProps &
   Rest<P, HomePageSFCProps>
 
-export interface HomePageHocProps {
-  locale: string
-  menu: MenuSpec
-  session?: string
-  onAuthenticationRequest?: (res$: Observer<string>) => void
-  onError?: (error?: any) => void
-  onSelectMenuItem?: (target: HTMLElement) => void
-}
-
 export interface HomePageSFCProps extends HomePageSFCHandlerProps {
   locale: string
   menu: MenuSpec
   session?: string
-  /**
-   * array of [_id: string, record?: ZenypassRecord]
-   * an undefined record is pending decypher.
-   */
   records?: IndexedRecordEntry[]
   busy?: BusyState
   error?: string
@@ -69,14 +63,18 @@ export enum BusyState {
 }
 
 export interface HomePageSFCHandlerProps {
+  onAuthenticationRequest?: (res$: Observer<string>) => void
+  onError?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
   onCancel?: (event?: MouseEvent) => void
   onModalToggled?: () => void
 }
 
-interface HomePageState {
-  props: HomePageProps<HomePageSFCProps>
-  menu: MenuSpec
+interface HomePageState extends HomePageHocProps {
+  attrs: Pick<
+    HomePageProps<HomePageSFCProps>,
+    Exclude<keyof HomePageProps<HomePageSFCProps>, keyof HomePageHocProps>
+  >
   state: HomePageFsmState
   records?: IndexedRecordEntry[]
   error?: string
@@ -90,18 +88,29 @@ const HOME_PAGE_FSM_STATE_TO_BUSY_STATE: {
 }
 
 function mapStateToProps ({
-  props,
+  attrs,
   state,
   menu,
   records,
-  error
-}: HomePageState): Rest<HomePageSFCProps, HomePageSFCHandlerProps> {
+  locale,
+  session,
+  // onboarding ignored
+  error,
+  onAuthenticationRequest,
+  onError
+}: HomePageState): Rest<HomePageSFCProps, HomePageSFCHandlerProps> &
+  Pick<HomePageSFCHandlerProps, 'onAuthenticationRequest' | 'onError'> {
   return {
-    ...props, // menu and onSelectMenuItem from props are both overwritten
+    ...attrs,
     menu,
     records,
+    locale,
+    session,
     busy: HOME_PAGE_FSM_STATE_TO_BUSY_STATE[state],
-    error
+    error,
+    // pass-through
+    onAuthenticationRequest,
+    onError
   }
 }
 
@@ -132,10 +141,12 @@ export function homePage<P extends HomePageSFCProps> (
     redux(
       reducer,
       injectRecordsFromService,
+      settings$FromService,
       createRecordOnCreateRecordRequested,
       tapOnEvent('CREATE_RECORD_RESOLVED', () => window.scrollTo(0, 0)),
-      callHandlerOnEvent('SELECT_MENU_ITEM', ['props', 'onSelectMenuItem']),
-      callHandlerOnEvent('ERROR', ['props', 'onError'])
+      applyHandlerOnEvent('UPDATE_SETTING', 'onUpdateSetting', mapPayload()),
+      callHandlerOnEvent('SELECT_MENU_ITEM', 'onSelectMenuItem'),
+      callHandlerOnEvent('ERROR', 'onError')
     ),
     () => tap(log('home-page:state:')),
     connect<HomePageState, HomePageSFCProps>(

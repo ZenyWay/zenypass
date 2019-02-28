@@ -17,13 +17,14 @@
 import getZenypassServiceAccess, {
   AuthorizationDoc,
   PouchDoc,
+  PouchVaultChange,
   ZenypassRecord,
   ZenypassService as CoreZenypassService,
   ZenypassServiceAccess
 } from '@zenyway/zenypass-service'
 import { newStatusError, ERROR_STATUS } from 'utils'
 
-export { AuthorizationDoc, PouchDoc, ZenypassRecord }
+export { AuthorizationDoc, PouchDoc, PouchVaultChange, ZenypassRecord }
 
 export interface ZenypassServiceFactory {
   signup(username: string, passphrase: string): Promise<string>

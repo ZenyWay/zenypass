@@ -22,7 +22,7 @@ import {
   pluck
   // tap
 } from 'rxjs/operators'
-import { Observable, merge } from 'rxjs'
+import { Observable } from 'rxjs'
 // const log = label => console.log.bind(console, label)
 
 const update = createActionFactory('UPDATE')

@@ -13,14 +13,13 @@
  * Limitations under the License.
  */
 //
-import { StandardAction } from 'basic-fsa-factories'
 import {
   Observable,
   from as observableFrom,
   of as observableOf,
   throwError
 } from 'rxjs'
-import { catchError, map, switchMap } from 'rxjs/operators'
+import { catchError, switchMap } from 'rxjs/operators'
 // const log = (label: string) => console.log.bind(console, label)
 
 export function createPrivilegedRequest<T> (

@@ -36,7 +36,6 @@ import {
 import {
   ERROR_STATUS,
   createPrivilegedRequest,
-  hasEntry,
   hasHandlerProp,
   toProjection
 } from 'utils'
@@ -190,20 +189,19 @@ export function cleartextOnPendingCleartextOrConnect (
   _: any,
   state$: Observable<any>
 ) {
-  const cleartext$ = state$.pipe(
+  const cleartextOrEdit$ = state$.pipe(
     distinctUntilKeyChanged('state'),
-    filter(hasEntry('state', RecordFsmState.PendingCleartext))
-  )
-  const edit$ = state$.pipe(
-    distinctUntilKeyChanged('state'),
-    filter(hasEntry('state', RecordFsmState.PendingEdit))
+    filter(
+      ({ state }) =>
+        state === RecordFsmState.PendingCleartext ||
+        state === RecordFsmState.PendingEdit
+    )
   )
   const connect$ = state$.pipe(
     distinctUntilKeyChanged('connect'),
-    filter(hasEntry('connect', ConnectFsmState.PendingConnect))
+    filter(({ connect }) => connect === ConnectFsmState.PendingConnect)
   )
-  return merge(cleartext$, edit$, connect$).pipe(
-    filter<any>(hasHandlerProp('onAuthenticationRequest')),
+  return merge(cleartextOrEdit$, connect$).pipe(
     switchMap(({ props: { onAuthenticationRequest, session, record } }) =>
       cleartext(
         toProjection(onAuthenticationRequest),

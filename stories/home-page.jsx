@@ -31,8 +31,8 @@ const attrs = {
   session: USERNAME,
   menu: MENU.slice(1), // remove entry from home-page
   onError: action('ERROR'),
-  onLogout: action('LOGOUT'),
-  onSelectMenuItem: action('SELECT_MENU_ITEM')
+  onSelectMenuItem: action('SELECT_MENU_ITEM'),
+  onUpdateSetting: action('UPDATE_SETTING')
 }
 
 const HomePage = withAuthentication(withAuthenticationModal(PrivilegedHomePage))

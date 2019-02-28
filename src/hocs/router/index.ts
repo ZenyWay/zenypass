@@ -22,9 +22,9 @@ import {
   actionFromAuthenticationPageType
 } from './dispatchers'
 import {
-  injectParamsFromUrl,
-  openLinkOnCloseInfo,
-  signoutOnLogout
+  injectQueryParamsFromLocationHash,
+  signoutOnLogout,
+  udpateLocationHashQueryParam
 } from './effects'
 import MENUS, { DEFAULT_LOCALE } from './options'
 import componentFromEvents, {
@@ -34,9 +34,13 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { createActionDispatchers } from 'basic-fsa-factories'
+import {
+  createActionDispatchers,
+  createActionFactory
+} from 'basic-fsa-factories'
+import compose from 'basic-compose'
+import { MenuSpec, openItemLink, pluck, tapOnEvent } from 'utils'
 import { tap } from 'rxjs/operators'
-import { MenuSpec } from 'utils'
 const log = label => console.log.bind(console, label)
 
 export type RouterProps<P extends RouterSFCProps> = Rest<P, RouterSFCProps>
@@ -48,6 +52,7 @@ export interface RouterSFCProps extends RouterSFCHandlerProps {
   session?: string
   menu?: MenuSpec
   error?: string
+  onboarding?: boolean
   info?: boolean
   params?: { [prop: string]: unknown }
 }
@@ -55,10 +60,11 @@ export interface RouterSFCProps extends RouterSFCHandlerProps {
 export interface RouterSFCHandlerProps {
   onAuthenticated?: (session?: string) => void
   onAuthenticationPageType?: (type?: AuthenticationPageType) => void
+  onCloseInfo?: (event: MouseEvent) => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
-  onCloseInfo?: (event: MouseEvent) => void
   onSelectMenuItem?: (target: HTMLElement) => void
+  onUpdateSetting?: (key?: string, value?: any) => void
 }
 
 interface RouterState {
@@ -68,6 +74,7 @@ interface RouterState {
   session?: string
   path: RouteAutomataState
   info: LinkAutomataState
+  onboarding?: boolean
   error?: any
   link?: HTMLLinkElement
 }
@@ -79,6 +86,7 @@ function mapStateToProps ({
   info,
   email,
   session,
+  onboarding,
   error
 }: RouterState): Rest<RouterSFCProps, RouterSFCHandlerProps> {
   const menu = MENUS[path]
@@ -91,8 +99,15 @@ function mapStateToProps ({
     info: info === 'info',
     email,
     session,
+    onboarding,
     error
   }
+}
+
+const updateQueryParam = createActionFactory('UPDATE_QUERY_PARAM')
+const SETTING_TO_QS_PARAM = {
+  lang: val => ['lang', val],
+  noOnboarding: val => ['onboarding', !val]
 }
 
 const mapDispatchToProps: (
@@ -100,10 +115,11 @@ const mapDispatchToProps: (
 ) => RouterSFCHandlerProps = createActionDispatchers({
   onAuthenticated: 'AUTHENTICATED',
   onAuthenticationPageType: actionFromAuthenticationPageType,
-  onEmailChange: 'EMAIL',
-  onSelectMenuItem: actionFromMenuItem,
+  onCloseInfo: 'CLOSE_INFO',
+  onEmailChange: ['UPDATE_QUERY_PARAM', email => ['email', email]],
   onError: actionFromError,
-  onCloseInfo: 'CLOSE_INFO'
+  onSelectMenuItem: actionFromMenuItem,
+  onUpdateSetting: (key, val) => updateQueryParam(SETTING_TO_QS_PARAM[key](val))
 })
 
 export function router<P extends RouterSFCProps> (
@@ -112,7 +128,18 @@ export function router<P extends RouterSFCProps> (
   return componentFromEvents<RouterProps<P>, P>(
     RouterSFC,
     () => tap(log('router:event:')),
-    redux(reducer, injectParamsFromUrl, openLinkOnCloseInfo, signoutOnLogout),
+    redux(
+      reducer,
+      tapOnEvent('UPDATE_QUERY_PARAM', ([key, value]) =>
+        udpateLocationHashQueryParam(key, value)
+      ),
+      injectQueryParamsFromLocationHash,
+      tapOnEvent(
+        'CLOSE_INFO',
+        compose.into(0)(openItemLink, pluck('1', 'link'))
+      ),
+      signoutOnLogout
+    ),
     () => tap(log('router:state:')),
     connect<RouterState, RouterSFCProps>(
       mapStateToProps,

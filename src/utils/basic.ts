@@ -71,6 +71,16 @@ export function values<T extends {} = {}> (entries: T): T[keyof T][] {
   return values
 }
 
+export function entries<O extends {} = {}> (obj: O): [keyof O, O[keyof O]][] {
+  const entries = Object.keys(obj) as any[]
+  let i = entries.length
+  while (i--) {
+    const key = entries[i]
+    entries[i] = [key, obj[key]]
+  }
+  return entries
+}
+
 export function setListEntry<V = any> (
   arr: V[],
   key: string | number,

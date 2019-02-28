@@ -12,7 +12,7 @@
     "dist": "npm run dist:production",
     "dist:production": "npm run dist:clean && npm run dist:static && browserify src/index.tsx -g [ envify purge --NODE_ENV=production --ZP_VERSION=$npm_package_version ] -t [ browserify-markdown --breaks false ] -p [ tsify -p src ] -t imgurify -g uglifyify -p [ common-shakeify -v ] | terser -c -m --toplevel > dist/index.js",
     "dist:staging": "npm run dist:clean && npm run dist:static && browserify src/index.tsx -g [ envify purge --NODE_ENV=staging --ZP_VERSION=$npm_package_version ] -t [ browserify-markdown --breaks false ] -p [ tsify -p src ] -t imgurify -g uglifyify -p [ common-shakeify -v ] | terser -c -m --toplevel > dist/index.js",
-    "dist:static": "cpx \"src/favicons/(!index.ts)\" dist && cpx \"src/static/**/*\" dist",
+    "dist:static": "cpx \"src/favicons/*\" dist && cpx \"src/static/**/!(*.ts)\" dist",
     "format": "prettier-standard \"{src,spec,stories,stubs}/**/*.[jt]@(s|sx)\"",
     "lint": "standard \"{src,spec}/**/*.[jt]s\"",
     "prepublish": "npm run dist",
