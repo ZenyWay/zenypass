@@ -14,7 +14,6 @@
  * Limitations under the License.
  */
 
-import sortIndexedRecordsByName from './sort'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
 import {
@@ -87,9 +86,7 @@ const SELECTED_PROPS: (keyof HomePageHocProps)[] = [
 
 export default compose.into(0)(
   createAutomataReducer(automata, HomePageFsmState.PendingRecords),
-  forType('UPDATE_RECORDS')(
-    into('records')(mapPayload(sortIndexedRecordsByName))
-  ),
+  forType('UPDATE_RECORDS')(into('records')(mapPayload())),
   forType('PROPS')(
     compose.into(0)(
       into('menu')(

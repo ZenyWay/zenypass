@@ -14,16 +14,13 @@
  * Limitations under the License.
  */
 //
+import sortIndexedRecordsByName from './sort'
 import zenypass, {
   PouchDoc,
   PouchVaultChange,
   ZenypassRecord
 } from 'zenypass-service'
-import {
-  createActionFactory,
-  StandardAction,
-  createActionFactories
-} from 'basic-fsa-factories'
+import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import { createPrivilegedRequest, entries, toProjection } from 'utils'
 import {
   catchError,
@@ -128,14 +125,16 @@ const getRecords$ = createPrivilegedRequest((username: string) =>
 export function injectRecordsFromService (_: any, state$: Observable<any>) {
   return state$.pipe(
     distinctUntilKeyChanged('session'),
-    switchMap(({ onAuthenticationRequest, session }) =>
+    switchMap(({ onAuthenticationRequest, session, locale }) =>
       getRecords$(
         toProjection(onAuthenticationRequest),
         session,
         true // unrestricted
       ).pipe(
         map((records: IndexedMap<ZenypassRecord>) =>
-          updateRecords(toIndexedRecordsArray(records))
+          updateRecords(
+            sortIndexedRecordsByName(toIndexedRecordsArray(records), locale)
+          )
         ),
         catchError(err => observableOf(error(err)))
       )

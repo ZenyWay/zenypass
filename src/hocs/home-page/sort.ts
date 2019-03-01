@@ -18,9 +18,11 @@ import { IndexedRecordEntry } from './effects'
 import { isUndefined } from 'utils'
 
 export default function sortIndexedRecordsByName (
-  records: IndexedRecordEntry[]
+  records: IndexedRecordEntry[],
+  locale: string
 ): IndexedRecordEntry[] {
-  return records.sort(compareIndexedRecordEntries)
+  const collator = new Intl.Collator(locale)
+  return records.sort(compareIndexedRecordEntries(collator))
 }
 
 /**
@@ -33,19 +35,19 @@ export default function sortIndexedRecordsByName (
  * then if equal, with case.
  * undefined is always less than a string.
  */
-function compareIndexedRecordEntries (
-  a: IndexedRecordEntry,
-  b: IndexedRecordEntry
-) {
-  return !a.record || !b.record
-    ? !a.record && !b.record
+function compareIndexedRecordEntries (collator: Intl.Collator) {
+  const compareLocaleStrings = compareStrings(collator)
+  return function (a: IndexedRecordEntry, b: IndexedRecordEntry) {
+    return !a.record || !b.record
+      ? !a.record && !b.record
+        ? compareIds(a._id, b._id)
+        : !a.record
+        ? 1
+        : -1
+      : !a.record.name && !b.record.name
       ? compareIds(a._id, b._id)
-      : !a.record
-      ? 1
-      : -1
-    : !a.record.name && !b.record.name
-    ? compareIds(a._id, b._id)
-    : compareStrings(a.record.name, b.record.name)
+      : compareLocaleStrings(a.record.name, b.record.name)
+  }
 }
 
 /**
@@ -60,17 +62,14 @@ function compareIds (a: string, b: string) {
  * and if equal, with case.
  * undefined is always less than a string.
  */
-function compareStrings (a: string | void, b: string | void) {
-  if (a === b) {
-    // this includes the case where both a and b are undefined
-    return 0
+function compareStrings (collator: Intl.Collator) {
+  return function (a: string | void, b: string | void) {
+    const noa = isUndefined(a)
+    const nob = isUndefined(b)
+    if (noa || nob) {
+      return noa ? (nob ? 0 : -1) : 1
+    }
+    // a and b are both defined
+    return collator.compare(a as string, b as string)
   }
-  const noa = isUndefined(a)
-  if (noa || isUndefined(b)) {
-    return noa ? -1 : 1 // a and b cannot be both undefined
-  }
-  // a and b are both defined
-  const _a = (a as string).toLowerCase()
-  const _b = b.toLowerCase()
-  return _a === _b ? (a > b ? 1 : -1) : _a > _b ? 1 : -1
 }
