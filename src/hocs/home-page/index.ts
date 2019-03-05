@@ -18,7 +18,8 @@ import reducer, { HomePageFsmState, HomePageHocProps } from './reducer'
 import {
   createRecordOnCreateRecordRequested,
   injectRecordsFromService,
-  settings$FromService,
+  injectSettings$FromService,
+  persistSettings$ToService,
   IndexedRecordEntry
 } from './effects'
 import componentFromEvents, {
@@ -141,7 +142,8 @@ export function homePage<P extends HomePageSFCProps> (
     redux(
       reducer,
       injectRecordsFromService,
-      settings$FromService,
+      injectSettings$FromService,
+      persistSettings$ToService,
       createRecordOnCreateRecordRequested,
       tapOnEvent('CREATE_RECORD_RESOLVED', () => window.scrollTo(0, 0)),
       applyHandlerOnEvent('UPDATE_SETTING', 'onUpdateSetting', mapPayload()),

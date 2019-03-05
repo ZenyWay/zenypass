@@ -21,6 +21,7 @@ import { always, forType, mapPayload, pluck } from 'utils'
 
 export enum RouteAutomataState {
   Homepage = '/',
+  PendingSignout = '/?pending=signout',
   Signup = '/signup',
   Signin = '/signin',
   Authorize = '/authorize',
@@ -36,14 +37,19 @@ export enum LinkAutomataState {
 
 const mapPayloadIntoError = into('error')(mapPayload())
 const mapPayloadIntoEmail = into('email')(mapPayload())
+const clearSession = into('session')(always())
 
 const routeAutomata: AutomataSpec<RouteAutomataState> = {
   [RouteAutomataState.Homepage]: {
     // TODO remove comments when corresponding pages are available
     // DEVICES: '/devices',
     // STORAGE: '/storage',
-    SIGNED_OUT: [RouteAutomataState.Signin, into('session')(always())],
+    EMAIL: RouteAutomataState.PendingSignout,
+    LOGOUT: RouteAutomataState.PendingSignout,
     FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
+  },
+  [RouteAutomataState.PendingSignout]: {
+    SIGNED_OUT: [RouteAutomataState.Signin, clearSession]
   },
   [RouteAutomataState.Signup]: {
     SIGNIN: RouteAutomataState.Signin,

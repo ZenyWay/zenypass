@@ -51,7 +51,7 @@
   },
   "homepage": "https://github.com/zenyway/zenypass#readme",
   "optionalDependencies": {
-    "@zenyway/zenypass-service": "1.0.1"
+    "@zenyway/zenypass-service": "1.1.1"
   },
   "browser": {
     "bootstrap": "./src/bootstrap",

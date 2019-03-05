@@ -59,7 +59,7 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
       .signin({ username, passphrase })
       .then(
         service =>
-          (this._services[username] = this._withSignout(username, service))
+          (this._services[username] = this._wrapSignout(username, service))
       )
   }
 
@@ -85,12 +85,15 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
     this.getService = this.getService.bind(this)
   }
 
-  private _withSignout (
+  private _wrapSignout (
     username: string,
     service: CoreZenypassService
   ): ZenypassService {
     const wrapped: ZenypassService = Object.create(service)
-    wrapped.signout = () => delete this._services[username]
+    wrapped.signout = () => {
+      service.signout()
+      delete this._services[username]
+    }
     return wrapped
   }
 }

@@ -23,7 +23,7 @@ import {
 } from './dispatchers'
 import {
   injectQueryParamsFromLocationHash,
-  signoutOnLogout,
+  signoutOnPendingSignout,
   udpateLocationHashQueryParam
 } from './effects'
 import MENUS, { DEFAULT_LOCALE } from './options'
@@ -39,8 +39,8 @@ import {
   createActionFactory
 } from 'basic-fsa-factories'
 import compose from 'basic-compose'
-import { MenuSpec, openItemLink, pluck, tapOnEvent } from 'utils'
-import { tap } from 'rxjs/operators'
+import { MenuSpec, openItemLink, pluck, shallowEqual, tapOnEvent } from 'utils'
+import { distinctUntilChanged, tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
 export type RouterProps<P extends RouterSFCProps> = Rest<P, RouterSFCProps>
@@ -82,13 +82,14 @@ interface RouterState {
 function mapStateToProps ({
   props,
   locale,
-  path,
+  path: _path,
   info,
   email,
   session,
   onboarding,
   error
 }: RouterState): Rest<RouterSFCProps, RouterSFCHandlerProps> {
+  const path = _path.split('?')[0]
   const menu = MENUS[path]
   const lang = locale || DEFAULT_LOCALE
   return {
@@ -99,7 +100,7 @@ function mapStateToProps ({
     info: info === 'info',
     email,
     session,
-    onboarding,
+    onboarding: !!onboarding,
     error
   }
 }
@@ -138,13 +139,14 @@ export function router<P extends RouterSFCProps> (
         'CLOSE_INFO',
         compose.into(0)(openItemLink, pluck('1', 'link'))
       ),
-      signoutOnLogout
+      signoutOnPendingSignout
     ),
     () => tap(log('router:state:')),
     connect<RouterState, RouterSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
+    () => distinctUntilChanged(shallowEqual),
     () => tap(log('router:view-props:'))
   )
 }

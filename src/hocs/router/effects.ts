@@ -14,6 +14,7 @@
  * Limitations under the License.
  */
 //
+import { RouteAutomataState } from './reducer'
 import zenypass from 'zenypass-service'
 import { LOCALES } from './options'
 import {
@@ -22,18 +23,18 @@ import {
   createActionFactory
 } from 'basic-fsa-factories'
 import {
-  catchError,
-  concatMap,
+  distinctUntilChanged,
+  distinctUntilKeyChanged,
   filter,
   pluck,
   map,
+  share,
   startWith,
-  tap,
-  withLatestFrom
+  tap
 } from 'rxjs/operators'
-import { Observable, fromEvent, of as observableOf } from 'rxjs'
+import { Observable, fromEvent, merge } from 'rxjs'
 import { isInvalidEmail, not } from 'utils'
-const log = (label: string) => console.log.bind(console, label)
+// const log = (label: string) => console.log.bind(console, label)
 
 const QS_PARAM_VALIDATORS = {
   email: not(isInvalidEmail),
@@ -55,14 +56,14 @@ const QS_PARAM_ACTIONS = createActionFactories({
 
 const signedOut = createActionFactory('SIGNED_OUT')
 
-export function signoutOnLogout (
+export function signoutOnPendingSignout (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  return event$.pipe(
-    filter(({ type }) => type === 'LOGOUT'),
-    withLatestFrom(state$),
-    pluck('1', 'session'),
+  return state$.pipe(
+    distinctUntilKeyChanged('path'),
+    filter(({ path }) => path === RouteAutomataState.PendingSignout),
+    pluck('session'),
     tap(signout),
     map(() => signedOut())
   )
@@ -72,47 +73,48 @@ function signout (username: string): Promise<void> {
   return zenypass.then(({ getService }) => getService(username).signout())
 }
 
+// support url hash in storybook (iframe in development mode)
 const win = window.top
 
 export function injectQueryParamsFromLocationHash () {
-  // support url hash in storybook (iframe in development mode)
-  return fromEvent(win, 'hashchange').pipe(
-    concatMap(() => parseQueryParamsFromLocationHash()),
-    startWith(...parseQueryParamsFromLocationHash()),
-    map(({ key, value }) => QS_PARAM_ACTIONS[key](value)),
-    catchError(err => observableOf(fatal(err)))
+  const params$ = fromEvent(win, 'hashchange').pipe(
+    map(parseQueryParamsFromLocationHash),
+    share(),
+    startWith(parseQueryParamsFromLocationHash())
   )
+  const param$s = Object.keys(QS_PARAM_VALIDATORS).map(key =>
+    params$.pipe(
+      map(params => getSearchParam(params, key)),
+      filter(QS_PARAM_VALIDATORS[key]),
+      distinctUntilChanged(),
+      map(value => QS_PARAM_ACTIONS[key](value))
+    )
+  )
+  return merge(...param$s)
 }
 
 function isValidBoolean (value: string) {
-  return value === 'true' || value === 'false'
-}
-
-const QS_PARAM_KEYS = Object.keys(QS_PARAM_VALIDATORS)
-
-interface Entry<V> {
-  key: string
-  value: V
-}
-
-function parseQueryParamsFromLocationHash (): Entry<any>[] {
-  const params = new URLSearchParams(win.location.hash.slice(1)) // remove leading hash
-  const parsed = [] as Entry<any>[]
-  for (const key of QS_PARAM_KEYS) {
-    if (params.has(key)) {
-      const value = params
-        .get(key)
-        .trim()
-        .toLowerCase()
-      const isValid = QS_PARAM_VALIDATORS[key]
-      if (isValid(value)) parsed.push({ key, value })
-    }
-  }
-  return parsed
+  return !value || value === 'true' || value === 'false'
 }
 
 export function udpateLocationHashQueryParam (key: string, value: any) {
-  const params = new URLSearchParams(win.location.hash.slice(1)) // remove leading hash
-  params.set(key, '' + value)
+  const params = parseQueryParamsFromLocationHash()
+  const param = getSearchParam(params, key)
+  const update = '' + value
+  if (update === param || (!value && !param)) return
+  params.set(key, update)
   win.location.hash = '#?' + params.toString()
+}
+
+function parseQueryParamsFromLocationHash () {
+  return new URLSearchParams(win.location.hash.slice(1)) // remove leading hash
+}
+
+function getSearchParam (params: URLSearchParams, key: string): string {
+  return !params.has(key)
+    ? ''
+    : params
+        .get(key)
+        .trim()
+        .toLowerCase()
 }

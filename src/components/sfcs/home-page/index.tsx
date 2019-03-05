@@ -25,8 +25,8 @@ import {
   Record
 } from '../filtered-record-cards'
 import { InfoModal } from '../info-modal'
-import { ProgressBar, InputGroup } from 'bootstrap'
-import { classes } from 'utils'
+import { ProgressBar } from 'bootstrap'
+import { classes, isString } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
@@ -39,7 +39,7 @@ export interface HomePageProps extends FilteredRecordCardsProps {
   menu: MenuSpecs
   records?: FilteredRecordEntry[]
   busy?: BusyState
-  error?: string
+  error?: any
   tokens?: string[]
   debounce?: string | number
   className?: string
@@ -91,7 +91,7 @@ export function HomePage ({
           <p>
             {t('Sorry, something went wrong')}
             <br />
-            {error}
+            {isString(error) ? error : error && error.toString()}
           </p>
         )}
       </InfoModal>

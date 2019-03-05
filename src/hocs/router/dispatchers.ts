@@ -24,7 +24,7 @@ import {
 const MENU_ACTIONS = createActionFactories({
   devices: 'DEVICES',
   storage: 'STORAGE',
-  locale: 'LOCALE',
+  locale: ['UPDATE_QUERY_PARAM', lang => ['lang', lang]],
   help: 'HELP',
   logout: 'LOGOUT'
 })

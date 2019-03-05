@@ -21,7 +21,12 @@ import zenypass, {
   ZenypassRecord
 } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import { createPrivilegedRequest, entries, toProjection } from 'utils'
+import {
+  ERROR_STATUS,
+  createPrivilegedRequest,
+  entries,
+  toProjection
+} from 'utils'
 import {
   catchError,
   concatMap,
@@ -33,6 +38,7 @@ import {
   last,
   map,
   pluck,
+  skip,
   startWith,
   switchMap,
   // tap,
@@ -41,8 +47,10 @@ import {
 import {
   Observable,
   from as observableFrom,
+  combineLatest,
   identity,
-  of as observableOf
+  of as observableOf,
+  throwError
 } from 'rxjs'
 
 // const log = (label: string) => console.log.bind(console, label)
@@ -59,6 +67,8 @@ export interface SettingsDoc extends PouchDoc {
 
 const SETTINGS_DOC_ID = 'settings'
 const updateSetting = createActionFactory<any>('UPDATE_SETTING')
+const settingsPersisted = createActionFactory<any>('SETTINGS_PERSISTED')
+const persistSettingsError = createActionFactory<any>('PERSIST_SETTINGS_ERROR')
 const createRecordResolved = createActionFactory<any>('CREATE_RECORD_RESOLVED')
 const createRecordRejected = createActionFactory<any>('CREATE_RECORD_REJECTED')
 const updateRecords = createActionFactory('UPDATE_RECORDS')
@@ -122,7 +132,10 @@ const getRecords$ = createPrivilegedRequest((username: string) =>
   )
 )
 
-export function injectRecordsFromService (_: any, state$: Observable<any>) {
+export function injectRecordsFromService (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
   return state$.pipe(
     distinctUntilKeyChanged('session'),
     switchMap(({ onAuthenticationRequest, session, locale }) =>
@@ -166,8 +179,9 @@ const getSettings$ = createPrivilegedRequest<SettingsDoc>((username: string) =>
       observableFrom(
         meta.getChange$<SettingsDoc>({
           doc_ids: [SETTINGS_DOC_ID],
-          since: 0,
-          include_docs: true
+          include_docs: true,
+          live: false,
+          since: 0
         })
       ).pipe(
         defaultIfEmpty<PouchVaultChange<SettingsDoc>>(void 0),
@@ -191,7 +205,10 @@ const getSettings$ = createPrivilegedRequest<SettingsDoc>((username: string) =>
   )
 )
 
-export function settings$FromService (_: any, state$: Observable<any>) {
+export function injectSettings$FromService (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
   return state$.pipe(
     distinctUntilKeyChanged('session'),
     switchMap(({ onAuthenticationRequest, session }) =>
@@ -206,6 +223,51 @@ export function settings$FromService (_: any, state$: Observable<any>) {
         ),
         map(setting => updateSetting(setting)),
         catchError(err => observableOf(error(err)))
+      )
+    ),
+    catchError(err => observableOf(error(err)))
+  )
+}
+
+const upsertSettings$ = createPrivilegedRequest<SettingsDoc>(
+  (username: string, { lang, noOnboarding }) =>
+    zenypass$.pipe(
+      map(({ getService }) => getService(username).meta),
+      switchMap(meta =>
+        observableFrom(meta.get<SettingsDoc>(SETTINGS_DOC_ID)).pipe(
+          catchError(err =>
+            err && err.status !== ERROR_STATUS.NOT_FOUND
+              ? throwError(err)
+              : observableOf({ lang, noOnboarding } as SettingsDoc)
+          ),
+          filter(doc => doc.lang !== lang || doc.noOnboarding !== noOnboarding),
+          concatMap(({ _id, _rev }) =>
+            meta.put({ _id, _rev, lang, noOnboarding })
+          )
+        )
+      )
+    )
+)
+
+export function persistSettings$ToService (_: any, state$: Observable<any>) {
+  const setting$s = ['locale', 'onboarding'].map(setting =>
+    state$.pipe(
+      pluck(setting),
+      distinctUntilChanged()
+    )
+  )
+  return combineLatest(...setting$s).pipe(
+    skip(1), // initial state
+    withLatestFrom(state$),
+    concatMap(([[lang, onboarding], { onAuthenticationRequest, session }]) =>
+      upsertSettings$(
+        toProjection(onAuthenticationRequest),
+        session,
+        true, // unrestricted
+        { lang, noOnboarding: !onboarding }
+      ).pipe(
+        map(settings => settingsPersisted(settings)),
+        catchError(err => observableOf(persistSettingsError(err)))
       )
     ),
     catchError(err => observableOf(error(err)))
