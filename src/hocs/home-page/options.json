@@ -6,9 +6,7 @@
   },
   [
     {
-      "data-id": "help",
-      "label": "help",
-      "icon": "fa fa-question-circle"
+      "data-id": "help"
     },
     {
       "data-id": "help/first-steps",

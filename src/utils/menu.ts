@@ -96,7 +96,7 @@ function mergeItems (
 ): MenuItemSpec[] | MenuItemSpec {
   return !Array.isArray(dst) || !Array.isArray(src)
     ? src
-    : src.concat(dst.slice(1))
+    : [dst[0]].concat(src.slice(1), dst.slice(1))
 }
 
 function findItemIndex (menu: MenuSpec, item: MenuItemSpec[] | MenuItemSpec) {
