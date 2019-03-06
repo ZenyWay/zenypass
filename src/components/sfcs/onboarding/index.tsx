@@ -50,10 +50,11 @@ export function Onboarding ({
             {t('First Steps')}
           </h5>
         </CardHeader>
-        <CardBody className='py-2' dangerouslySetInnerHTML={nextSteps} />
+        <CardBody className='py-2'>
+          <small dangerouslySetInnerHTML={nextSteps} />
+        </CardBody>
         <CardFooter className='border-0 bg-white pt-0 d-flex justify-content-end'>
           <Button color='info' onClick={onClose}>
-            {' '}
             {t('OK, understood')}
           </Button>
         </CardFooter>
