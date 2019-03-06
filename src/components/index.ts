@@ -91,6 +91,7 @@ export {
   NavbarMenuProps as NavbarMenuSFCProps
 } from './sfcs/navbar-menu'
 export { NavbarMenu, NavBarMenuProps } from './navbar-menu'
+export { Onboarding, OnboardingProps } from './sfcs/onboarding'
 export { RecordField, RecordFieldProps } from './sfcs/record-field'
 export {
   RecordCard as RecordCardSFC,
