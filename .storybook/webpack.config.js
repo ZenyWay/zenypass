@@ -2,6 +2,12 @@
 const path = require('path')
 
 module.exports = (baseConfig, env, config) => {
+  // markdown loader: replace default md loader (= raw-loader)
+  upsertRule(config.module.rules, {
+    test: /\.md$/,
+    use: [{ loader: 'transform-loader?browserify-markdown' }]
+  })
+
   // svg loader: run first, before default svg loader (= file-loader)
   config.module.rules.unshift({
     test: /\.svg$/,
@@ -58,4 +64,12 @@ module.exports = (baseConfig, env, config) => {
   )
 
   return config
+}
+
+function upsertRule (rules, rule) {
+  const testAsString = rule.test.toString()
+  const index = rules.findIndex(rule => rule.test.toString() === testAsString)
+  if (index >= 0) rules[index] = rule
+  else rules.push(rule)
+  return rule
 }
