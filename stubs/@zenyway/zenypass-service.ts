@@ -42,6 +42,7 @@ export interface Credentials {
   passphrase: string
 }
 export interface ZenypassService {
+  signout(): void
   unlock(passphrase: string): Promise<string>
   authorize(passphrase: string, secret: string): Promise<AuthorizationDoc>
   cancelAuthorization(): void
@@ -49,9 +50,37 @@ export interface ZenypassService {
   getAgentInfo$(): Observable<AuthorizationDoc>
   // getStorageInfo$(): Observable<StorageInfo>;
   username: string
-  // meta: DocVault;
+  meta: DocVault
   records: ZenypassRecordService
   // payments: PaymentService;
+}
+export interface DocVault {
+  upsert<D extends PouchDoc>(doc: D): Promise<D>
+  put<D extends PouchDoc>(doc: D): Promise<D>
+  get<D extends PouchDoc>(ref: string | PouchDoc): Promise<D>
+  getChange$<D extends PouchDoc>(
+    opts?: Partial<PouchChangesSpec>
+  ): Observable<PouchVaultChange<D>>
+}
+export interface PouchChangesSpec extends PouchFilterSpec {
+  include_docs: boolean
+  return_docs: boolean
+  live: boolean
+  since: 'now' | number
+}
+export interface PouchFilterSpec {
+  doc_ids: string[]
+  filter: <D extends PouchDoc>(doc: D) => boolean
+}
+export interface PouchVaultChange<D extends PouchDoc> extends PouchDbChange<D> {
+  live: boolean
+}
+export interface PouchDbChange<D extends PouchDoc> {
+  seq: number
+  id: string
+  changes: { rev: string }[]
+  deleted?: boolean
+  doc?: D
 }
 export interface ZenypassRecordService {
   records$: Observable<IndexedMap<ZenypassRecord>>

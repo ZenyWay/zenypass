@@ -37,11 +37,14 @@ import {
 import {
   AuthorizationDoc,
   PouchDoc,
-  ZenypassRecord
+  PouchVaultChange,
+  ZenypassRecord,
+  ZenypassRecordService,
+  ZenypassService
 } from '@zenyway/zenypass-service'
 const log = label => console.log.bind(console, label)
 
-export { AuthorizationDoc, PouchDoc, ZenypassRecord }
+export { AuthorizationDoc, PouchDoc, PouchVaultChange, ZenypassRecord }
 export type KVMap<V> = { [key: string]: V }
 
 export const USERNAME = 'me@zw.fr'
@@ -168,7 +171,7 @@ function signin (username: string, passphrase: string): Promise<string> {
   ).toPromise()
 }
 
-function getService (username: string) {
+function getService (username: string): Partial<ZenypassService> {
   if (username !== USERNAME) {
     return
   }
@@ -177,7 +180,7 @@ function getService (username: string) {
     getRecord: getRecord.bind(void 0, username),
     newRecord: newRecord.bind(void 0, username),
     putRecord: putRecord.bind(void 0, username)
-  }
+  } as ZenypassRecordService
   return { unlock, records, signout: noop }
 }
 
