@@ -54,6 +54,7 @@ export interface HomePageSFCProps extends HomePageSFCHandlerProps {
   menu: MenuSpec
   session?: string
   records?: IndexedRecordEntry[]
+  onboarding?: boolean
   busy?: BusyState
   error?: string
 }
@@ -69,6 +70,7 @@ export interface HomePageSFCHandlerProps {
   onSelectMenuItem?: (target: HTMLElement) => void
   onCancel?: (event?: MouseEvent) => void
   onModalToggled?: () => void
+  onCloseOnboarding?: (event?: MouseEvent) => void
 }
 
 interface HomePageState extends HomePageHocProps {
@@ -95,7 +97,7 @@ function mapStateToProps ({
   records,
   locale,
   session,
-  // onboarding ignored
+  onboarding,
   error,
   onAuthenticationRequest,
   onError
@@ -108,6 +110,7 @@ function mapStateToProps ({
     locale,
     session,
     busy: HOME_PAGE_FSM_STATE_TO_BUSY_STATE[state],
+    onboarding,
     error,
     // pass-through
     onAuthenticationRequest,
@@ -119,13 +122,14 @@ const selectMenuItem = createActionFactory<HTMLElement>('SELECT_MENU_ITEM')
 
 const MENU_ACTIONS = createActionFactories({
   'new-entry': 'CREATE_RECORD_REQUESTED',
-  'help/first-steps': 'FIRST_STEPS'
+  'help/first-steps': ['UPDATE_SETTING', () => ['onboarding', true]]
 })
 
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => HomePageSFCHandlerProps = createActionDispatchers({
   onCancel: 'CANCEL',
+  onCloseOnboarding: ['UPDATE_SETTING', () => ['onboarding', false]],
   onModalToggled: 'MODAL_TOGGLED',
   onSelectMenuItem (item: HTMLElement): StandardAction<any> {
     const action = MENU_ACTIONS[item.dataset.id] || selectMenuItem

@@ -24,6 +24,7 @@ import {
   FilteredRecordEntry,
   Record
 } from '../filtered-record-cards'
+import { Onboarding } from '../onboarding'
 import { InfoModal } from '../info-modal'
 import { ProgressBar } from 'bootstrap'
 import { classes, isString } from 'utils'
@@ -41,11 +42,13 @@ export interface HomePageProps extends FilteredRecordCardsProps {
   busy?: BusyState
   error?: any
   tokens?: string[]
+  onboarding?: boolean
   debounce?: string | number
   className?: string
   onSelectMenuItem?: (target: HTMLElement) => void
   onSearchFieldRef?: (ref: HTMLElement) => void
   onTokensChange?: (tokens: string[]) => void
+  onCloseOnboarding?: (event?: MouseEvent) => void
   onCloseModal?: (event: MouseEvent) => void
   onModalToggled?: () => void
 }
@@ -62,11 +65,13 @@ export function HomePage ({
   busy,
   error,
   tokens,
+  onboarding,
   debounce = DEFAULT_DEBOUNCE,
   className,
   onSelectMenuItem,
   onSearchFieldRef,
   onTokensChange,
+  onCloseOnboarding,
   onCloseModal,
   onModalToggled,
   ...attrs
@@ -129,6 +134,14 @@ export function HomePage ({
             )}
           >
             <FilteredRecordCards locale={locale} records={records} {...attrs} />
+          </div>
+          <div
+            className={classes(
+              'row justify-content-center',
+              !onboarding && 'd-none'
+            )}
+          >
+            <Onboarding locale={locale} onClose={onCloseOnboarding} />
           </div>
         </div>
       </section>

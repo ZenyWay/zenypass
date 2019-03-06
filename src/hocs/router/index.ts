@@ -106,10 +106,6 @@ function mapStateToProps ({
 }
 
 const updateQueryParam = createActionFactory('UPDATE_QUERY_PARAM')
-const SETTING_TO_QS_PARAM = {
-  lang: val => ['lang', val],
-  noOnboarding: val => ['onboarding', !val]
-}
 
 const mapDispatchToProps: (
   dispatch: (event: any) => void
@@ -120,7 +116,7 @@ const mapDispatchToProps: (
   onEmailChange: ['UPDATE_QUERY_PARAM', email => ['email', email]],
   onError: actionFromError,
   onSelectMenuItem: actionFromMenuItem,
-  onUpdateSetting: (key, val) => updateQueryParam(SETTING_TO_QS_PARAM[key](val))
+  onUpdateSetting: (key, val) => updateQueryParam([key, val])
 })
 
 export function router<P extends RouterSFCProps> (
