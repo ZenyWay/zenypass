@@ -42,7 +42,7 @@ export function localizeMenu (
 
       function localizeItem (item: MenuItemSpec[] | MenuItemSpec) {
         return Array.isArray(item)
-          ? item.map(localizeItem)
+          ? item.filter(item => !exclude(locale, item)).map(localizeItem)
           : {
               ...item,
               label: t(item.label),
