@@ -36,7 +36,8 @@ import componentFromEvents, {
 } from 'component-from-events'
 import {
   createActionDispatchers,
-  createActionFactory
+  createActionFactory,
+  createActionFactories
 } from 'basic-fsa-factories'
 import compose from 'basic-compose'
 import { MenuSpec, openItemLink, pluck, shallowEqual, tapOnEvent } from 'utils'
@@ -106,6 +107,10 @@ function mapStateToProps ({
 }
 
 const updateQueryParam = createActionFactory('UPDATE_QUERY_PARAM')
+const UPDATE_QUERY_PARAM_PAYLOADS = {
+  locale: locale => ['lang', locale],
+  onboarding: onboarding => ['onboarding', onboarding]
+}
 
 const mapDispatchToProps: (
   dispatch: (event: any) => void
@@ -116,7 +121,8 @@ const mapDispatchToProps: (
   onEmailChange: ['UPDATE_QUERY_PARAM', email => ['email', email]],
   onError: actionFromError,
   onSelectMenuItem: actionFromMenuItem,
-  onUpdateSetting: (key, val) => updateQueryParam([key, val])
+  onUpdateSetting: (key, val) =>
+    updateQueryParam(UPDATE_QUERY_PARAM_PAYLOADS[key](val))
 })
 
 export function router<P extends RouterSFCProps> (

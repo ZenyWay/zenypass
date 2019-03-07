@@ -102,7 +102,8 @@ export function udpateLocationHashQueryParam (key: string, value: any) {
   const param = getSearchParam(params, key)
   const update = '' + value
   if (update === param || (!value && !param)) return
-  params.set(key, update)
+  if (update === 'false') params.delete(key)
+  else params.set(key, update)
   win.location.hash = '#?' + params.toString()
 }
 

@@ -218,8 +218,8 @@ export function injectSettings$FromService (
         true // unrestricted
       ).pipe(
         filter(({ _deleted }) => !_deleted),
-        concatMap(({ _id, _rev, _deleted, ...settings }: SettingsDoc) =>
-          entries(settings)
+        concatMap(({ lang, noOnboarding }: SettingsDoc) =>
+          entries({ locale: lang, onboarding: !noOnboarding })
         ),
         map(setting => updateSetting(setting)),
         catchError(err => observableOf(error(err)))
