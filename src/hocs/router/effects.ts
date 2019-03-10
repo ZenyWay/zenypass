@@ -33,11 +33,11 @@ import {
   tap
 } from 'rxjs/operators'
 import { Observable, fromEvent, merge } from 'rxjs'
-import { isInvalidEmail, not } from 'utils'
+import { always } from 'utils'
 // const log = (label: string) => console.log.bind(console, label)
 
 const QS_PARAM_VALIDATORS = {
-  email: not(isInvalidEmail),
+  email: always(true),
   lang: lang => LOCALES.indexOf(lang) >= 0,
   signup: isValidBoolean,
   onboarding: isValidBoolean

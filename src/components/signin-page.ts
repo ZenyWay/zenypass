@@ -14,24 +14,13 @@
  * Limitations under the License.
  */
 //
-/** @jsx createElement */
-import { createElement } from 'create-element'
+import { signinPage, SigninPageProps as GenericSigninPageProps } from 'hocs'
 import {
-  authenticationPage,
-  AuthenticationPageProps as GenericAuthenticationPageProps,
-  AuthenticationPageType
-} from 'hocs'
-import {
-  AuthenticationPage as AuthenticationPageSFC,
-  AuthenticationPageProps as AuthenticationPageSFCProps
+  AuthenticationPage,
+  AuthenticationPageProps
 } from './sfcs/authentication-page'
 
-export { AuthenticationPageType }
-
-export const AuthenticationPage = authenticationPage<
-  AuthenticationPageSFCProps
->((props: AuthenticationPageSFCProps) => <AuthenticationPageSFC {...props} />)
-
-export type AuthenticationPageProps = GenericAuthenticationPageProps<
-  AuthenticationPageSFCProps
->
+export const SigninPage = signinPage<AuthenticationPageProps>(
+  AuthenticationPage
+)
+export type SigninPageProps = GenericSigninPageProps<AuthenticationPageProps>

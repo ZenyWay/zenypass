@@ -28,11 +28,6 @@ export {
   authenticationModal,
   AuthenticationModalProps
 } from './authentication-modal'
-export {
-  authenticationPage,
-  AuthenticationPageProps,
-  AuthenticationPageType
-} from './authentication-page'
 export { connectionModal, ConnectionModalProps } from './connection-modal'
 export { controlledInput, ControlledInputProps } from './controlled-input'
 export { copyButton, CopyButtonProps } from './copy-button'
@@ -42,9 +37,9 @@ export {
   FilteredRecordCardsProps
 } from './filtered-record-cards'
 export { homePage, HomePageProps } from './home-page'
-// export { pure } from './pure'
 export { recordCard, RecordCardProps } from './record-card'
 export { router, RouterProps } from './router'
+export { signinPage, SigninPageProps } from './signin-page'
 export {
   withAuthentication,
   AuthenticationProviderProps

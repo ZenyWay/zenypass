@@ -16,10 +16,7 @@
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
 import { HomePage, MenuSpecs, DropdownItemSpec } from '../../home-page'
-import {
-  AuthenticationPage,
-  AuthenticationPageType
-} from '../../authentication-page'
+import { SigninPage, SigninPageProps } from '../../signin-page'
 import { ErrorPage } from '../error-page'
 import { InfoModal } from '../info-modal'
 import { newStatusError } from 'utils'
@@ -42,7 +39,6 @@ export interface CoreRouterProps {
   onboarding?: boolean
   children?: any
   onAuthenticated?: (session?: string) => void
-  onAuthenticationPageType?: (type?: AuthenticationPageType) => void
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
@@ -73,12 +69,6 @@ export function Router ({
       <CoreRouter locale={locale} {...attrs} />
     </Fragment>
   )
-}
-
-const AUTHENTICATION_PAGE_TYPES = {
-  '/signin': AuthenticationPageType.Signin,
-  '/signup': AuthenticationPageType.Signup,
-  '/authorize': AuthenticationPageType.Authorize
 }
 
 function CoreRouter ({
@@ -117,16 +107,14 @@ function CoreRouter ({
     case '/signup':
     case '/signin':
       return (
-        <AuthenticationPage
+        <SigninPage
           locale={locale}
           locales={menu as DropdownItemSpec[]}
           email={email}
-          type={AUTHENTICATION_PAGE_TYPES[path]}
           onEmailChange={onEmailChange}
           onError={onError}
           onSelectLocale={onSelectMenuItem}
           onAuthenticated={onAuthenticated}
-          onAuthenticationPageType={onAuthenticationPageType}
         />
       )
     case '/fatal':

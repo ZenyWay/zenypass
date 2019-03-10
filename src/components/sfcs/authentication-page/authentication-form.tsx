@@ -34,19 +34,10 @@ export interface AuthenticationFormProps {
   password?: string
   confirm?: string
   token?: string
-  /**
-   * email: email field enabled; password, confirm and submit disabled
-   *
-   * password: email and password field enabled; confirm and submit disabled
-   *
-   * true: all enabled
-   *
-   * false: all disabled
-   */
-  enabled?: SigninFormField | boolean
+  enabled?: boolean
   created?: boolean
   cleartext?: boolean
-  error?: AuthenticationFormField | 'submit' | false
+  error?: AuthenticationFormError | false
   onChange?: (value: string, target: HTMLElement) => void
   onConfirmInputRef?: (target: HTMLElement) => void
   onEmailInputRef?: (target: HTMLElement) => void
@@ -55,10 +46,38 @@ export interface AuthenticationFormProps {
   onSubmit?: (event: Event) => void
 }
 
-export type AuthenticationFormField = SigninFormField | 'confirm' | 'token'
-export type SigninFormField = 'email' | 'password'
+export type AuthenticationFormError =
+  | 'email'
+  | 'password'
+  | 'credentials'
+  | 'all'
+  | 'submit'
+
+export type AuthenticationFormField = 'email' | 'password' | 'confirm' | 'token'
 
 export type UnknownProps = { [prop: string]: unknown }
+
+const ERROR_TO_FIELDS: {
+  [error in AuthenticationFormError]: Partial<
+    { [field in AuthenticationFormField]: boolean }
+  >
+} = {
+  email: {
+    email: true
+  },
+  password: {
+    password: true
+  },
+  credentials: {
+    email: true,
+    password: true
+  },
+  all: {
+    email: true,
+    password: true
+  },
+  submit: {}
+}
 
 const ERRORS = {
   email: {
@@ -117,8 +136,6 @@ export function AuthenticationForm ({
   const t = l10ns[locale]
   const authorize = type === 'authorize'
   const dropdown = emails && emails.length
-  const passwordEnabled = enabled && enabled !== 'email'
-  const confirmEnabled = enabled === true
   const unauthorized = error === 'submit'
   const info = INFO[type]
   return (
@@ -150,7 +167,12 @@ export function AuthenticationForm ({
         icon={dropdown ? 'fa fa-user' : 'user'}
         placeholder={t('Enter your email address')}
         value={email}
-        error={error === 'email' && t(ERRORS.email[type])}
+        error={
+          email &&
+          error &&
+          ERROR_TO_FIELDS[error].email &&
+          t(ERRORS.email[type])
+        }
         data-id='email'
         onChange={onChange}
         locale={locale}
@@ -162,13 +184,18 @@ export function AuthenticationForm ({
         id='password'
         className='mb-2'
         icon='lock'
-        placeholder={passwordEnabled && t('Enter your password')}
+        placeholder={t('Enter your password')}
         value={password}
-        error={error === 'password' && t(ERRORS.password[type])}
+        error={
+          password &&
+          error &&
+          ERROR_TO_FIELDS[error].password &&
+          t(ERRORS.password[type])
+        }
         data-id='password'
         onChange={onChange}
         locale={locale}
-        disabled={!passwordEnabled}
+        disabled={!enabled}
         innerRef={onPasswordInputRef}
       />
       {type === 'signin' ? null : authorize ? (
@@ -178,17 +205,18 @@ export function AuthenticationForm ({
           className='mb-2'
           icon='key'
           flip='vertical'
-          placeholder={
-            confirmEnabled
-              ? t('Enter the authorization code')
-              : `${t('Authorization code')}...`
-          }
+          placeholder={t('Enter the authorization code')}
           value={token}
-          error={error === 'token' && t(ERRORS.token[type])}
+          error={
+            token &&
+            error &&
+            ERROR_TO_FIELDS[error].token &&
+            t(ERRORS.token[type])
+          }
           data-id='token'
           onChange={onChange}
           locale={locale}
-          disabled={!confirmEnabled}
+          disabled={!enabled}
           innerRef={onTokenInputRef}
         />
       ) : (
@@ -197,13 +225,18 @@ export function AuthenticationForm ({
           id='confirm'
           className='mb-2'
           icon='lock'
-          placeholder={!confirmEnabled ? null : t('Confirm your password')}
+          placeholder={t('Confirm your password')}
           value={confirm}
-          error={error === 'confirm' && t(ERRORS.confirm[type])}
+          error={
+            confirm &&
+            error &&
+            ERROR_TO_FIELDS[error].confirm &&
+            t(ERRORS.confirm[type])
+          }
           data-id='confirm'
           onChange={onChange}
           locale={locale}
-          disabled={!confirmEnabled}
+          disabled={!enabled}
           innerRef={onConfirmInputRef}
         />
       )}

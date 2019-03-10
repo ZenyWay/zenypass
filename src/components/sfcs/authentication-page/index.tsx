@@ -18,8 +18,7 @@ import { createElement, Fragment } from 'create-element'
 import {
   AuthenticationPageType,
   AuthenticationForm,
-  SigninFormField,
-  AuthenticationFormField
+  AuthenticationFormError
 } from './authentication-form'
 import { ConsentsModal } from './consents-modal'
 import { SplashCard, SplashFooterCard } from '../splash-card'
@@ -48,7 +47,7 @@ export interface AuthenticationPageProps {
   news?: boolean
   pending?: boolean
   retry?: boolean
-  error?: AuthenticationFormField | 'submit' | false
+  error?: AuthenticationFormError
   /**
    * email: email field enabled; password, confirm and submit disabled
    *
@@ -59,7 +58,7 @@ export interface AuthenticationPageProps {
    *
    * false: all disabled
    */
-  enabled?: SigninFormField | boolean
+  enabled?: boolean
   onCancel?: (event: MouseEvent) => void
   onChange?: (value: string, target: HTMLElement) => void
   onSelectEmail?: (item?: HTMLElement) => void
@@ -166,7 +165,7 @@ export function AuthenticationPage ({
                 cleartext={cleartext}
                 created={created}
                 error={error}
-                enabled={enabled}
+                enabled={!pending}
                 locale={locale}
                 onChange={onChange}
                 onEmailInputRef={onEmailInputRef}
@@ -186,11 +185,7 @@ export function AuthenticationPage ({
                 type='submit'
                 form='authentication-form'
                 color='info'
-                disabled={
-                  !enabled ||
-                  enabled === 'email' ||
-                  (type !== 'signin' && enabled === 'password')
-                }
+                disabled={!enabled || pending}
                 className='float-right'
               >
                 {!pending ? null : (

@@ -182,7 +182,16 @@ function mapStateToProps ({
   }
 }
 
-const change = createActionFactories({
+const CLEAR_ACTIONS = createActionFactories({
+  email: 'CHANGE_EMAIL',
+  password: 'CHANGE_PASSWORD',
+  confirm: 'CHANGE_CONFIRM',
+  token: 'CHANGE_TOKEN',
+  news: 'TOGGLE_NEWS',
+  terms: 'TOGGLE_TERMS'
+})
+
+const CHANGE_ACTIONS = createActionFactories({
   email: 'CHANGE_EMAIL',
   password: 'CHANGE_PASSWORD',
   confirm: 'CHANGE_CONFIRM',
@@ -196,11 +205,12 @@ const mapDispatchToProps: (
 ) => AuthenticationPageSFCHandlerProps = createActionDispatchers({
   onCancel: 'CANCEL',
   onChange: (value: string, input: HTMLElement) =>
-    change[input.dataset.id](value),
+    (value ? CHANGE_ACTIONS : CLEAR_ACTIONS)[input.dataset.id](value),
   // onSelectEmail: 'SELECT_EMAIL',
   onSubmit: ['SUBMIT', preventDefault],
   onTogglePageType: 'TOGGLE_PAGE_TYPE',
-  onToggleConsent: ({ currentTarget }) => change[currentTarget.dataset.id](),
+  onToggleConsent: ({ currentTarget }) =>
+    CHANGE_ACTIONS[currentTarget.dataset.id](),
   onEmailInputRef: ['INPUT_REF', inputRef('email')],
   onPasswordInputRef: ['INPUT_REF', inputRef('password')],
   onConfirmInputRef: ['INPUT_REF', inputRef('confirm')]

@@ -39,10 +39,6 @@ export {
   AuthenticationModalProps as AuthenticationModalSFCProps
 } from './sfcs/authentication-modal'
 export {
-  AuthenticationPage,
-  AuthenticationPageProps
-} from './authentication-page'
-export {
   AuthenticationPage as AuthenticationPageSFC,
   AuthenticationPageProps as AuthenticationPageSFCProps
 } from './sfcs/authentication-page'
@@ -108,5 +104,6 @@ export {
   SerializedRecordField,
   SerializedRecordFieldProps
 } from './serialized-record-field'
+export { SigninPage, SigninPageProps } from './signin-page'
 export { SplashCard, SplashCardProps } from './sfcs/splash-card'
 export { withAuthenticationModal } from './sfcs/with-authentication'
