@@ -16,7 +16,8 @@
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
 import { HomePage, MenuSpecs, DropdownItemSpec } from '../../home-page'
-import { SigninPage, SigninPageProps } from '../../signin-page'
+import { SigninPage } from '../../signin-page'
+import { SignupPage } from '../../signup-page'
 import { ErrorPage } from '../error-page'
 import { InfoModal } from '../info-modal'
 import { newStatusError } from 'utils'
@@ -42,6 +43,8 @@ export interface CoreRouterProps {
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
+  onGotoSignin?: () => void
+  onGotoSignup?: () => void
   onSelectMenuItem?: (target: HTMLElement) => void
   onUpdateSetting?: (key?: string, value?: any) => void
 }
@@ -81,10 +84,11 @@ function CoreRouter ({
   error,
   children = null,
   onAuthenticated,
-  onAuthenticationPageType,
   onAuthenticationRequest,
   onEmailChange,
   onError,
+  onGotoSignin,
+  onGotoSignup,
   onSelectMenuItem,
   onUpdateSetting,
   attrs
@@ -105,6 +109,17 @@ function CoreRouter ({
       )
     case '/authorize':
     case '/signup':
+      return (
+        <SignupPage
+          locale={locale}
+          locales={menu as DropdownItemSpec[]}
+          email={email}
+          onEmailChange={onEmailChange}
+          onError={onError}
+          onSelectLocale={onSelectMenuItem}
+          onTogglePage={onGotoSignin}
+        />
+      )
     case '/signin':
       return (
         <SigninPage
@@ -115,6 +130,7 @@ function CoreRouter ({
           onError={onError}
           onSelectLocale={onSelectMenuItem}
           onAuthenticated={onAuthenticated}
+          onTogglePage={onGotoSignup}
         />
       )
     case '/fatal':

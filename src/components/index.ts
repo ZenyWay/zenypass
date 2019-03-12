@@ -105,5 +105,6 @@ export {
   SerializedRecordFieldProps
 } from './serialized-record-field'
 export { SigninPage, SigninPageProps } from './signin-page'
+export { SignupPage, SignupPageProps } from './signup-page'
 export { SplashCard, SplashCardProps } from './sfcs/splash-card'
 export { withAuthenticationModal } from './sfcs/with-authentication'

@@ -40,6 +40,7 @@ export { homePage, HomePageProps } from './home-page'
 export { recordCard, RecordCardProps } from './record-card'
 export { router, RouterProps } from './router'
 export { signinPage, SigninPageProps } from './signin-page'
+export { signupPage, SignupPageProps } from './signup-page'
 export {
   withAuthentication,
   AuthenticationProviderProps

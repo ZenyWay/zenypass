@@ -65,7 +65,7 @@ export interface AuthenticationPageProps {
   onSelectLocale?: (item?: HTMLElement) => void
   onSubmit?: (event: Event) => void
   onToggleConsent?: (event: Event) => void
-  onTogglePageType?: (event: Event) => void
+  onTogglePage?: (event: Event) => void
   onConfirmInputRef?: (target: HTMLElement) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
@@ -110,7 +110,7 @@ export function AuthenticationPage ({
   onSelectEmail,
   onSubmit,
   onToggleConsent,
-  onTogglePageType,
+  onTogglePage,
   onEmailInputRef,
   onPasswordInputRef,
   onConfirmInputRef,
@@ -212,11 +212,7 @@ export function AuthenticationPage ({
               <p>
                 <small>{question} ?</small>
               </p>
-              <Button
-                color='info'
-                onClick={onTogglePageType}
-                disabled={pending}
-              >
+              <Button color='info' onClick={onTogglePage} disabled={pending}>
                 {t(isSignup ? 'Login' : 'Create your account')}
               </Button>
             </CardBody>
