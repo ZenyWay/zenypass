@@ -17,41 +17,37 @@
 import { ValidityFsm } from './reducer'
 import zenypass from 'zenypass-service'
 import { StandardAction, createActionFactory } from 'basic-fsa-factories'
-import { stateOnEvent, ERROR_STATUS } from 'utils'
+import { stateOnEvent } from 'utils'
 import {
+  catchError,
   filter,
   map,
+  startWith,
   switchMap
   // tap
 } from 'rxjs/operators'
-import { Observable } from 'rxjs'
+import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 // const log = label => console.log.bind(console, label)
 
-const invalidPassword = createActionFactory<void>('INVALID_PASSWORD')
-const validPassword = createActionFactory<void>('VALID_PASSWORD')
+const zenypass$ = observableFrom(zenypass)
+
+const signingUp = createActionFactory<void>('SIGNING_UP')
 const signedUp = createActionFactory<void>('SIGNED_UP')
 const error = createActionFactory<any>('ERROR')
 
-export function validatePasswordOnChangePassword (
-  event$: Observable<StandardAction<any>>
-) {
-  return event$.pipe(
-    filter(({ type }) => type === 'CHANGE_PASSWORD'),
-    map(({ payload }) => (payload ? validPassword : invalidPassword)(payload))
-  )
-}
-
-export function serviceSignupOnSubmitFromSignupSubmitting (
+export function serviceSignupOnSubmitFromConfirmed (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
   return stateOnEvent(({ type }) => type === 'SUBMIT')(event$, state$).pipe(
-    filter<any>(({ state }) => state === 'signup:submitting'),
-    switchMap(({ props, password }) =>
-      zenypass
-        .then(({ signup }) => signup(props.email, password))
-        .then(() => signedUp())
-        .catch(err => error(err))
+    filter<any>(({ valid }) => valid === ValidityFsm.Confirmed),
+    switchMap(({ email, password }) =>
+      zenypass$.pipe(
+        switchMap(({ signup }) => signup(email, password)),
+        map(() => signedUp(email)),
+        catchError(err => observableOf(error(err))),
+        startWith(signingUp())
+      )
     )
   )
 }

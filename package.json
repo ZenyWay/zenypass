@@ -67,7 +67,7 @@
     "zenypass-service": "./src/zenypass-service"
   },
   "dependencies": {
-    "automata-reducer": "3.2.0",
+    "automata-reducer": "3.2.1",
     "basic-compose": "4.0.1",
     "basic-cursors": "2.2.0",
     "basic-fsa-factories": "1.1.0",

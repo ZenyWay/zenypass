@@ -15,12 +15,8 @@
  */
 
 import { reducer, ValidityFsm, SigninFsm, SigninPageHocProps } from './reducer'
-import {
-  serviceSigninOnSubmitFromValid,
-  validatePasswordOnChangePassword
-} from './effects'
-import componentFromStream from 'component-from-props'
-import {
+import { serviceSigninOnSubmitFromValid } from './effects'
+import componentFromEvents, {
   ComponentConstructor,
   Rest,
   SFC,
@@ -34,7 +30,6 @@ import {
 import compose from 'basic-compose'
 import {
   callHandlerOnEvent,
-  isInvalidEmail,
   pluck,
   preventDefault,
   shallowEqual,
@@ -81,6 +76,7 @@ interface SigninPageState extends SigninPageHocProps {
     SigninPageProps<SigninPageSFCProps>,
     Exclude<keyof SigninPageProps<SigninPageSFCProps>, keyof SigninPageHocProps>
   >
+  email?: string
   password?: string
   valid: ValidityFsm
   signin: SigninFsm
@@ -143,24 +139,14 @@ function inputRef (field: string) {
   }
 }
 
-const PROPS_ACTIONS = createActionFactories({
-  invalid: 'INVALID_EMAIL_PROPS',
-  valid: 'VALID_EMAIL_PROPS'
-})
-
 export function signinPage<P extends SigninPageSFCProps> (
   SigninPageSFC: SFC<P>
 ): ComponentConstructor<SigninPageProps<P>> {
-  return componentFromStream(
+  return componentFromEvents(
     SigninPageSFC,
-    (props: SigninPageProps<P>) =>
-      (isInvalidEmail(props.email)
-        ? PROPS_ACTIONS.invalid
-        : PROPS_ACTIONS.valid)(props),
     () => tap(log('signin-page:event:')),
     redux(
       reducer,
-      validatePasswordOnChangePassword,
       tapOnEvent(
         'INPUT_REF',
         compose.into(0)(

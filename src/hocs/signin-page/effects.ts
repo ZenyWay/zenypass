@@ -31,21 +31,10 @@ import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
 const zenypass$ = observableFrom(zenypass)
 
-const invalidPassword = createActionFactory<void>('INVALID_PASSWORD')
-const validPassword = createActionFactory<void>('VALID_PASSWORD')
 const authenticating = createActionFactory<void>('AUTHENTICATING')
 const authenticated = createActionFactory<void>('AUTHENTICATED')
 const unauthorized = createActionFactory<void>('UNAUTHORIZED')
 const error = createActionFactory<any>('ERROR')
-
-export function validatePasswordOnChangePassword (
-  event$: Observable<StandardAction<any>>
-) {
-  return event$.pipe(
-    filter(({ type }) => type === 'CHANGE_PASSWORD'),
-    map(({ payload }) => (payload ? validPassword : invalidPassword)(payload))
-  )
-}
 
 export function serviceSigninOnSubmitFromValid (
   event$: Observable<StandardAction<any>>,

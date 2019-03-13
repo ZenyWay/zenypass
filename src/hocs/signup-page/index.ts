@@ -15,12 +15,8 @@
  */
 
 import { reducer, ValidityFsm, SignupFsm, SignupPageHocProps } from './reducer'
-import {
-  serviceSignupOnSubmitFromSignupSubmitting,
-  validatePasswordOnChangePassword
-} from './effects'
-import componentFromStream from 'component-from-props'
-import {
+import { serviceSignupOnSubmitFromConfirmed } from './effects'
+import componentFromEvents, {
   ComponentConstructor,
   Rest,
   SFC,
@@ -50,6 +46,7 @@ export interface SignupPageSFCProps extends SignupPageSFCHandlerProps {
   // emails?: DropdownItemSpec[]
   email?: string
   password?: string
+  confirm?: string
   enabled?: boolean
   pending?: boolean
   retry?: boolean
@@ -82,7 +79,9 @@ interface SignupPageState extends SignupPageHocProps {
     SignupPageProps<SignupPageSFCProps>,
     Exclude<keyof SignupPageProps<SignupPageSFCProps>, keyof SignupPageHocProps>
   >
+  email?: string
   password?: string
+  confirm?: string
   valid: ValidityFsm
   signup: SignupFsm
   inputs?: { [key in SignupInputs]: HTMLElement }
@@ -101,12 +100,14 @@ function mapStateToProps ({
   valid,
   signup,
   email,
-  password
+  password,
+  confirm
 }: SignupPageState): Rest<SignupPageSFCProps, SignupPageSFCHandlerProps> {
   return {
     ...attrs,
     email,
     password,
+    confirm,
     pending: signup === SignupFsm.Pending,
     enabled: !isInvalidEmailState(valid),
     error: signup === SignupFsm.Error || VALID_STATE_TO_ERROR[valid]
@@ -139,24 +140,14 @@ function inputRef (field: string) {
   }
 }
 
-const PROPS_ACTIONS = createActionFactories({
-  invalid: 'INVALID_EMAIL_PROPS',
-  valid: 'VALID_EMAIL_PROPS'
-})
-
 export function signupPage<P extends SignupPageSFCProps> (
   SignupPageSFC: SFC<P>
 ): ComponentConstructor<SignupPageProps<P>> {
-  return componentFromStream(
+  return componentFromEvents(
     SignupPageSFC,
-    (props: SignupPageProps<P>) =>
-      (isInvalidEmail(props.email)
-        ? PROPS_ACTIONS.invalid
-        : PROPS_ACTIONS.valid)(props),
     () => tap(log('signup-page:event:')),
     redux(
       reducer,
-      validatePasswordOnChangePassword,
       tapOnEvent(
         'INPUT_REF',
         compose.into(0)(
@@ -170,7 +161,7 @@ export function signupPage<P extends SignupPageSFCProps> (
         'UNAUTHORIZED',
         compose.into(0)(focus, pluck('1', 'inputs', 'password'))
       ),
-      serviceSignupOnSubmitFromSignupSubmitting,
+      serviceSignupOnSubmitFromConfirmed,
       callHandlerOnEvent('TOGGLE_PAGE', 'onTogglePage'),
       callHandlerOnEvent('AUTHENTICATED', 'onTogglePage'),
       callHandlerOnEvent('CHANGE_EMAIL', 'onEmailChange'),
