@@ -131,6 +131,7 @@ export function RecordCard ({
                   id={`collapsed-record-card:${_id}:connect`}
                   outline
                   color='info'
+                  disabled={connectingOrPendingRecord}
                   onClick={onConnectRequest}
                   className='border-0 flex-grow-0 flex-shrink-0 px-2'
                 >
