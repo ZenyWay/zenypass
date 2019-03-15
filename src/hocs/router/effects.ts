@@ -23,6 +23,7 @@ import {
   createActionFactory
 } from 'basic-fsa-factories'
 import {
+  catchError,
   distinctUntilChanged,
   distinctUntilKeyChanged,
   filter,
@@ -32,8 +33,8 @@ import {
   startWith,
   tap
 } from 'rxjs/operators'
-import { Observable, fromEvent, merge } from 'rxjs'
-import { always } from 'utils'
+import { Observable, fromEvent, merge, of as observableOf } from 'rxjs'
+import { always, ERROR_STATUS } from 'utils'
 // const log = (label: string) => console.log.bind(console, label)
 
 const QS_PARAM_VALIDATORS = {
@@ -44,6 +45,7 @@ const QS_PARAM_VALIDATORS = {
 }
 
 const fatal = createActionFactory('FATAL')
+const unauthorized = createActionFactory('UNAUTHORIZED')
 const signup = createActionFactory('SIGNUP')
 const signin = createActionFactory('SIGNIN')
 
@@ -56,21 +58,25 @@ const QS_PARAM_ACTIONS = createActionFactories({
 
 const signedOut = createActionFactory('SIGNED_OUT')
 
-export function signoutOnPendingSignout (
-  event$: Observable<StandardAction<any>>,
-  state$: Observable<any>
-) {
+export function signoutOnPendingSignout (_: any, state$: Observable<any>) {
   return state$.pipe(
     distinctUntilKeyChanged('path'),
     filter(({ path }) => path === RouteAutomataState.PendingSignout),
     pluck('session'),
     tap(signout),
-    map(() => signedOut())
+    map(() => signedOut()),
+    catchError(err =>
+      observableOf(
+        err !== ERROR_STATUS.UNAUTHORIZED ? fatal(err) : unauthorized()
+      )
+    )
   )
 }
 
 function signout (username: string): Promise<void> {
-  return zenypass.then(({ getService }) => getService(username).signout())
+  return zenypass
+    .then(({ getService }) => username && getService(username))
+    .then(service => service && service.signout())
 }
 
 // support url hash in storybook (iframe in development mode)

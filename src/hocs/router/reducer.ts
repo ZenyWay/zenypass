@@ -45,10 +45,12 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     // DEVICES: '/devices',
     // STORAGE: '/storage',
     EMAIL: RouteAutomataState.PendingSignout,
-    LOGOUT: RouteAutomataState.PendingSignout,
-    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
+    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError],
+    LOGOUT: RouteAutomataState.PendingSignout
   },
   [RouteAutomataState.PendingSignout]: {
+    UNAUTHORIZED: RouteAutomataState.Signin,
+    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError],
     SIGNED_OUT: [RouteAutomataState.Signin, clearSession]
   },
   [RouteAutomataState.Signup]: {
