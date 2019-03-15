@@ -52,19 +52,20 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     SIGNED_OUT: [RouteAutomataState.Signin, clearSession]
   },
   [RouteAutomataState.Signup]: {
-    GOTO_SIGNIN: RouteAutomataState.Signin,
+    SIGNED_UP: RouteAutomataState.Signin, // TODO add state for Signin from Signup
+    SIGNIN: RouteAutomataState.Signin,
     EMAIL: mapPayloadIntoEmail,
     FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
   },
   [RouteAutomataState.Signin]: {
     AUTHORIZE: RouteAutomataState.Authorize,
-    GOTO_SIGNUP: RouteAutomataState.Signup,
+    SIGNUP: RouteAutomataState.Signup,
     EMAIL: mapPayloadIntoEmail,
     AUTHENTICATED: [RouteAutomataState.Homepage, into('session')(mapPayload())],
     FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
   },
   [RouteAutomataState.Authorize]: {
-    GOTO_SIGNIN: RouteAutomataState.Signin,
+    SIGNIN: RouteAutomataState.Signin,
     EMAIL: mapPayloadIntoEmail,
     FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
   },

@@ -45,6 +45,7 @@ export interface CoreRouterProps {
   onError?: (error?: any) => void
   onGotoSignin?: () => void
   onGotoSignup?: () => void
+  onSignedUp?: () => void
   onSelectMenuItem?: (target: HTMLElement) => void
   onUpdateSetting?: (key?: string, value?: any) => void
 }
@@ -89,6 +90,7 @@ function CoreRouter ({
   onError,
   onGotoSignin,
   onGotoSignup,
+  onSignedUp,
   onSelectMenuItem,
   onUpdateSetting,
   attrs
@@ -116,6 +118,7 @@ function CoreRouter ({
           email={email}
           onEmailChange={onEmailChange}
           onError={onError}
+          onSignedUp={onSignedUp}
           onSelectLocale={onSelectMenuItem}
           onTogglePage={onGotoSignin}
         />

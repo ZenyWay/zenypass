@@ -205,7 +205,7 @@ export function signupPage<P extends SignupPageSFCProps> (
       ),
       serviceSignupOnSubmitFromSubmittable,
       callHandlerOnEvent('TOGGLE_PAGE', 'onTogglePage'),
-      callHandlerOnEvent('AUTHENTICATED', 'onTogglePage'),
+      callHandlerOnEvent('SIGNED_UP', 'onSignedUp'),
       callHandlerOnEvent('CHANGE_EMAIL', 'onEmailChange'),
       callHandlerOnEvent('ERROR', 'onError')
     ),

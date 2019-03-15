@@ -33,6 +33,7 @@ import {
 
 export interface SignupPageHocProps {
   email?: string
+  onSignedUp?: () => void
   onTogglePage?: () => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
@@ -125,6 +126,7 @@ const signupFsm: AutomataSpec<SignupFsm> = {
 
 const SELECTED_PROPS: (keyof SignupPageHocProps)[] = [
   'email',
+  'onSignedUp',
   'onTogglePage',
   'onEmailChange',
   'onError'
