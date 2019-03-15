@@ -28,10 +28,10 @@ delete locales[0].label // remove label of dropdown toggle
 const attrs = {
   locales: LANG_MENU,
   onAuthenticated: action('AUTHENTICATED'),
-  onAuthorize: action('AUTHORIZE'),
   onEmailChange: action('EMAIL_CHANGE'),
   onError: action('ERROR'),
-  onSelectLocale: action('SELECT_LOCALE')
+  onSelectLocale: action('SELECT_LOCALE'),
+  onTogglePage: action('TOGGLE_PAGE')
 }
 
 const emails = ['jane.doe@example.com', 'rob@hvsc.org']
@@ -51,13 +51,13 @@ storiesOf('SigninPage', module)
   .add('signin', () => ({ locale }) => (
     <SigninPage locale={locale} {...attrs} />
   ))
-  .add('signin-error-email', () => ({ locale }) => (
+  .add('signin-invalid-email', () => ({ locale }) => (
     <SigninPage
       locale={locale}
       email={emails[0].label.split('@')[0]}
       {...attrs}
     />
   ))
-  .add('signin-email', () => ({ locale }) => (
+  .add('signin-valid-email', () => ({ locale }) => (
     <SigninPage locale={locale} email={emails[0].label} {...attrs} />
   ))

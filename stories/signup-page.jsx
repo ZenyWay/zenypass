@@ -27,11 +27,11 @@ delete locales[0].label // remove label of dropdown toggle
 
 const attrs = {
   locales: LANG_MENU,
-  onAuthenticated: action('AUTHENTICATED'),
-  onAuthorize: action('AUTHORIZE'),
   onEmailChange: action('EMAIL_CHANGE'),
   onError: action('ERROR'),
-  onSelectLocale: action('SELECT_LOCALE')
+  onSignedUp: action('SIGNED_UP'),
+  onSelectLocale: action('SELECT_LOCALE'),
+  onTogglePage: action('TOGGLE_PAGE')
 }
 
 const emails = ['jane.doe@example.com', 'rob@hvsc.org']
@@ -51,13 +51,13 @@ storiesOf('SignupPage', module)
   .add('signup', () => ({ locale }) => (
     <SignupPage locale={locale} {...attrs} />
   ))
-  .add('signup-error-email', () => ({ locale }) => (
+  .add('signup-invalid-email', () => ({ locale }) => (
     <SignupPage
       locale={locale}
       email={emails[0].label.split('@')[0]}
       {...attrs}
     />
   ))
-  .add('signup-email', () => ({ locale }) => (
+  .add('signup-valid-email', () => ({ locale }) => (
     <SignupPage locale={locale} email={emails[0].label} {...attrs} />
   ))
