@@ -138,7 +138,7 @@ export function AuthenticationForm ({
   const unauthorized = error === 'submit'
   const info = INFO[type]
   return (
-    <form {...attrs} onSubmit={onSubmit}>
+    <form noValidate {...attrs} onSubmit={onSubmit}>
       {!created ? null : (
         <Fragment>
           <p>

@@ -117,7 +117,7 @@ export function RecordField ({
         onChange={onChange}
         {...attrs}
       />
-      {error ? <small className='invalid-feedback'>{error}</small> : null}
+      {error ? <small className='text-danger w-100'>{error}</small> : null}
       {children}
     </IconLabelInputGroup>
   )
