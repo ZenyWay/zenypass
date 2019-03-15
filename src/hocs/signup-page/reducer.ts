@@ -25,6 +25,7 @@ import {
   mapEvents,
   mapPayload,
   mergePayload,
+  not,
   omit,
   pick,
   mapEventOn
@@ -65,6 +66,7 @@ const mapPayloadIntoPassword = into('password')(mapPayload())
 const clearPassword = propCursor('password')(always(''))
 const mapPayloadIntoConfirm = into('confirm')(mapPayload())
 const clearConfirm = propCursor('confirm')(always(''))
+const toggleNews = propCursor('news')(not())
 
 const validityFsm: AutomataSpec<ValidityFsm> = {
   [ValidityFsm.Invalid]: {
@@ -92,13 +94,16 @@ const validityFsm: AutomataSpec<ValidityFsm> = {
     INVALID_PASSWORD: ValidityFsm.InvalidPassword,
     INVALID_CONFIRM: ValidityFsm.Tbc,
     VALID_EMAIL: [ValidityFsm.Tbc, clearConfirm],
-    VALID_PASSWORD: ValidityFsm.Tbc
+    VALID_PASSWORD: ValidityFsm.Tbc,
+    SUBMIT: ValidityFsm.Consents
   },
   [ValidityFsm.Consents]: {
-    TOGGLE_CONSENT: ValidityFsm.Submittable
+    TOGGLE_NEWS: toggleNews,
+    TOGGLE_TERMS: ValidityFsm.Submittable
   },
   [ValidityFsm.Submittable]: {
-    TOGGLE_CONSENT: ValidityFsm.Consents,
+    TOGGLE_NEWS: toggleNews,
+    TOGGLE_TERMS: ValidityFsm.Consents,
     ERROR: [ValidityFsm.Tbc, clearConfirm],
     SIGNED_UP: [ValidityFsm.InvalidPassword, clearPassword, clearConfirm]
   }

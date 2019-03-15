@@ -15,7 +15,7 @@
  */
 
 import { reducer, ValidityFsm, SignupFsm, SignupPageHocProps } from './reducer'
-import { serviceSignupOnSubmitFromConfirmed } from './effects'
+import { serviceSignupOnSubmitFromSubmittable } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -47,7 +47,10 @@ export interface SignupPageSFCProps extends SignupPageSFCHandlerProps {
   email?: string
   password?: string
   confirm?: string
+  terms?: boolean
+  news?: boolean
   enabled?: boolean
+  consents?: boolean
   pending?: boolean
   retry?: boolean
   error?: SignupPageError | false | unknown
@@ -73,6 +76,7 @@ export interface SignupPageSFCHandlerProps {
   onChange?: (value: string, target?: HTMLElement) => void
   // onSelectEmail?: (item?: HTMLElement) => void
   onSubmit?: (event?: Event) => void
+  onToggleConsent?: (event: Event) => void
   onTogglePage?: (event?: MouseEvent) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
@@ -87,6 +91,7 @@ interface SignupPageState extends SignupPageHocProps {
   email?: string
   password?: string
   confirm?: string
+  news?: boolean
   valid: ValidityFsm
   signup: SignupFsm
   inputs?: { [key in SignupInputs]: HTMLElement }
@@ -120,13 +125,17 @@ const STATE_TO_ERROR: Partial<
 function mapStateToProps (
   state: SignupPageState
 ): Rest<SignupPageSFCProps, SignupPageSFCHandlerProps> {
-  const { attrs, valid, signup, email, password, confirm } = state
+  const { attrs, valid, signup, email, password, confirm, news } = state
   const error = get(STATE_TO_ERROR, signup, valid)
+  const terms = valid === ValidityFsm.Submittable
   return {
     ...attrs,
     email,
     password,
     confirm,
+    news,
+    terms,
+    consents: terms || valid === ValidityFsm.Consents,
     pending: signup === SignupFsm.Pending,
     enabled:
       !isInvalidEmailState(valid) && valid !== ValidityFsm.InvalidPassword,
@@ -146,7 +155,9 @@ function get (obj: any, ...keys: string[]): any {
 const CHANGE_ACTIONS = createActionFactories({
   email: 'CHANGE_EMAIL',
   password: 'CHANGE_PASSWORD',
-  confirm: 'CHANGE_CONFIRM'
+  confirm: 'CHANGE_CONFIRM',
+  news: 'TOGGLE_NEWS',
+  terms: 'TOGGLE_TERMS'
 })
 
 const mapDispatchToProps: (
@@ -157,6 +168,8 @@ const mapDispatchToProps: (
     CHANGE_ACTIONS[id](value),
   // onSelectEmail: 'SELECT_EMAIL',
   onSubmit: ['SUBMIT', preventDefault],
+  onToggleConsent: ({ currentTarget }) =>
+    CHANGE_ACTIONS[currentTarget.dataset.id](),
   onTogglePage: 'TOGGLE_PAGE',
   onEmailInputRef: ['INPUT_REF', inputRef('email')],
   onPasswordInputRef: ['INPUT_REF', inputRef('password')],
@@ -190,7 +203,7 @@ export function signupPage<P extends SignupPageSFCProps> (
         'UNAUTHORIZED',
         compose.into(0)(focus, pluck('1', 'inputs', 'password'))
       ),
-      serviceSignupOnSubmitFromConfirmed,
+      serviceSignupOnSubmitFromSubmittable,
       callHandlerOnEvent('TOGGLE_PAGE', 'onTogglePage'),
       callHandlerOnEvent('AUTHENTICATED', 'onTogglePage'),
       callHandlerOnEvent('CHANGE_EMAIL', 'onEmailChange'),

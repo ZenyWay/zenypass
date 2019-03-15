@@ -35,12 +35,12 @@ const signingUp = createActionFactory<void>('SIGNING_UP')
 const signedUp = createActionFactory<void>('SIGNED_UP')
 const error = createActionFactory<any>('ERROR')
 
-export function serviceSignupOnSubmitFromConfirmed (
+export function serviceSignupOnSubmitFromSubmittable (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
   return stateOnEvent(({ type }) => type === 'SUBMIT')(event$, state$).pipe(
-    filter<any>(({ valid }) => valid === ValidityFsm.Confirmed),
+    filter<any>(({ valid }) => valid === ValidityFsm.Submittable),
     switchMap(({ email, password }) =>
       zenypass$.pipe(
         switchMap(({ signup }) => signup(email, password)),
