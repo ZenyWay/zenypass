@@ -15,12 +15,7 @@
  */
 
 import reducer, { RouteAutomataState, LinkAutomataState } from './reducer'
-import {
-  AuthenticationPageType,
-  actionFromMenuItem,
-  actionFromError,
-  actionFromAuthenticationPageType
-} from './dispatchers'
+import { actionFromMenuItem, actionFromError } from './dispatchers'
 import {
   injectQueryParamsFromLocationHash,
   signoutOnPendingSignout,
@@ -36,8 +31,7 @@ import componentFromEvents, {
 } from 'component-from-events'
 import {
   createActionDispatchers,
-  createActionFactory,
-  createActionFactories
+  createActionFactory
 } from 'basic-fsa-factories'
 import compose from 'basic-compose'
 import { MenuSpec, openItemLink, pluck, shallowEqual, tapOnEvent } from 'utils'
@@ -60,7 +54,6 @@ export interface RouterSFCProps extends RouterSFCHandlerProps {
 
 export interface RouterSFCHandlerProps {
   onAuthenticated?: (session?: string) => void
-  onAuthenticationPageType?: (type?: AuthenticationPageType) => void
   onCloseInfo?: (event: MouseEvent) => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
@@ -119,7 +112,6 @@ const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => RouterSFCHandlerProps = createActionDispatchers({
   onAuthenticated: 'AUTHENTICATED',
-  onAuthenticationPageType: actionFromAuthenticationPageType,
   onCloseInfo: 'CLOSE_INFO',
   onEmailChange: ['UPDATE_QUERY_PARAM', email => ['email', email]],
   onError: actionFromError,

@@ -14,7 +14,6 @@
  * Limitations under the License.
  */
 
-import { AuthenticationPageType } from '../authentication-page'
 import {
   createActionFactories,
   createActionFactory,
@@ -66,18 +65,4 @@ const UNAUTHORIZED_OR_CLOSED_CODES = [401, 403, 499]
 
 function isUnauthorizedOrClosed (error) {
   return error && UNAUTHORIZED_OR_CLOSED_CODES.indexOf(error.status) >= 0
-}
-
-export { AuthenticationPageType }
-
-const AUTHENTICATION_PAGE_ACTIONS = createActionFactories({
-  [AuthenticationPageType.Signin]: 'SIGNIN',
-  [AuthenticationPageType.Signup]: 'SIGNUP',
-  [AuthenticationPageType.Authorize]: 'AUTHORIZE'
-})
-
-export function actionFromAuthenticationPageType (
-  type: AuthenticationPageType = AuthenticationPageType.Signin
-) {
-  return AUTHENTICATION_PAGE_ACTIONS[type]()
 }
