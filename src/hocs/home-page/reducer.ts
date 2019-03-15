@@ -19,13 +19,13 @@ import { into } from 'basic-cursors'
 import {
   MenuSpec,
   always,
-  exclude,
+  omit,
   forType,
   localizeMenu,
   mapPayload,
   mergePayload,
   mergeMenus,
-  select
+  pick
 } from 'utils'
 import compose from 'basic-compose'
 import createL10ns from 'basic-l10n'
@@ -92,8 +92,8 @@ export default compose.into(0)(
       into('menu')(
         mapPayload(({ menu, locale }) => mergeMenus(menu, homemenu[locale]))
       ),
-      mergePayload(select(SELECTED_PROPS)),
-      into('attrs')(mapPayload(exclude(SELECTED_PROPS)))
+      mergePayload(pick(SELECTED_PROPS)),
+      into('attrs')(mapPayload(omit(SELECTED_PROPS)))
     )
   )
 )

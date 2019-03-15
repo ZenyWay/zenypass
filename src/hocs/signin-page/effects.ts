@@ -41,7 +41,7 @@ export function serviceSigninOnSubmitFromValid (
   state$: Observable<any>
 ) {
   return stateOnEvent(({ type }) => type === 'SUBMIT')(event$, state$).pipe(
-    filter(({ valid }) => valid === ValidityFsm.Valid),
+    filter(({ valid }) => valid === ValidityFsm.Submittable),
     switchMap(({ email, password }) =>
       zenypass$.pipe(
         switchMap(({ signin }) => signin(email, password)),

@@ -33,11 +33,11 @@ export function pluck<T> (keys: string[] | string, ...rest: string[]) {
       }
 }
 
-export function select<T> (...keys: string[])
-export function select<T> (keys: string[] | string)
-export function select<T> (keys: string[] | string, ...rest: string[]) {
+export function pick<T> (...keys: string[])
+export function pick<T> (keys: string[] | string)
+export function pick<T> (keys: string[] | string, ...rest: string[]) {
   return !Array.isArray(keys)
-    ? select([keys].concat(rest))
+    ? pick([keys].concat(rest))
     : function<O extends T> (obj: O): T {
         let res = {} as T
         for (const key of keys) {
@@ -47,11 +47,11 @@ export function select<T> (keys: string[] | string, ...rest: string[]) {
       }
 }
 
-export function exclude<T> (...keys: string[])
-export function exclude<T> (keys: string[] | string)
-export function exclude<T> (keys: string[] | string, ...rest: string[]) {
+export function omit<T> (...keys: string[])
+export function omit<T> (keys: string[] | string)
+export function omit<T> (keys: string[] | string, ...rest: string[]) {
   return !Array.isArray(keys)
-    ? exclude([keys].concat(rest))
+    ? omit([keys].concat(rest))
     : function<O extends T> (obj: O): T {
         let res = {} as T
         for (const key of Object.keys(obj)) {

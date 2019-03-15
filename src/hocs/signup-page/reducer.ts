@@ -20,13 +20,14 @@ import { into, propCursor } from 'basic-cursors'
 import compose from 'basic-compose'
 import {
   always,
-  exclude,
   isInvalidEmail,
   forType,
   mapEvents,
   mapPayload,
   mergePayload,
-  select
+  omit,
+  pick,
+  mapEventOn
 } from 'utils'
 
 export interface SignupPageHocProps {
@@ -40,24 +41,26 @@ export enum ValidityFsm {
   Invalid = 'INVALID',
   InvalidEmail = 'INVALID_EMAIL',
   InvalidPassword = 'INVALID_PASSWORD',
-  Valid = 'VALID',
-  Confirmed = 'CONFIRMED'
+  Tbc = 'TBC',
+  Confirmed = 'CONFIRMED',
+  Consents = 'CONSENTS',
+  Submittable = 'SUBMITTABLE'
 }
 
 export enum SignupFsm {
   Idle = 'IDLE',
-  Consents = 'CONSENTS',
-  Consented = 'CONSENTED',
   Pending = 'PENDING',
   Error = 'ERROR'
 }
 
-const invalidEmail = createActionFactory<void>('INVALID_EMAIL')
-const validEmail = createActionFactory<void>('VALID_EMAIL')
-const invalidPassword = createActionFactory<void>('INVALID_PASSWORD')
-const validPassword = createActionFactory<void>('VALID_PASSWORD')
-const invalidConfirm = createActionFactory<void>('INVALID_CONFIRM')
-const validConfirm = createActionFactory<void>('VALID_CONFIRM')
+const MIN_PASSWORD_LENGTH = 4
+const isInvalidPassword = ({ password }) =>
+  !password || password.length < MIN_PASSWORD_LENGTH
+const isInvalidConfirm = ({ password, confirm }) =>
+  !password || confirm !== password
+const isEmailChange = (state, { payload }) =>
+  (payload && payload.email) !== (state && state.email)
+const error = createActionFactory<any>('ERROR')
 const mapPayloadIntoPassword = into('password')(mapPayload())
 const clearPassword = propCursor('password')(always(''))
 const mapPayloadIntoConfirm = into('confirm')(mapPayload())
@@ -70,47 +73,48 @@ const validityFsm: AutomataSpec<ValidityFsm> = {
   },
   [ValidityFsm.InvalidEmail]: {
     INVALID_PASSWORD: ValidityFsm.Invalid,
-    VALID_EMAIL: ValidityFsm.Valid
+    VALID_EMAIL: ValidityFsm.Tbc
   },
   [ValidityFsm.InvalidPassword]: {
-    INVALID_EMAIL: ValidityFsm.Invalid,
-    VALID_PASSWORD: ValidityFsm.Valid
+    INVALID_EMAIL: [ValidityFsm.Invalid, clearConfirm],
+    VALID_EMAIL: clearPassword,
+    clearConfirm,
+    VALID_PASSWORD: ValidityFsm.Tbc
   },
-  [ValidityFsm.Valid]: {
+  [ValidityFsm.Tbc]: {
     INVALID_EMAIL: [ValidityFsm.InvalidEmail, clearConfirm],
-    INVALID_PASSWORD: [ValidityFsm.InvalidPassword, clearConfirm],
+    INVALID_PASSWORD: ValidityFsm.InvalidPassword,
     VALID_EMAIL: clearConfirm,
-    VALID_PASSWORD: clearConfirm,
     VALID_CONFIRM: ValidityFsm.Confirmed
   },
   [ValidityFsm.Confirmed]: {
     INVALID_EMAIL: [ValidityFsm.InvalidEmail, clearConfirm],
-    INVALID_PASSWORD: [ValidityFsm.InvalidPassword, clearConfirm],
-    INVALID_CONFIRM: ValidityFsm.Valid,
-    VALID_EMAIL: [ValidityFsm.Valid, clearConfirm],
-    VALID_PASSWORD: [ValidityFsm.Valid, clearConfirm],
-    ERROR: [ValidityFsm.Valid, clearConfirm],
+    INVALID_PASSWORD: ValidityFsm.InvalidPassword,
+    INVALID_CONFIRM: ValidityFsm.Tbc,
+    VALID_EMAIL: [ValidityFsm.Tbc, clearConfirm],
+    VALID_PASSWORD: ValidityFsm.Tbc
+  },
+  [ValidityFsm.Consents]: {
+    TOGGLE_CONSENT: ValidityFsm.Submittable
+  },
+  [ValidityFsm.Submittable]: {
+    TOGGLE_CONSENT: ValidityFsm.Consents,
+    ERROR: [ValidityFsm.Tbc, clearConfirm],
     SIGNED_UP: [ValidityFsm.InvalidPassword, clearPassword, clearConfirm]
   }
 }
 
 const signupFsm: AutomataSpec<SignupFsm> = {
   [SignupFsm.Idle]: {
-    SIGNING_UP: SignupFsm.Consents
-  },
-  [SignupFsm.Consents]: {
-    TOGGLE_CONSENT: SignupFsm.Consented
-  },
-  [SignupFsm.Consented]: {
-    TOGGLE_CONSENT: SignupFsm.Consents,
+    ERROR: SignupFsm.Error,
     SIGNING_UP: SignupFsm.Pending
   },
   [SignupFsm.Pending]: {
-    ERROR: [SignupFsm.Error, clearConfirm],
+    ERROR: SignupFsm.Error,
     SIGNED_UP: SignupFsm.Idle
   },
   [SignupFsm.Error]: {
-    SIGNING_UP: SignupFsm.Consents
+    SIGNING_UP: SignupFsm.Pending
   }
 }
 
@@ -125,22 +129,33 @@ export const reducer = compose.into(0)(
   compose(
     createAutomataReducer(validityFsm, ValidityFsm.Invalid, { key: 'valid' }),
     mapEvents({
-      CHANGE_CONFIRM: ({ password, confirm }) =>
-        (password === confirm ? validConfirm : invalidConfirm)(),
-      CHANGE_PASSWORD: ({ password }) =>
-        (password ? validPassword : invalidPassword)(),
-      PROPS: ({ email }) =>
-        (isInvalidEmail(email) ? invalidEmail : validEmail)()
+      CHANGE_CONFIRM: [isInvalidConfirm, 'INVALID_CONFIRM', 'VALID_CONFIRM'],
+      CHANGE_PASSWORD: [
+        isInvalidPassword,
+        'INVALID_PASSWORD',
+        'VALID_PASSWORD'
+      ],
+      PROPS: [
+        ({ email }) => isInvalidEmail(email),
+        'INVALID_EMAIL',
+        'VALID_EMAIL'
+      ]
     })
   ),
   createAutomataReducer(signupFsm, SignupFsm.Idle, { key: 'signup' }),
-  forType('CHANGE_PASSWORD')(mapPayloadIntoPassword),
+  forType('CHANGE_PASSWORD')(
+    compose.into(0)(clearConfirm, mapPayloadIntoPassword)
+  ),
   forType('CHANGE_CONFIRM')(mapPayloadIntoConfirm),
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(
     compose.into(0)(
-      mergePayload(select(SELECTED_PROPS)),
-      into('attrs')(mapPayload(exclude(SELECTED_PROPS)))
+      mergePayload(pick(SELECTED_PROPS)),
+      into('attrs')(mapPayload(omit(SELECTED_PROPS))),
+      compose(
+        forType('CHANGE_EMAIL')(clearConfirm),
+        mapEventOn(isEmailChange)('CHANGE_EMAIL')
+      )
     )
   )
 )

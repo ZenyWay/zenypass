@@ -17,7 +17,7 @@
 //
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
-import { always, exclude, forType, mapPayload, pluck } from 'utils'
+import { always, omit, forType, mapPayload, pluck } from 'utils'
 import compose from 'basic-compose'
 
 export enum AuthenticationFsmState {
@@ -50,9 +50,7 @@ export default compose.into(0)(
   forType('PROPS')(
     compose.into(0)(
       into('props')(
-        mapPayload(
-          exclude('onError', 'onAuthenticated', 'onCancelled', 'session')
-        )
+        mapPayload(omit('onError', 'onAuthenticated', 'onCancelled', 'session'))
       ),
       into('onError')(mapPayload(pluck('onError'))),
       into('onAuthenticated')(mapPayload(pluck('onAuthenticated'))),

@@ -20,13 +20,13 @@ import { into, propCursor } from 'basic-cursors'
 import compose from 'basic-compose'
 import {
   always,
-  exclude,
   isInvalidEmail,
   forType,
   mapEvents,
   mapPayload,
   mergePayload,
-  select
+  omit,
+  pick
 } from 'utils'
 
 export interface SigninPageHocProps {
@@ -40,8 +40,8 @@ export interface SigninPageHocProps {
 export enum ValidityFsm {
   Invalid = 'INVALID',
   InvalidEmail = 'INVALID_EMAIL',
-  InvalidPassword = 'INVALID_PASSWORD',
-  Valid = 'VALID'
+  EmptyPassword = 'EMPTY_PASSWORD',
+  Submittable = 'SUBMITTABLE'
 }
 
 export enum SigninFsm {
@@ -50,38 +50,32 @@ export enum SigninFsm {
   Error = 'ERROR',
   PendingRetry = 'PENDING_RETRY',
   Alert = 'ALERT',
-  Retry = 'RETRY'
+  RetryError = 'RETRY_ERROR'
 }
 
-const invalidEmail = createActionFactory<void>('INVALID_EMAIL')
-const validEmail = createActionFactory<void>('VALID_EMAIL')
-const invalidPassword = createActionFactory<void>('INVALID_PASSWORD')
-const validPassword = createActionFactory<void>('VALID_PASSWORD')
+const isInvalidPassword = ({ password }) => !password
 const mapPayloadIntoPassword = into('password')(mapPayload())
 const clearPassword = propCursor('password')(always(''))
 
-/**
- * only change page type on SIGNUP, SIGNIN, or AUTHORIZE
- */
 const validityFsm: AutomataSpec<ValidityFsm> = {
   [ValidityFsm.Invalid]: {
-    VALID_EMAIL: ValidityFsm.InvalidPassword,
+    VALID_EMAIL: ValidityFsm.EmptyPassword,
     VALID_PASSWORD: ValidityFsm.InvalidEmail
   },
   [ValidityFsm.InvalidEmail]: {
     INVALID_PASSWORD: ValidityFsm.Invalid,
-    VALID_EMAIL: ValidityFsm.Valid
+    VALID_EMAIL: ValidityFsm.Submittable
   },
-  [ValidityFsm.InvalidPassword]: {
+  [ValidityFsm.EmptyPassword]: {
     INVALID_EMAIL: ValidityFsm.Invalid,
-    VALID_PASSWORD: ValidityFsm.Valid
+    VALID_PASSWORD: ValidityFsm.Submittable
   },
-  [ValidityFsm.Valid]: {
+  [ValidityFsm.Submittable]: {
     INVALID_EMAIL: ValidityFsm.InvalidEmail,
-    INVALID_PASSWORD: ValidityFsm.InvalidPassword,
-    ERROR: [ValidityFsm.InvalidPassword, clearPassword],
-    UNAUTHORIZED: [ValidityFsm.InvalidPassword, clearPassword],
-    AUTHENTICATED: [ValidityFsm.InvalidPassword, clearPassword]
+    INVALID_PASSWORD: ValidityFsm.EmptyPassword,
+    ERROR: [ValidityFsm.EmptyPassword, clearPassword],
+    UNAUTHORIZED: [ValidityFsm.EmptyPassword, clearPassword],
+    AUTHENTICATED: [ValidityFsm.EmptyPassword, clearPassword]
   }
 }
 
@@ -103,9 +97,9 @@ const signinFsm: AutomataSpec<SigninFsm> = {
     AUTHENTICATED: SigninFsm.Idle
   },
   [SigninFsm.Alert]: {
-    CANCEL: SigninFsm.Retry
+    CANCEL: SigninFsm.RetryError
   },
-  [SigninFsm.Retry]: {
+  [SigninFsm.RetryError]: {
     AUTHENTICATING: SigninFsm.PendingRetry
   }
 }
@@ -122,10 +116,16 @@ export const reducer = compose.into(0)(
   compose(
     createAutomataReducer(validityFsm, ValidityFsm.Invalid, { key: 'valid' }),
     mapEvents({
-      CHANGE_PASSWORD: ({ password }) =>
-        (password ? validPassword : invalidPassword)(),
-      PROPS: ({ email }) =>
-        (isInvalidEmail(email) ? invalidEmail : validEmail)()
+      CHANGE_PASSWORD: [
+        isInvalidPassword,
+        'INVALID_PASSWORD',
+        'VALID_PASSWORD'
+      ],
+      PROPS: [
+        ({ email }) => isInvalidEmail(email),
+        'INVALID_EMAIL',
+        'VALID_EMAIL'
+      ]
     })
   ),
   createAutomataReducer(signinFsm, SigninFsm.Idle, { key: 'signin' }),
@@ -133,8 +133,8 @@ export const reducer = compose.into(0)(
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(
     compose.into(0)(
-      mergePayload(select(SELECTED_PROPS)),
-      into('attrs')(mapPayload(exclude(SELECTED_PROPS)))
+      mergePayload(pick(SELECTED_PROPS)),
+      into('attrs')(mapPayload(omit(SELECTED_PROPS)))
     )
   )
 )

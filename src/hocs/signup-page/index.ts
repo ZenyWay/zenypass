@@ -30,13 +30,13 @@ import {
 import compose from 'basic-compose'
 import {
   callHandlerOnEvent,
-  isInvalidEmail,
   pluck,
   preventDefault,
   shallowEqual,
   tapOnEvent
 } from 'utils'
 import { tap, distinctUntilChanged } from 'rxjs/operators'
+import { isString } from 'util'
 const log = label => console.log.bind(console, label)
 
 export type SignupPageProps<P extends SignupPageSFCProps> = SignupPageHocProps &
@@ -50,10 +50,15 @@ export interface SignupPageSFCProps extends SignupPageSFCHandlerProps {
   enabled?: boolean
   pending?: boolean
   retry?: boolean
-  error?: SignupPageError | unknown
+  error?: SignupPageError | false | unknown
 }
 
-export type SignupPageError = 'email' | 'password' | 'credentials' | 'submit'
+export type SignupPageError =
+  | 'email'
+  | 'password'
+  | 'credentials'
+  | 'confirm'
+  | 'submit'
 
 export type SignupInputs = 'email' | 'password'
 
@@ -87,31 +92,55 @@ interface SignupPageState extends SignupPageHocProps {
   inputs?: { [key in SignupInputs]: HTMLElement }
 }
 
-const VALID_STATE_TO_ERROR: Partial<
-  { [state in ValidityFsm]: SignupPageError }
+const STATE_TO_ERROR: Partial<
+  {
+    [state in SignupFsm]: Partial<
+      {
+        [state in ValidityFsm]:
+          | SignupPageError
+          | ((state?: SignupPageState) => SignupPageError | '')
+      }
+    >
+  }
 > = {
-  [ValidityFsm.Invalid]: 'credentials',
-  [ValidityFsm.InvalidEmail]: 'email',
-  [ValidityFsm.InvalidPassword]: 'password'
+  [SignupFsm.Idle]: {
+    [ValidityFsm.Invalid]: ({ email, password }) =>
+      (email && password && 'credentials') ||
+      (email && 'email') ||
+      (password && 'password'),
+    [ValidityFsm.InvalidEmail]: ({ email }) => email && 'email',
+    [ValidityFsm.InvalidPassword]: ({ password }) => password && 'password',
+    [ValidityFsm.Tbc]: ({ confirm }) => confirm && 'confirm'
+  },
+  [SignupFsm.Error]: {
+    [ValidityFsm.Tbc]: 'submit'
+  }
 }
 
-function mapStateToProps ({
-  attrs,
-  valid,
-  signup,
-  email,
-  password,
-  confirm
-}: SignupPageState): Rest<SignupPageSFCProps, SignupPageSFCHandlerProps> {
+function mapStateToProps (
+  state: SignupPageState
+): Rest<SignupPageSFCProps, SignupPageSFCHandlerProps> {
+  const { attrs, valid, signup, email, password, confirm } = state
+  const error = get(STATE_TO_ERROR, signup, valid)
   return {
     ...attrs,
     email,
     password,
     confirm,
     pending: signup === SignupFsm.Pending,
-    enabled: !isInvalidEmailState(valid),
-    error: signup === SignupFsm.Error || VALID_STATE_TO_ERROR[valid]
+    enabled:
+      !isInvalidEmailState(valid) && valid !== ValidityFsm.InvalidPassword,
+    error: !error || isString(error) ? error : error(state)
   }
+}
+
+function get (obj: any, ...keys: string[]): any {
+  let res: any = obj
+  for (const key of keys) {
+    if (!res) return
+    res = res[key]
+  }
+  return res
 }
 
 const CHANGE_ACTIONS = createActionFactories({

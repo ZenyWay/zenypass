@@ -88,12 +88,13 @@ const VALID_STATE_TO_ERROR: Partial<
 > = {
   [ValidityFsm.Invalid]: 'credentials',
   [ValidityFsm.InvalidEmail]: 'email',
-  [ValidityFsm.InvalidPassword]: 'password'
+  [ValidityFsm.EmptyPassword]: 'password'
 }
 const SIGNIN_STATE_TO_ERROR: Partial<
   { [state in SigninFsm]: SigninPageError }
 > = {
-  [SigninFsm.Retry]: 'submit',
+  [SigninFsm.Alert]: 'submit',
+  [SigninFsm.RetryError]: 'submit',
   [SigninFsm.Error]: 'submit'
 }
 

@@ -48,16 +48,6 @@ export interface AuthenticationPageProps {
   pending?: boolean
   retry?: boolean
   error?: AuthenticationFormError
-  /**
-   * email: email field enabled; password, confirm and submit disabled
-   *
-   * password: (signup only)
-   * email and password field enabled; confirm and submit disabled
-   *
-   * true: all enabled
-   *
-   * false: all disabled
-   */
   enabled?: boolean
   onCancel?: (event: MouseEvent) => void
   onChange?: (value: string, target: HTMLElement) => void

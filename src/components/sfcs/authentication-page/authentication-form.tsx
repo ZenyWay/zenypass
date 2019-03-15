@@ -15,7 +15,7 @@
  */
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
-import { RecordField as PassiveRecordField } from '../record-field'
+import { RecordField } from '../record-field'
 import { DropdownItemSpec } from '../../dropdown'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
@@ -50,7 +50,7 @@ export type AuthenticationFormError =
   | 'email'
   | 'password'
   | 'credentials'
-  | 'all'
+  | 'confirm'
   | 'submit'
 
 export type AuthenticationFormField = 'email' | 'password' | 'confirm' | 'token'
@@ -72,9 +72,8 @@ const ERROR_TO_FIELDS: {
     email: true,
     password: true
   },
-  all: {
-    email: true,
-    password: true
+  confirm: {
+    confirm: true
   },
   submit: {}
 }
@@ -159,7 +158,7 @@ export function AuthenticationForm ({
           </p>
         </Fragment>
       )}
-      <PassiveRecordField
+      <RecordField
         type='email'
         id='email'
         className='mb-2'
@@ -179,7 +178,7 @@ export function AuthenticationForm ({
         disabled={!enabled}
         innerRef={onEmailInputRef}
       />
-      <PassiveRecordField
+      <RecordField
         type={cleartext ? 'text' : 'password'}
         id='password'
         className='mb-2'
@@ -199,7 +198,7 @@ export function AuthenticationForm ({
         innerRef={onPasswordInputRef}
       />
       {type === 'signin' ? null : authorize ? (
-        <PassiveRecordField
+        <RecordField
           type='text'
           id='token'
           className='mb-2'
@@ -220,7 +219,7 @@ export function AuthenticationForm ({
           innerRef={onTokenInputRef}
         />
       ) : (
-        <PassiveRecordField
+        <RecordField
           type={cleartext ? 'text' : 'password'}
           id='confirm'
           className='mb-2'

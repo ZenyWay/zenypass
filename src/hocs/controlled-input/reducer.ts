@@ -16,7 +16,7 @@
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
-import { always, exclude, forType, mapPayload, pluck } from 'utils'
+import { always, omit, forType, mapPayload, pluck } from 'utils'
 
 export enum ControlledInputFsmState {
   Pristine = 'PRISTINE',
@@ -48,7 +48,7 @@ export default compose.into(0)(
     compose.into(0)(
       into('props')(
         mapPayload(
-          exclude(
+          omit(
             'debounce',
             'blurOnEnterKey',
             'innerRef',

@@ -141,7 +141,7 @@ export function controlledInput<P extends InputProps> (
     redux(
       reducer,
       applyHandlerOnEvent(
-        isChangeTriggerEventOrControlledInputBlur,
+        isDirtyAndChangeTriggerEventOrControlledInputBlur,
         'onChange',
         ({ value, input }) => [value, input]
       ),
@@ -175,13 +175,14 @@ export function controlledInput<P extends InputProps> (
 
 const CHANGE_TRIGGER_EVENTS = ['DEBOUNCE', 'CLEAR', 'ESCAPE_KEY', 'ENTER_KEY']
 
-function isChangeTriggerEventOrControlledInputBlur (
+function isDirtyAndChangeTriggerEventOrControlledInputBlur (
   state: ControlledInputState,
   event: StandardAction<FocusEvent>
 ): boolean {
   return (
-    CHANGE_TRIGGER_EVENTS.indexOf(event.type) >= 0 ||
-    isControlledInputBlur(state, event)
+    state.props.value !== state.value &&
+    (CHANGE_TRIGGER_EVENTS.indexOf(event.type) >= 0 ||
+      isControlledInputBlur(state, event))
   )
 }
 
