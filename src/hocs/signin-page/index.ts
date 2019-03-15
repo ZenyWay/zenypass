@@ -55,12 +55,6 @@ export type SigninPageError = 'email' | 'password' | 'credentials' | 'submit'
 
 export type SigninInputs = 'email' | 'password'
 
-export interface DropdownItemSpec {
-  label?: string
-  icon?: string[] | string
-  [key: string]: unknown
-}
-
 export interface SigninPageSFCHandlerProps {
   onCancel?: (event?: MouseEvent) => void
   onChange?: (value: string, target?: HTMLElement) => void

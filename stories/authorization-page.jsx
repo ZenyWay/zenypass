@@ -17,7 +17,7 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { SigninPage } from 'components'
+import { AuthorizationPage } from 'components'
 import { action } from '@storybook/addon-actions'
 import withL10n from 'zenyway-storybook-addon-l10n'
 import { LANG_MENU } from './helpers/consts'
@@ -27,7 +27,7 @@ delete locales[0].label // remove label of dropdown toggle
 
 const attrs = {
   locales: LANG_MENU,
-  onAuthenticated: action('AUTHENTICATED'),
+  onAuthorized: action('AUTHORIZED'),
   onEmailChange: action('EMAIL_CHANGE'),
   onError: action('ERROR'),
   onSelectLocale: action('SELECT_LOCALE'),
@@ -46,15 +46,15 @@ const emails = ['jane.doe@example.com', 'rob@hvsc.org']
     label: 'Enter another email'
   })
 
-storiesOf('SigninPage', module)
+storiesOf('AuthorizationPage', module)
   .addDecorator(withL10n({ locales: ['fr', 'en'] }))
   .add('invalid-email', () => ({ locale }) => (
-    <SigninPage
+    <AuthorizationPage
       locale={locale}
       email={emails[0].label.split('@')[0]}
       {...attrs}
     />
   ))
   .add('valid-email', () => ({ locale }) => (
-    <SigninPage locale={locale} email={emails[0].label} {...attrs} />
+    <AuthorizationPage locale={locale} email={emails[0].label} {...attrs} />
   ))

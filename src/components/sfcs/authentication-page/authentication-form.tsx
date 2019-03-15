@@ -80,6 +80,7 @@ const ERROR_TO_FIELDS: {
 
 const ERRORS = {
   email: {
+    [AuthenticationPageType.Authorize]: 'Please enter a valid email address',
     [AuthenticationPageType.Signup]: 'Please enter a valid email address',
     [AuthenticationPageType.Signin]: 'Please enter a valid email address'
   },

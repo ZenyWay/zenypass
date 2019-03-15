@@ -42,6 +42,7 @@ export {
   AuthenticationPage as AuthenticationPageSFC,
   AuthenticationPageProps as AuthenticationPageSFCProps
 } from './sfcs/authentication-page'
+export { AuthorizationPage, AuthorizationPageProps } from './authorization-page'
 export {
   AuthorizedAgentCard,
   AuthorizedAgentCardProps

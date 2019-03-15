@@ -48,16 +48,13 @@ const emails = ['jane.doe@example.com', 'rob@hvsc.org']
 
 storiesOf('SignupPage', module)
   .addDecorator(withL10n({ locales: ['fr', 'en'] }))
-  .add('signup', () => ({ locale }) => (
-    <SignupPage locale={locale} {...attrs} />
-  ))
-  .add('signup-invalid-email', () => ({ locale }) => (
+  .add('invalid-email', () => ({ locale }) => (
     <SignupPage
       locale={locale}
       email={emails[0].label.split('@')[0]}
       {...attrs}
     />
   ))
-  .add('signup-valid-email', () => ({ locale }) => (
+  .add('valid-email', () => ({ locale }) => (
     <SignupPage locale={locale} email={emails[0].label} {...attrs} />
   ))

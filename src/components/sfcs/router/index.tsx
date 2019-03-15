@@ -15,6 +15,7 @@
  */
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
+import { AuthorizationPage } from '../../authorization-page'
 import { HomePage, MenuSpecs, DropdownItemSpec } from '../../home-page'
 import { SigninPage } from '../../signin-page'
 import { SignupPage } from '../../signup-page'
@@ -110,6 +111,18 @@ function CoreRouter ({
         />
       )
     case '/authorize':
+      return (
+        <AuthorizationPage
+          locale={locale}
+          locales={menu as DropdownItemSpec[]}
+          email={email}
+          onEmailChange={onEmailChange}
+          onError={onError}
+          onSignedUp={onSignedUp}
+          onSelectLocale={onSelectMenuItem}
+          onTogglePage={onGotoSignin}
+        />
+      )
     case '/signup':
       return (
         <SignupPage

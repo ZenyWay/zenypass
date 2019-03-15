@@ -28,6 +28,7 @@ export {
   authenticationModal,
   AuthenticationModalProps
 } from './authentication-modal'
+export { authorizationPage, AuthorizationPageProps } from './authorization-page'
 export { connectionModal, ConnectionModalProps } from './connection-modal'
 export { controlledInput, ControlledInputProps } from './controlled-input'
 export { copyButton, CopyButtonProps } from './copy-button'

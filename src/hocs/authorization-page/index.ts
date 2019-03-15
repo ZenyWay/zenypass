@@ -14,8 +14,13 @@
  * Limitations under the License.
  */
 
-import { reducer, ValidityFsm, SignupFsm, SignupPageHocProps } from './reducer'
-import { serviceSignupOnSubmitFromSubmittable } from './effects'
+import {
+  reducer,
+  ValidityFsm,
+  AuthorizationFsm,
+  AuthorizationPageHocProps
+} from './reducer'
+import {} from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -39,33 +44,32 @@ import { tap, distinctUntilChanged } from 'rxjs/operators'
 import { isString } from 'util'
 const log = label => console.log.bind(console, label)
 
-export type SignupPageProps<P extends SignupPageSFCProps> = SignupPageHocProps &
-  Rest<P, SignupPageSFCProps>
+export type AuthorizationPageProps<
+  P extends AuthorizationPageSFCProps
+> = AuthorizationPageHocProps & Rest<P, AuthorizationPageSFCProps>
 
-export interface SignupPageSFCProps extends SignupPageSFCHandlerProps {
+export interface AuthorizationPageSFCProps
+  extends AuthorizationPageSFCHandlerProps {
   // emails?: DropdownItemSpec[]
   email?: string
   password?: string
-  confirm?: string
-  terms?: boolean
-  news?: boolean
+  token?: string
   enabled?: boolean
-  consents?: boolean
   pending?: boolean
   retry?: boolean
-  error?: SignupPageError | false | unknown
+  error?: AuthorizationPageError | false | unknown
 }
 
-export type SignupPageError =
+export type AuthorizationPageError =
   | 'email'
   | 'password'
   | 'credentials'
-  | 'confirm'
+  | 'token'
   | 'submit'
 
-export type SignupInputs = 'email' | 'password'
+export type AuthorizationInputs = 'email' | 'password'
 
-export interface SignupPageSFCHandlerProps {
+export interface AuthorizationPageSFCHandlerProps {
   onCancel?: (event?: MouseEvent) => void
   onChange?: (value: string, target?: HTMLElement) => void
   // onSelectEmail?: (item?: HTMLElement) => void
@@ -74,63 +78,61 @@ export interface SignupPageSFCHandlerProps {
   onTogglePage?: (event?: MouseEvent) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
-  onConfirmInputRef?: (target: HTMLElement) => void
+  onTokenInputRef?: (target: HTMLElement) => void
 }
 
-interface SignupPageState extends SignupPageHocProps {
+interface AuthorizationPageState extends AuthorizationPageHocProps {
   attrs: Pick<
-    SignupPageProps<SignupPageSFCProps>,
-    Exclude<keyof SignupPageProps<SignupPageSFCProps>, keyof SignupPageHocProps>
+    AuthorizationPageProps<AuthorizationPageSFCProps>,
+    Exclude<
+      keyof AuthorizationPageProps<AuthorizationPageSFCProps>,
+      keyof AuthorizationPageHocProps
+    >
   >
   email?: string
   password?: string
-  confirm?: string
-  news?: boolean
+  token?: string
   valid: ValidityFsm
-  signup: SignupFsm
-  inputs?: { [key in SignupInputs]: HTMLElement }
+  authorization: AuthorizationFsm
+  inputs?: { [key in AuthorizationInputs]: HTMLElement }
 }
 
 const STATE_TO_ERROR: Partial<
   {
-    [state in SignupFsm]: Partial<
+    [state in AuthorizationFsm]: Partial<
       {
         [state in ValidityFsm]:
-          | SignupPageError
-          | ((state?: SignupPageState) => SignupPageError | '')
+          | AuthorizationPageError
+          | ((state?: AuthorizationPageState) => AuthorizationPageError | '')
       }
     >
   }
 > = {
-  [SignupFsm.Idle]: {
+  [AuthorizationFsm.Idle]: {
     [ValidityFsm.Invalid]: ({ email, password }) =>
       (email && password && 'credentials') ||
       (email && 'email') ||
       (password && 'password'),
     [ValidityFsm.InvalidEmail]: ({ email }) => email && 'email',
     [ValidityFsm.InvalidPassword]: ({ password }) => password && 'password',
-    [ValidityFsm.Tbc]: ({ confirm }) => confirm && 'confirm'
+    [ValidityFsm.InvalidToken]: ({ token }) => token && 'token'
   },
-  [SignupFsm.Error]: {
-    [ValidityFsm.Tbc]: 'submit'
+  [AuthorizationFsm.Error]: {
+    [ValidityFsm.InvalidToken]: 'submit'
   }
 }
 
 function mapStateToProps (
-  state: SignupPageState
-): Rest<SignupPageSFCProps, SignupPageSFCHandlerProps> {
-  const { attrs, valid, signup, email, password, confirm, news } = state
-  const error = get(STATE_TO_ERROR, signup, valid)
-  const terms = valid === ValidityFsm.Submittable
+  state: AuthorizationPageState
+): Rest<AuthorizationPageSFCProps, AuthorizationPageSFCHandlerProps> {
+  const { attrs, valid, authorization, email, password, token } = state
+  const error = get(STATE_TO_ERROR, authorization, valid)
   return {
     ...attrs,
     email,
     password,
-    confirm,
-    news,
-    terms,
-    consents: terms || valid === ValidityFsm.Consents,
-    pending: signup === SignupFsm.Pending,
+    token,
+    pending: authorization === AuthorizationFsm.Pending,
     enabled:
       !isInvalidEmailState(valid) && valid !== ValidityFsm.InvalidPassword,
     error: !error || isString(error) ? error : error(state)
@@ -149,14 +151,12 @@ function get (obj: any, ...keys: string[]): any {
 const CHANGE_ACTIONS = createActionFactories({
   email: 'CHANGE_EMAIL',
   password: 'CHANGE_PASSWORD',
-  confirm: 'CHANGE_CONFIRM',
-  news: 'TOGGLE_NEWS',
-  terms: 'TOGGLE_TERMS'
+  token: 'CHANGE_TOKEN'
 })
 
 const mapDispatchToProps: (
   dispatch: (event: any) => void
-) => SignupPageSFCHandlerProps = createActionDispatchers({
+) => AuthorizationPageSFCHandlerProps = createActionDispatchers({
   onCancel: 'CANCEL',
   onChange: (value: string, { dataset: { id } }: HTMLElement) =>
     CHANGE_ACTIONS[id](value),
@@ -167,7 +167,7 @@ const mapDispatchToProps: (
   onTogglePage: 'TOGGLE_PAGE',
   onEmailInputRef: ['INPUT_REF', inputRef('email')],
   onPasswordInputRef: ['INPUT_REF', inputRef('password')],
-  onConfirmInputRef: ['INPUT_REF', inputRef('confirm')]
+  onTokenInputRef: ['INPUT_REF', inputRef('token')]
 })
 
 function inputRef (field: string) {
@@ -176,12 +176,12 @@ function inputRef (field: string) {
   }
 }
 
-export function signupPage<P extends SignupPageSFCProps> (
-  SignupPageSFC: SFC<P>
-): ComponentConstructor<SignupPageProps<P>> {
+export function authorizationPage<P extends AuthorizationPageSFCProps> (
+  AuthorizationPageSFC: SFC<P>
+): ComponentConstructor<AuthorizationPageProps<P>> {
   return componentFromEvents(
-    SignupPageSFC,
-    () => tap(log('signup-page:event:')),
+    AuthorizationPageSFC,
+    () => tap(log('authorization-page:event:')),
     redux(
       reducer,
       tapOnEvent(
@@ -197,19 +197,18 @@ export function signupPage<P extends SignupPageSFCProps> (
         'UNAUTHORIZED',
         compose.into(0)(focus, pluck('1', 'inputs', 'password'))
       ),
-      serviceSignupOnSubmitFromSubmittable,
       callHandlerOnEvent('TOGGLE_PAGE', 'onTogglePage'),
       callHandlerOnEvent('SIGNED_UP', 'onSignedUp'),
       callHandlerOnEvent('CHANGE_EMAIL', 'onEmailChange'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
-    () => tap(log('signup-page:state:')),
-    connect<SignupPageState, SignupPageSFCProps>(
+    () => tap(log('authorization-page:state:')),
+    connect<AuthorizationPageState, AuthorizationPageSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
     () => distinctUntilChanged(shallowEqual),
-    () => tap(log('signup-page:view-props:'))
+    () => tap(log('authorization-page:view-props:'))
   )
 }
 
