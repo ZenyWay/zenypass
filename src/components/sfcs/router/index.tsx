@@ -40,13 +40,14 @@ export interface CoreRouterProps {
   error?: any
   onboarding?: boolean
   children?: any
-  onAuthenticated?: (session?: string) => void
   onAuthenticationRequest?: (res$: Observer<string>) => void
+  onAuthorize?: () => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
-  onGotoSignin?: () => void
-  onGotoSignup?: () => void
+  onSignedIn?: (session?: string) => void
   onSignedUp?: () => void
+  onSignin?: () => void
+  onSignup?: () => void
   onSelectMenuItem?: (target: HTMLElement) => void
   onUpdateSetting?: (key?: string, value?: any) => void
 }
@@ -85,14 +86,16 @@ function CoreRouter ({
   onboarding,
   error,
   children = null,
-  onAuthenticated,
   onAuthenticationRequest,
+  onAuthorize,
   onEmailChange,
   onError,
-  onGotoSignin,
-  onGotoSignup,
+  onSignedIn,
   onSignedUp,
+  onSignin,
+  onSignup,
   onSelectMenuItem,
+  onTogglePage,
   onUpdateSetting,
   attrs
 }: CoreRouterProps & { [prop: string]: unknown }) {
@@ -120,7 +123,8 @@ function CoreRouter ({
           onError={onError}
           onSignedUp={onSignedUp}
           onSelectLocale={onSelectMenuItem}
-          onTogglePage={onGotoSignin}
+          onSignin={onSignin}
+          onSignup={onSignup}
         />
       )
     case '/signup':
@@ -129,11 +133,12 @@ function CoreRouter ({
           locale={locale}
           locales={menu as DropdownItemSpec[]}
           email={email}
+          onAuthorize={onAuthorize}
           onEmailChange={onEmailChange}
           onError={onError}
           onSignedUp={onSignedUp}
           onSelectLocale={onSelectMenuItem}
-          onTogglePage={onGotoSignin}
+          onSignin={onSignin}
         />
       )
     case '/signin':
@@ -142,11 +147,12 @@ function CoreRouter ({
           locale={locale}
           locales={menu as DropdownItemSpec[]}
           email={email}
+          onAuthorize={onAuthorize}
           onEmailChange={onEmailChange}
           onError={onError}
           onSelectLocale={onSelectMenuItem}
-          onAuthenticated={onAuthenticated}
-          onTogglePage={onGotoSignup}
+          onSignedIn={onSignedIn}
+          onSignup={onSignup}
         />
       )
     case '/fatal':

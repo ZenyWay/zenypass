@@ -118,12 +118,13 @@ const CHANGE_ACTIONS = createActionFactories({
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => SigninPageSFCHandlerProps = createActionDispatchers({
+  onAuthorize: 'AUTHORIZE',
   onCancel: 'CANCEL',
   onChange: (value: string, { dataset: { id } }: HTMLElement) =>
     CHANGE_ACTIONS[id](value),
   // onSelectEmail: 'SELECT_EMAIL',
+  onSignup: 'SIGNUP',
   onSubmit: ['SUBMIT', preventDefault],
-  onTogglePage: 'TOGGLE_PAGE',
   onEmailInputRef: ['INPUT_REF', inputRef('email')],
   onPasswordInputRef: ['INPUT_REF', inputRef('password')]
 })
@@ -156,8 +157,9 @@ export function signinPage<P extends SigninPageSFCProps> (
         compose.into(0)(focus, pluck('1', 'inputs', 'password'))
       ),
       serviceSigninOnSubmitFromValid,
-      callHandlerOnEvent('TOGGLE_PAGE', 'onTogglePage'),
-      callHandlerOnEvent('AUTHENTICATED', 'onAuthenticated'),
+      callHandlerOnEvent('AUTHORIZE', 'onAuthorize'),
+      callHandlerOnEvent('SIGNED_IN', 'onSignedIn'),
+      callHandlerOnEvent('SIGNUP', 'onSignup'),
       callHandlerOnEvent('CHANGE_EMAIL', 'onEmailChange'),
       callHandlerOnEvent('ERROR', 'onError')
     ),

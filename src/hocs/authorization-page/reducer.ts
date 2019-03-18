@@ -33,7 +33,8 @@ import {
 export interface AuthorizationPageHocProps {
   email?: string
   onSignedUp?: () => void
-  onTogglePage?: () => void
+  onSignin?: () => void
+  onSignup?: () => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
 }
@@ -106,7 +107,8 @@ const authorizationFsm: AutomataSpec<AuthorizationFsm> = {
 const SELECTED_PROPS: (keyof AuthorizationPageHocProps)[] = [
   'email',
   'onSignedUp',
-  'onTogglePage',
+  'onSignin',
+  'onSignup',
   'onEmailChange',
   'onError'
 ]

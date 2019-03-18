@@ -17,11 +17,7 @@
 import { RouteAutomataState } from './reducer'
 import zenypass from 'zenypass-service'
 import { LOCALES } from './options'
-import {
-  StandardAction,
-  createActionFactories,
-  createActionFactory
-} from 'basic-fsa-factories'
+import { createActionFactories, createActionFactory } from 'basic-fsa-factories'
 import {
   catchError,
   distinctUntilChanged,
@@ -34,7 +30,7 @@ import {
   tap
 } from 'rxjs/operators'
 import { Observable, fromEvent, merge, of as observableOf } from 'rxjs'
-import { always, ERROR_STATUS } from 'utils'
+import { always, isString, ERROR_STATUS } from 'utils'
 // const log = (label: string) => console.log.bind(console, label)
 
 const QS_PARAM_VALIDATORS = {
@@ -44,10 +40,19 @@ const QS_PARAM_VALIDATORS = {
   onboarding: isValidBoolean
 }
 
-const fatal = createActionFactory('FATAL')
+const fatalError = createActionFactory('FATAL_ERROR')
 const unauthorized = createActionFactory('UNAUTHORIZED')
 const signup = createActionFactory('SIGNUP')
 const signin = createActionFactory('SIGNIN')
+const paths = createActionFactories({
+  '/': 'HOMEPAGE',
+  '/authorize': 'AUTHORIZE',
+  '/devices': 'DEVICES',
+  '/fatal': 'FATAL',
+  '/signin': 'SIGNIN',
+  '/signup': 'SIGNUP',
+  '/storage': 'STORAGE'
+})
 
 const QS_PARAM_ACTIONS = createActionFactories({
   email: 'EMAIL',
@@ -58,16 +63,16 @@ const QS_PARAM_ACTIONS = createActionFactories({
 
 const signedOut = createActionFactory('SIGNED_OUT')
 
-export function signoutOnPendingSignout (_: any, state$: Observable<any>) {
+export function signoutOnSigningOut (_: any, state$: Observable<any>) {
   return state$.pipe(
     distinctUntilKeyChanged('path'),
-    filter(({ path }) => path === RouteAutomataState.PendingSignout),
+    filter(({ path }) => path === RouteAutomataState.SigningOut),
     pluck('session'),
     tap(signout),
     map(() => signedOut()),
     catchError(err =>
       observableOf(
-        err !== ERROR_STATUS.UNAUTHORIZED ? fatal(err) : unauthorized()
+        err !== ERROR_STATUS.UNAUTHORIZED ? fatalError(err) : unauthorized()
       )
     )
   )
@@ -82,8 +87,12 @@ function signout (username: string): Promise<void> {
 // support url hash in storybook (iframe in development mode)
 const win = window.top
 
-export function injectQueryParamsFromLocationHash () {
-  const params$ = fromEvent(win, 'hashchange').pipe(
+export function injectPathAndQueryParamsFromLocationHash () {
+  const hash$ = fromEvent(win, 'hashchange').pipe(
+    map(() => win.location.hash.slice(1)), // remove leading hash
+    share()
+  )
+  const params$ = hash$.pipe(
     map(parseQueryParamsFromLocationHash),
     share(),
     startWith(parseQueryParamsFromLocationHash())
@@ -96,11 +105,24 @@ export function injectQueryParamsFromLocationHash () {
       map(value => QS_PARAM_ACTIONS[key](value))
     )
   )
-  return merge(...param$s)
+  const path$ = hash$.pipe(
+    map(parsePathFromLocationHash),
+    distinctUntilChanged(),
+    map(path => paths[path]),
+    filter(Boolean),
+    map(action => action())
+  )
+  return merge(path$, ...param$s)
 }
 
 function isValidBoolean (value: string) {
   return !value || value === 'true' || value === 'false'
+}
+
+export function updateLocationHashPath (update: string) {
+  const path = parsePathFromLocationHash()
+  if (update === path) return
+  updateLocationHash(update)
 }
 
 export function udpateLocationHashQueryParam (key: string, value: any) {
@@ -110,11 +132,32 @@ export function udpateLocationHashQueryParam (key: string, value: any) {
   if (update === param || (!value && !param)) return
   if (update === 'false') params.delete(key)
   else params.set(key, update)
-  win.location.hash = '#?' + params.toString()
+  updateLocationHash(params)
+}
+
+function updateLocationHash (path: string)
+function updateLocationHash (params: URLSearchParams)
+function updateLocationHash (update: string | URLSearchParams) {
+  const isPathUpdate = isString(update)
+  const path = isPathUpdate ? update : parsePathFromLocationHash()
+  const params = (!isPathUpdate
+    ? update
+    : parseQueryParamsFromLocationHash()
+  ).toString()
+  win.location.hash = `#${path}${!params.length ? '' : `?${params.toString()}`}`
+}
+
+function parsePathFromLocationHash () {
+  return parseUrlFromLocationHash().pathname
 }
 
 function parseQueryParamsFromLocationHash () {
-  return new URLSearchParams(win.location.hash.slice(1)) // remove leading hash
+  const { search } = parseUrlFromLocationHash()
+  return new URLSearchParams(search)
+}
+
+function parseUrlFromLocationHash () {
+  return new URL(win.location.hash.slice(1), win.location.origin)
 }
 
 function getSearchParam (params: URLSearchParams, key: string): string {

@@ -36,7 +36,7 @@ import {
   tapOnEvent
 } from 'utils'
 import { tap, distinctUntilChanged } from 'rxjs/operators'
-import { isString } from 'util'
+import { always, isString } from 'utils'
 const log = label => console.log.bind(console, label)
 
 export type SignupPageProps<P extends SignupPageSFCProps> = SignupPageHocProps &
@@ -66,12 +66,13 @@ export type SignupPageError =
 export type SignupInputs = 'email' | 'password'
 
 export interface SignupPageSFCHandlerProps {
+  onAuthorize?: (event?: MouseEvent) => void
   onCancel?: (event?: MouseEvent) => void
   onChange?: (value: string, target?: HTMLElement) => void
   // onSelectEmail?: (item?: HTMLElement) => void
+  onSignin?: (event?: MouseEvent) => void
   onSubmit?: (event?: Event) => void
   onToggleConsent?: (event: Event) => void
-  onTogglePage?: (event?: MouseEvent) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
   onConfirmInputRef?: (target: HTMLElement) => void
@@ -157,14 +158,15 @@ const CHANGE_ACTIONS = createActionFactories({
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => SignupPageSFCHandlerProps = createActionDispatchers({
+  onAuthorize: 'AUTHORIZE',
   onCancel: 'CANCEL',
   onChange: (value: string, { dataset: { id } }: HTMLElement) =>
     CHANGE_ACTIONS[id](value),
   // onSelectEmail: 'SELECT_EMAIL',
+  onSignin: 'SIGNIN',
   onSubmit: ['SUBMIT', preventDefault],
   onToggleConsent: ({ currentTarget }) =>
     CHANGE_ACTIONS[currentTarget.dataset.id](),
-  onTogglePage: 'TOGGLE_PAGE',
   onEmailInputRef: ['INPUT_REF', inputRef('email')],
   onPasswordInputRef: ['INPUT_REF', inputRef('password')],
   onConfirmInputRef: ['INPUT_REF', inputRef('confirm')]
@@ -198,7 +200,8 @@ export function signupPage<P extends SignupPageSFCProps> (
         compose.into(0)(focus, pluck('1', 'inputs', 'password'))
       ),
       serviceSignupOnSubmitFromSubmittable,
-      callHandlerOnEvent('TOGGLE_PAGE', 'onTogglePage'),
+      callHandlerOnEvent('AUTHORIZE', 'onAuthorize'),
+      callHandlerOnEvent('SIGNIN', 'onSignin'),
       callHandlerOnEvent('SIGNED_UP', 'onSignedUp'),
       callHandlerOnEvent('CHANGE_EMAIL', 'onEmailChange'),
       callHandlerOnEvent('ERROR', 'onError')

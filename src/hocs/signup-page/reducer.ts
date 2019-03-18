@@ -33,10 +33,11 @@ import {
 
 export interface SignupPageHocProps {
   email?: string
-  onSignedUp?: () => void
-  onTogglePage?: () => void
+  onAuthorize?: () => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
+  onSignedUp?: () => void
+  onSignin?: () => void
 }
 
 export enum ValidityFsm {
@@ -126,10 +127,11 @@ const signupFsm: AutomataSpec<SignupFsm> = {
 
 const SELECTED_PROPS: (keyof SignupPageHocProps)[] = [
   'email',
-  'onSignedUp',
-  'onTogglePage',
+  'onAuthorize',
   'onEmailChange',
-  'onError'
+  'onError',
+  'onSignedUp',
+  'onSignin'
 ]
 
 export const reducer = compose.into(0)(

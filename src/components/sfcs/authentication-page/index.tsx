@@ -49,13 +49,15 @@ export interface AuthenticationPageProps {
   retry?: boolean
   error?: AuthenticationFormError
   enabled?: boolean
+  onAuthorize?: (event: Event) => void
   onCancel?: (event: MouseEvent) => void
   onChange?: (value: string, target: HTMLElement) => void
   onSelectEmail?: (item?: HTMLElement) => void
   onSelectLocale?: (item?: HTMLElement) => void
   onSubmit?: (event: Event) => void
   onToggleConsent?: (event: Event) => void
-  onTogglePage?: (event: Event) => void
+  onSignin?: (event: Event) => void
+  onSignup?: (event: Event) => void
   onConfirmInputRef?: (target: HTMLElement) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
@@ -94,13 +96,15 @@ export function AuthenticationPage ({
   enabled,
   retry,
   error,
+  onAuthorize,
   onCancel,
   onChange,
   onSelectLocale,
   onSelectEmail,
+  onSignin,
+  onSignup,
   onSubmit,
   onToggleConsent,
-  onTogglePage,
   onEmailInputRef,
   onPasswordInputRef,
   onConfirmInputRef,
@@ -109,10 +113,6 @@ export function AuthenticationPage ({
 }: AuthenticationPageProps & UnknownProps) {
   const t = l10ns[locale]
   const title = t(TITLES[type])
-  const isSignup = type === 'signup'
-  const question = t(
-    isSignup ? 'Already have an account' : "You don't have an account"
-  )
   return (
     <Fragment>
       <ConsentsModal
@@ -128,16 +128,16 @@ export function AuthenticationPage ({
         locale={locale}
         title={t('Unrecognized password')}
         confirm={t('Authorize this browser')}
-        cancel={t('Retry')}
+        cancel={t('Try again')}
         expanded={retry}
         onCancel={onCancel}
-        onConfirm={onSubmit}
+        onConfirm={onAuthorize}
       >
         <p>
-          {t('Typo')} ? {t('Try again')}.<br />
-          <br />
-          {t('No typo')} ?{' '}
-          {t('Try to authorize this browser to access your account')}.
+          {t(
+            'Please verify your email address and your password, or if necessary, authorize this browser to access your account'
+          )}
+          .
         </p>
       </InfoModal>
       <section className='container' {...attrs}>
@@ -196,19 +196,109 @@ export function AuthenticationPage ({
             <small>{t('Online-help')}</small>
           </a>
         </Row>
-        <Row className='justify-content-center'>
-          <SplashFooterCard>
-            <CardBody>
-              <p>
-                <small>{question} ?</small>
-              </p>
-              <Button color='info' onClick={onTogglePage} disabled={pending}>
-                {t(isSignup ? 'Login' : 'Create your account')}
-              </Button>
-            </CardBody>
-          </SplashFooterCard>
-        </Row>
+        <TogglePageCards
+          locale={locale}
+          type={type}
+          disabled={pending}
+          onAuthorize={onAuthorize}
+          onSignin={onSignin}
+          onSignup={onSignup}
+        />
       </section>
     </Fragment>
+  )
+}
+
+const TOGGLE_PAGE_CARD_TYPES: AuthenticationPageType[] = [
+  AuthenticationPageType.Authorize,
+  AuthenticationPageType.Signin,
+  AuthenticationPageType.Signup
+]
+
+const TOGGLE_PAGE_CARD_HANDLERS: {
+  [type in AuthenticationPageType]: string
+} = {
+  [AuthenticationPageType.Authorize]: 'onAuthorize',
+  [AuthenticationPageType.Signin]: 'onSignin',
+  [AuthenticationPageType.Signup]: 'onSignup'
+}
+
+interface TogglePageCardsProps {
+  locale: string
+  type?: AuthenticationPageType
+  disabled?: boolean
+  onAuthorize?: (event: Event) => void
+  onSignin?: (event: Event) => void
+  onSignup?: (event: Event) => void
+}
+
+function TogglePageCards ({
+  locale,
+  type,
+  disabled,
+  ...handlers
+}: TogglePageCardsProps) {
+  const cards = []
+  for (const _type of TOGGLE_PAGE_CARD_TYPES) {
+    if (_type !== type) {
+      const card = (
+        <Row className='justify-content-center'>
+          <TogglePageCard
+            locale={locale}
+            type={_type as AuthenticationPageType}
+            disabled={disabled}
+            onClick={handlers[TOGGLE_PAGE_CARD_HANDLERS[_type]]}
+          />
+        </Row>
+      )
+      cards.push(card)
+    }
+  }
+  return <Fragment>{...cards}</Fragment>
+}
+
+interface TogglePageCardProps {
+  locale: string
+  type?: AuthenticationPageType
+  disabled?: boolean
+  onClick?: (event: Event) => void
+}
+
+const TOGGLE_PAGE_CARD_TEXT: {
+  [key in AuthenticationPageType]: { question: string; title: string }
+} = {
+  [AuthenticationPageType.Authorize]: {
+    question: 'This browser is not authorized to access your account',
+    title: 'Authorize this browser'
+  },
+  [AuthenticationPageType.Signin]: {
+    question: 'Already have an account',
+    title: 'Login'
+  },
+  [AuthenticationPageType.Signup]: {
+    question: "You don't have an account",
+    title: 'Create your account'
+  }
+}
+
+function TogglePageCard ({
+  locale,
+  type,
+  disabled,
+  onClick
+}: TogglePageCardProps) {
+  const t = l10ns[locale]
+  const { question, title } = TOGGLE_PAGE_CARD_TEXT[type]
+  return (
+    <SplashFooterCard>
+      <CardBody>
+        <p>
+          <small>{t(question)} ?</small>
+        </p>
+        <Button color='info' onClick={onClick} disabled={disabled}>
+          {t(title)}
+        </Button>
+      </CardBody>
+    </SplashFooterCard>
   )
 }

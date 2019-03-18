@@ -17,8 +17,9 @@
 import reducer, { RouteAutomataState, LinkAutomataState } from './reducer'
 import { actionFromMenuItem, actionFromError } from './dispatchers'
 import {
-  injectQueryParamsFromLocationHash,
-  signoutOnPendingSignout,
+  injectPathAndQueryParamsFromLocationHash,
+  signoutOnSigningOut,
+  updateLocationHashPath,
   udpateLocationHashQueryParam
 } from './effects'
 import MENUS, { DEFAULT_LOCALE } from './options'
@@ -34,7 +35,14 @@ import {
   createActionFactory
 } from 'basic-fsa-factories'
 import compose from 'basic-compose'
-import { MenuSpec, openItemLink, pluck, shallowEqual, tapOnEvent } from 'utils'
+import {
+  MenuSpec,
+  always,
+  openItemLink,
+  pluck,
+  shallowEqual,
+  tapOnEvent
+} from 'utils'
 import { distinctUntilChanged, tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
@@ -53,13 +61,15 @@ export interface RouterSFCProps extends RouterSFCHandlerProps {
 }
 
 export interface RouterSFCHandlerProps {
-  onAuthenticated?: (session?: string) => void
-  onCloseInfo?: (event: MouseEvent) => void
+  onAuthorize?: () => void
+  onAuthorized?: () => void
+  onCloseInfo?: (event?: MouseEvent) => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
-  onGotoSignin?: () => void
-  onGotoSignup?: () => void
+  onSignedIn?: (session?: string) => void
   onSignedUp?: () => void
+  onSignin?: () => void
+  onSignup?: () => void
   onSelectMenuItem?: (target: HTMLElement) => void
   onUpdateSetting?: (key?: string, value?: any) => void
 }
@@ -86,7 +96,7 @@ function mapStateToProps ({
   onboarding,
   error
 }: RouterState): Rest<RouterSFCProps, RouterSFCHandlerProps> {
-  const path = _path.split('?')[0]
+  const path = _path.split(/[;?]/)[0]
   const menu = MENUS[path]
   const lang = locale || DEFAULT_LOCALE
   return {
@@ -102,7 +112,6 @@ function mapStateToProps ({
   }
 }
 
-const updateQueryParam = createActionFactory('UPDATE_QUERY_PARAM')
 const UPDATE_QUERY_PARAM_PAYLOADS = {
   locale: locale => ['lang', locale],
   onboarding: onboarding => ['onboarding', onboarding]
@@ -111,16 +120,20 @@ const UPDATE_QUERY_PARAM_PAYLOADS = {
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => RouterSFCHandlerProps = createActionDispatchers({
-  onAuthenticated: 'AUTHENTICATED',
+  onAuthorize: ['ROUTE', always('/authorize')],
+  onAuthorized: 'AUTHORIZED',
   onCloseInfo: 'CLOSE_INFO',
   onEmailChange: ['UPDATE_QUERY_PARAM', email => ['email', email]],
   onError: actionFromError,
-  onGotoSignin: () => updateQueryParam(['signup', false]),
-  onGotoSignup: () => updateQueryParam(['signup', true]),
+  onSignedIn: 'SIGNED_IN',
   onSignedUp: 'SIGNED_UP',
+  onSignin: ['ROUTE', always('/signin')],
+  onSignup: ['ROUTE', always('/signup')],
   onSelectMenuItem: actionFromMenuItem,
-  onUpdateSetting: (key, val) =>
-    updateQueryParam(UPDATE_QUERY_PARAM_PAYLOADS[key](val))
+  onUpdateSetting: [
+    'UPDATE_QUERY_PARAM',
+    (key, val) => UPDATE_QUERY_PARAM_PAYLOADS[key](val)
+  ]
 })
 
 export function router<P extends RouterSFCProps> (
@@ -131,15 +144,24 @@ export function router<P extends RouterSFCProps> (
     () => tap(log('router:event:')),
     redux(
       reducer,
+      tapOnEvent('AUTHORIZED', () => updateLocationHashPath('/signin')),
+      tapOnEvent('CLOSE', () => updateLocationHashPath('/')),
+      tapOnEvent('DEVICES', () => updateLocationHashPath('/devices')),
+      tapOnEvent('FATAL_ERROR', () => updateLocationHashPath('/fatal')),
+      tapOnEvent('ROUTE', updateLocationHashPath),
+      tapOnEvent('SIGNED_IN', () => updateLocationHashPath('/')),
+      tapOnEvent('SIGNED_OUT', () => updateLocationHashPath('/signin')),
+      tapOnEvent('SIGNED_UP', () => updateLocationHashPath('/signin')),
+      tapOnEvent('STORAGE', () => updateLocationHashPath('/storage')),
       tapOnEvent('UPDATE_QUERY_PARAM', ([key, value]) =>
         udpateLocationHashQueryParam(key, value)
       ),
-      injectQueryParamsFromLocationHash,
+      injectPathAndQueryParamsFromLocationHash,
       tapOnEvent(
         'CLOSE_INFO',
         compose.into(0)(openItemLink, pluck('1', 'link'))
       ),
-      signoutOnPendingSignout
+      signoutOnSigningOut
     ),
     () => tap(log('router:state:')),
     connect<RouterState, RouterSFCProps>(

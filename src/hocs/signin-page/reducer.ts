@@ -31,10 +31,11 @@ import {
 
 export interface SigninPageHocProps {
   email?: string
-  onAuthenticated?: (session?: string) => void
+  onAuthorize?: () => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
-  onTogglePage?: () => void
+  onSignedIn?: (session?: string) => void
+  onSignup?: () => void
 }
 
 export enum ValidityFsm {
@@ -75,41 +76,46 @@ const validityFsm: AutomataSpec<ValidityFsm> = {
     INVALID_PASSWORD: ValidityFsm.EmptyPassword,
     ERROR: [ValidityFsm.EmptyPassword, clearPassword],
     UNAUTHORIZED: [ValidityFsm.EmptyPassword, clearPassword],
+    NOT_FOUND: [ValidityFsm.EmptyPassword, clearPassword],
     AUTHENTICATED: [ValidityFsm.EmptyPassword, clearPassword]
   }
 }
 
 const signinFsm: AutomataSpec<SigninFsm> = {
   [SigninFsm.Idle]: {
-    AUTHENTICATING: SigninFsm.Pending
+    SIGNING_IN: SigninFsm.Pending
   },
   [SigninFsm.Pending]: {
     ERROR: SigninFsm.Idle,
     UNAUTHORIZED: SigninFsm.Error,
-    AUTHENTICATED: SigninFsm.Idle
+    NOT_FOUND: SigninFsm.Error,
+    SIGNED_IN: SigninFsm.Idle
   },
   [SigninFsm.Error]: {
-    AUTHENTICATING: SigninFsm.PendingRetry
+    SIGNING_IN: SigninFsm.PendingRetry
   },
   [SigninFsm.PendingRetry]: {
     ERROR: SigninFsm.Idle,
     UNAUTHORIZED: SigninFsm.Alert,
-    AUTHENTICATED: SigninFsm.Idle
+    NOT_FOUND: SigninFsm.Alert,
+    SIGNED_IN: SigninFsm.Idle
   },
   [SigninFsm.Alert]: {
-    CANCEL: SigninFsm.RetryError
+    CANCEL: SigninFsm.RetryError,
+    AUTHORIZE: SigninFsm.Idle
   },
   [SigninFsm.RetryError]: {
-    AUTHENTICATING: SigninFsm.PendingRetry
+    SIGNING_IN: SigninFsm.PendingRetry
   }
 }
 
 const SELECTED_PROPS: (keyof SigninPageHocProps)[] = [
   'email',
-  'onAuthenticated',
+  'onAuthorize',
   'onEmailChange',
   'onError',
-  'onTogglePage'
+  'onSignedIn',
+  'onSignup'
 ]
 
 export const reducer = compose.into(0)(

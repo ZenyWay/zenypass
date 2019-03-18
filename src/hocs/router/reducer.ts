@@ -20,11 +20,12 @@ import compose from 'basic-compose'
 import { always, forType, mapPayload, pluck } from 'utils'
 
 export enum RouteAutomataState {
-  Homepage = '/',
-  PendingSignout = '/?pending=signout',
+  Authorize = '/authorize',
   Signup = '/signup',
   Signin = '/signin',
-  Authorize = '/authorize',
+  SignedIn = '/signin;signed-in',
+  SigningOut = '/;signing-out',
+  Homepage = '/',
   Devices = '/devices',
   Storage = '/storage',
   Fatal = '/fatal'
@@ -40,44 +41,54 @@ const mapPayloadIntoEmail = into('email')(mapPayload())
 const clearSession = into('session')(always())
 
 const routeAutomata: AutomataSpec<RouteAutomataState> = {
+  [RouteAutomataState.Authorize]: {
+    // AUTHORIZED: // TODO add state for Signin from Authorized
+    SIGNIN: RouteAutomataState.Signin,
+    SIGNUP: RouteAutomataState.Signup,
+    EMAIL: mapPayloadIntoEmail,
+    FATAL: RouteAutomataState.Fatal
+  },
+  [RouteAutomataState.Signup]: {
+    // SIGNED_UP: // TODO add state for Signin from Signup
+    AUTHORIZE: RouteAutomataState.Authorize,
+    SIGNIN: RouteAutomataState.Signin,
+    EMAIL: mapPayloadIntoEmail,
+    FATAL: RouteAutomataState.Fatal
+  },
+  [RouteAutomataState.Signin]: {
+    SIGNED_IN: [RouteAutomataState.SignedIn, into('session')(mapPayload())],
+    AUTHORIZE: RouteAutomataState.Authorize,
+    SIGNUP: RouteAutomataState.Signup,
+    EMAIL: mapPayloadIntoEmail,
+    FATAL: RouteAutomataState.Fatal
+  },
+  [RouteAutomataState.SigningOut]: {
+    SIGNED_OUT: [RouteAutomataState.Signin, clearSession],
+    // UNAUTHORIZED: RouteAutomataState.Signin,
+    FATAL: RouteAutomataState.Fatal
+  },
+  [RouteAutomataState.SignedIn]: {
+    EMAIL: RouteAutomataState.SigningOut,
+    FATAL: RouteAutomataState.Fatal,
+    HOMEPAGE: RouteAutomataState.Homepage
+  },
   [RouteAutomataState.Homepage]: {
     // TODO remove comments when corresponding pages are available
     // DEVICES: '/devices',
     // STORAGE: '/storage',
-    EMAIL: RouteAutomataState.PendingSignout,
-    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError],
-    LOGOUT: RouteAutomataState.PendingSignout
-  },
-  [RouteAutomataState.PendingSignout]: {
-    UNAUTHORIZED: RouteAutomataState.Signin,
-    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError],
-    SIGNED_OUT: [RouteAutomataState.Signin, clearSession]
-  },
-  [RouteAutomataState.Signup]: {
-    SIGNED_UP: RouteAutomataState.Signin, // TODO add state for Signin from Signup
-    SIGNIN: RouteAutomataState.Signin,
-    EMAIL: mapPayloadIntoEmail,
-    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
-  },
-  [RouteAutomataState.Signin]: {
-    AUTHORIZE: RouteAutomataState.Authorize,
-    SIGNUP: RouteAutomataState.Signup,
-    EMAIL: mapPayloadIntoEmail,
-    AUTHENTICATED: [RouteAutomataState.Homepage, into('session')(mapPayload())],
-    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
-  },
-  [RouteAutomataState.Authorize]: {
-    SIGNIN: RouteAutomataState.Signin,
-    EMAIL: mapPayloadIntoEmail,
-    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
+    EMAIL: RouteAutomataState.SigningOut,
+    FATAL: RouteAutomataState.Fatal,
+    LOGOUT: RouteAutomataState.SigningOut
   },
   [RouteAutomataState.Devices]: {
-    CLOSE: RouteAutomataState.Homepage,
-    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
+    EMAIL: RouteAutomataState.SigningOut,
+    HOMEPAGE: RouteAutomataState.Homepage,
+    FATAL: RouteAutomataState.Fatal
   },
   [RouteAutomataState.Storage]: {
-    CLOSE: RouteAutomataState.Homepage,
-    FATAL: [RouteAutomataState.Fatal, mapPayloadIntoError]
+    EMAIL: RouteAutomataState.SigningOut,
+    HOMEPAGE: RouteAutomataState.Homepage,
+    FATAL: RouteAutomataState.Fatal
   },
   [RouteAutomataState.Fatal]: {
     // DEAD-END
@@ -96,6 +107,7 @@ const linkAutomata: AutomataSpec<LinkAutomataState> = {
 export default compose.into(0)(
   createAutomataReducer(routeAutomata, RouteAutomataState.Signin, 'path'),
   createAutomataReducer(linkAutomata, LinkAutomataState.Idle, 'info'),
+  forType('FATAL_ERROR')(into('error')(mapPayload())),
   forType('ONBOARDING')(into('onboarding')(mapPayload())),
   forType('LOCALE')(into('locale')(mapPayload())),
   forType('PROPS')(into('props')(mapPayload()))

@@ -31,9 +31,10 @@ import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
 const zenypass$ = observableFrom(zenypass)
 
-const authenticating = createActionFactory<void>('AUTHENTICATING')
-const authenticated = createActionFactory<void>('AUTHENTICATED')
+const signingIn = createActionFactory<void>('SIGNING_IN')
+const signedIn = createActionFactory<void>('SIGNED_IN')
 const unauthorized = createActionFactory<void>('UNAUTHORIZED')
+const notFound = createActionFactory<void>('NOT_FOUND')
 const error = createActionFactory<any>('ERROR')
 
 export function serviceSigninOnSubmitFromValid (
@@ -45,16 +46,18 @@ export function serviceSigninOnSubmitFromValid (
     switchMap(({ email, password }) =>
       zenypass$.pipe(
         switchMap(({ signin }) => signin(email, password)),
-        map(() => authenticated(email)),
-        catchError(err => observableOf(unauthorizedOrError(err))),
-        startWith(authenticating())
+        map(() => signedIn(email)),
+        catchError(err => observableOf(unauthorizedNotFoundOrError(err))),
+        startWith(signingIn())
       )
     )
   )
 }
 
-function unauthorizedOrError (err: any) {
+function unauthorizedNotFoundOrError (err: any) {
   return err && err.status !== ERROR_STATUS.UNAUTHORIZED
-    ? error(err)
+    ? err && err.status !== ERROR_STATUS.NOT_FOUND
+      ? error(err)
+      : notFound()
     : unauthorized()
 }

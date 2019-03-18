@@ -161,10 +161,11 @@ const mapDispatchToProps: (
   onChange: (value: string, { dataset: { id } }: HTMLElement) =>
     CHANGE_ACTIONS[id](value),
   // onSelectEmail: 'SELECT_EMAIL',
+  onSignin: 'SIGNIN',
+  onSignup: 'SIGNUP',
   onSubmit: ['SUBMIT', preventDefault],
   onToggleConsent: ({ currentTarget }) =>
     CHANGE_ACTIONS[currentTarget.dataset.id](),
-  onTogglePage: 'TOGGLE_PAGE',
   onEmailInputRef: ['INPUT_REF', inputRef('email')],
   onPasswordInputRef: ['INPUT_REF', inputRef('password')],
   onTokenInputRef: ['INPUT_REF', inputRef('token')]
@@ -197,8 +198,9 @@ export function authorizationPage<P extends AuthorizationPageSFCProps> (
         'UNAUTHORIZED',
         compose.into(0)(focus, pluck('1', 'inputs', 'password'))
       ),
-      callHandlerOnEvent('TOGGLE_PAGE', 'onTogglePage'),
       callHandlerOnEvent('SIGNED_UP', 'onSignedUp'),
+      callHandlerOnEvent('SIGNIN', 'onSignin'),
+      callHandlerOnEvent('SIGNUP', 'onSignup'),
       callHandlerOnEvent('CHANGE_EMAIL', 'onEmailChange'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
