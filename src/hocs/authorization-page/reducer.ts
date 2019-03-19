@@ -14,6 +14,7 @@
  * Limitations under the License.
  */
 
+import { isPureModhex } from 'zenypass-modhex'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { createActionFactory } from 'basic-fsa-factories'
 import { into, propCursor } from 'basic-cursors'
@@ -54,7 +55,8 @@ export enum AuthorizationFsm {
 }
 
 const isInvalidPassword = ({ password }) => !password
-const isInvalidToken = ({ token }) => !token // TODO
+const isInvalidToken = ({ token }) =>
+  !token || !isPureModhex(token.split(' ').join(''))
 const isEmailChange = (state, { payload }) =>
   (payload && payload.email) !== (state && state.email)
 const error = createActionFactory<any>('ERROR')
@@ -85,6 +87,11 @@ const validityFsm: AutomataSpec<ValidityFsm> = {
     VALID_TOKEN: ValidityFsm.Submittable
   },
   [ValidityFsm.Submittable]: {
+    INVALID_EMAIL: [ValidityFsm.InvalidEmail, clearToken],
+    INVALID_PASSWORD: ValidityFsm.InvalidPassword,
+    INVALID_TOKEN: ValidityFsm.InvalidToken,
+    VALID_EMAIL: [ValidityFsm.InvalidToken, clearToken],
+    VALID_PASSWORD: ValidityFsm.InvalidToken,
     ERROR: [ValidityFsm.InvalidToken, clearToken],
     SIGNED_UP: [ValidityFsm.InvalidPassword, clearPassword, clearToken]
   }

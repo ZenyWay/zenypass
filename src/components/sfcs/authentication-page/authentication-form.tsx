@@ -51,6 +51,7 @@ export type AuthenticationFormError =
   | 'password'
   | 'credentials'
   | 'confirm'
+  | 'token'
   | 'submit'
 
 export type AuthenticationFormField = 'email' | 'password' | 'confirm' | 'token'
@@ -74,6 +75,9 @@ const ERROR_TO_FIELDS: {
   },
   confirm: {
     confirm: true
+  },
+  token: {
+    token: true
   },
   submit: {}
 }

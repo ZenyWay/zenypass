@@ -80,7 +80,8 @@
     "inferno-create-element": "7.1.7",
     "query-string": "6.2.0",
     "rxjs": "6.4.0",
-    "typestyle": "2.0.1"
+    "typestyle": "2.0.1",
+    "zenypass-modhex": "1.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.2.2",
