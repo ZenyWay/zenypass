@@ -35,13 +35,14 @@ import {
 import compose from 'basic-compose'
 import {
   callHandlerOnEvent,
+  isString,
   pluck,
   preventDefault,
   shallowEqual,
-  tapOnEvent
+  tapOnEvent,
+  tapOnMount
 } from 'utils'
 import { tap, distinctUntilChanged } from 'rxjs/operators'
-import { isString } from 'util'
 const log = label => console.log.bind(console, label)
 
 export type AuthorizationPageProps<
@@ -186,6 +187,7 @@ export function authorizationPage<P extends AuthorizationPageSFCProps> (
     redux(
       reducer,
       serviceAuthorizeOnSubmitFromSubmittable,
+      tapOnMount(() => window.scrollTo(0, 0)),
       tapOnEvent(
         'INPUT_REF',
         compose.into(0)(

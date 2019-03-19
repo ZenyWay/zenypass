@@ -26,7 +26,7 @@ export enum RouteAutomataState {
   SignedIn = '/signin;signed-in',
   SigningOut = '/;signing-out',
   Homepage = '/',
-  Devices = '/devices',
+  Authorizations = '/authorizations',
   Storage = '/storage',
   Fatal = '/fatal'
 }
@@ -74,13 +74,13 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
   },
   [RouteAutomataState.Homepage]: {
     // TODO remove comments when corresponding pages are available
-    // DEVICES: '/devices',
+    // AUTHORIZATIONS: '/authorizations',
     // STORAGE: '/storage',
     EMAIL: RouteAutomataState.SigningOut,
     FATAL: RouteAutomataState.Fatal,
     LOGOUT: RouteAutomataState.SigningOut
   },
-  [RouteAutomataState.Devices]: {
+  [RouteAutomataState.Authorizations]: {
     EMAIL: RouteAutomataState.SigningOut,
     HOMEPAGE: RouteAutomataState.Homepage,
     FATAL: RouteAutomataState.Fatal

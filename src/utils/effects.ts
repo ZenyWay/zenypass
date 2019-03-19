@@ -19,6 +19,7 @@ import { Observable, Observer, Subject, noop } from 'rxjs'
 import {
   distinctUntilChanged,
   filter,
+  first,
   ignoreElements,
   map,
   pluck,
@@ -40,6 +41,16 @@ export type Effect<S = any> = (
   event$: Observable<StandardAction<any>>,
   state$: Observable<S>
 ) => Observable<StandardAction<any>>
+
+export function tapOnMount<S> (fn: (state?: S) => void) {
+  return function (_: any, state$: Observable<any>) {
+    return state$.pipe(
+      first(),
+      tap(fn),
+      ignoreElements()
+    )
+  }
+}
 
 export function tapOnEvent<S = any> (
   type: string | string[] | ((state: S, event: StandardAction<any>) => boolean),

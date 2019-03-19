@@ -21,7 +21,7 @@ import {
 } from 'basic-fsa-factories'
 
 const MENU_ACTIONS = createActionFactories({
-  devices: 'DEVICES',
+  authorizations: 'AUTHORIZATIONS',
   storage: 'STORAGE',
   locale: ['UPDATE_QUERY_PARAM', lang => ['lang', lang]],
   help: 'HELP',

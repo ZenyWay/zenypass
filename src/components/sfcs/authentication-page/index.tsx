@@ -75,7 +75,7 @@ const TITLES: { [key in AuthenticationPageType]: string } = {
 const SUBMIT_ACTIONS: { [key in AuthenticationPageType]: string } = {
   signin: 'Login',
   signup: 'Create your account',
-  authorize: 'Authorize this device'
+  authorize: 'Authorize this browser'
 }
 
 export function AuthenticationPage ({
@@ -210,8 +210,8 @@ export function AuthenticationPage ({
 }
 
 const TOGGLE_PAGE_CARD_TYPES: AuthenticationPageType[] = [
-  AuthenticationPageType.Authorize,
   AuthenticationPageType.Signin,
+  AuthenticationPageType.Authorize,
   AuthenticationPageType.Signup
 ]
 

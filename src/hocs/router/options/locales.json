@@ -1,6 +1,6 @@
 {
   "fr": {
-    "devices": "Appareils",
+    "authorizations": "Autorisations",
     "new-entry": "Ajouter un site",
     "locale": "Langue",
     "fr": "Français",
@@ -13,7 +13,7 @@
     "sign-out": "Déconnexion"
   },
   "en": {
-    "devices": "Devices",
+    "authorizations": "Authorizations",
     "new-entry": "Add a website",
     "locale": "Language",
     "fr": "Français",

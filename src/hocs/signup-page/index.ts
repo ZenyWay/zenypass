@@ -33,10 +33,11 @@ import {
   pluck,
   preventDefault,
   shallowEqual,
-  tapOnEvent
+  tapOnEvent,
+  tapOnMount
 } from 'utils'
 import { tap, distinctUntilChanged } from 'rxjs/operators'
-import { always, isString } from 'utils'
+import { isString } from 'utils'
 const log = label => console.log.bind(console, label)
 
 export type SignupPageProps<P extends SignupPageSFCProps> = SignupPageHocProps &
@@ -186,6 +187,7 @@ export function signupPage<P extends SignupPageSFCProps> (
     () => tap(log('signup-page:event:')),
     redux(
       reducer,
+      tapOnMount(() => window.scrollTo(0, 0)),
       tapOnEvent(
         'INPUT_REF',
         compose.into(0)(

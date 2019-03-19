@@ -146,7 +146,9 @@ export function router<P extends RouterSFCProps> (
       reducer,
       tapOnEvent('AUTHORIZED', () => updateLocationHashPath('/signin')),
       tapOnEvent('CLOSE', () => updateLocationHashPath('/')),
-      tapOnEvent('DEVICES', () => updateLocationHashPath('/devices')),
+      tapOnEvent('AUTHORIZATIONS', () =>
+        updateLocationHashPath('/authorizations')
+      ),
       tapOnEvent('FATAL_ERROR', () => updateLocationHashPath('/fatal')),
       tapOnEvent('ROUTE', updateLocationHashPath),
       tapOnEvent('SIGNED_IN', () => updateLocationHashPath('/')),

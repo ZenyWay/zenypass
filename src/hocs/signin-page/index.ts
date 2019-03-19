@@ -33,7 +33,8 @@ import {
   pluck,
   preventDefault,
   shallowEqual,
-  tapOnEvent
+  tapOnEvent,
+  tapOnMount
 } from 'utils'
 import { tap, distinctUntilChanged } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
@@ -143,6 +144,7 @@ export function signinPage<P extends SigninPageSFCProps> (
     () => tap(log('signin-page:event:')),
     redux(
       reducer,
+      tapOnMount(() => window.scrollTo(0, 0)),
       tapOnEvent(
         'INPUT_REF',
         compose.into(0)(

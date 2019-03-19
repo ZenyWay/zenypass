@@ -47,7 +47,7 @@ const signin = createActionFactory('SIGNIN')
 const paths = createActionFactories({
   '/': 'HOMEPAGE',
   '/authorize': 'AUTHORIZE',
-  '/devices': 'DEVICES',
+  '/authorizations': 'AUTHORIZATIONS',
   '/fatal': 'FATAL',
   '/signin': 'SIGNIN',
   '/signup': 'SIGNUP',

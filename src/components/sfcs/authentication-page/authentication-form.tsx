@@ -105,14 +105,14 @@ const ERRORS = {
 
 const INFO = {
   [AuthenticationPageType.Authorize]: {
-    link: 'authorize-link',
+    link: 'authorize-help-link',
     message:
-      'To authorize access to your ZenyPass account from this browser, login to ZenyPass on a device that already has access, click on "Devices" in the menu, then click on "Add a device" and copy the resulting authorization code into the above field'
+      "To authorize access to your ZenyPass account from this browser, login to ZenyPass on a device that already has access, click on 'Authorizations' in the menu, then click on 'Add an authorization' and copy the resulting authorization code into the above field"
   },
   [AuthenticationPageType.Signup]: {
-    link: 'info-link',
+    link: 'signup-help-link',
     message:
-      "For enhanced security, please choose an exclusive password that you don't use elsewhere, and make sure you don't forget or loose it"
+      "For enhanced security, please choose a password that you don't use elsewhere, and make sure you don't forget or loose it"
   }
 }
 
