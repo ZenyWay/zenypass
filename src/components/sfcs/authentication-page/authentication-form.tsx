@@ -250,7 +250,9 @@ export function AuthenticationForm ({
             .
           </small>
         )}
-        {!info ? null : (
+      </p>
+      {!info ? null : (
+        <p>
           <small>
             {t(info.message)}.<br />
             <a
@@ -262,8 +264,8 @@ export function AuthenticationForm ({
               {t('More information')}...
             </a>
           </small>
-        )}
-      </p>
+        </p>
+      )}
     </form>
   )
 }
