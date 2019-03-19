@@ -20,7 +20,7 @@ import {
   AuthorizationFsm,
   AuthorizationPageHocProps
 } from './reducer'
-import {} from './effects'
+import { serviceAuthorizeOnSubmitFromSubmittable } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -185,6 +185,7 @@ export function authorizationPage<P extends AuthorizationPageSFCProps> (
     () => tap(log('authorization-page:event:')),
     redux(
       reducer,
+      serviceAuthorizeOnSubmitFromSubmittable,
       tapOnEvent(
         'INPUT_REF',
         compose.into(0)(

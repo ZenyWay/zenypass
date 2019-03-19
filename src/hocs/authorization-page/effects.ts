@@ -14,30 +14,40 @@
  * Limitations under the License.
  */
 
+import { ValidityFsm } from './reducer'
 import zenypass from 'zenypass-service'
+import { StandardAction, createActionFactory } from 'basic-fsa-factories'
+import { stateOnEvent, ERROR_STATUS } from 'utils'
 import {
-  StandardAction,
-  createActionFactory,
-  createActionFactories
-} from 'basic-fsa-factories'
-import {
-  isInvalidEmail,
-  isFunction,
-  hasEntry,
-  pluck as select,
-  stateOnEvent,
-  ERROR_STATUS
-} from 'utils'
-import {
-  distinctUntilChanged,
-  distinctUntilKeyChanged,
+  catchError,
   filter,
-  ignoreElements,
   map,
-  pluck,
-  skipWhile,
-  switchMap,
-  tap
+  startWith,
+  switchMap
+  // tap
 } from 'rxjs/operators'
-import { Observable } from 'rxjs'
+import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 // const log = label => console.log.bind(console, label)
+
+const zenypass$ = observableFrom(zenypass)
+
+const authorizing = createActionFactory<void>('AUTHORIZING')
+const authorized = createActionFactory<void>('AUTHORIZED')
+const error = createActionFactory<any>('ERROR')
+
+export function serviceAuthorizeOnSubmitFromSubmittable (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return stateOnEvent(({ type }) => type === 'SUBMIT')(event$, state$).pipe(
+    filter<any>(({ valid }) => valid === ValidityFsm.Submittable),
+    switchMap(({ email, password, token }) =>
+      zenypass$.pipe(
+        switchMap(({ requestAccess }) => requestAccess(email, password, token)),
+        map(() => authorized(email)),
+        catchError(err => observableOf(error(err))),
+        startWith(authorizing())
+      )
+    )
+  )
+}

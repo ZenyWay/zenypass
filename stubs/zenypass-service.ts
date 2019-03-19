@@ -149,10 +149,23 @@ const RECORDS = [
   )
 
 export default Promise.resolve({
+  requestAccess,
   signup,
   signin,
   getService
 })
+
+function requestAccess (
+  username: string,
+  passphrase: string,
+  secret: string
+): Promise<string> {
+  return stall(AUTHENTICATION_DELAY)(() =>
+    username === USERNAME && secret === TOKEN
+      ? observableOf(SESSION_ID)
+      : throwError(FORBIDDEN)
+  ).toPromise()
+}
 
 function signup (username: string, passphrase: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
