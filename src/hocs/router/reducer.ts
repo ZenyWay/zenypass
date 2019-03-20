@@ -25,7 +25,7 @@ export const enum RouteAutomataState {
   Signup = '/signup',
   Signin = '/signin',
   SignedIn = '/signin;signed-in',
-  SigningOut = '/;signing-out',
+  SigningOut = '/signin;signing-out',
   Homepage = '/',
   Authorizations = '/authorizations',
   Storage = '/storage',
@@ -37,7 +37,6 @@ export enum LinkAutomataState {
   Info = 'info'
 }
 
-const mapPayloadIntoEmail = into('email')(mapPayload())
 const clearSession = into('session')(always())
 
 const routeAutomata: AutomataSpec<RouteAutomataState> = {
@@ -45,22 +44,20 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     // AUTHORIZED: // TODO add state for Signin from Authorized
     SIGNIN: RouteAutomataState.Signin,
     SIGNUP: RouteAutomataState.Signup,
-    PATH_NOT_FOUND: RouteAutomataState.SigningOut,
-    HOMEPAGE: RouteAutomataState.SigningOut,
-    AUTHORIZATIONS: RouteAutomataState.SigningOut,
-    STORAGE: RouteAutomataState.SigningOut,
-    EMAIL: mapPayloadIntoEmail,
+    PATH_NOT_FOUND: RouteAutomataState.Signin,
+    HOMEPAGE: RouteAutomataState.Signin,
+    AUTHORIZATIONS: RouteAutomataState.Signin,
+    STORAGE: RouteAutomataState.Signin,
     FATAL: RouteAutomataState.Fatal
   },
   [RouteAutomataState.Signup]: {
     // SIGNED_UP: // TODO add state for Signin from Signup
     AUTHORIZE: RouteAutomataState.Authorize,
     SIGNIN: RouteAutomataState.Signin,
-    PATH_NOT_FOUND: RouteAutomataState.SigningOut,
-    HOMEPAGE: RouteAutomataState.SigningOut,
-    AUTHORIZATIONS: RouteAutomataState.SigningOut,
-    STORAGE: RouteAutomataState.SigningOut,
-    EMAIL: mapPayloadIntoEmail,
+    PATH_NOT_FOUND: RouteAutomataState.Signin,
+    HOMEPAGE: RouteAutomataState.Signin,
+    AUTHORIZATIONS: RouteAutomataState.Signin,
+    STORAGE: RouteAutomataState.Signin,
     FATAL: RouteAutomataState.Fatal
   },
   [RouteAutomataState.Signin]: {
@@ -71,7 +68,6 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     HOMEPAGE: RouteAutomataState.SigningOut,
     AUTHORIZATIONS: RouteAutomataState.SigningOut,
     STORAGE: RouteAutomataState.SigningOut,
-    EMAIL: mapPayloadIntoEmail,
     FATAL: RouteAutomataState.Fatal
   },
   [RouteAutomataState.SigningOut]: {
@@ -138,5 +134,6 @@ export default compose.into(0)(
   forType('FATAL_ERROR')(into('error')(mapPayload())),
   forType('ONBOARDING')(into('onboarding')(mapPayload())),
   forType('LOCALE')(into('locale')(mapPayload())),
+  forType('EMAIL')(into('email')(mapPayload())),
   forType('PROPS')(into('props')(mapPayload()))
 )
