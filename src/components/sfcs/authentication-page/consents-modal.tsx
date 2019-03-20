@@ -147,6 +147,9 @@ export function ConsentsModal ({
         </form>
       </ModalBody>
       <ModalFooter className='bg-light'>
+        <Button outline onClick={onCancel}>
+          {t('Cancel')}
+        </Button>
         <Button
           type='submit'
           form='consents-modal-form'

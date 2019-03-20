@@ -101,11 +101,13 @@ const validityFsm: AutomataSpec<ValidityFsm> = {
   },
   [ValidityFsm.Consents]: {
     TOGGLE_NEWS: toggleNews,
-    TOGGLE_TERMS: ValidityFsm.Submittable
+    TOGGLE_TERMS: ValidityFsm.Submittable,
+    CANCEL: [ValidityFsm.Tbc, clearConfirm]
   },
   [ValidityFsm.Submittable]: {
     TOGGLE_NEWS: toggleNews,
     TOGGLE_TERMS: ValidityFsm.Consents,
+    CANCEL: [ValidityFsm.Tbc, clearConfirm],
     ERROR: [ValidityFsm.Tbc, clearConfirm],
     SIGNED_UP: [ValidityFsm.InvalidPassword, clearPassword, clearConfirm]
   }
