@@ -130,7 +130,11 @@ export function ConsentsModal ({
           >
             <small className='form-text text-muted'>
               {`${t('Also follow ZenyPass on')} `}
-              <a href={t('info-link')} target='_blank' rel='noopener noreferer'>
+              <a
+                href={t('medium-link')}
+                target='_blank'
+                rel='noopener noreferer'
+              >
                 Medium
               </a>
               {` ${t('and')} `}
