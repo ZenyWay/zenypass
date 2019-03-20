@@ -15,7 +15,7 @@
  */
 
 import { StandardAction, createActionFactory } from 'basic-fsa-factories'
-import { Observable, Observer, Subject, noop } from 'rxjs'
+import { Observable, Observer, Subject, defer, noop } from 'rxjs'
 import {
   distinctUntilChanged,
   filter,
@@ -42,13 +42,9 @@ export type Effect<S = any> = (
   state$: Observable<S>
 ) => Observable<StandardAction<any>>
 
-export function tapOnMount<S> (fn: (state?: S) => void) {
-  return function (_: any, state$: Observable<any>) {
-    return state$.pipe(
-      first(),
-      tap(fn),
-      ignoreElements()
-    )
+export function tapOnMount<S> (fn: () => any) {
+  return function () {
+    return defer(fn).pipe(ignoreElements())
   }
 }
 

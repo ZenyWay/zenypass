@@ -17,6 +17,7 @@
 import reducer, { RouteAutomataState, LinkAutomataState } from './reducer'
 import { actionFromMenuItem, actionFromError } from './dispatchers'
 import {
+  Route,
   injectPathAndQueryParamsFromLocationHash,
   signoutOnSigningOut,
   updateLocationHashPath,
@@ -30,10 +31,7 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import {
-  createActionDispatchers,
-  createActionFactory
-} from 'basic-fsa-factories'
+import { createActionDispatchers } from 'basic-fsa-factories'
 import compose from 'basic-compose'
 import {
   MenuSpec,
@@ -41,7 +39,8 @@ import {
   openItemLink,
   pluck,
   shallowEqual,
-  tapOnEvent
+  tapOnEvent,
+  tapOnMount
 } from 'utils'
 import { distinctUntilChanged, tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
@@ -120,15 +119,15 @@ const UPDATE_QUERY_PARAM_PAYLOADS = {
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => RouterSFCHandlerProps = createActionDispatchers({
-  onAuthorize: ['ROUTE', always('/authorize')],
+  onAuthorize: ['ROUTE', always(Route.AUTHORIZE)],
   onAuthorized: 'AUTHORIZED',
   onCloseInfo: 'CLOSE_INFO',
   onEmailChange: ['UPDATE_QUERY_PARAM', email => ['email', email]],
   onError: actionFromError,
   onSignedIn: 'SIGNED_IN',
   onSignedUp: 'SIGNED_UP',
-  onSignin: ['ROUTE', always('/signin')],
-  onSignup: ['ROUTE', always('/signup')],
+  onSignin: ['ROUTE', always(Route.SIGNIN)],
+  onSignup: ['ROUTE', always(Route.SIGNUP)],
   onSelectMenuItem: actionFromMenuItem,
   onUpdateSetting: [
     'UPDATE_QUERY_PARAM',
@@ -144,17 +143,17 @@ export function router<P extends RouterSFCProps> (
     () => tap(log('router:event:')),
     redux(
       reducer,
-      tapOnEvent('AUTHORIZED', () => updateLocationHashPath('/signin')),
-      tapOnEvent('CLOSE', () => updateLocationHashPath('/')),
+      tapOnEvent('AUTHORIZED', () => updateLocationHashPath(Route.SIGNIN)),
+      tapOnEvent('CLOSE', () => updateLocationHashPath(Route.HOMEPAGE)),
       tapOnEvent('AUTHORIZATIONS', () =>
-        updateLocationHashPath('/authorizations')
+        updateLocationHashPath(Route.AUTHORIZATIONS)
       ),
-      tapOnEvent('FATAL_ERROR', () => updateLocationHashPath('/fatal')),
+      tapOnEvent('FATAL_ERROR', () => updateLocationHashPath(Route.FATAL)),
       tapOnEvent('ROUTE', updateLocationHashPath),
-      tapOnEvent('SIGNED_IN', () => updateLocationHashPath('/')),
-      tapOnEvent('SIGNED_OUT', () => updateLocationHashPath('/signin')),
-      tapOnEvent('SIGNED_UP', () => updateLocationHashPath('/signin')),
-      tapOnEvent('STORAGE', () => updateLocationHashPath('/storage')),
+      tapOnEvent('SIGNED_IN', () => updateLocationHashPath(Route.HOMEPAGE)),
+      tapOnEvent('SIGNED_OUT', () => updateLocationHashPath(Route.SIGNIN)),
+      tapOnEvent('SIGNED_UP', () => updateLocationHashPath(Route.SIGNIN)),
+      tapOnEvent('STORAGE', () => updateLocationHashPath(Route.STORAGE)),
       tapOnEvent('UPDATE_QUERY_PARAM', ([key, value]) =>
         udpateLocationHashQueryParam(key, value)
       ),

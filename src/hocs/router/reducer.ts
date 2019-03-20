@@ -18,8 +18,9 @@ import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
 import { always, forType, mapPayload, pluck } from 'utils'
+import { signoutOnSigningOut } from './effects'
 
-export enum RouteAutomataState {
+export const enum RouteAutomataState {
   Authorize = '/authorize',
   Signup = '/signup',
   Signin = '/signin',
@@ -36,7 +37,6 @@ export enum LinkAutomataState {
   Info = 'info'
 }
 
-const mapPayloadIntoError = into('error')(mapPayload())
 const mapPayloadIntoEmail = into('email')(mapPayload())
 const clearSession = into('session')(always())
 
@@ -45,6 +45,10 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     // AUTHORIZED: // TODO add state for Signin from Authorized
     SIGNIN: RouteAutomataState.Signin,
     SIGNUP: RouteAutomataState.Signup,
+    PATH_NOT_FOUND: RouteAutomataState.SigningOut,
+    HOMEPAGE: RouteAutomataState.SigningOut,
+    AUTHORIZATIONS: RouteAutomataState.SigningOut,
+    STORAGE: RouteAutomataState.SigningOut,
     EMAIL: mapPayloadIntoEmail,
     FATAL: RouteAutomataState.Fatal
   },
@@ -52,6 +56,10 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     // SIGNED_UP: // TODO add state for Signin from Signup
     AUTHORIZE: RouteAutomataState.Authorize,
     SIGNIN: RouteAutomataState.Signin,
+    PATH_NOT_FOUND: RouteAutomataState.SigningOut,
+    HOMEPAGE: RouteAutomataState.SigningOut,
+    AUTHORIZATIONS: RouteAutomataState.SigningOut,
+    STORAGE: RouteAutomataState.SigningOut,
     EMAIL: mapPayloadIntoEmail,
     FATAL: RouteAutomataState.Fatal
   },
@@ -59,6 +67,10 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     SIGNED_IN: [RouteAutomataState.SignedIn, into('session')(mapPayload())],
     AUTHORIZE: RouteAutomataState.Authorize,
     SIGNUP: RouteAutomataState.Signup,
+    PATH_NOT_FOUND: RouteAutomataState.SigningOut,
+    HOMEPAGE: RouteAutomataState.SigningOut,
+    AUTHORIZATIONS: RouteAutomataState.SigningOut,
+    STORAGE: RouteAutomataState.SigningOut,
     EMAIL: mapPayloadIntoEmail,
     FATAL: RouteAutomataState.Fatal
   },
@@ -68,6 +80,10 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     FATAL: RouteAutomataState.Fatal
   },
   [RouteAutomataState.SignedIn]: {
+    PATH_NOT_FOUND: RouteAutomataState.SigningOut,
+    AUTHORIZE: RouteAutomataState.SigningOut,
+    SIGNIN: RouteAutomataState.SigningOut,
+    SIGNUP: RouteAutomataState.SigningOut,
     EMAIL: RouteAutomataState.SigningOut,
     FATAL: RouteAutomataState.Fatal,
     HOMEPAGE: RouteAutomataState.Homepage
@@ -76,16 +92,28 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     // TODO remove comments when corresponding pages are available
     // AUTHORIZATIONS: '/authorizations',
     // STORAGE: '/storage',
+    PATH_NOT_FOUND: RouteAutomataState.SigningOut,
+    LOGOUT: RouteAutomataState.SigningOut,
+    AUTHORIZE: RouteAutomataState.SigningOut,
+    SIGNIN: RouteAutomataState.SigningOut,
+    SIGNUP: RouteAutomataState.SigningOut,
     EMAIL: RouteAutomataState.SigningOut,
-    FATAL: RouteAutomataState.Fatal,
-    LOGOUT: RouteAutomataState.SigningOut
+    FATAL: RouteAutomataState.Fatal
   },
   [RouteAutomataState.Authorizations]: {
+    PATH_NOT_FOUND: RouteAutomataState.SigningOut,
+    AUTHORIZE: RouteAutomataState.SigningOut,
+    SIGNIN: RouteAutomataState.SigningOut,
+    SIGNUP: RouteAutomataState.SigningOut,
     EMAIL: RouteAutomataState.SigningOut,
     HOMEPAGE: RouteAutomataState.Homepage,
     FATAL: RouteAutomataState.Fatal
   },
   [RouteAutomataState.Storage]: {
+    PATH_NOT_FOUND: RouteAutomataState.SigningOut,
+    AUTHORIZE: RouteAutomataState.SigningOut,
+    SIGNIN: RouteAutomataState.SigningOut,
+    SIGNUP: RouteAutomataState.SigningOut,
     EMAIL: RouteAutomataState.SigningOut,
     HOMEPAGE: RouteAutomataState.Homepage,
     FATAL: RouteAutomataState.Fatal
