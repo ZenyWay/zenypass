@@ -29,7 +29,7 @@ const MENU_ACTIONS = createActionFactories({
 })
 const link = createActionFactory('LINK')
 const selectMenuItem = createActionFactory('SELECT_MENU_ITEM')
-const fatal = createActionFactory('FATAL')
+const fatalError = createActionFactory('FATAL_ERROR')
 
 export function actionFromMenuItem (item: HTMLElement) {
   return isExternalLinkItem(item) ? link(item) : actionFromNonLinkMenuItem(item)
@@ -57,7 +57,9 @@ function actionFromNonLinkMenuItem (item: HTMLElement): StandardAction<any> {
 }
 
 export function actionFromError (error?: any): StandardAction<any> {
-  const action = isUnauthorizedOrClosed(error) ? MENU_ACTIONS.logout : fatal
+  const action = isUnauthorizedOrClosed(error)
+    ? MENU_ACTIONS.logout
+    : fatalError
   return action(error)
 }
 

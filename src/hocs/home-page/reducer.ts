@@ -66,7 +66,11 @@ const automata: AutomataSpec<HomePageFsmState> = {
   },
   [HomePageFsmState.PendingNewRecord]: {
     CREATE_RECORD_RESOLVED: HomePageFsmState.Idle,
-    CREATE_RECORD_REJECTED: [HomePageFsmState.NewRecordError, mapPayloadToError]
+    CREATE_RECORD_REJECTED: [
+      HomePageFsmState.NewRecordError,
+      mapPayloadToError
+    ],
+    ERROR: [HomePageFsmState.NewRecordError, mapPayloadToError]
   },
   [HomePageFsmState.NewRecordError]: {
     CANCEL: [HomePageFsmState.Idle, clearError]

@@ -19,7 +19,14 @@ import { errorsFromRecord, isValidRecordEntry } from './validators'
 import formatRecordEntry from './formaters'
 import zenypass, { PouchDoc, ZenypassRecord } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import { EMPTY, Observable, of as observableOf, merge } from 'rxjs'
+import {
+  EMPTY,
+  Observable,
+  from as observableFrom,
+  of as observableOf,
+  merge,
+  throwError
+} from 'rxjs'
 import {
   catchError,
   concatMap,
@@ -37,6 +44,7 @@ import {
   ERROR_STATUS,
   createPrivilegedRequest,
   hasHandlerProp,
+  newStatusError,
   toProjection
 } from 'utils'
 import copyToClipboard from 'clipboard-copy'
@@ -67,6 +75,8 @@ const updateRecordRejected = createActionFactory('UPDATE_RECORD_REJECTED')
 const deleteRecordResolved = createActionFactory('DELETE_RECORD_RESOLVED')
 const deleteRecordRejected = createActionFactory('DELETE_RECORD_REJECTED')
 const error = createActionFactory('ERROR')
+
+const zenypass$ = observableFrom(zenypass)
 
 export function timeoutCleartextOnReadonlyCleartext (
   _: any,
@@ -136,8 +146,13 @@ function toChangeError (key: string, value: any, error?: boolean) {
 
 const updateRecord = createPrivilegedRequest(
   (username: string, record: ZenypassRecord) =>
-    zenypass.then(({ getService }) =>
-      getService(username).records.putRecord(record)
+    zenypass$.pipe(
+      map(({ getService }) => username && getService(username)),
+      switchMap(service =>
+        !service
+          ? throwError(newStatusError(ERROR_STATUS.FORBIDDEN))
+          : service.records.putRecord(record)
+      )
     )
 )
 
@@ -182,7 +197,14 @@ export function saveRecordOnPendingSaveOrDeleteRecord (
 }
 
 const cleartext = createPrivilegedRequest((username: string, ref: PouchDoc) =>
-  zenypass.then(({ getService }) => getService(username).records.getRecord(ref))
+  zenypass$.pipe(
+    map(({ getService }) => username && getService(username)),
+    switchMap(service =>
+      !service
+        ? throwError(newStatusError(ERROR_STATUS.FORBIDDEN))
+        : service.records.getRecord(ref)
+    )
+  )
 )
 
 export function cleartextOnPendingCleartextOrConnect (

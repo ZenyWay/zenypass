@@ -77,7 +77,9 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
 
   private constructor (
     private _access: ZenypassServiceAccess,
-    private _services = {} as { [username: string]: ZenypassService }
+    private _services = Object.create(null) as {
+      [username: string]: ZenypassService
+    }
   ) {
     this.signup = this.signup.bind(this)
     this.signin = this.signin.bind(this)

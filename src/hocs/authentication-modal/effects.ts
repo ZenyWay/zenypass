@@ -18,7 +18,7 @@
 import { AuthenticationFsmState } from './reducer'
 import zenypass from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import { ERROR_STATUS } from 'utils'
+import { ERROR_STATUS, newStatusError } from 'utils'
 import {
   catchError,
   distinctUntilKeyChanged,
@@ -52,7 +52,12 @@ export function authenticateOnAuthenticating (
 
 function authenticate ({ value, session }): Promise<StandardAction<any>> {
   return zenypass
-    .then(({ getService }) => getService(session).unlock(value))
+    .then(({ getService }) => session && getService(session))
+    .then(service =>
+      !service
+        ? Promise.reject(newStatusError(ERROR_STATUS.FORBIDDEN))
+        : service.unlock(value)
+    )
     .then(() => authenticated(session))
     .catch(err =>
       err && err.status === ERROR_STATUS.UNAUTHORIZED
