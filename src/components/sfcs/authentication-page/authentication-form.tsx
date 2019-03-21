@@ -250,7 +250,9 @@ export function AuthenticationForm ({
           <small className='text-danger'>
             {t('Unauthorized access')}:<br />
             {t(
-              'Please verify your email address and enter your password again'
+              `Please verify your email address and enter your ${
+                authorize ? 'authorization code' : 'password'
+              } again`
             )}
             .
           </small>
