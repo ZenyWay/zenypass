@@ -201,7 +201,7 @@ export function authorizationPage<P extends AuthorizationPageSFCProps> (
         'UNAUTHORIZED',
         compose.into(0)(focus, pluck('1', 'inputs', 'password'))
       ),
-      callHandlerOnEvent('SIGNED_UP', 'onSignedUp'),
+      callHandlerOnEvent('AUTHORIZED', 'onAuthorized'),
       callHandlerOnEvent('SIGNIN', 'onSignin'),
       callHandlerOnEvent('SIGNUP', 'onSignup'),
       callHandlerOnEvent('CHANGE_EMAIL', 'onEmailChange'),

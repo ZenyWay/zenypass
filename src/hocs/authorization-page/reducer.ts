@@ -35,7 +35,7 @@ const TOKEN_LENGTH = 12
 
 export interface AuthorizationPageHocProps {
   email?: string
-  onSignedUp?: () => void
+  onAuthorized?: () => void
   onSignin?: () => void
   onSignup?: () => void
   onEmailChange?: (email?: string) => void
@@ -114,7 +114,7 @@ const authorizationFsm: AutomataSpec<AuthorizationFsm> = {
 
 const SELECTED_PROPS: (keyof AuthorizationPageHocProps)[] = [
   'email',
-  'onSignedUp',
+  'onAuthorized',
   'onSignin',
   'onSignup',
   'onEmailChange',
