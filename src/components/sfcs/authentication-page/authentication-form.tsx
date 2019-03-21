@@ -16,6 +16,7 @@
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
 import { RecordField } from '../record-field'
+import { SerializedRecordField } from '../../serialized-record-field'
 import { DropdownItemSpec } from '../../dropdown'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
@@ -203,8 +204,8 @@ export function AuthenticationForm ({
         innerRef={onPasswordInputRef}
       />
       {type === 'signin' ? null : authorize ? (
-        <RecordField
-          type='text'
+        <SerializedRecordField
+          type='modhex'
           id='token'
           className='mb-2'
           icon='key'

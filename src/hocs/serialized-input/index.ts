@@ -13,7 +13,7 @@
  * Limitations under the License.
  */
 import { into } from 'basic-cursors'
-import { csv } from './serializers'
+import serializers, { InputSerializer } from './serializers'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -53,13 +53,13 @@ function mapStateToProps ({
   props
 }: SerializedInputState): Rest<ControlledInputProps, InputHandlerProps> {
   const { type, onChange, ...attrs } = props
+  const serializer = serializers[type]
   return {
     ...attrs,
-    type: type === 'csv' ? 'text' : type,
-    value:
-      type === 'csv'
-        ? csv.stringify(props.value as string[])
-        : (props.value as string)
+    type: serializer ? serializer.type : type,
+    value: serializer
+      ? serializer.stringify(props.value)
+      : (props.value as string)
   }
 }
 
@@ -84,7 +84,7 @@ export function serializedInput<P extends ControlledInputProps> (
         'CHANGE',
         ['props', 'onChange'],
         ({ props: { type } }, { payload: { value, target } }) => [
-          type === 'csv' ? csv.parse(value) : value,
+          serializers[type] ? serializers[type].parse(value) : value,
           target
         ]
       )
@@ -93,8 +93,9 @@ export function serializedInput<P extends ControlledInputProps> (
     connect<SerializedInputState, ControlledInputProps>(
       mapStateToProps,
       mapDispatchToProps
-    ),
-    () => distinctUntilChanged(shallowEqual)
+    )
+    // pass all updates, otherwise user input that yields an unchanged parsed value
+    // hence an unchanged stringified output is not overwritten.
     // () => tap(log('serialized-input:VIEW_PROPS:'))
   )
 }

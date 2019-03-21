@@ -31,6 +31,8 @@ import {
   mapEventOn
 } from 'utils'
 
+const TOKEN_LENGTH = 12
+
 export interface AuthorizationPageHocProps {
   email?: string
   onSignedUp?: () => void
@@ -56,10 +58,9 @@ export enum AuthorizationFsm {
 
 const isInvalidPassword = ({ password }) => !password
 const isInvalidToken = ({ token }) =>
-  !token || !isPureModhex(token.split(' ').join(''))
+  !token || token.length !== TOKEN_LENGTH || !isPureModhex(token)
 const isEmailChange = (state, { payload }) =>
   (payload && payload.email) !== (state && state.email)
-const error = createActionFactory<any>('ERROR')
 const mapPayloadIntoPassword = into('password')(mapPayload())
 const clearPassword = propCursor('password')(always(''))
 const mapPayloadIntoToken = into('token')(mapPayload())
