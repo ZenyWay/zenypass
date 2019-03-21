@@ -101,14 +101,14 @@ const validityFsm: AutomataSpec<ValidityFsm> = {
 const authorizationFsm: AutomataSpec<AuthorizationFsm> = {
   [AuthorizationFsm.Idle]: {
     ERROR: AuthorizationFsm.Error,
-    SIGNING_UP: AuthorizationFsm.Pending
+    AUTHORIZING: AuthorizationFsm.Pending
   },
   [AuthorizationFsm.Pending]: {
     ERROR: AuthorizationFsm.Error,
-    SIGNED_UP: AuthorizationFsm.Idle
+    AUTHORIZED: AuthorizationFsm.Idle
   },
   [AuthorizationFsm.Error]: {
-    SIGNING_UP: AuthorizationFsm.Pending
+    AUTHORIZING: AuthorizationFsm.Pending
   }
 }
 
