@@ -155,13 +155,18 @@ export default Promise.resolve({
   getService
 })
 
+const RAW_TOKEN = TOKEN.split(' ')
+  .map(str => str.trim())
+  .filter(Boolean)
+  .join('')
+
 function requestAccess (
   username: string,
   passphrase: string,
   secret: string
 ): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
-    username === USERNAME && secret === TOKEN
+    username === USERNAME && secret === RAW_TOKEN
       ? observableOf(SESSION_ID)
       : throwError(FORBIDDEN)
   ).toPromise()
