@@ -171,7 +171,7 @@ export function ConnectionModal ({
                 type='checkbox'
                 className='form-check-input'
                 value='automatic'
-                checked={!manual}
+                defaultChecked={!manual}
               />
               {t('Open Website on Copy')}
             </Label>

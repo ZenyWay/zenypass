@@ -19,6 +19,7 @@ import { classes } from 'utils'
 
 export interface InputGroupProps extends InputGroupAddonProps {
   size?: 'sm' | 'lg' | '' | false
+  tag?: string
 }
 
 export interface InputGroupAddonProps {
@@ -26,9 +27,14 @@ export interface InputGroupAddonProps {
   [prop: string]: unknown
 }
 
-export function InputGroup ({ size, className, ...attrs }: InputGroupProps) {
+export function InputGroup ({
+  size,
+  className,
+  tag: Tag = 'div',
+  ...attrs
+}: InputGroupProps) {
   return (
-    <div
+    <Tag
       className={classes(
         'input-group',
         size && `input-group-${size}`,

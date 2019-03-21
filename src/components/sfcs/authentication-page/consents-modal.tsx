@@ -188,29 +188,27 @@ function ConsentCheckbox ({
   const inputId = `${id}_consent`
   return (
     <FormGroup {...attrs}>
-      <InputGroup>
+      <InputGroup
+        tag='label'
+        data-id={id}
+        onChange={onToggle}
+        htmlFor={inputId}
+      >
         <InputGroupPrepend>
           <InputGroupText
             className={classes(error && 'border-danger text-danger')}
           >
-            <Input
-              type='checkbox'
-              id={inputId}
-              data-id={id}
-              checked={checked}
-              onInput={onToggle}
-            />
+            <Input type='checkbox' id={inputId} defaultChecked={checked} />
           </InputGroupText>
         </InputGroupPrepend>
-        <label
+        <span
           className={classes(
             'form-control form-control-sm h-auto',
             error && 'is-invalid'
           )}
-          htmlFor={inputId}
         >
           {label || null}
-        </label>
+        </span>
       </InputGroup>
       <small className={classes(error && 'form-text text-danger')}>
         {error || null}

@@ -21,7 +21,7 @@ export interface InputProps {
   id?: string
   type?: string
   value?: string
-  checked?: boolean
+  defaultChecked?: boolean
   placeholder?: string
   rows?: string
   autoFocus?: boolean
