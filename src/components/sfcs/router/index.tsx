@@ -42,6 +42,7 @@ export interface CoreRouterProps {
   children?: any
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onAuthorize?: () => void
+  onAuthorized?: () => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
   onSignedIn?: (session?: string) => void
@@ -90,6 +91,7 @@ function CoreRouter ({
   onAuthorize,
   onEmailChange,
   onError,
+  onAuthorized,
   onSignedIn,
   onSignedUp,
   onSignin,
@@ -121,7 +123,7 @@ function CoreRouter ({
           email={email}
           onEmailChange={onEmailChange}
           onError={onError}
-          onSignedUp={onSignedUp}
+          onAuthorized={onAuthorized}
           onSelectLocale={onSelectMenuItem}
           onSignin={onSignin}
           onSignup={onSignup}
