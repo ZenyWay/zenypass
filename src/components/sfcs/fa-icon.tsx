@@ -20,7 +20,7 @@ import { classes } from 'utils'
 
 export interface FAIconProps {
   icon?: string[] | string
-  size?: 'xs' | 'sm' | 'lg' | '2x' | '3x' | '5x' | '7x' | '10x' | '' | false
+  size?: IconSize | '' | false
   rotate?: '90' | '180' | '270' | '' | false
   flip?: 'horizontal' | 'vertical' | '' | false
   animate?: 'spin' | 'pulse' | '' | false
@@ -31,6 +31,8 @@ export interface FAIconProps {
   innerRef?: (ref: HTMLElement) => void
   [prop: string]: unknown
 }
+
+export type IconSize = 'xs' | 'sm' | 'lg' | '2x' | '3x' | '5x' | '7x' | '10x'
 
 export function FAIcon ({
   icon,
@@ -63,6 +65,8 @@ export function FAIcon ({
 
 export interface FAIconButtonProps extends ButtonProps {
   icon?: string
+  iconSize?: IconSize | '' | false
+  fw?: boolean
   pending?: boolean
   rotate?: '90' | '180' | '270' | '' | false
   flip?: 'horizontal' | 'vertical' | '' | false
@@ -71,6 +75,8 @@ export interface FAIconButtonProps extends ButtonProps {
 
 export function FAIconButton ({
   icon,
+  iconSize,
+  fw,
   pending,
   rotate,
   flip,
@@ -83,10 +89,11 @@ export function FAIconButton ({
     <Button disabled={disabled || pending} {...attrs}>
       <FAIcon
         icon={!pending ? icon : 'spinner'}
+        size={iconSize}
         rotate={!pending && rotate}
         flip={!pending && flip}
         animate={!pending ? animate : 'spin'}
-        fw
+        fw={fw}
       />
       {children}
     </Button>

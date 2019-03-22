@@ -22,8 +22,10 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
+  Input,
   InputGroup,
-  Label
+  Label,
+  InputGroupAppend
 } from 'bootstrap'
 import { FAIconButton, FAIcon } from '../fa-icon'
 import { InfoModal } from '../info-modal'
@@ -96,7 +98,8 @@ export function RecordCard ({
 }: RecordCardProps) {
   const t = l10ns[locale]
   const { _id, name, url, username, password } = record
-  const hasConnectionButton = password !== '' || !!(url && username)
+  const hasPassword = password !== ''
+  const isBookmarkCard = url && !hasPassword && !username
   const pendingRecord = pending === 'record'
   const connecting = pending === 'connect'
   const connectingOrPendingRecord = connecting || pendingRecord
@@ -110,10 +113,33 @@ export function RecordCard ({
       )}
       {...attrs}
     >
-      <Card className='px-0 shadow-sm'>
+      <Card
+        className='px-0 shadow-sm'
+        onClick={
+          !expanded && (hasPassword || isBookmarkCard) && onConnectRequest
+        }
+      >
         {edit ? null : (
           <CardHeader className='border-0 bg-white pb-1'>
-            <div className='d-flex'>
+            <InputGroup>
+              <span
+                className={classes(
+                  'form-control form-control-plaintext text-truncate',
+                  `text-${url ? 'info' : 'dark'}`
+                )}
+              >
+                <strong>{name}</strong>
+              </span>
+              {expanded || (!hasPassword && !isBookmarkCard) ? null : (
+                <FAIconButton
+                  color='none'
+                  icon={isBookmarkCard ? 'bookmark' : 'lock'}
+                  pending={connectingOrPendingRecord}
+                  disabled
+                />
+              )}
+            </InputGroup>
+            {/*<div className='d-flex'>
               <Button
                 id={`collapsed-record-card:${_id}:name`}
                 href={url}
@@ -150,7 +176,7 @@ export function RecordCard ({
                   />
                 </Button>
               )}
-            </div>
+            </div>*/}
           </CardHeader>
         )}
         {!expanded ? null : (
@@ -235,7 +261,7 @@ export function RecordCard ({
             ?
           </p>
         </InfoModal>
-        {!hasConnectionButton ? null : (
+        {!hasPassword ? null : (
           <ConnectionModal
             open={connect}
             onClose={onConnectClose}
@@ -267,15 +293,13 @@ function CollapsedCardFooter ({
   const invisible = !username && 'invisible'
   return (
     <InputGroup id={`collapsed-record-card:${_id}:username`}>
-      <Label className={classes('ml-1', invisible)}>
-        <FAIcon icon='user' />
-      </Label>
       <span
         className={classes(
           'form-control form-control-plaintext text-truncate',
           invisible
         )}
       >
+        <FAIcon className='text-dark mr-2' icon='user' />
         {username}
       </span>
       <ToggleButton
@@ -306,13 +330,15 @@ function ToggleButton ({
 }: ToggleButtonProps) {
   const icon = !expanded ? 'caret-down' : edit ? 'close' : 'caret-up'
   const classNames = classes(
-    'close py-2',
+    'float-right py-2',
     ((errors && errors.name) || !!pending) && 'invisible'
   )
   return (
     <FAIconButton
       id={`collapsed-record-card:${_id}:toggle-expand`}
       icon={icon}
+      iconSize='lg'
+      color='none'
       className={classNames}
       onClick={onToggleExpanded}
     />
@@ -347,6 +373,7 @@ function ExpandedCardFooter ({
       disabled={!!pending}
       outline
       color={!pending ? 'info' : 'dark'}
+      fw
       onClick={onEditRecordRequest}
     >
       &nbsp;{t('Edit')}
@@ -363,6 +390,7 @@ function ExpandedCardFooter ({
           disabled={!!pending}
           outline
           color={!pending ? 'info' : 'dark'}
+          fw
           className='mr-2'
         >
           &nbsp;{t('Save')}
@@ -375,6 +403,7 @@ function ExpandedCardFooter ({
         disabled={!!pending}
         outline
         color='danger'
+        fw
         onClick={onDeleteRecordRequest}
       />
     </Fragment>

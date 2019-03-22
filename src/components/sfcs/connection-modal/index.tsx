@@ -124,6 +124,7 @@ export function ConnectionModal ({
                   icons={icons}
                   value={username}
                   color={copyUsername ? 'info' : 'secondary'}
+                  fw
                   outline={!copyUsername}
                   onClick={onClickCopy}
                   onCopied={onUsernameCopied}
@@ -155,6 +156,7 @@ export function ConnectionModal ({
                 icons={icons}
                 value={password}
                 color='info'
+                fw
                 onClick={onClickCopy}
                 onCopied={onPasswordCopied}
                 innerRef={onDefaultActionButtonRef}

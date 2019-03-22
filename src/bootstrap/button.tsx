@@ -27,7 +27,7 @@ export interface ButtonProps {
   checked?: boolean
   block?: boolean
   className?: string
-  color?: BasicColor | 'link' | '' | false
+  color?: BasicColor | 'link' | 'none' | '' | false
   outline?: boolean
   size?: 'lg' | 'sm' | '' | false
   href?: string
@@ -44,7 +44,7 @@ export function Button ({
   checked,
   block,
   className,
-  color = 'secondary', // primary | secondary | success | info | warning | danger | link
+  color = 'secondary', // primary | secondary | success | info | warning | danger | link | none
   outline,
   size,
   href,
@@ -56,7 +56,7 @@ export function Button ({
   const Tag: any = href ? 'a' : 'button'
   const classNames = classes(
     'btn',
-    `btn${outline ? '-outline' : ''}-${color}`,
+    color !== 'none' && `btn${outline ? '-outline' : ''}-${color}`,
     size && `btn-${size}`,
     block && 'btn-block',
     active && 'active',

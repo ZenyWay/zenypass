@@ -37,6 +37,7 @@ import {
   isString,
   focus,
   preventDefault,
+  stopPropagation,
   tapOnEvent
 } from 'utils'
 import {
@@ -236,7 +237,7 @@ const mapDispatchToProps: (
     ](),
   onDefaultActionButtonRef: 'DEFAULT_ACTION_BUTTON_REF',
   onToggleCleartext: 'TOGGLE_CLEARTEXT',
-  onToggleExpanded: 'TOGGLE_EXPANDED',
+  onToggleExpanded: ['TOGGLE_EXPANDED', stopPropagation],
   onEditRecordRequest: 'EDIT_RECORD_REQUESTED',
   onChange: [
     'CHANGE',

@@ -171,6 +171,7 @@ export function RecordCardBody ({
             className={!username && 'd-none'}
             outline
             color='info'
+            fw
           />
         </InputGroupAppend>
       </RecordField>
@@ -196,6 +197,7 @@ export function RecordCardBody ({
               pending={pending === 'connect'}
               outline
               color='info'
+              fw
               onClick={onConnectRequest}
             />
           ) : (
@@ -206,6 +208,7 @@ export function RecordCardBody ({
               data-id='password'
               outline
               color='info'
+              fw
               className={!password && 'd-none'}
             />
           )}

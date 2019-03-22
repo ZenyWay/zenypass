@@ -20,8 +20,11 @@ import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import withL10n from 'zenyway-storybook-addon-l10n'
 import preventDefaultAction from './helpers/prevent-default'
+import tapAction from './helpers/tap'
 import { RecordCardSFC as RecordCard } from 'components'
 import { RECORD } from './helpers/consts'
+
+const stopPropagationAction = tapAction(event => event.stopPropagation())
 
 const privateRecord = {
   ...RECORD,
@@ -35,7 +38,7 @@ const attrs = {
   onCopied: action('COPIED'),
   onDefaultActionButtonRef: action('DEFAULT_ACTION_BUTTON_REF'),
   onToggleCleartext: action('TOGGLE_CLEARTEXT'),
-  onToggleExpanded: action('TOGGLE_EXPANDED'),
+  onToggleExpanded: stopPropagationAction('TOGGLE_EXPANDED'),
   onEditRecordRequest: action('EDIT_RECORD_REQUEST'),
   onChange: action('CHANGE'),
   onToggleCheckbox: action('TOGGLE_CHECKBOX'),

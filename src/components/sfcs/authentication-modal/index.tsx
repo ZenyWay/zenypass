@@ -88,6 +88,7 @@ export function AuthenticationModal ({
           pending={pending}
           form='PasswordModalForm'
           color='info'
+          fw
         >
           {t('Authorize')}
         </FAIconButton>

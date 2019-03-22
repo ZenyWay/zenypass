@@ -90,6 +90,7 @@ export function IconLabelInputGroup ({
               pending={pending}
               outline
               color='info'
+              fw
               onClick={onIconClick}
               disabled={disabled}
               title={buttonTitle}

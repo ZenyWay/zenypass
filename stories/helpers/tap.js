@@ -13,6 +13,14 @@
  * Limitations under the License.
  */
 //
-import tap from './tap'
+import { decorateAction } from '@storybook/addon-actions'
 
-export default tap(event => event.preventDefault())
+export default function (effect: (event: any) => any) {
+  return decorateAction([
+    function (args) {
+      const [event] = args
+      effect(event)
+      return args
+    }
+  ])
+}
