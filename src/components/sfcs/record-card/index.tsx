@@ -16,6 +16,7 @@
  */
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
+import { style } from 'typestyle'
 import {
   Button,
   Card,
@@ -72,6 +73,12 @@ export type PendingState =
   | 'connect'
   | 'clear-clipboard'
 
+const iosClickDelegationWorkaround = style({
+  cursor: 'pointer'
+})
+
+const cardClassNames = `px-0 shadow-sm ${iosClickDelegationWorkaround}`
+
 export function RecordCard ({
   locale,
   record,
@@ -114,7 +121,7 @@ export function RecordCard ({
       {...attrs}
     >
       <Card
-        className='px-0 shadow-sm'
+        className={cardClassNames}
         onClick={
           !expanded && (hasPassword || isBookmarkCard) && onConnectRequest
         }
