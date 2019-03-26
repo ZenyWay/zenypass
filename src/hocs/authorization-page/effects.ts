@@ -20,6 +20,7 @@ import { StandardAction, createActionFactory } from 'basic-fsa-factories'
 import { stateOnEvent, ERROR_STATUS } from 'utils'
 import {
   catchError,
+  delay,
   filter,
   map,
   startWith,
@@ -30,6 +31,12 @@ import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 // const log = label => console.log.bind(console, label)
 
 const zenypass$ = observableFrom(zenypass)
+
+/**
+ * temporary partial work-around for avoiding signin on new agent
+ * before authorization is finished and synced.
+ */
+const DELAY_AFTER_SUCCESSFUL_AUTHORIZATION = 5000 // ms
 
 const authorizing = createActionFactory<void>('AUTHORIZING')
 const authorized = createActionFactory<void>('AUTHORIZED')
@@ -44,6 +51,7 @@ export function serviceAuthorizeOnSubmitFromSubmittable (
     switchMap(({ email, password, token }) =>
       zenypass$.pipe(
         switchMap(({ requestAccess }) => requestAccess(email, password, token)),
+        delay(DELAY_AFTER_SUCCESSFUL_AUTHORIZATION),
         map(() => authorized(email)),
         catchError(err => observableOf(error(err))),
         startWith(authorizing())
