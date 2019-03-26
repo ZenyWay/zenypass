@@ -18,8 +18,8 @@ import { ZenypassRecord } from 'zenypass-service'
 import reducer, { ConnectFsmState, RecordFsmState } from './reducer'
 import {
   clearClipboardOnDirtyConnectCancelOrClearClipboard,
+  openBookmarkAndCopyUsernameOnConnectRequestWhenBookmark,
   validateRecordOnThumbnailWhenNotPendingContent,
-  validateChangeOnChange,
   cleartextOnPendingCleartextOrConnect,
   timeoutCleartextOnReadonlyCleartext,
   saveRecordOnPendingSaveOrDeleteRecord
@@ -271,8 +271,8 @@ export function recordCard<P extends RecordCardSFCProps> (
       callHandlerOnEvent('ERROR', ['props', 'onError']),
       tapOnEvent('DEFAULT_ACTION_BUTTON_REF', focus),
       clearClipboardOnDirtyConnectCancelOrClearClipboard,
+      openBookmarkAndCopyUsernameOnConnectRequestWhenBookmark,
       validateRecordOnThumbnailWhenNotPendingContent,
-      validateChangeOnChange,
       cleartextOnPendingCleartextOrConnect,
       timeoutCleartextOnReadonlyCleartext,
       saveRecordOnPendingSaveOrDeleteRecord

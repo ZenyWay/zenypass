@@ -99,7 +99,7 @@ export function RecordCard ({
   const t = l10ns[locale]
   const { _id, name, url, username, password } = record
   const hasPassword = password !== ''
-  const isBookmarkCard = url && !hasPassword && !username
+  const isBookmarkCard = url && !hasPassword
   const pendingRecord = pending === 'record'
   const connecting = pending === 'connect'
   const connectingOrPendingRecord = connecting || pendingRecord
@@ -222,7 +222,6 @@ export function RecordCard ({
                 expanded
                 edit={edit}
                 pending={pending}
-                errors={errors}
                 onToggleExpanded={onToggleExpanded}
               />
             </Fragment>
@@ -316,7 +315,6 @@ interface ToggleButtonProps {
   expanded?: boolean
   edit?: boolean
   pending?: PendingState
-  errors?: Partial<Errors>
   onToggleExpanded?: (event?: MouseEvent) => void
 }
 
@@ -325,14 +323,10 @@ function ToggleButton ({
   expanded,
   edit,
   pending,
-  errors,
   onToggleExpanded
 }: ToggleButtonProps) {
   const icon = !expanded ? 'caret-down' : edit ? 'close' : 'caret-up'
-  const classNames = classes(
-    'float-right py-2',
-    ((errors && errors.name) || !!pending) && 'invisible'
-  )
+  const classNames = classes('float-right py-2', !!pending && 'invisible')
   return (
     <FAIconButton
       id={`collapsed-record-card:${_id}:toggle-expand`}

@@ -14,18 +14,23 @@
  * Limitations under the License.
  */
 //
+import { isValidRecordEntry } from './validators'
+import formatRecordEntry from './formaters'
 import { ZenypassRecord } from 'zenypass-service'
-import createAutomataReducer, { AutomataSpec, Reducer } from 'automata-reducer'
+import { createActionFactory } from 'basic-fsa-factories'
+import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
 import {
+  Reducer,
   alt,
   always,
   forType,
   mapPayload,
   mergePayload,
   pluck,
-  not
+  not,
+  withEventGuards
 } from 'utils'
 
 /**
@@ -54,6 +59,9 @@ export enum RecordFsmState {
   PendingDelete = 'PENDING_DELETE'
 }
 
+const validChange = createActionFactory('VALID_CHANGE')
+const invalidChange = createActionFactory('INVALID_CHANGE')
+
 const inChanges = prop =>
   compose<Reducer<any>>(
     propCursor('changes'),
@@ -79,6 +87,21 @@ const mapPayloadToPassword = inChanges('password')(mapPayload(alt('')))
 const mapPayloadToError = into('error')(mapPayload())
 const reset = [clearChanges, clearPassword, clearErrors]
 
+const RecordFsmStateEdit = {
+  VALID_CHANGE: [
+    mergePayloadIntoChanges(pluck('change')),
+    mergePayloadIntoErrors(pluck('error'))
+  ],
+  INVALID_CHANGE: [
+    mergePayloadIntoChanges(pluck('change')),
+    mergePayloadIntoErrors(pluck('error'))
+  ],
+  TOGGLE_CHECKBOX: toggleUnrestricted,
+  TOGGLE_EXPANDED: RecordFsmState.PendingConfirmCancel,
+  UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,
+  DELETE_RECORD_REQUESTED: RecordFsmState.PendingConfirmDelete
+}
+
 const recordAutomata: AutomataSpec<RecordFsmState> = {
   [RecordFsmState.PendingRecord]: {
     PROPS_PENDING_RECORD: into('props')(mapPayload()),
@@ -103,34 +126,12 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
     EDIT_RECORD_REQUESTED: RecordFsmState.EditCleartext
   },
   [RecordFsmState.EditConcealed]: {
-    VALID_CHANGE: [
-      mergePayloadIntoChanges(pluck('change')),
-      mergePayloadIntoErrors(pluck('error'))
-    ],
-    INVALID_CHANGE: [
-      mergePayloadIntoChanges(pluck('change')),
-      mergePayloadIntoErrors(pluck('error'))
-    ],
-    TOGGLE_CHECKBOX: toggleUnrestricted,
-    TOGGLE_CLEARTEXT: RecordFsmState.EditCleartext,
-    TOGGLE_EXPANDED: RecordFsmState.PendingConfirmCancel,
-    UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,
-    DELETE_RECORD_REQUESTED: RecordFsmState.PendingConfirmDelete
+    ...RecordFsmStateEdit,
+    TOGGLE_CLEARTEXT: RecordFsmState.EditCleartext
   },
   [RecordFsmState.EditCleartext]: {
-    VALID_CHANGE: [
-      mergePayloadIntoChanges(pluck('change')),
-      mergePayloadIntoErrors(pluck('error'))
-    ],
-    INVALID_CHANGE: [
-      mergePayloadIntoChanges(pluck('change')),
-      mergePayloadIntoErrors(pluck('error'))
-    ],
-    TOGGLE_CHECKBOX: toggleUnrestricted,
-    TOGGLE_CLEARTEXT: RecordFsmState.EditConcealed,
-    TOGGLE_EXPANDED: RecordFsmState.PendingConfirmCancel,
-    UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,
-    DELETE_RECORD_REQUESTED: RecordFsmState.PendingConfirmDelete
+    ...RecordFsmStateEdit,
+    TOGGLE_CLEARTEXT: RecordFsmState.EditConcealed
   },
   [RecordFsmState.PendingCleartext]: {
     CLEARTEXT_REJECTED: [RecordFsmState.ReadonlyConcealed, mapPayloadToError],
@@ -176,7 +177,7 @@ export enum ConnectFsmState {
 
 const connectAutomata: AutomataSpec<ConnectFsmState> = {
   [ConnectFsmState.Idle]: {
-    CONNECT_REQUEST: ConnectFsmState.PendingConnect,
+    CONNECT: ConnectFsmState.PendingConnect,
     PASSWORD_COPIED: ConnectFsmState.PendingClearClipboard
   },
   [ConnectFsmState.Connecting]: {
@@ -225,8 +226,24 @@ function updateErrors (errors: Partial<Errors>, updates = {}) {
   return !updated ? errors : Object.keys(result).length ? result : void 0
 }
 
-export default compose.into(0)(
+const reducer = compose.into(0)(
   createAutomataReducer(recordAutomata, RecordFsmState.PendingRecord),
   createAutomataReducer(connectAutomata, ConnectFsmState.Idle, 'connect'),
   forType('PROPS')(into('props')(mapPayload()))
-)
+) as Reducer
+
+const connect = createActionFactory('CONNECT')
+const open = createActionFactory('OPEN')
+
+export default withEventGuards({
+  CHANGE: ([key, value]) =>
+    isValidRecordEntry(key, value)
+      ? validChange(toChangeError(key, formatRecordEntry(key, value)))
+      : invalidChange(toChangeError(key, value, true)),
+  CONNECT_REQUEST: (_, { props: { record: { password } = {} as any } }) =>
+    (password || password === '' ? open : connect)()
+})(reducer)
+
+function toChangeError (key: string, value: any, error?: boolean) {
+  return { change: { [key]: value }, error: { [key]: !!error } }
+}

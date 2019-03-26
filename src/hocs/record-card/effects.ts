@@ -15,8 +15,7 @@
  */
 //
 import { RecordFsmState, ConnectFsmState } from './reducer'
-import { errorsFromRecord, isValidRecordEntry } from './validators'
-import formatRecordEntry from './formaters'
+import { errorsFromRecord } from './validators'
 import zenypass, { PouchDoc, ZenypassRecord } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
@@ -34,10 +33,11 @@ import {
   delay,
   distinctUntilKeyChanged,
   filter,
+  ignoreElements,
   map,
   pluck,
   switchMap,
-  // tap,
+  tap,
   withLatestFrom
 } from 'rxjs/operators'
 import {
@@ -64,8 +64,6 @@ const l10ns = createL10ns({
 
 const clipboardCleared = createActionFactory('CLIPBOARD_CLEARED')
 const clipboardCopyError = createActionFactory('CLIPBOARD_COPY_ERROR')
-const validChange = createActionFactory('VALID_CHANGE')
-const invalidChange = createActionFactory('INVALID_CHANGE')
 const invalidRecord = createActionFactory('INVALID_RECORD')
 const toggleCleartext = createActionFactory('TOGGLE_CLEARTEXT')
 const cleartextResolved = createActionFactory('CLEARTEXT_RESOLVED')
@@ -110,6 +108,31 @@ export function clearClipboardOnDirtyConnectCancelOrClearClipboard (
   )
 }
 
+export function openBookmarkAndCopyUsernameOnConnectRequestWhenBookmark (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return event$.pipe(
+    filter(({ type }) => type === 'CONNECT_REQUEST'),
+    withLatestFrom(state$),
+    pluck('1', 'props', 'record'),
+    filter(({ url, password }) => url && password === ''),
+    tap(({ url, username }) => copyUsernameAndOpenWindow(url, username)),
+    ignoreElements()
+  )
+}
+
+function copyUsernameAndOpenWindow (href: string, username?: string) {
+  const copied = username ? copyToClipboard(username) : Promise.resolve()
+  return copied.then(openWindow).catch(openWindow)
+
+  function openWindow (): void {
+    const ref = window.open(href, '_blank')
+    // mitigate reverse tab-nabbing (https://www.owasp.org/index.php/Reverse_Tabnabbing)
+    ref.opener = null
+  }
+}
+
 export function validateRecordOnThumbnailWhenNotPendingContent (
   _: any,
   state$: Observable<any>
@@ -124,24 +147,6 @@ export function validateRecordOnThumbnailWhenNotPendingContent (
     filter(Boolean),
     map(errors => invalidRecord(errors))
   )
-}
-
-export function validateChangeOnChange (
-  event$: Observable<StandardAction<any>>
-) {
-  return event$.pipe(
-    filter(({ type }) => type === 'CHANGE'),
-    pluck('payload'),
-    map(([key, value]) =>
-      isValidRecordEntry(key, value)
-        ? validChange(toChangeError(key, formatRecordEntry(key, value)))
-        : invalidChange(toChangeError(key, value, true))
-    )
-  )
-}
-
-function toChangeError (key: string, value: any, error?: boolean) {
-  return { change: { [key]: value }, error: { [key]: !!error } }
 }
 
 const updateRecord = createPrivilegedRequest(
