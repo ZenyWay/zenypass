@@ -23,12 +23,11 @@ import {
   always,
   isInvalidEmail,
   forType,
-  mapEvents,
   mapPayload,
   mergePayload,
   omit,
   pick,
-  mapEventOn
+  withEventGuards
 } from 'utils'
 
 const TOKEN_LENGTH = 12
@@ -56,11 +55,12 @@ export enum AuthorizationFsm {
   Error = 'ERROR'
 }
 
-const isInvalidPassword = ({ password }) => !password
-const isInvalidToken = ({ token }) =>
+const isInvalidToken = token =>
   !token || token.length !== TOKEN_LENGTH || !isPureModhex(token)
-const isEmailChange = (state, { payload }) =>
-  (payload && payload.email) !== (state && state.email)
+const isEmailChange = (email, previous) =>
+  email !== (previous && previous.email)
+
+const mapPayloadIntoEmail = into('email')(mapPayload())
 const mapPayloadIntoPassword = into('password')(mapPayload())
 const clearPassword = propCursor('password')(always(''))
 const mapPayloadIntoToken = into('token')(mapPayload())
@@ -113,7 +113,6 @@ const authorizationFsm: AutomataSpec<AuthorizationFsm> = {
 }
 
 const SELECTED_PROPS: (keyof AuthorizationPageHocProps)[] = [
-  'email',
   'onAuthorized',
   'onSignin',
   'onSignup',
@@ -121,39 +120,37 @@ const SELECTED_PROPS: (keyof AuthorizationPageHocProps)[] = [
   'onError'
 ]
 
-export const reducer = compose.into(0)(
-  compose(
-    createAutomataReducer(validityFsm, ValidityFsm.Invalid, { key: 'valid' }),
-    mapEvents({
-      CHANGE_TOKEN: [isInvalidToken, 'INVALID_TOKEN', 'VALID_TOKEN'],
-      CHANGE_PASSWORD: [
-        isInvalidPassword,
-        'INVALID_PASSWORD',
-        'VALID_PASSWORD'
-      ],
-      PROPS: [
-        ({ email }) => isInvalidEmail(email),
-        'INVALID_EMAIL',
-        'VALID_EMAIL'
-      ]
-    })
-  ),
+const reducer = compose.into(0)(
+  createAutomataReducer(validityFsm, ValidityFsm.Invalid, { key: 'valid' }),
   createAutomataReducer(authorizationFsm, AuthorizationFsm.Idle, {
     key: 'authorization'
   }),
+  forType('CHANGE_TOKEN')(mapPayloadIntoToken),
   forType('CHANGE_PASSWORD')(
     compose.into(0)(clearToken, mapPayloadIntoPassword)
   ),
-  forType('CHANGE_TOKEN')(mapPayloadIntoToken),
+  forType('CHANGE_EMAIL')(compose.into(0)(clearToken, mapPayloadIntoEmail)),
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(
     compose.into(0)(
       mergePayload(pick(SELECTED_PROPS)),
-      into('attrs')(mapPayload(omit(SELECTED_PROPS))),
-      compose(
-        forType('CHANGE_EMAIL')(clearToken),
-        mapEventOn(isEmailChange)('CHANGE_EMAIL')
-      )
+      into('attrs')(mapPayload(omit(SELECTED_PROPS)))
     )
   )
 )
+
+const changeEmail = createActionFactory('CHANGE_EMAIL')
+const invalidEmail = createActionFactory('INVALID_EMAIL')
+const validEmail = createActionFactory('VALID_EMAIL')
+const invalidPassword = createActionFactory('INVALID_PASSWORD')
+const validPassword = createActionFactory('VALID_PASSWORD')
+const invalidToken = createActionFactory('INVALID_TOKEN')
+const validToken = createActionFactory('VALID_TOKEN')
+
+export default withEventGuards({
+  PROPS: ({ email }, state: any) =>
+    isEmailChange(email, state) && changeEmail(email),
+  CHANGE_EMAIL: email => (isInvalidEmail(email) ? invalidEmail : validEmail)(),
+  CHANGE_PASSWORD: password => (!password ? invalidPassword : validPassword)(),
+  CHANGE_TOKEN: token => (isInvalidToken(token) ? invalidToken : validToken)()
+})(reducer)

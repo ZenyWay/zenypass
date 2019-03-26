@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 
-import { reducer, ValidityFsm, SigninFsm, SigninPageHocProps } from './reducer'
+import reducer, { ValidityFsm, SigninFsm, SigninPageHocProps } from './reducer'
 import { serviceSigninOnSubmitFromValid } from './effects'
 import componentFromEvents, {
   ComponentConstructor,

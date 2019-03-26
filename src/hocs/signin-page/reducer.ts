@@ -15,19 +15,20 @@
  */
 
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
-import { createActionFactory } from 'basic-fsa-factories'
 import { into, propCursor } from 'basic-cursors'
 import compose from 'basic-compose'
 import {
   always,
   isInvalidEmail,
   forType,
-  mapEvents,
   mapPayload,
   mergePayload,
+  not,
   omit,
-  pick
+  pick,
+  withEventGuards
 } from 'utils'
+import { createActionFactory } from 'basic-fsa-factories'
 
 export interface SigninPageHocProps {
   email?: string
@@ -54,7 +55,6 @@ export enum SigninFsm {
   RetryError = 'RETRY_ERROR'
 }
 
-const isInvalidPassword = ({ password }) => !password
 const mapPayloadIntoPassword = into('password')(mapPayload())
 const clearPassword = propCursor('password')(always(''))
 
@@ -118,22 +118,8 @@ const SELECTED_PROPS: (keyof SigninPageHocProps)[] = [
   'onSignup'
 ]
 
-export const reducer = compose.into(0)(
-  compose(
-    createAutomataReducer(validityFsm, ValidityFsm.Invalid, { key: 'valid' }),
-    mapEvents({
-      CHANGE_PASSWORD: [
-        isInvalidPassword,
-        'INVALID_PASSWORD',
-        'VALID_PASSWORD'
-      ],
-      PROPS: [
-        ({ email }) => isInvalidEmail(email),
-        'INVALID_EMAIL',
-        'VALID_EMAIL'
-      ]
-    })
-  ),
+const reducer = compose.into(0)(
+  createAutomataReducer(validityFsm, ValidityFsm.Invalid, { key: 'valid' }),
   createAutomataReducer(signinFsm, SigninFsm.Idle, { key: 'signin' }),
   forType('CHANGE_PASSWORD')(mapPayloadIntoPassword),
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
@@ -144,3 +130,13 @@ export const reducer = compose.into(0)(
     )
   )
 )
+
+const invalidEmail = createActionFactory('INVALID_EMAIL')
+const validEmail = createActionFactory('VALID_EMAIL')
+const invalidPassword = createActionFactory('INVALID_PASSWORD')
+const validPassword = createActionFactory('VALID_PASSWORD')
+
+export default withEventGuards({
+  PROPS: ({ email }) => (isInvalidEmail(email) ? invalidEmail : validEmail)(),
+  CHANGE_PASSWORD: password => (!password ? invalidPassword : validPassword)()
+})(reducer)

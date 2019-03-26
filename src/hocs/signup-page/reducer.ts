@@ -22,13 +22,12 @@ import {
   always,
   isInvalidEmail,
   forType,
-  mapEvents,
   mapPayload,
   mergePayload,
   not,
   omit,
   pick,
-  mapEventOn
+  withEventGuards
 } from 'utils'
 
 export interface SignupPageHocProps {
@@ -57,13 +56,14 @@ export enum SignupFsm {
 }
 
 const MIN_PASSWORD_LENGTH = 4
-const isInvalidPassword = ({ password }) =>
+const isInvalidPassword = password =>
   !password || password.length < MIN_PASSWORD_LENGTH
-const isInvalidConfirm = ({ password, confirm }) =>
+const isInvalidConfirm = (password, confirm) =>
   !password || confirm !== password
-const isEmailChange = (state, { payload }) =>
-  (payload && payload.email) !== (state && state.email)
-const error = createActionFactory<any>('ERROR')
+const isEmailChange = (email, previous) =>
+  email !== (previous && previous.email)
+
+const mapPayloadIntoEmail = into('email')(mapPayload())
 const mapPayloadIntoPassword = into('password')(mapPayload())
 const clearPassword = propCursor('password')(always(''))
 const mapPayloadIntoConfirm = into('confirm')(mapPayload())
@@ -128,7 +128,6 @@ const signupFsm: AutomataSpec<SignupFsm> = {
 }
 
 const SELECTED_PROPS: (keyof SignupPageHocProps)[] = [
-  'email',
   'onAuthorize',
   'onEmailChange',
   'onError',
@@ -136,37 +135,37 @@ const SELECTED_PROPS: (keyof SignupPageHocProps)[] = [
   'onSignin'
 ]
 
-export const reducer = compose.into(0)(
-  compose(
-    createAutomataReducer(validityFsm, ValidityFsm.Invalid, { key: 'valid' }),
-    mapEvents({
-      CHANGE_CONFIRM: [isInvalidConfirm, 'INVALID_CONFIRM', 'VALID_CONFIRM'],
-      CHANGE_PASSWORD: [
-        isInvalidPassword,
-        'INVALID_PASSWORD',
-        'VALID_PASSWORD'
-      ],
-      PROPS: [
-        ({ email }) => isInvalidEmail(email),
-        'INVALID_EMAIL',
-        'VALID_EMAIL'
-      ]
-    })
-  ),
+const reducer = compose.into(0)(
+  createAutomataReducer(validityFsm, ValidityFsm.Invalid, { key: 'valid' }),
   createAutomataReducer(signupFsm, SignupFsm.Idle, { key: 'signup' }),
+  forType('CHANGE_CONFIRM')(mapPayloadIntoConfirm),
   forType('CHANGE_PASSWORD')(
     compose.into(0)(clearConfirm, mapPayloadIntoPassword)
   ),
-  forType('CHANGE_CONFIRM')(mapPayloadIntoConfirm),
+  forType('CHANGE_EMAIL')(compose.into(0)(clearConfirm, mapPayloadIntoEmail)),
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(
     compose.into(0)(
       mergePayload(pick(SELECTED_PROPS)),
-      into('attrs')(mapPayload(omit(SELECTED_PROPS))),
-      compose(
-        forType('CHANGE_EMAIL')(clearConfirm),
-        mapEventOn(isEmailChange)('CHANGE_EMAIL')
-      )
+      into('attrs')(mapPayload(omit(SELECTED_PROPS)))
     )
   )
 )
+
+const changeEmail = createActionFactory('CHANGE_EMAIL')
+const invalidEmail = createActionFactory('INVALID_EMAIL')
+const validEmail = createActionFactory('VALID_EMAIL')
+const invalidPassword = createActionFactory('INVALID_PASSWORD')
+const validPassword = createActionFactory('VALID_PASSWORD')
+const invalidConfirm = createActionFactory('INVALID_CONFIRM')
+const validConfirm = createActionFactory('VALID_CONFIRM')
+
+export default withEventGuards({
+  PROPS: ({ email }, state: any) =>
+    isEmailChange(email, state) && changeEmail(email),
+  CHANGE_EMAIL: email => (isInvalidEmail(email) ? invalidEmail : validEmail)(),
+  CHANGE_PASSWORD: password =>
+    (isInvalidPassword(password) ? invalidPassword : validPassword)(),
+  CHANGE_CONFIRM: (confirm, { password }) =>
+    (isInvalidConfirm(password, confirm) ? invalidConfirm : validConfirm)()
+})(reducer)

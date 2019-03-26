@@ -14,8 +14,8 @@
  * Limitations under the License.
  */
 //
+import compose from 'basic-compose'
 import { identity, isFunction, isString, shallowEqual } from './basic'
-import { createActionFactory } from 'basic-fsa-factories'
 
 export type Reducer<A = any, V = any> = (acc: A, value: V) => A
 
@@ -58,70 +58,34 @@ export function forType (type) {
   }
 }
 
-export type EventMorphismSpec<T extends string = string> = [
-  (state: any, payload?: any) => boolean,
-  T | EventMorphism<T>,
-  (T | EventMorphism<T>)?
-]
+export type EventGuard<T extends string = string, S = any> = (
+  event: StandardAction<T>,
+  state: S
+) => StandardAction<T> | false | void
 
-export type EventMorphism<T extends string = string> = (
-  state: any,
-  payload?: any
-) => T | StandardAction<T>
-
-export function mapEvents<T extends string = string> (
-  specs: { [type in T]: EventMorphismSpec<T> }
-) {
-  const triggers = {} as {
-    [type in T]: (state: any, event: StandardAction<T>) => StandardAction<T>
-  }
-  for (const type of Object.keys(specs)) {
-    const [predicate, onTrue, onFalse] = specs[type]
-    triggers[type] = mapEventOn(predicate)(onTrue, onFalse)
-  }
-  return function (state: any, event: StandardAction<T>) {
-    const trigger = triggers[event.type]
-    return !trigger ? event : trigger(state, event)
-  }
+export type EventGuardMap<T extends string = string, S = any> = {
+  [type in T]: (payload: any, state: S) => StandardAction<T> | false | void
 }
 
-export function mapEventOn<T extends string = string> (
-  predicate: (state: any, event?: any) => boolean
-)
-export function mapEventOn<T extends string = string> (
-  type: T,
-  predicate?: (state: any, payload?: any) => boolean
-)
-export function mapEventOn<T extends string = string> (
-  type: T | ((state: any, payload?: any) => boolean),
-  predicate?: (state: any, payload?: any) => boolean
+export function withEventGuards<T extends string = string, S = any> (
+  ...specs: (EventGuardMap<T, S> | EventGuard<T, S>)[]
 ) {
-  const _predicate = isFunction(type)
-    ? type
-    : function (state: any, event: StandardAction<T>) {
-        return (
-          event.type === type && predicate && predicate(state, event.payload)
-        )
+  const guards: EventGuard<T, S>[] = specs.map(spec =>
+    isFunction(spec)
+      ? spec
+      : function (event: StandardAction<T>, state: S) {
+          const trigger = spec[event.type]
+          return trigger && trigger(event.payload, state)
+        }
+  )
+  return function (reduce: Reducer<S, StandardAction<T>>) {
+    return function reduceWithEventGuards (state: S, event: StandardAction<T>) {
+      let update = reduce(state, event)
+      for (const guard of guards) {
+        const trigger = guard(event, update)
+        if (trigger) update = reduceWithEventGuards(update, trigger)
       }
-  return function (
-    eventOnTrue: T | EventMorphism<T>,
-    eventOnFalse?: T | EventMorphism<T>
-  ) {
-    return function (state: any, event: StandardAction<T>): StandardAction<T> {
-      const trigger = _predicate(state, event) ? eventOnTrue : eventOnFalse
-      return !trigger ? event : asAction(trigger, state, event.payload)
+      return update
     }
   }
-}
-
-function asAction<T extends string = string> (
-  spec: T | EventMorphism<T> | StandardAction<T>,
-  state?: any,
-  payload?: any
-): StandardAction<T> {
-  return isFunction(spec)
-    ? asAction(spec(state, payload))
-    : isString(spec)
-    ? { type: spec, payload }
-    : spec
 }

@@ -14,8 +14,7 @@
  * Limitations under the License.
  */
 
-import {
-  reducer,
+import reducer, {
   ValidityFsm,
   AuthorizationFsm,
   AuthorizationPageHocProps

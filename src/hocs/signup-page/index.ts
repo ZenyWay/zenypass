@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 
-import { reducer, ValidityFsm, SignupFsm, SignupPageHocProps } from './reducer'
+import reducer, { ValidityFsm, SignupFsm, SignupPageHocProps } from './reducer'
 import { serviceSignupOnSubmitFromSubmittable } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
