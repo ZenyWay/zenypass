@@ -77,7 +77,16 @@ const iosClickDelegationWorkaround = style({
   cursor: 'pointer'
 })
 
-const cardClassNames = `px-0 shadow-sm ${iosClickDelegationWorkaround}`
+const shadowOnHover = style({
+  transition: 'box-shadow .2s',
+  $nest: {
+    '&:hover': {
+      boxShadow: '0 0.5rem 1rem rgba(0,0,0,.15)!important' // bootstrap4 'shadow' class
+    }
+  }
+})
+
+const cardClassNames = `px-0 shadow-sm ${shadowOnHover} ${iosClickDelegationWorkaround}`
 
 export function RecordCard ({
   locale,
@@ -142,7 +151,7 @@ export function RecordCard ({
                   color='none'
                   icon={isBookmarkCard ? 'bookmark' : 'lock'}
                   pending={connectingOrPendingRecord}
-                  disabled
+                  className='disabled'
                 />
               )}
             </InputGroup>
