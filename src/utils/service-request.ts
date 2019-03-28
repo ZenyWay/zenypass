@@ -51,9 +51,9 @@ function doPrivilegedRequest<T> (
 ) {
   return (!unrestricted
     ? observableFrom(authenticate(username))
-    : observableOf(username)
+    : observableOf(void 0)
   ).pipe(
-    switchMap(username => request(username, ...args)),
+    switchMap(() => request(username, ...args)),
     catchError(error =>
       error && error.status !== 401 // unauthorized
         ? throwError(error)
