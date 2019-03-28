@@ -54,7 +54,6 @@ const AUTHORIZATION_DELAY = 10000 // ms
 const TOKEN_DELAY = 500 // ms
 const RECORD_SERVICE_DELAY = 500 // ms
 const MIN_PASSWORD_LENGTH = 4
-const SESSION_ID = '42'
 const TOKEN = 'BCDE FGHI JKLN'
 const UNAUTHORIZED = newStatusError(401, 'UNAUTHORIZED')
 const FORBIDDEN = newStatusError(403, 'FORBIDDEN')
@@ -148,12 +147,37 @@ const RECORDS = [
     {} as KVMap<Partial<ZenypassRecord>>
   )
 
-export default Promise.resolve({
+const zenypass = Promise.resolve({
   requestAccess,
   signup,
   signin,
-  getService
+  getService (username: string): Partial<ZenypassService> {
+    if (username !== USERNAME) return
+    const records = {
+      records$,
+      getRecord: getRecord.bind(void 0, username),
+      newRecord: newRecord.bind(void 0, username),
+      putRecord: putRecord.bind(void 0, username)
+    } as ZenypassRecordService
+    return { unlock, records, signout: noop, authorize, getAuthToken }
+  }
 })
+
+export default zenypass
+
+export function getService (
+  username?: string
+): Promise<Partial<ZenypassService>> {
+  return zenypass
+    .then(({ getService }) => username && getService(username))
+    .then(service =>
+      !service
+        ? Promise.reject(
+            new Error(`SERVICE NOT FOUND FOR USERNAME: ${username}`)
+          )
+        : Promise.resolve(service)
+    )
+}
 
 const RAW_TOKEN = TOKEN.split(' ')
   .map(str => str.trim())
@@ -167,7 +191,7 @@ function requestAccess (
 ): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
     username === USERNAME && secret === RAW_TOKEN
-      ? observableOf(SESSION_ID)
+      ? observableOf(username)
       : throwError(FORBIDDEN)
   ).toPromise()
 }
@@ -176,7 +200,7 @@ function signup (username: string, passphrase: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
     username !== USERNAME &&
     (passphrase && passphrase.length >= MIN_PASSWORD_LENGTH)
-      ? observableOf(SESSION_ID)
+      ? observableOf(username)
       : throwError(FORBIDDEN)
   ).toPromise()
 }
@@ -189,37 +213,28 @@ function signin (username: string, passphrase: string): Promise<string> {
   ).toPromise()
 }
 
-function getService (username: string): Partial<ZenypassService> {
-  if (username !== USERNAME) {
-    return
-  }
-  const records = {
-    records$,
-    getRecord: getRecord.bind(void 0, username),
-    newRecord: newRecord.bind(void 0, username),
-    putRecord: putRecord.bind(void 0, username)
-  } as ZenypassRecordService
-  return { unlock, records, signout: noop }
-}
-
 function unlock (password: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
-    password === PASSWORD ? observableOf(SESSION_ID) : throwError(UNAUTHORIZED)
+    password === PASSWORD ? observableOf(password) : throwError(UNAUTHORIZED)
   ).toPromise()
 }
 
-export function authorize (sessionId: string): Observable<string> {
-  return sessionId === SESSION_ID
-    ? observableOf(TOKEN).pipe(
-        delay(TOKEN_DELAY),
-        concat(NEVER),
-        takeUntil(interval(AUTHORIZATION_DELAY))
-      )
+function getAuthToken (length?: number): string {
+  return RAW_TOKEN
+}
+
+function authorize (
+  passphrase: string,
+  secret: string
+): Promise<AuthorizationDoc> {
+  return (passphrase === PASSWORD && secret === RAW_TOKEN
+    ? observableOf(AUTHORIZATIONS[0]).pipe(delay(AUTHORIZATION_DELAY))
     : throwError(UNAUTHORIZED)
+  ).toPromise()
 }
 
 export function getAuthorizations$ (
-  sessionId: string
+  username: string
 ): Observable<KVMap<AuthorizationDoc>> {
   const authorizations = Object.keys(AUTHORIZATIONS).reduce(
     function (agents, _id) {
@@ -228,7 +243,7 @@ export function getAuthorizations$ (
     },
     {} as KVMap<AuthorizationDoc>
   )
-  return sessionId === SESSION_ID
+  return username === USERNAME
     ? observableOf(authorizations).pipe(concat(NEVER))
     : throwError(UNAUTHORIZED)
 }
