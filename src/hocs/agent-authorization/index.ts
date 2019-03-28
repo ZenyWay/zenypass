@@ -15,7 +15,10 @@
  * Limitations under the License.
  */
 //
-import reducer, { AgentAuthorizationFsm } from './reducer'
+import reducer, {
+  AgentAuthorizationFsm,
+  AgentAuthorizationHocProps
+} from './reducer'
 import {
   authorizeOnPendingAuthorization,
   cancelAuthorizationOnCancelling,
@@ -30,14 +33,13 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { callHandlerOnEvent, tapOnEvent } from 'utils'
+import { callHandlerOnEvent } from 'utils'
 import { tap } from 'rxjs/operators'
-import { SSL_OP_MICROSOFT_SESS_ID_BUG } from 'constants'
 const log = label => console.log.bind(console, label)
 
 export type AgentAuthorizationProps<
   P extends AgentAuthorizationSFCProps
-> = Rest<P, AgentAuthorizationSFCProps>
+> = AgentAuthorizationHocProps & Rest<P, AgentAuthorizationSFCProps>
 
 export interface AgentAuthorizationSFCProps
   extends AgentAuthorizationSFCHandlerProps {

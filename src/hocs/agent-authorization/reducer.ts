@@ -21,13 +21,13 @@ import compose from 'basic-compose'
 import { always, forType, mapPayload, mergePayload, omit, pick } from 'utils'
 import { Observer } from 'rxjs'
 
-export interface AgentAuthorizationCardProps {
+export interface AgentAuthorizationHocProps {
   session?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onError?: (error: any) => void
 }
 
-const SELECTED_PROPS: (keyof AgentAuthorizationCardProps)[] = [
+const SELECTED_PROPS: (keyof AgentAuthorizationHocProps)[] = [
   'session',
   'onAuthenticationRequest',
   'onError'
