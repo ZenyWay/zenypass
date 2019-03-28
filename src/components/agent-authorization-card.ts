@@ -19,10 +19,15 @@ import {
   AgentAuthorizationCard as AgentAuthorizationCardSFC,
   AgentAuthorizationCardProps as AgentAuthorizationCardSFCProps
 } from './sfcs/agent-authorization-card'
-import { agentAuthorizationCard, AgentAuthorizationCardProps } from 'hocs'
+import {
+  agentAuthorization,
+  AgentAuthorizationProps as GenericAgentAuthorizationProps
+} from 'hocs'
 
-export const AgentAuthorizationCard = agentAuthorizationCard<
+export const AgentAuthorizationCard = agentAuthorization<
   AgentAuthorizationCardSFCProps
 >(AgentAuthorizationCardSFC)
 
-export { AgentAuthorizationCardProps }
+export type AgentAuthorizationCardProps = GenericAgentAuthorizationProps<
+  AgentAuthorizationCardSFCProps
+>

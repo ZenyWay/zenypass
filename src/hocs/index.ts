@@ -17,9 +17,9 @@
 export { Component, ComponentConstructor, SFC } from 'component-from-events'
 export { serializedInput, SerializedInputProps } from './serialized-input'
 export {
-  agentAuthorizationCard,
-  AgentAuthorizationCardProps
-} from './agent-authorization-card'
+  agentAuthorization,
+  AgentAuthorizationProps
+} from './agent-authorization'
 export {
   agentAuthorizationsPage,
   AgentAuthorizationsPageProps

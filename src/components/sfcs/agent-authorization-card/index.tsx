@@ -16,69 +16,82 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
+import { style } from 'typestyle'
 import { Card, CardProps, CardBody, CardFooter, CardHeader } from 'bootstrap'
 import { FAIconButton } from '../fa-icon'
+import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
-const debug =
-  process.env.NODE_ENV !== 'production' &&
-  require('debug')('zenypass:components:access-authorization:')
-const l10ns = createL10ns(require('./locales.json'), { debug })
+const l10ns = createL10ns(require('./locales.json'))
 
 export interface AgentAuthorizationCardProps extends CardProps {
-  authenticate?: boolean
   error?: string
   pending?: boolean
   token?: string
   locale: string
   onClick?: (event: MouseEvent) => void
-  onCancel?: (err?: any) => void
-  onAuthenticated?: (sessionID: string) => void
 }
+
+const shadowOnHover = style({
+  transition: 'box-shadow .2s',
+  $nest: {
+    '&:hover': {
+      boxShadow: '0 0.5rem 1rem rgba(0,0,0,.15)!important' // bootstrap4 'shadow' class
+    }
+  }
+})
+
+const cardClassNames = `px-0 shadow-sm ${shadowOnHover}`
 
 export function AgentAuthorizationCard ({
   error,
   locale,
-  onClick,
-  onCancel,
   pending,
   token,
+  className,
+  onClick,
   ...attrs
 }: AgentAuthorizationCardProps) {
   const t = l10ns[locale]
-
-  const txt = pending && token ? t('Access authorization token:') : '...'
-  const buttonTxt = pending ? t('Cancel') : t('Authorize a new access')
-
+  const authorizing = pending && !!token
   return (
-    <Card
-      align='center'
-      border={error ? 'danger' : pending && 'info'}
-      {...attrs}
+    <article
+      className={classes(
+        'col-12 col-sm-6 col-lg-4 col-xl-3 py-1 px-0 px-sm-1',
+        className
+      )}
     >
-      <CardHeader bg='transparent' className='border-0' />
-      <CardBody>
-        {pending ? (
-          <div>
-            <p className='mb-2'>{txt}</p>
-            <p className='mb-2'>{token}</p>
-          </div>
-        ) : null}
-        <FAIconButton
-          color='info'
-          pending={pending && !token}
-          onClick={onClick}
-          className={pending && 'btn-outline-info'}
-        >
-          {buttonTxt}
-        </FAIconButton>
-      </CardBody>
-      <CardFooter
-        bg='transparent'
-        text={error && 'danger'}
-        className='border-0'
+      <Card
+        align='center'
+        bg='white'
+        border={error ? 'danger' : pending && 'info'}
+        className={cardClassNames}
+        {...attrs}
       >
-        {error}
-      </CardFooter>
-    </Card>
+        <CardHeader bg='transparent' className='border-0' />
+        <CardBody className={authorizing && 'py-0'}>
+          {!authorizing ? null : (
+            <p>
+              {t('Access authorization code')}:<br />
+              {token}
+            </p>
+          )}
+          <FAIconButton
+            color='info'
+            outline={pending}
+            pending={pending && !token}
+            onClick={onClick}
+          >
+            {authorizing ? t('Cancel') : t('Authorize a new access')}
+          </FAIconButton>
+        </CardBody>
+        <CardFooter
+          bg='transparent'
+          text={error && 'danger'}
+          className='border-0'
+        >
+          {error}
+        </CardFooter>
+      </Card>
+    </article>
   )
 }

@@ -17,17 +17,26 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { AgentAuthorizationCard } from 'components'
-import Wrapper from './helpers/card-wrapper'
-import preventDefaultAction from './helpers/prevent-default'
+import { action } from '@storybook/addon-actions'
+import {
+  AgentAuthorizationCard as PrivilegedAgentAuthorizationCard,
+  withAuthenticationModal
+} from 'components'
+import { withAuthentication } from 'hocs'
+import withL10n from 'zenyway-storybook-addon-l10n'
+import { USERNAME } from '../stubs/zenypass-service'
+
+const AgentAuthorizationCard = withAuthentication(
+  withAuthenticationModal(PrivilegedAgentAuthorizationCard)
+)
 
 const attrs = {
-  locale: 'fr',
-  onSubmit: preventDefaultAction('CLICKED')
+  session: USERNAME,
+  onError: action('ERROR')
 }
 
-storiesOf('AgentAuthorizationCard', module).add('default', () => (
-  <Wrapper>
-    <AgentAuthorizationCard {...attrs} />
-  </Wrapper>
-))
+storiesOf('AgentAuthorizationCard', module)
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('default', () => ({ locale }) => (
+    <AgentAuthorizationCard locale={locale} {...attrs} />
+  ))

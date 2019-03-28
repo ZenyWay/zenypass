@@ -159,7 +159,14 @@ const zenypass = Promise.resolve({
       newRecord: newRecord.bind(void 0, username),
       putRecord: putRecord.bind(void 0, username)
     } as ZenypassRecordService
-    return { unlock, records, signout: noop, authorize, getAuthToken }
+    return {
+      unlock,
+      records,
+      signout: noop,
+      authorize,
+      getAuthToken,
+      cancelAuthorization: noop
+    }
   }
 })
 

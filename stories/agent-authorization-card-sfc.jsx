@@ -19,33 +19,25 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import withL10n from 'zenyway-storybook-addon-l10n'
 import { AgentAuthorizationCardSFC as AgentAuthorizationCard } from 'components'
-import Wrapper from './helpers/card-wrapper'
 
+const TOKEN = 'JJJJ JJJJ JJJJ'
 const attrs = {
-  locale: 'fr',
-  onClick: action('CLICK'),
-  token: 'JJJJ JJJJ JJJJ'
+  onClick: action('CLICK')
 }
 
 storiesOf('AgentAuthorizationCard (SFC)', module)
-  .add('default', () => (
-    <Wrapper>
-      <AgentAuthorizationCard {...attrs} />
-    </Wrapper>
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('default', () => ({ locale }) => (
+    <AgentAuthorizationCard locale={locale} {...attrs} />
   ))
-  .add('authenticate', () => (
-    <Wrapper>
-      <AgentAuthorizationCard {...attrs} authenticate />
-    </Wrapper>
+  .add('pending', () => ({ locale }) => (
+    <AgentAuthorizationCard locale={locale} pending {...attrs} />
   ))
-  .add('authorizing', () => (
-    <Wrapper>
-      <AgentAuthorizationCard {...attrs} pending />
-    </Wrapper>
+  .add('authorizing', () => ({ locale }) => (
+    <AgentAuthorizationCard locale={locale} pending token={TOKEN} {...attrs} />
   ))
-  .add('error', () => (
-    <Wrapper>
-      <AgentAuthorizationCard {...attrs} error='ERROR' />
-    </Wrapper>
+  .add('error', () => ({ locale }) => (
+    <AgentAuthorizationCard locale={locale} error='ERROR' {...attrs} />
   ))
