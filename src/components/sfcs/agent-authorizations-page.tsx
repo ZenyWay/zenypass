@@ -17,59 +17,74 @@
 /** @jsx createElement */
 //
 import { createElement } from 'create-element'
-import { Col, Container, Row } from 'bootstrap'
+import { Observer } from 'component-from-props'
+import { Col, Row } from 'bootstrap'
 import { UnknownProps } from 'bootstrap/types'
 import { AuthorizedAgentCard } from './authorized-agent-card'
 import { AgentAuthorizationCard } from '../agent-authorization-card'
+import { NavbarMenu } from './navbar-menu'
 import { classes } from 'utils'
 
 export interface AgentAuthorizationsPageProps {
-  agents: AuthorizedAgentInfo[]
-  error: string
-  className: string
   locale: string
+  agents?: AuthorizedAgentInfo[]
+  session?: string
+  className?: string
+  onAuthenticationRequest?: (res$: Observer<string>) => void
+  onClose?: (event?: MouseEvent) => void
+  onError?: (error: any) => void
 }
 
 export interface AuthorizedAgentInfo {
-  agent: string
-  date: Date
-  key: string
+  _id: string
+  agent?: string
+  date?: Date
 }
 
 export function AgentAuthorizationsPage ({
-  error,
-  agents = [],
-  className,
   locale,
+  agents = [],
+  session,
+  className,
+  onAuthenticationRequest,
+  onClose,
+  onError,
   ...attrs
 }: Partial<AgentAuthorizationsPageProps> & UnknownProps) {
+  let i = agents.length
+  const cards = new Array(i)
+  while (i--) {
+    const { _id, agent, date } = agents[i]
+    cards[i] = (
+      <AuthorizedAgentCard
+        key={_id}
+        agent={agent}
+        date={date}
+        locale={locale}
+      />
+    )
+  }
   return (
-    <Container>
-      {error && (
-        <Row className='text-danger text-center border border-danger rounded my-3 py-2'>
-          <Col sm='12'>{error}</Col>
-        </Row>
-      )}
+    <section>
+      <header className='sticky-top'>
+        <NavbarMenu onClickToggle={onClose} className='shadow' />
+      </header>
       <Row
-        className={classes('align-items-center', className)}
-        mb={2}
+        className={classes(
+          'align-items-center justify-content-center',
+          className
+        )}
+        mb='2'
         {...attrs}
       >
-        <Colonne>
-          <AgentAuthorizationCard locale={locale} />
-        </Colonne>
-        {agents.map(({ agent, date, key }) => (
-          <Colonne key={key}>
-            <AuthorizedAgentCard agent={agent} date={date} locale={locale} />
-          </Colonne>
-        ))}
+        <AgentAuthorizationCard
+          locale={locale}
+          session={session}
+          onAuthenticationRequest={onAuthenticationRequest}
+          onError={onError}
+        />
+        {cards}
       </Row>
-    </Container>
+    </section>
   )
 }
-
-const Colonne = ({ children }) => (
-  <Col xl='4' md='6' className='text-center rounded'>
-    {children}
-  </Col>
-)

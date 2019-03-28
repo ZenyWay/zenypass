@@ -18,64 +18,46 @@
 //
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { AgentAuthorizationsPageSFC as AgentAuthorizationsPage } from 'components'
+import { action } from '@storybook/addon-actions'
+import {
+  AgentAuthorizationsPageSFC as PrivilegedAgentAuthorizationsPage,
+  withAuthenticationModal
+} from 'components'
+import { withAuthentication } from 'hocs'
+import withL10n from 'zenyway-storybook-addon-l10n'
+import { USERNAME } from '../stubs/zenypass-service'
 
-const agents = [
-  {
-    browser: 'Firefox',
-    date: '2018-07-27',
-    key: 0
-  },
-  {
-    browser: 'Opera',
-    date: '2018-07-27',
-    key: 1
-  },
-  {
-    browser: 'Chrome',
-    date: '2018-07-27',
-    key: 2
-  },
-  {
-    browser: 'Chromium',
-    date: '2018-07-27',
-    key: 3
-  },
-  {
-    browser: 'Safari',
-    date: '2018-07-27',
-    key: 4
-  },
-  {
-    browser: 'Edge',
-    date: '2018-07-27',
-    key: 5
-  },
-  {
-    browser: 'Explorer',
-    date: '2018-07-27',
-    key: 6
-  },
-  {
-    browser: 'Opera Neon',
-    date: '2018-07-27',
-    key: 7
-  },
-  {
-    browser: 'Opera Linux',
-    date: '2018-07-27',
-    key: 8
-  }
-].map(agent => ({ ...agent, date: new Date(agent.date) }))
+const AgentAuthorizationsPage = withAuthentication(
+  withAuthenticationModal(PrivilegedAgentAuthorizationsPage)
+)
+
+const DATE = '2018-07-27'
+const AGENTS = [
+  'Firefox',
+  'Opera',
+  'Chrome',
+  'Chromium',
+  'Safari',
+  'Edge',
+  'Explorer',
+  'Opera Neon',
+  'Opera Linux'
+].map((agent, index) => ({ _id: `${index}`, agent, date: new Date(DATE) }))
 
 const attrs = {
-  locale: 'fr',
-  agents
+  session: USERNAME,
+  agents: AGENTS,
+  onClose: action('CLOSE')
 }
 
 storiesOf('AgentAuthorizationsPage (SFC)', module)
-  .add('default', () => <AgentAuthorizationsPage {...attrs} />)
-  .add('error', () => <AgentAuthorizationsPage {...attrs} error='ERROR' />)
-  .add('authenticate', () => (
-    <AgentAuthorizationsPage {...attrs} authenticate />
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('default', () => ({ locale }) => (
+    <AgentAuthorizationsPage locale={locale} {...attrs} />
+  ))
+  .add('error', () => ({ locale }) => (
+    <AgentAuthorizationsPage locale={locale} error='ERROR' {...attrs} />
+  ))
+  .add('authenticate', () => ({ locale }) => (
+    <AgentAuthorizationsPage locale={locale} authenticate {...attrs} />
   ))

@@ -27,6 +27,7 @@ import {
 } from 'bootstrap'
 import { MenuItemIcon, DropdownItemSpec } from './dropdown'
 import { Dropdown } from '../dropdown'
+import { FAIconButton } from './fa-icon'
 import { ZENYPASS_LOGO_WHITE_SVG } from 'static'
 
 export interface NavbarMenuProps {
@@ -62,16 +63,28 @@ export function NavbarMenu ({
         <small>&nbsp;ZenyPass</small>
       </NavbarBrand>
       <span class='flex-fill text-light'>{children}</span>
-      <NavbarToggler onClick={onClickToggle} />
-      <Collapse navbar isOpen={expanded}>
-        <Nav className='ml-auto' navbar>
-          <NavMenuItems
-            menu={menu}
-            onClickItem={onClickItem}
-            onSelectItem={onSelectItem}
-          />
-        </Nav>
-      </Collapse>
+      {!menu.length ? (
+        <FAIconButton
+          icon='times'
+          iconSize='lg'
+          color='none'
+          className='text-white'
+          onClick={onClickToggle}
+        />
+      ) : (
+        <Fragment>
+          <NavbarToggler onClick={onClickToggle} />
+          <Collapse navbar isOpen={expanded}>
+            <Nav className='ml-auto' navbar>
+              <NavMenuItems
+                menu={menu}
+                onClickItem={onClickItem}
+                onSelectItem={onSelectItem}
+              />
+            </Nav>
+          </Collapse>
+        </Fragment>
+      )}
     </Navbar>
   )
 }

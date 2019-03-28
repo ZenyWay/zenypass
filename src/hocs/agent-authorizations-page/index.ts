@@ -46,9 +46,9 @@ export interface AgentAuthorizationsPageSFCHandlerProps {
 }
 
 export interface AuthorizedAgentInfo {
-  key: string
-  agent: string
-  date: Date
+  _id: string
+  agent?: string
+  date?: Date
 }
 
 interface AgentAuthorizationsPageState {
@@ -70,7 +70,7 @@ function mapStateToProps ({
   const agents = values(authorizations).map(authorization => ({
     agent: authorization.identifier,
     date: new Date(authorization.certified),
-    key: `${authorization._id}/${authorization._rev}`
+    _id: `${authorization._id}/${authorization._rev}`
   }))
 
   return {
