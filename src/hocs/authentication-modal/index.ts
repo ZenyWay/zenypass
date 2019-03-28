@@ -15,7 +15,10 @@
  * Limitations under the License.
  */
 //
-import reducer, { AuthenticationFsmState } from './reducer'
+import reducer, {
+  AuthenticationFsmState,
+  AuthenticationModalHocProps
+} from './reducer'
 import { authenticateOnAuthenticating } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
@@ -40,14 +43,6 @@ export type AuthenticationModalProps<
   P extends AuthenticationModalSFCProps
 > = AuthenticationModalHocProps & Rest<P, AuthenticationModalSFCProps>
 
-export interface AuthenticationModalHocProps {
-  authenticate?: boolean
-  session?: string
-  onError?: (error: any) => void
-  onCancelled?: () => void
-  onAuthenticated?: (sessionId: string) => void
-}
-
 export interface AuthenticationModalSFCProps
   extends AuthenticationModalSFCHandlerProps {
   open?: boolean
@@ -63,8 +58,8 @@ export interface AuthenticationModalSFCHandlerProps {
   onSubmit?: (event: Event) => void
 }
 
-interface AuthenticationModalState {
-  props: Partial<
+interface AuthenticationModalState extends AuthenticationModalHocProps {
+  attrs: Partial<
     Pick<
       AuthenticationModalProps<AuthenticationModalSFCProps>,
       Exclude<
@@ -76,15 +71,12 @@ interface AuthenticationModalState {
   state: AuthenticationFsmState
   value?: string
   error?: string
-  session?: string
   input?: HTMLElement
-  onError?: (error: any) => void
-  onCancelled?: () => void
-  onAuthenticated?: (sessionId: string) => void
 }
 
 function mapStateToProps ({
-  props,
+  attrs,
+  authenticate: open,
   value,
   error,
   state
@@ -92,7 +84,6 @@ function mapStateToProps ({
   AuthenticationModalSFCProps,
   AuthenticationModalSFCHandlerProps
 > {
-  const { authenticate: open, ...attrs } = props
   return {
     ...attrs,
     open,

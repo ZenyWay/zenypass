@@ -17,8 +17,24 @@
 //
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
-import { always, omit, forType, mapPayload, pluck } from 'utils'
+import {
+  always,
+  forType,
+  mapPayload,
+  mergePayload,
+  omit,
+  pick,
+  pluck
+} from 'utils'
 import compose from 'basic-compose'
+
+export interface AuthenticationModalHocProps {
+  authenticate?: boolean
+  session?: string
+  onError?: (error: any) => void
+  onCancelled?: () => void
+  onAuthenticated?: (sessionId: string) => void
+}
 
 export enum AuthenticationFsmState {
   Idle = 'IDLE',
@@ -45,18 +61,21 @@ const automata: AutomataSpec<AuthenticationFsmState> = {
   }
 }
 
+const SELECTED_PROPS: (keyof AuthenticationModalHocProps)[] = [
+  'authenticate',
+  'session',
+  'onAuthenticated',
+  'onCancelled',
+  'onError'
+]
+
 export default compose.into(0)(
   createAutomataReducer(automata, AuthenticationFsmState.Idle),
+  forType('INPUT_REF')(into('input')(mapPayload())),
   forType('PROPS')(
     compose.into(0)(
-      into('props')(
-        mapPayload(omit('onError', 'onAuthenticated', 'onCancelled', 'session'))
-      ),
-      into('onError')(mapPayload(pluck('onError'))),
-      into('onAuthenticated')(mapPayload(pluck('onAuthenticated'))),
-      into('onCancelled')(mapPayload(pluck('onCancelled'))),
-      into('session')(mapPayload(pluck('session')))
+      mergePayload(pick(SELECTED_PROPS)),
+      into('attrs')(mapPayload(omit(SELECTED_PROPS)))
     )
-  ),
-  forType('INPUT_REF')(into('input')(mapPayload()))
+  )
 )
