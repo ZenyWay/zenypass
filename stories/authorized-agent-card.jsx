@@ -17,15 +17,13 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
+import withL10n from 'zenyway-storybook-addon-l10n'
 import { AuthorizedAgentCard } from '../src/components/sfcs/authorized-agent-card'
-import Wrapper from './helpers/card-wrapper'
 
-storiesOf('AuthorizedAgentCard', module).add('default', () => (
-  <Wrapper>
-    <AuthorizedAgentCard
-      browser='OPERA'
-      date='Mardi 10 Juillet 2018'
-      locale='fr'
-    />
-  </Wrapper>
-))
+const DATE = new Date('2018-07-10')
+
+storiesOf('AuthorizedAgentCard', module)
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('default', () => ({ locale }) => (
+    <AuthorizedAgentCard locale={locale} agent='OPERA' date={DATE} />
+  ))

@@ -16,38 +16,67 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { Card, CardBody, CardFooter, CardHeader } from 'bootstrap'
+import { style } from 'typestyle'
+import { Card, CardBody, CardFooter, CardHeader, CardProps } from 'bootstrap'
+import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
+const l10ns = createL10ns(require('./locales.json'))
 
-const debug =
-  process.env.NODE_ENV !== 'production' &&
-  require('debug')('zenypass:components:access-browser:')
-const l10ns = createL10ns(require('./locales.json'), { debug })
-
-export interface AuthorizedAgentCardProps {
-  date: Date
-  agent: string
+export interface AuthorizedAgentCardProps extends CardProps {
+  date?: Date
+  agent?: string
   locale: string
 }
+
+const DATE_OPTIONS = {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+}
+
+const formaters = Object.keys(l10ns).reduce(function (formaters, locale) {
+  formaters[locale] = new Intl.DateTimeFormat(locale, DATE_OPTIONS)
+  return formaters
+}, {})
+
+const shadowOnHover = style({
+  transition: 'box-shadow .2s',
+  $nest: {
+    '&:hover': {
+      boxShadow: '0 0.5rem 1rem rgba(0,0,0,.15)!important' // bootstrap4 'shadow' class
+    }
+  }
+})
+
+const cardClassNames = `px-0 shadow-sm ${shadowOnHover}`
 
 export function AuthorizedAgentCard ({
   agent,
   date,
-  locale
+  locale,
+  className,
+  ...attrs
 }: AuthorizedAgentCardProps) {
   const t = l10ns[locale]
 
   return (
-    <Card className='mb-2'>
-      <CardHeader className='border-0 bg-white'>
-        {' '}
-        <h5>{agent}</h5>{' '}
-      </CardHeader>
-      <CardBody>
-        <p className='mb-2'>{t('Access authorized since:')}</p>
-        <p>{date.toLocaleString()}</p>
-      </CardBody>
-      <CardFooter className='border-0 bg-white' />
-    </Card>
+    <article
+      className={classes(
+        'col-12 col-sm-6 col-lg-4 col-xl-3 py-1 px-0 px-sm-1',
+        className
+      )}
+    >
+      <Card align='center' bg='white' className={cardClassNames} {...attrs}>
+        <CardHeader bg='transparent' className='border-0'>
+          <strong>{agent}</strong>
+        </CardHeader>
+        <CardBody className='py-0'>
+          <p className='mb-2'>{t('Access authorized since:')}</p>
+          <p>{formaters[locale].format(date)}</p>
+        </CardBody>
+        <CardFooter bg='transparent' className='border-0' />
+      </Card>
+    </article>
   )
 }
