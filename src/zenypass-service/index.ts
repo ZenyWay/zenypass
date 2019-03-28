@@ -100,6 +100,18 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
   }
 }
 
-export default getZenypassServiceAccess().then(
+const zenypass = getZenypassServiceAccess().then(
   _ZenypassServiceFactory.getInstance
 )
+
+export default zenypass
+
+export function getService (username?: string): Promise<ZenypassService> {
+  return zenypass
+    .then(({ getService }) => username && getService(username))
+    .then(service =>
+      !service
+        ? Promise.reject(newStatusError(ERROR_STATUS.NOT_FOUND))
+        : Promise.resolve(service)
+    )
+}
