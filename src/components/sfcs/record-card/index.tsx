@@ -17,17 +17,7 @@
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
 import { style } from 'typestyle'
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Input,
-  InputGroup,
-  Label,
-  InputGroupAppend
-} from 'bootstrap'
+import { Card, CardHeader, CardBody, CardFooter, InputGroup } from 'bootstrap'
 import { FAIconButton, FAIcon } from '../fa-icon'
 import { InfoModal } from '../info-modal'
 import { ConnectionModal } from '../../connection-modal'
@@ -86,8 +76,6 @@ const shadowOnHover = style({
   }
 })
 
-const cardClassNames = `px-0 shadow-sm ${shadowOnHover} ${iosClickDelegationWorkaround}`
-
 export function RecordCard ({
   locale,
   record,
@@ -116,6 +104,7 @@ export function RecordCard ({
   const { _id, name, url, username, password } = record
   const hasPassword = password !== ''
   const isBookmarkCard = url && !hasPassword
+  const isClickableThumbnail = !expanded && (hasPassword || isBookmarkCard)
   const pendingRecord = pending === 'record'
   const connecting = pending === 'connect'
   const connectingOrPendingRecord = connecting || pendingRecord
@@ -130,10 +119,12 @@ export function RecordCard ({
       {...attrs}
     >
       <Card
-        className={cardClassNames}
-        onClick={
-          !expanded && (hasPassword || isBookmarkCard) && onConnectRequest
-        }
+        className={classes(
+          'px-0 shadow-sm',
+          shadowOnHover,
+          isClickableThumbnail && iosClickDelegationWorkaround
+        )}
+        onClick={isClickableThumbnail && onConnectRequest}
       >
         {edit ? null : (
           <CardHeader className='border-0 bg-white pb-1'>
@@ -155,44 +146,6 @@ export function RecordCard ({
                 />
               )}
             </InputGroup>
-            {/*<div className='d-flex'>
-              <Button
-                id={`collapsed-record-card:${_id}:name`}
-                href={url}
-                target='_blank'
-                rel='noopener noreferer'
-                outline
-                color={url ? 'info' : 'dark'}
-                disabled={!url}
-                className='border-0 flex-fill mr-2 text-truncate text-left'
-              >
-                <strong>{name}</strong>
-              </Button>
-              {expanded || !hasConnectionButton ? null : (
-                <Button
-                  id={`collapsed-record-card:${_id}:connect`}
-                  outline
-                  color='info'
-                  disabled={connectingOrPendingRecord}
-                  onClick={onConnectRequest}
-                  className='border-0 flex-grow-0 flex-shrink-0 px-2'
-                >
-                  <FAIcon
-                    icon='lock'
-                    className={classes(
-                      'mr-1',
-                      (pendingRecord || record.unrestricted) && 'd-none'
-                    )}
-                  />
-                  <FAIcon
-                    icon={
-                      connectingOrPendingRecord ? 'spinner' : 'external-link'
-                    }
-                    animate={connectingOrPendingRecord && 'spin'}
-                  />
-                </Button>
-              )}
-            </div>*/}
           </CardHeader>
         )}
         {!expanded ? null : (
