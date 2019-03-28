@@ -25,8 +25,12 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
+import { shallowEqual } from 'utils'
 import { Observer } from 'rxjs'
-// import { tap } from 'rxjs/operators'
+import {
+  distinctUntilChanged
+  // tap
+} from 'rxjs/operators'
 // const log = label => console.log.bind(console, label)
 
 export type AuthenticationProviderProps<
@@ -52,18 +56,16 @@ export interface AuthenticationProviderSFCHandlerProps {
 interface AuthenticationProviderState {
   props: AuthenticationProviderHocProps & { [prop: string]: unknown }
   authenticate: boolean
-  session: string
 }
 
 function mapStateToProps ({
   props,
-  authenticate,
-  session
+  authenticate
 }: AuthenticationProviderState): Rest<
   AuthenticationProviderSFCProps,
   AuthenticationProviderSFCHandlerProps
 > {
-  return { ...props, authenticate, session: session || props.session }
+  return { ...props, authenticate }
 }
 
 const mapDispatchToProps: (
@@ -85,7 +87,8 @@ export function withAuthentication<P extends AuthenticationProviderSFCProps> (
     connect<AuthenticationProviderState, AuthenticationProviderSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
+    ),
+    () => distinctUntilChanged(shallowEqual)
     // () => tap(log('authentication-provider:view-props:'))
   )
 }
