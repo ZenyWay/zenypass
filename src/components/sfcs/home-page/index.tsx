@@ -26,7 +26,7 @@ import {
 } from '../filtered-record-cards'
 import { Onboarding } from '../onboarding'
 import { InfoModal } from '../info-modal'
-import { ProgressBar } from 'bootstrap'
+import { ProgressBar, Row } from 'bootstrap'
 import { classes, isString } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
@@ -108,10 +108,10 @@ export function HomePage ({
             className='shadow'
           />
           <div className='container-fluid bg-light'>
-            <div className='row justify-content-center'>
+            <Row className='justify-content-center px-1'>
               <IconLabelInputGroup
                 icon='search'
-                className='col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 px-0 mt-1 shadow-sm'
+                className='col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mt-1 px-0 shadow'
               >
                 <SerializedInput
                   innerRef={onSearchFieldRef}
@@ -123,26 +123,26 @@ export function HomePage ({
                   onChange={onTokensChange}
                 />
               </IconLabelInputGroup>
-            </div>
+            </Row>
           </div>
         </header>
         <div className='container-fluid mt-1'>
-          <div
+          <Row
             className={classes(
-              'row align-items-start justify-content-center',
+              'align-items-start justify-content-center',
               className
             )}
           >
             <FilteredRecordCards locale={locale} records={records} {...attrs} />
-          </div>
-          <div
+          </Row>
+          <Row
             className={classes(
-              'row justify-content-center',
+              'justify-content-center',
               !onboarding && 'd-none'
             )}
           >
             <Onboarding locale={locale} onClose={onCloseOnboarding} />
-          </div>
+          </Row>
         </div>
       </section>
     </Fragment>

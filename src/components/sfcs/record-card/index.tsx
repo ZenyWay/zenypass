@@ -71,7 +71,7 @@ const shadowOnHover = style({
   transition: 'box-shadow .2s',
   $nest: {
     '&:hover': {
-      boxShadow: '0 0.5rem 1rem rgba(0,0,0,.15)!important' // bootstrap4 'shadow' class
+      boxShadow: '0 0.5rem 1rem rgba(0,0,0,.25)!important' // bootstrap4 'shadow' class
     }
   }
 })
@@ -113,7 +113,7 @@ export function RecordCard ({
   return (
     <article
       className={classes(
-        'col-12 col-sm-6 col-lg-4 col-xl-3 py-1 px-0 px-sm-1',
+        'col-12 col-sm-6 col-lg-4 col-xl-3 py-1 px-0 px-1',
         className
       )}
       {...attrs}
@@ -127,7 +127,7 @@ export function RecordCard ({
         onClick={isClickableThumbnail && onConnectRequest}
       >
         {edit ? null : (
-          <CardHeader className='border-0 bg-white pb-1'>
+          <CardHeader className='border-0 bg-white pb-1 px-3'>
             <InputGroup>
               <span
                 className={classes(
@@ -149,7 +149,7 @@ export function RecordCard ({
           </CardHeader>
         )}
         {!expanded ? null : (
-          <CardBody className='py-2'>
+          <CardBody className='py-2 px-3'>
             <RecordCardBody
               locale={locale}
               record={record}
@@ -167,7 +167,7 @@ export function RecordCard ({
             />
           </CardBody>
         )}
-        <CardFooter className='border-0 bg-white pt-0'>
+        <CardFooter className='border-0 bg-white pt-0 px-3'>
           {!expanded ? (
             <CollapsedCardFooter
               _id={_id}

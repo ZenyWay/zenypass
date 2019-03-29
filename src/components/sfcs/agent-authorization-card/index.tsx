@@ -35,7 +35,7 @@ const shadowOnHover = style({
   transition: 'box-shadow .2s',
   $nest: {
     '&:hover': {
-      boxShadow: '0 0.5rem 1rem rgba(0,0,0,.15)!important' // bootstrap4 'shadow' class
+      boxShadow: '0 0.5rem 1rem rgba(0,0,0,.25)!important' // bootstrap4 'shadow' class
     }
   }
 })
@@ -56,7 +56,7 @@ export function AgentAuthorizationCard ({
   return (
     <article
       className={classes(
-        'col-12 col-sm-6 col-lg-4 col-xl-3 py-1 px-0 px-sm-1',
+        'col-12 col-sm-6 col-lg-4 col-xl-3 py-1 px-0 px-1',
         className
       )}
     >
@@ -67,8 +67,8 @@ export function AgentAuthorizationCard ({
         className={cardClassNames}
         {...attrs}
       >
-        <CardHeader bg='transparent' className='border-0' />
-        <CardBody className={authorizing && 'py-0'}>
+        <CardHeader bg='transparent' className='border-0 px-3' />
+        <CardBody className={classes('px-3', authorizing && 'py-0')}>
           {!authorizing ? null : (
             <p>
               {t('Access authorization code')}:<br />
@@ -87,7 +87,7 @@ export function AgentAuthorizationCard ({
         <CardFooter
           bg='transparent'
           text={error && 'danger'}
-          className='border-0'
+          className='border-0 px-3'
         >
           {error}
         </CardFooter>
