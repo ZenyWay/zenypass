@@ -15,7 +15,8 @@
  */
 //
 import sortIndexedRecordsByName from './sort'
-import zenypass, {
+import {
+  getService,
   PouchDoc,
   PouchVaultChange,
   ZenypassRecord
@@ -75,18 +76,9 @@ const createRecordRejected = createActionFactory<any>('CREATE_RECORD_REJECTED')
 const updateRecords = createActionFactory('UPDATE_RECORDS')
 const error = createActionFactory('ERROR')
 
-const zenypass$ = observableFrom(zenypass)
-
 const createRecord$ = createPrivilegedRequest<ZenypassRecord>(
   (username: string) =>
-    zenypass$.pipe(
-      map(({ getService }) => username && getService(username)),
-      switchMap(service =>
-        !service
-          ? throwError(newStatusError(ERROR_STATUS.FORBIDDEN))
-          : service.records.newRecord()
-      )
-    )
+    getService(username).then(({ records }) => records.newRecord())
 )
 
 export function createRecordOnCreateRecordRequested (
@@ -139,13 +131,8 @@ function includesDefinedRecord (record: ZenypassRecord) {
 }
 
 const getRecords$ = createPrivilegedRequest((username: string) =>
-  zenypass$.pipe(
-    map(({ getService }) => username && getService(username)),
-    switchMap(service =>
-      !service
-        ? throwError(newStatusError(ERROR_STATUS.FORBIDDEN))
-        : service.records.records$
-    )
+  observableFrom(getService(username)).pipe(
+    switchMap(({ records }) => records.records$)
   )
 )
 
@@ -190,35 +177,32 @@ function toIndexedRecordsArray (
 }
 
 const getSettings$ = createPrivilegedRequest<SettingsDoc>((username: string) =>
-  zenypass$.pipe(
-    map(({ getService }) => username && getService(username)),
-    switchMap(service =>
-      !service
-        ? throwError(newStatusError(ERROR_STATUS.FORBIDDEN))
-        : observableFrom(
-            service.meta.getChange$<SettingsDoc>({
+  observableFrom(getService(username)).pipe(
+    switchMap(({ meta }) =>
+      observableFrom(
+        meta.getChange$<SettingsDoc>({
+          doc_ids: [SETTINGS_DOC_ID],
+          include_docs: true,
+          live: false,
+          since: 0
+        })
+      ).pipe(
+        defaultIfEmpty<PouchVaultChange<SettingsDoc>>(void 0),
+        last<PouchVaultChange<SettingsDoc>>(),
+        concatMap(change =>
+          observableFrom(
+            meta.getChange$({
               doc_ids: [SETTINGS_DOC_ID],
               include_docs: true,
-              live: false,
-              since: 0
+              live: true,
+              since: (change && change.seq) || 0
             })
           ).pipe(
-            defaultIfEmpty<PouchVaultChange<SettingsDoc>>(void 0),
-            last<PouchVaultChange<SettingsDoc>>(),
-            concatMap(change =>
-              observableFrom(
-                service.meta.getChange$({
-                  doc_ids: [SETTINGS_DOC_ID],
-                  include_docs: true,
-                  live: true,
-                  since: (change && change.seq) || 0
-                })
-              ).pipe(
-                pluck<PouchVaultChange<SettingsDoc>, SettingsDoc>('doc'),
-                change && change.doc ? startWith(change.doc) : identity
-              )
-            )
+            pluck<PouchVaultChange<SettingsDoc>, SettingsDoc>('doc'),
+            change && change.doc ? startWith(change.doc) : identity
           )
+        )
+      )
     )
   )
 )
@@ -249,24 +233,19 @@ export function injectSettings$FromService (
 
 const upsertSettings$ = createPrivilegedRequest<SettingsDoc>(
   (username: string, { lang, noOnboarding }) =>
-    zenypass$.pipe(
-      map(({ getService }) => username && getService(username)),
-      switchMap(service =>
-        !service
-          ? throwError(newStatusError(ERROR_STATUS.FORBIDDEN))
-          : observableFrom(service.meta.get<SettingsDoc>(SETTINGS_DOC_ID)).pipe(
-              catchError(err =>
-                err && err.status !== ERROR_STATUS.NOT_FOUND
-                  ? throwError(err)
-                  : observableOf({ lang, noOnboarding } as SettingsDoc)
-              ),
-              filter(
-                doc => doc.lang !== lang || doc.noOnboarding !== noOnboarding
-              ),
-              concatMap(({ _id, _rev }) =>
-                service.meta.put({ _id, _rev, lang, noOnboarding })
-              )
-            )
+    observableFrom(getService(username)).pipe(
+      switchMap(({ meta }) =>
+        observableFrom(meta.get<SettingsDoc>(SETTINGS_DOC_ID)).pipe(
+          catchError(err =>
+            err && err.status !== ERROR_STATUS.NOT_FOUND
+              ? throwError(err)
+              : observableOf({ lang, noOnboarding } as SettingsDoc)
+          ),
+          filter(doc => doc.lang !== lang || doc.noOnboarding !== noOnboarding),
+          concatMap(({ _id, _rev }) =>
+            meta.put({ _id, _rev, lang, noOnboarding })
+          )
+        )
       )
     )
 )

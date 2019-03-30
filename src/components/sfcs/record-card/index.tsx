@@ -112,10 +112,7 @@ export function RecordCard ({
   const confirmCancel = pending === 'confirm-cancel'
   return (
     <article
-      className={classes(
-        'col-12 col-sm-6 col-lg-4 col-xl-3 py-1 px-0 px-1',
-        className
-      )}
+      className={classes('col-12 col-sm-6 col-lg-4 col-xl-3 p-1', className)}
       {...attrs}
     >
       <Card

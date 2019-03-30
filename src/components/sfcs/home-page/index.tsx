@@ -107,7 +107,7 @@ export function HomePage ({
             onSelectItem={onSelectMenuItem}
             className='shadow'
           />
-          <div className='container-fluid bg-light'>
+          <div className='container-fluid bg-transparent'>
             <Row className='justify-content-center px-1'>
               <IconLabelInputGroup
                 icon='search'
@@ -126,7 +126,7 @@ export function HomePage ({
             </Row>
           </div>
         </header>
-        <div className='container-fluid mt-1'>
+        <main className='container-fluid mt-1'>
           <Row
             className={classes(
               'align-items-start justify-content-center',
@@ -143,7 +143,7 @@ export function HomePage ({
           >
             <Onboarding locale={locale} onClose={onCloseOnboarding} />
           </Row>
-        </div>
+        </main>
       </section>
     </Fragment>
   )
