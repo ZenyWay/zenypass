@@ -31,7 +31,7 @@ const AgentAuthorizationsPage = withAuthentication(
   withAuthenticationModal(PrivilegedAgentAuthorizationsPage)
 )
 
-const DATE = '2018-07-27'
+const DATE = new Date('2018-07-27').valueOf()
 const AGENTS = [
   'Firefox',
   'Opera',
@@ -42,7 +42,7 @@ const AGENTS = [
   'Explorer',
   'Opera Neon',
   'Opera Linux'
-].map((agent, index) => ({ _id: `${index}`, agent, date: new Date(DATE) }))
+].map((identifier, index) => ({ _id: `${index}`, identifier, certified: DATE }))
 
 const attrs = {
   session: USERNAME,

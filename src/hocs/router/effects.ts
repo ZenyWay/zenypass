@@ -15,7 +15,7 @@
  */
 //
 import { RouteAutomataState } from './reducer'
-import zenypass from 'zenypass-service'
+import { getService } from 'zenypass-service'
 import { LOCALES } from './options'
 import { createActionFactories, createActionFactory } from 'basic-fsa-factories'
 import {
@@ -85,9 +85,9 @@ export function signoutOnSigningOut (_: any, state$: Observable<any>) {
 }
 
 function signout (username: string): Promise<void> {
-  return zenypass
-    .then(({ getService }) => username && getService(username))
-    .then(service => service && service.signout())
+  return getService(username)
+    .then(service => service.signout())
+    .catch(log('signout:ignored:'))
 }
 
 // support url hash in storybook (iframe in development mode)

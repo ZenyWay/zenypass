@@ -20,10 +20,10 @@ import { storiesOf } from '@storybook/react'
 import withL10n from 'zenyway-storybook-addon-l10n'
 import { AuthorizedAgentCard } from '../src/components/sfcs/authorized-agent-card'
 
-const DATE = new Date('2018-07-10')
+const DATE = new Date('2018-07-10').valueOf()
 
 storiesOf('AuthorizedAgentCard', module)
   .addDecorator(withL10n({ locales: ['fr', 'en'] }))
   .add('default', () => ({ locale }) => (
-    <AuthorizedAgentCard locale={locale} agent='OPERA' date={DATE} />
+    <AuthorizedAgentCard locale={locale} identifier='OPERA' certified={DATE} />
   ))

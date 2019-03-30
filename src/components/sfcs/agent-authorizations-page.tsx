@@ -37,8 +37,8 @@ export interface AgentAuthorizationsPageProps {
 
 export interface AuthorizedAgentInfo {
   _id: string
-  agent?: string
-  date?: Date
+  identifier?: string
+  certified?: number
 }
 
 export function AgentAuthorizationsPage ({
@@ -54,12 +54,12 @@ export function AgentAuthorizationsPage ({
   let i = agents.length
   const cards = new Array(i)
   while (i--) {
-    const { _id, agent, date } = agents[i]
+    const { _id, identifier, certified } = agents[i]
     cards[i] = (
       <AuthorizedAgentCard
         key={_id}
-        agent={agent}
-        date={date}
+        identifier={identifier}
+        certified={certified}
         locale={locale}
       />
     )
@@ -69,22 +69,24 @@ export function AgentAuthorizationsPage ({
       <header className='sticky-top'>
         <NavbarMenu onClickToggle={onClose} className='shadow' />
       </header>
-      <Row
-        className={classes(
-          'align-items-center justify-content-center',
-          className
-        )}
-        mb='2'
-        {...attrs}
-      >
-        <AgentAuthorizationCard
-          locale={locale}
-          session={session}
-          onAuthenticationRequest={onAuthenticationRequest}
-          onError={onError}
-        />
-        {cards}
-      </Row>
+      <main className='container-fluid'>
+        <Row
+          className={classes(
+            'align-items-center justify-content-center',
+            className
+          )}
+          mb='2'
+          {...attrs}
+        >
+          <AgentAuthorizationCard
+            locale={locale}
+            session={session}
+            onAuthenticationRequest={onAuthenticationRequest}
+            onError={onError}
+          />
+          {cards}
+        </Row>
+      </main>
     </section>
   )
 }

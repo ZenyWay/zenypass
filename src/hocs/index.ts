@@ -21,9 +21,9 @@ export {
   AgentAuthorizationProps
 } from './agent-authorization'
 export {
-  agentAuthorizationsPage,
-  AgentAuthorizationsPageProps
-} from './agent-authorizations-page'
+  agentAuthorizations,
+  AgentAuthorizationsProps
+} from './agent-authorizations'
 export {
   authenticationModal,
   AuthenticationModalProps

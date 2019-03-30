@@ -15,14 +15,14 @@
  */
 //
 /** @jsx createElement */
-import { agentAuthorizationsPage, AgentAuthorizationsPageProps } from 'hocs'
+import { agentAuthorizations, AgentAuthorizationsProps } from 'hocs'
 import {
   AgentAuthorizationsPage as AgentAuthorizationsPageSFC,
   AgentAuthorizationsPageProps as AgentAuthorizationsPageSFCProps
 } from './sfcs/agent-authorizations-page'
 
-export const AgentAuthorizationsPage = agentAuthorizationsPage<
+export const AgentAuthorizationsPage = agentAuthorizations<
   AgentAuthorizationsPageSFCProps
 >(AgentAuthorizationsPageSFC)
 
-export { AgentAuthorizationsPageProps }
+export { AgentAuthorizationsProps as AgentAuthorizationsPageProps }

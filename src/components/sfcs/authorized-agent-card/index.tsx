@@ -23,8 +23,8 @@ import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
 export interface AuthorizedAgentCardProps extends CardProps {
-  date?: Date
-  agent?: string
+  certified?: number
+  identifier?: string
   locale: string
 }
 
@@ -52,8 +52,8 @@ const shadowOnHover = style({
 const cardClassNames = `px-0 shadow-sm ${shadowOnHover}`
 
 export function AuthorizedAgentCard ({
-  agent,
-  date,
+  identifier,
+  certified,
   locale,
   className,
   ...attrs
@@ -62,18 +62,15 @@ export function AuthorizedAgentCard ({
 
   return (
     <article
-      className={classes(
-        'col-12 col-sm-6 col-lg-4 col-xl-3 py-1 px-0 px-sm-1',
-        className
-      )}
+      className={classes('col-12 col-sm-6 col-lg-4 col-xl-3 p-1', className)}
     >
       <Card align='center' bg='white' className={cardClassNames} {...attrs}>
         <CardHeader bg='transparent' className='border-0'>
-          <strong>{agent}</strong>
+          <strong>{identifier}</strong>
         </CardHeader>
         <CardBody className='py-0'>
           <p className='mb-2'>{t('Access authorized since:')}</p>
-          <p>{formaters[locale].format(date)}</p>
+          <p>{formaters[locale].format(new Date(certified))}</p>
         </CardBody>
         <CardFooter bg='transparent' className='border-0' />
       </Card>
