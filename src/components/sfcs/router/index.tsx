@@ -16,6 +16,7 @@
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
 import { AuthorizationPage } from '../../authorization-page'
+import { AgentAuthorizationsPage } from '../../agent-authorizations-page'
 import { HomePage, MenuSpecs, DropdownItemSpec } from '../../home-page'
 import { SigninPage } from '../../signin-page'
 import { SignupPage } from '../../signup-page'
@@ -28,7 +29,7 @@ const l10ns = createL10ns(require('./locales.json'))
 
 export interface RouterProps extends CoreRouterProps {
   info: boolean
-  onCloseInfo: (event: MouseEvent) => void
+  onCloseInfo: (event?: MouseEvent) => void
 }
 
 export interface CoreRouterProps {
@@ -43,6 +44,7 @@ export interface CoreRouterProps {
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onAuthorize?: () => void
   onAuthorized?: () => void
+  onClose: (event?: MouseEvent) => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
   onSignedIn?: (session?: string) => void
@@ -89,6 +91,7 @@ function CoreRouter ({
   children = null,
   onAuthenticationRequest,
   onAuthorize,
+  onClose,
   onEmailChange,
   onError,
   onAuthorized,
@@ -97,7 +100,6 @@ function CoreRouter ({
   onSignin,
   onSignup,
   onSelectMenuItem,
-  onTogglePage,
   onUpdateSetting,
   attrs
 }: CoreRouterProps & { [prop: string]: unknown }) {
@@ -127,6 +129,16 @@ function CoreRouter ({
           onSelectLocale={onSelectMenuItem}
           onSignin={onSignin}
           onSignup={onSignup}
+        />
+      )
+    case '/authorizations':
+      return (
+        <AgentAuthorizationsPage
+          locale={locale}
+          session={session}
+          onAuthenticationRequest={onAuthenticationRequest}
+          onClose={onClose}
+          onError={onError}
         />
       )
     case '/signup':

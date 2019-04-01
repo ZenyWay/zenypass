@@ -85,9 +85,8 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
     HOMEPAGE: RouteAutomataState.Homepage
   },
   [RouteAutomataState.Homepage]: {
-    // TODO remove comments when corresponding pages are available
-    // AUTHORIZATIONS: '/authorizations',
-    // STORAGE: '/storage',
+    AUTHORIZATIONS: RouteAutomataState.Authorizations,
+    // STORAGE: RouteAutomataState.Storage,
     PATH_NOT_FOUND: RouteAutomataState.SigningOut,
     LOGOUT: RouteAutomataState.SigningOut,
     AUTHORIZE: RouteAutomataState.SigningOut,

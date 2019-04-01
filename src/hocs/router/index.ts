@@ -39,8 +39,7 @@ import {
   openItemLink,
   pluck,
   shallowEqual,
-  tapOnEvent,
-  tapOnMount
+  tapOnEvent
 } from 'utils'
 import { distinctUntilChanged, tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
@@ -62,6 +61,7 @@ export interface RouterSFCProps extends RouterSFCHandlerProps {
 export interface RouterSFCHandlerProps {
   onAuthorize?: () => void
   onAuthorized?: () => void
+  onClose?: (event?: MouseEvent) => void
   onCloseInfo?: (event?: MouseEvent) => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
@@ -121,6 +121,7 @@ const mapDispatchToProps: (
 ) => RouterSFCHandlerProps = createActionDispatchers({
   onAuthorize: ['ROUTE', always(Route.AUTHORIZE)],
   onAuthorized: 'AUTHORIZED',
+  onClose: 'CLOSE',
   onCloseInfo: 'CLOSE_INFO',
   onEmailChange: ['UPDATE_QUERY_PARAM', email => ['email', email]],
   onError: actionFromError,
