@@ -27,14 +27,22 @@ import componentFromEvents, {
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { callHandlerOnEvent } from 'utils'
 import { tap } from 'rxjs/operators'
+import { Observer } from 'rxjs'
 const log = label => console.log.bind(console, label)
 
 export type AgentAuthorizationsProps<
   P extends AgentAuthorizationsSFCProps
 > = AgentAuthorizationsHocProps & Rest<P, AgentAuthorizationsSFCProps>
 
-export interface AgentAuthorizationsSFCProps {
+export interface AgentAuthorizationsSFCProps
+  extends AgentAuthorizationsSFCHandlerProps {
   agents?: IndexedAgentEntry[]
+  session?: string
+}
+
+export interface AgentAuthorizationsSFCHandlerProps {
+  onAuthenticationRequest?: (res$: Observer<string>) => void
+  onError?: (error: any) => void
 }
 
 export interface IndexedAgentEntry {
@@ -51,13 +59,19 @@ export interface AuthorizedAgentInfo {
 interface AgentAuthorizationsState {
   attrs: AgentAuthorizationsProps<AgentAuthorizationsSFCProps>
   agents?: IndexedAgentEntry[]
+  session?: string
+  onAuthenticationRequest?: (res$: Observer<string>) => void
+  onError?: (error: any) => void
 }
 
 function mapStateToProps ({
   attrs,
-  agents
+  agents,
+  session,
+  onAuthenticationRequest,
+  onError
 }: AgentAuthorizationsState): AgentAuthorizationsSFCProps {
-  return { ...attrs, agents }
+  return { ...attrs, agents, session, onAuthenticationRequest, onError }
 }
 
 export function agentAuthorizations<P extends AgentAuthorizationsSFCProps> (
