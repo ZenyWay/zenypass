@@ -15,11 +15,11 @@
  * Limitations under the License.
  */
 //
-import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
-import { propCursor, into } from 'basic-cursors'
+import { into, propCursor } from 'basic-cursors'
 import compose from 'basic-compose'
-import { forType, mapPayload } from 'utils'
+import { forType, mapPayload, mergePayload, omit, pick } from 'utils'
 import { Observer } from 'rxjs'
+import { IndexedAgentEntry } from '.'
 
 export interface AgentAuthorizationsHocProps {
   session?: string
@@ -27,25 +27,25 @@ export interface AgentAuthorizationsHocProps {
   onError?: (error: any) => void
 }
 
-const inProps = propCursor('props')
-const intoAuthorizations = into('authorizations')
-const intoError = into('error')
-
-export type AutomataState = 'default' | 'authenticating'
-
-const automata: AutomataSpec<AutomataState> = {
-  authenticating: {
-    CANCEL: ['default', intoError(mapPayload())],
-    AUTHENTICATED: 'default'
-  },
-  default: {
-    AGENTS: intoAuthorizations(mapPayload()),
-    UNAUTHORIZED: 'authenticating',
-    SERVER_ERROR: intoError(mapPayload())
-  }
-}
+const SELECTED_PROPS: (keyof AgentAuthorizationsHocProps)[] = [
+  'session',
+  'onAuthenticationRequest',
+  'onError'
+]
 
 export default compose.into(0)(
-  createAutomataReducer(automata, 'authenticating'),
-  forType('PROPS')(inProps(mapPayload()))
+  forType('AGENT')(
+    propCursor('agents')(
+      (
+        agents: IndexedAgentEntry[] = [],
+        { payload: { _id, identifier, certified } }
+      ) => agents.concat({ _id, agent: { _id, identifier, certified } })
+    )
+  ),
+  forType('PROPS')(
+    compose.into(0)(
+      mergePayload(pick(SELECTED_PROPS)),
+      into('attrs')(mapPayload(omit(SELECTED_PROPS)))
+    )
+  )
 )

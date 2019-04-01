@@ -15,9 +15,8 @@
  * Limitations under the License.
  */
 //
-import reducer, { AgentAuthorizationsHocProps, AutomataState } from './reducer'
-import { getAgentsOnAuthenticated } from './effects'
-import { /* getAuthorizations$, */ AuthorizationDoc } from 'zenypass-service'
+import reducer, { AgentAuthorizationsHocProps } from './reducer'
+import { injectAgentsFromService } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -25,22 +24,22 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { values } from 'utils'
 import { createActionDispatchers } from 'basic-fsa-factories'
-// import { tap } from 'rxjs/operators'
+import { callHandlerOnEvent } from 'utils'
+import { tap } from 'rxjs/operators'
+const log = label => console.log.bind(console, label)
 
 export type AgentAuthorizationsProps<
   P extends AgentAuthorizationsSFCProps
 > = AgentAuthorizationsHocProps & Rest<P, AgentAuthorizationsSFCProps>
 
-export interface AgentAuthorizationsSFCProps
-  extends AgentAuthorizationsSFCHandlerProps {
-  agents?: AuthorizedAgentInfo[]
+export interface AgentAuthorizationsSFCProps {
+  agents?: IndexedAgentEntry[]
 }
 
-export interface AgentAuthorizationsSFCHandlerProps {
-  onCancel?: (err?: any) => void
-  onAuthenticated?: (sessionId: string) => void
+export interface IndexedAgentEntry {
+  _id: string
+  agent: AuthorizedAgentInfo
 }
 
 export interface AuthorizedAgentInfo {
@@ -50,52 +49,35 @@ export interface AuthorizedAgentInfo {
 }
 
 interface AgentAuthorizationsState {
-  props: AgentAuthorizationsProps<AgentAuthorizationsSFCProps>
-  state: AutomataState
-  authorizations?: { [_id: string]: AuthorizationDoc }
-  error?: string
+  attrs: AgentAuthorizationsProps<AgentAuthorizationsSFCProps>
+  agents?: IndexedAgentEntry[]
 }
 
 function mapStateToProps ({
-  props,
-  authorizations,
-  state,
-  error
-}: AgentAuthorizationsState): Rest<
-  AgentAuthorizationsSFCProps,
-  AgentAuthorizationsSFCHandlerProps
-> {
-  const agents = values(authorizations).map(authorization => ({
-    agent: authorization.identifier,
-    date: new Date(authorization.certified),
-    _id: `${authorization._id}/${authorization._rev}`
-  }))
-
-  return {
-    ...props,
-    agents
-  }
+  attrs,
+  agents
+}: AgentAuthorizationsState): AgentAuthorizationsSFCProps {
+  return { ...attrs, agents }
 }
-
-const mapDispatchToProps: (
-  dispatch: (event: any) => void
-) => AgentAuthorizationsSFCHandlerProps = createActionDispatchers({
-  onCancel: 'CANCEL',
-  onAuthenticated: 'AUTHENTICATED'
-})
 
 export function agentAuthorizations<P extends AgentAuthorizationsSFCProps> (
   AgentAuthorizationsPage: SFC<P>
 ): ComponentConstructor<AgentAuthorizationsProps<P>> {
   return componentFromEvents<AgentAuthorizationsProps<P>, P>(
     AgentAuthorizationsPage,
-    // () => tap(console.log.bind(console,'controlled-authorization-page-event:')),
-    redux(reducer /*, getAgentsOnAuthenticated({ getAuthorizations$ }) */),
-    // () => tap(console.log.bind(console,'controlled-authorization-page-state:')),
+    () => tap(log('agent-authorizations:event:')),
+    redux(
+      reducer,
+      injectAgentsFromService,
+      callHandlerOnEvent('ERROR', 'onError')
+    ),
+    () => tap(log('agent-authorizations:state:')),
     connect<AgentAuthorizationsState, AgentAuthorizationsSFCProps>(
       mapStateToProps,
-      mapDispatchToProps
-    )
-    // () => tap(console.log.bind(console,'controlled-authorization-page-props:'))
+      createActionDispatchers({
+        /* no handlers */
+      })
+    ),
+    () => tap(log('agent-authorizations:props:'))
   )
 }

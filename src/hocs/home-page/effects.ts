@@ -26,7 +26,6 @@ import {
   ERROR_STATUS,
   createPrivilegedRequest,
   entries,
-  newStatusError,
   toProjection
 } from 'utils'
 import {

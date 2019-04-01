@@ -29,7 +29,7 @@ import {
   catchError,
   distinctUntilKeyChanged,
   filter,
-  ignoreElements,
+  last,
   map,
   switchMap,
   startWith,
@@ -71,6 +71,7 @@ export function authorizeOnPendingAuthorization (
   state$: Observable<any>
 ) {
   const cancel$ = event$.pipe(filter(({ type }) => type === 'CLICK'))
+  const unmount$ = state$.pipe(last())
 
   return state$.pipe(
     distinctUntilKeyChanged('state'),
@@ -96,6 +97,7 @@ export function authorizeOnPendingAuthorization (
         map(() => authorizationResolved()),
         catchError(err => observableOf(authorizationRejected(err))),
         takeUntil(cancel$),
+        takeUntil(unmount$),
         throwIfEmpty(() => newStatusError(ERROR_STATUS.CLIENT_CLOSED_REQUEST)),
         startWith(authorizing())
       )

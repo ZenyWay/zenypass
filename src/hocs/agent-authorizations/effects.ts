@@ -16,9 +16,12 @@
  */
 /** @jsx createElement */
 //
+import { getService, AuthorizationDoc } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
+import { createPrivilegedRequest, toProjection } from 'utils'
 import {
   catchError,
+  distinctUntilKeyChanged,
   filter,
   last,
   map,
@@ -26,44 +29,34 @@ import {
   switchMap,
   takeUntil
 } from 'rxjs/operators'
-import { Observable, of as observable } from 'rxjs'
+import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
-export { StandardAction }
+const agent = createActionFactory('AGENT')
+const error = createActionFactory('ERROR')
 
-const onAgents = createActionFactory('AGENTS')
-const onServerError = createActionFactory('SERVER_ERROR')
-const unauthorized = createActionFactory('UNAUTHORIZED')
-
-export function getAgentsOnAuthenticated ({ getAuthorizations$ }) {
-  return function (event$, state$: Observable<{}>) {
-    const unmount$ = state$.pipe(last())
-
-    return event$.pipe(
-      filter(ofType('AUTHENTICATED')),
-      pluck('payload'),
-      takeUntil(unmount$),
-      switchMap(authorizing)
+const getAgent$ = createPrivilegedRequest<AuthorizationDoc>(
+  (username: string) =>
+    observableFrom(getService(username)).pipe(
+      switchMap(service => service.getAgentInfo$())
     )
+)
 
-    function authorizing (sessionId) {
-      return getAuthorizations$(sessionId).pipe(
-        takeUntil(unmount$),
-        map(onAgents),
-        catchError(unauthorizedOrServerError)
+export function injectAgentsFromService (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  return state$.pipe(
+    distinctUntilKeyChanged('session'),
+    switchMap(({ onAuthenticationRequest, session, locale }) =>
+      getAgent$(
+        toProjection(onAuthenticationRequest),
+        session,
+        true // unrestricted
+      ).pipe(
+        map(doc => agent(doc)),
+        catchError(err => observableOf(error(err)))
       )
-    }
-  }
-}
-
-function unauthorizedOrServerError (err) {
-  const status = (err && err.status) || 501
-  return observable((err && err.message) || `ERROR ${status}`).pipe(
-    map(status === 401 ? unauthorized : onServerError)
+    ),
+    catchError(err => observableOf(error(err)))
   )
-}
-
-function ofType (type) {
-  return function (action) {
-    return action.type === type
-  }
 }

@@ -30,7 +30,7 @@ export function createPrivilegedRequest<T> (
     username: string,
     unrestricted: boolean,
     ...args: any[]
-  ) {
+  ): Observable<T> {
     // curry request argument
     return doPrivilegedRequest(
       authenticate,
@@ -48,7 +48,7 @@ function doPrivilegedRequest<T> (
   username: string,
   unrestricted: boolean,
   ...args: any[]
-) {
+): Observable<T> {
   return (!unrestricted
     ? observableFrom(authenticate(username))
     : observableOf(void 0)

@@ -18,8 +18,18 @@
 //
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
 import { AgentAuthorizationsPage } from 'components'
+import withL10n from 'zenyway-storybook-addon-l10n'
+import { USERNAME } from '../stubs/zenypass-service'
 
-storiesOf('AgentAuthorizationsPage', module).add('default', () => (
-  <AgentAuthorizationsPage locale='fr' />
-))
+const attrs = {
+  session: USERNAME,
+  onClose: action('CLOSE')
+}
+
+storiesOf('AgentAuthorizationsPage', module)
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('default', () => ({ locale }) => (
+    <AgentAuthorizationsPage locale={locale} {...attrs} />
+  ))

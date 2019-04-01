@@ -27,12 +27,17 @@ import { classes } from 'utils'
 
 export interface AgentAuthorizationsPageProps {
   locale: string
-  agents?: AuthorizedAgentInfo[]
+  agents?: IndexedAgentEntry[]
   session?: string
   className?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onClose?: (event?: MouseEvent) => void
   onError?: (error: any) => void
+}
+
+export interface IndexedAgentEntry {
+  _id: string
+  agent: AuthorizedAgentInfo
 }
 
 export interface AuthorizedAgentInfo {
@@ -54,7 +59,10 @@ export function AgentAuthorizationsPage ({
   let i = agents.length
   const cards = new Array(i)
   while (i--) {
-    const { _id, identifier, certified } = agents[i]
+    const {
+      _id,
+      agent: { identifier, certified }
+    } = agents[i]
     cards[i] = (
       <AuthorizedAgentCard
         key={_id}
