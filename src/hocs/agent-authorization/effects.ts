@@ -29,15 +29,15 @@ import {
   catchError,
   distinctUntilKeyChanged,
   filter,
-  last,
+  finalize,
   map,
   switchMap,
   startWith,
   takeUntil,
-  tap,
+  // tap,
   throwIfEmpty
 } from 'rxjs/operators'
-import { Observable, of as observableOf } from 'rxjs'
+import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
 export { StandardAction }
 
@@ -47,13 +47,18 @@ const authorizationResolved = createActionFactory('AUTHORIZATION_RESOLVED')
 const authorizationRejected = createActionFactory('AUTHORIZATION_REJECTED')
 const error = createActionFactory('ERROR')
 const cancel = createActionFactory('CANCEL')
-const cancelled = createActionFactory('CANCELLED')
 
 // const log = (label: string) => console.log.bind(console, label)
 
 const authorize = createPrivilegedRequest(
   (username: string, passphrase: string, secret: string) =>
-    getService(username).then(service => service.authorize(passphrase, secret))
+    observableFrom(getService(username)).pipe(
+      switchMap(service =>
+        observableFrom(service.authorize(passphrase, secret)).pipe(
+          finalize(() => service.cancelAuthorization())
+        )
+      )
+    )
 )
 
 export function generateTokenOnPendingToken (_: any, state$: Observable<any>) {
@@ -71,7 +76,6 @@ export function authorizeOnPendingAuthorization (
   state$: Observable<any>
 ) {
   const cancel$ = event$.pipe(filter(({ type }) => type === 'CLICK'))
-  const unmount$ = state$.pipe(last())
 
   return state$.pipe(
     distinctUntilKeyChanged('state'),
@@ -97,7 +101,6 @@ export function authorizeOnPendingAuthorization (
         map(() => authorizationResolved()),
         catchError(err => observableOf(authorizationRejected(err))),
         takeUntil(cancel$),
-        takeUntil(unmount$),
         throwIfEmpty(() => newStatusError(ERROR_STATUS.CLIENT_CLOSED_REQUEST)),
         startWith(authorizing())
       )
@@ -107,19 +110,5 @@ export function authorizeOnPendingAuthorization (
         ? observableOf(error(err))
         : authorize$.pipe(startWith(cancel()))
     )
-  )
-}
-
-export function cancelAuthorizationOnCancelling (
-  _: any,
-  state$: Observable<any>
-) {
-  return state$.pipe(
-    distinctUntilKeyChanged('state'),
-    filter(({ state }) => state === AgentAuthorizationFsm.Cancelling),
-    switchMap(({ session }) => getService(session)),
-    tap(service => service.cancelAuthorization()),
-    map(() => cancelled()),
-    catchError(err => observableOf(error(err)))
   )
 }

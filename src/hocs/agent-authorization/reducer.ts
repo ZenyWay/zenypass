@@ -38,7 +38,6 @@ export enum AgentAuthorizationFsm {
   PendingToken = 'PENDING_TOKEN',
   PendingAuthorization = 'PENDING_AUTHORIZATION',
   Authorizing = 'AUTHORIZING',
-  Cancelling = 'CANCELLING',
   Error = 'ERROR'
 }
 
@@ -69,11 +68,8 @@ const automata: AutomataSpec<AgentAuthorizationFsm> = {
       clearToken,
       mapPayloadIntoError
     ],
-    CANCEL: [AgentAuthorizationFsm.Cancelling, clearToken],
+    CANCEL: [AgentAuthorizationFsm.Idle, clearToken],
     ERROR: [AgentAuthorizationFsm.Error, clearToken]
-  },
-  [AgentAuthorizationFsm.Cancelling]: {
-    CANCELLED: AgentAuthorizationFsm.Idle
   },
   [AgentAuthorizationFsm.Error]: {
     CLICK: [AgentAuthorizationFsm.PendingToken, clearError]

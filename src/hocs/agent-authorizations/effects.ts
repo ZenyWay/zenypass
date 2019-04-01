@@ -22,12 +22,8 @@ import { createPrivilegedRequest, toProjection } from 'utils'
 import {
   catchError,
   distinctUntilKeyChanged,
-  filter,
-  last,
   map,
-  pluck,
-  switchMap,
-  takeUntil
+  switchMap
 } from 'rxjs/operators'
 import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 

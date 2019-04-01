@@ -21,7 +21,6 @@ import reducer, {
 } from './reducer'
 import {
   authorizeOnPendingAuthorization,
-  cancelAuthorizationOnCancelling,
   generateTokenOnPendingToken
 } from './effects'
 import { modhex } from '../serialized-input/serializers'
@@ -93,7 +92,6 @@ export function agentAuthorization<P extends AgentAuthorizationSFCProps> (
       reducer,
       generateTokenOnPendingToken,
       authorizeOnPendingAuthorization,
-      cancelAuthorizationOnCancelling,
       callHandlerOnEvent('ERROR', 'onError')
     ),
     () => tap(log('agent-authorization:state:')),
