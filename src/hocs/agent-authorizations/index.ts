@@ -15,8 +15,11 @@
  * Limitations under the License.
  */
 //
-import reducer, { AgentAuthorizationsHocProps } from './reducer'
-import { injectAgentsFromService } from './effects'
+import reducer, {
+  AgentAuthorizationsFsm,
+  AgentAuthorizationsHocProps
+} from './reducer'
+import { debounceOnAgent, injectAgentsFromService } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -38,6 +41,7 @@ export interface AgentAuthorizationsSFCProps
   extends AgentAuthorizationsSFCHandlerProps {
   agents?: IndexedAgentEntry[]
   session?: string
+  init?: boolean
 }
 
 export interface AgentAuthorizationsSFCHandlerProps {
@@ -58,17 +62,20 @@ export interface AuthorizedAgentInfo {
 
 interface AgentAuthorizationsState extends AgentAuthorizationsHocProps {
   attrs: AgentAuthorizationsProps<AgentAuthorizationsSFCProps>
+  state: AgentAuthorizationsFsm
   agents?: IndexedAgentEntry[]
 }
 
 function mapStateToProps ({
   attrs,
+  state,
   agents,
   session,
   onAuthenticationRequest,
   onError
 }: AgentAuthorizationsState): AgentAuthorizationsSFCProps {
-  return { ...attrs, agents, session, onAuthenticationRequest, onError }
+  const init = state === AgentAuthorizationsFsm.Init
+  return { ...attrs, agents, init, session, onAuthenticationRequest, onError }
 }
 
 export function agentAuthorizations<P extends AgentAuthorizationsSFCProps> (
@@ -80,6 +87,7 @@ export function agentAuthorizations<P extends AgentAuthorizationsSFCProps> (
     redux(
       reducer,
       injectAgentsFromService,
+      debounceOnAgent,
       callHandlerOnEvent('ERROR', 'onError')
     ),
     () => tap(log('agent-authorizations:state:')),

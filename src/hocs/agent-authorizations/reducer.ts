@@ -15,6 +15,7 @@
  * Limitations under the License.
  */
 //
+import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into, propCursor } from 'basic-cursors'
 import compose from 'basic-compose'
 import { forType, mapPayload, mergePayload, omit, pick } from 'utils'
@@ -27,6 +28,20 @@ export interface AgentAuthorizationsHocProps {
   onError?: (error: any) => void
 }
 
+export enum AgentAuthorizationsFsm {
+  Init = 'INIT',
+  Idle = 'IDLE'
+}
+
+const automata: AutomataSpec<AgentAuthorizationsFsm> = {
+  [AgentAuthorizationsFsm.Init]: {
+    DEBOUNCE: AgentAuthorizationsFsm.Idle
+  },
+  [AgentAuthorizationsFsm.Idle]: {
+    // dead-end
+  }
+}
+
 const SELECTED_PROPS: (keyof AgentAuthorizationsHocProps)[] = [
   'session',
   'onAuthenticationRequest',
@@ -34,6 +49,7 @@ const SELECTED_PROPS: (keyof AgentAuthorizationsHocProps)[] = [
 ]
 
 export default compose.into(0)(
+  createAutomataReducer(automata, AgentAuthorizationsFsm.Init),
   forType('AGENT')(
     propCursor('agents')(
       (

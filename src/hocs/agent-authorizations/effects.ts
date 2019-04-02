@@ -21,13 +21,18 @@ import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import { createPrivilegedRequest, toProjection } from 'utils'
 import {
   catchError,
+  debounceTime,
   distinctUntilKeyChanged,
+  filter,
   map,
   switchMap
 } from 'rxjs/operators'
 import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
+const DEBOUNCE_TIME_ON_AGENT = 1500 // ms
+
 const agent = createActionFactory('AGENT')
+const debounce = createActionFactory('DEBOUNCE')
 const error = createActionFactory('ERROR')
 
 const getAgent$ = createPrivilegedRequest<AuthorizationDoc>(
@@ -54,5 +59,13 @@ export function injectAgentsFromService (
       )
     ),
     catchError(err => observableOf(error(err)))
+  )
+}
+
+export function debounceOnAgent (event$: Observable<StandardAction<any>>) {
+  return event$.pipe(
+    filter(({ type }) => type === 'AGENT'),
+    debounceTime(DEBOUNCE_TIME_ON_AGENT),
+    map(() => debounce())
   )
 }

@@ -58,12 +58,9 @@ const attrs = {
 
 storiesOf('AgentAuthorizationsPage (SFC)', module)
   .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('init', () => ({ locale }) => (
+    <AgentAuthorizationsPage locale={locale} {...attrs} init />
+  ))
   .add('default', () => ({ locale }) => (
     <AgentAuthorizationsPage locale={locale} {...attrs} />
-  ))
-  .add('error', () => ({ locale }) => (
-    <AgentAuthorizationsPage locale={locale} error='ERROR' {...attrs} />
-  ))
-  .add('authenticate', () => ({ locale }) => (
-    <AgentAuthorizationsPage locale={locale} authenticate {...attrs} />
   ))
