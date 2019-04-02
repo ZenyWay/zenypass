@@ -39,5 +39,9 @@ storiesOf('AgentAuthorizationCard (SFC)', module)
     <AgentAuthorizationCard locale={locale} pending token={TOKEN} {...attrs} />
   ))
   .add('error', () => ({ locale }) => (
-    <AgentAuthorizationCard locale={locale} error='ERROR' {...attrs} />
+    <AgentAuthorizationCard
+      locale={locale}
+      error='Something went wrong'
+      {...attrs}
+    />
   ))

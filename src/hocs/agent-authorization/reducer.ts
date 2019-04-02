@@ -18,7 +18,15 @@
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload, mergePayload, omit, pick } from 'utils'
+import {
+  always,
+  forType,
+  mapPayload,
+  mergePayload,
+  omit,
+  pick,
+  ERROR_STATUS
+} from 'utils'
 import { Observer } from 'rxjs'
 
 export interface AgentAuthorizationHocProps {
@@ -41,7 +49,7 @@ export enum AgentAuthorizationFsm {
   Error = 'ERROR'
 }
 
-const mapPayloadIntoError = into('error')(mapPayload())
+const mapPayloadIntoError = into('error')(mapPayload(stringifyError))
 const clearError = into('error')(always())
 const clearToken = into('token')(always())
 
@@ -85,3 +93,9 @@ export default compose.into(0)(
     )
   )
 )
+
+function stringifyError (err: any): string {
+  const str = err && err.toString()
+  const status = err && err.status
+  return status ? `${str} (${status})` : str
+}
