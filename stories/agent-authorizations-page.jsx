@@ -19,14 +19,23 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
-import { AgentAuthorizationsPage } from 'components'
+import {
+  AgentAuthorizationsPage as PrivilegedAgentAuthorizationsPage,
+  withAuthenticationModal
+} from 'components'
 import withL10n from 'zenyway-storybook-addon-l10n'
 import { USERNAME } from '../stubs/zenypass-service'
+import { withAuthentication } from 'hocs'
 
 const attrs = {
   session: USERNAME,
-  onClose: action('CLOSE')
+  onClose: action('CLOSE'),
+  onError: action('ERROR')
 }
+
+const AgentAuthorizationsPage = withAuthentication(
+  withAuthenticationModal(PrivilegedAgentAuthorizationsPage)
+)
 
 storiesOf('AgentAuthorizationsPage', module)
   .addDecorator(withL10n({ locales: ['fr', 'en'] }))

@@ -51,7 +51,6 @@ export const USERNAME = 'me@zw.fr'
 const PASSWORD = '!!!'
 const AUTHENTICATION_DELAY = 1500 // ms
 const AUTHORIZATION_DELAY = 10000 // ms
-const TOKEN_DELAY = 500 // ms
 const RECORD_SERVICE_DELAY = 500 // ms
 const MIN_PASSWORD_LENGTH = 4
 const TOKEN = 'BCDE FGHI JKLN'
@@ -147,6 +146,26 @@ const RECORDS = [
     {} as KVMap<Partial<ZenypassRecord>>
   )
 
+const DATE = new Date('2018-07-27').valueOf()
+const AGENTS = [
+  'Firefox',
+  'Opera',
+  'Chrome',
+  'Chromium',
+  'Safari',
+  'Edge',
+  'Explorer',
+  'Opera Neon',
+  'Opera Linux'
+].map(
+  (identifier, index) =>
+    ({
+      _id: `${index}`,
+      identifier,
+      certified: DATE
+    } as AuthorizationDoc)
+)
+
 const zenypass = Promise.resolve({
   requestAccess,
   signup,
@@ -165,7 +184,8 @@ const zenypass = Promise.resolve({
       signout: noop,
       authorize,
       getAuthToken,
-      cancelAuthorization: noop
+      cancelAuthorization: noop,
+      getAgentInfo$
     }
   }
 })
@@ -253,6 +273,10 @@ export function getAuthorizations$ (
   return username === USERNAME
     ? observableOf(authorizations).pipe(concat(NEVER))
     : throwError(UNAUTHORIZED)
+}
+
+function getAgentInfo$ () {
+  return observableFrom(AGENTS)
 }
 
 const recordsUpdate$ = new Subject<RecordsUpdate>()
