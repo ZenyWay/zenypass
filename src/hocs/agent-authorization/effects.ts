@@ -37,7 +37,12 @@ import {
   // tap,
   throwIfEmpty
 } from 'rxjs/operators'
-import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
+import {
+  Observable,
+  from as observableFrom,
+  of as observableOf,
+  throwError
+} from 'rxjs'
 
 export { StandardAction }
 
@@ -99,7 +104,13 @@ export function authorizeOnPendingAuthorization (
         secret
       ).pipe(
         map(() => authorizationResolved()),
-        catchError(err => observableOf(authorizationRejected(err))),
+        catchError(err =>
+          observableOf(
+            err && err.status !== ERROR_STATUS.REQUEST_TIMEOUT
+              ? authorizationRejected(err)
+              : cancel(err)
+          )
+        ),
         takeUntil(cancel$),
         throwIfEmpty(() => newStatusError(ERROR_STATUS.CLIENT_CLOSED_REQUEST)),
         startWith(authorizing())
