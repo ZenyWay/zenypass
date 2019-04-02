@@ -16,9 +16,9 @@
  */
 /** @jsx createElement */
 //
-import { createElement } from 'create-element'
+import { createElement, Fragment } from 'create-element'
 import { Observer } from 'component-from-props'
-import { Col, Row } from 'bootstrap'
+import { Row } from 'bootstrap'
 import { UnknownProps } from 'bootstrap/types'
 import { AuthorizedAgentCard } from './authorized-agent-card'
 import { AgentAuthorizationCard } from '../agent-authorization-card'
@@ -31,6 +31,7 @@ export interface AgentAuthorizationsPageProps {
   session?: string
   className?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
+  onAuthorization?: (pending?: boolean) => void
   onClose?: (event?: MouseEvent) => void
   onError?: (error: any) => void
 }
@@ -52,26 +53,12 @@ export function AgentAuthorizationsPage ({
   session,
   className,
   onAuthenticationRequest,
+  onAuthorization,
   onClose,
   onError,
   ...attrs
 }: Partial<AgentAuthorizationsPageProps> & UnknownProps) {
-  let i = agents.length
-  const cards = new Array(i)
-  while (i--) {
-    const {
-      _id,
-      agent: { identifier, certified }
-    } = agents[i]
-    cards[i] = (
-      <AuthorizedAgentCard
-        key={_id}
-        identifier={identifier}
-        certified={certified}
-        locale={locale}
-      />
-    )
-  }
+  const authId = agentId('_auth')
   return (
     <section>
       <header className='sticky-top'>
@@ -87,14 +74,48 @@ export function AgentAuthorizationsPage ({
           {...attrs}
         >
           <AgentAuthorizationCard
+            key={authId}
+            id={authId}
             locale={locale}
             session={session}
             onAuthenticationRequest={onAuthenticationRequest}
+            onAuthorization={onAuthorization}
             onError={onError}
           />
-          {cards}
+          <AgentAuthorizations locale={locale} agents={agents} />
         </Row>
       </main>
     </section>
   )
+}
+
+interface AgentAuthorizationsProps {
+  locale: string
+  agents?: IndexedAgentEntry[]
+}
+
+function AgentAuthorizations ({ locale, agents }: AgentAuthorizationsProps) {
+  let i = agents.length
+  const cards = new Array(i)
+  while (i--) {
+    const {
+      _id,
+      agent: { identifier, certified }
+    } = agents[i]
+    const id = agentId(_id)
+    cards[i] = (
+      <AuthorizedAgentCard
+        key={id}
+        id={id}
+        identifier={identifier}
+        certified={certified}
+        locale={locale}
+      />
+    )
+  }
+  return <Fragment>{cards}</Fragment>
+}
+
+function agentId (_id: string) {
+  return `agent_${_id}`
 }

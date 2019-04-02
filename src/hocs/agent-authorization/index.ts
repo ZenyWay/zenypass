@@ -31,8 +31,8 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import { createActionDispatchers } from 'basic-fsa-factories'
-import { callHandlerOnEvent } from 'utils'
+import { createActionDispatchers, StandardAction } from 'basic-fsa-factories'
+import { always, callHandlerOnEvent } from 'utils'
 import { tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
@@ -51,7 +51,7 @@ export interface AgentAuthorizationSFCHandlerProps {
   onClick?: (event: MouseEvent) => void
 }
 
-interface AgentAuthorizationState {
+interface AgentAuthorizationState extends AgentAuthorizationHocProps {
   attrs: { [prop: string]: unknown }
   state: AgentAuthorizationFsm
   token?: string
@@ -92,6 +92,12 @@ export function agentAuthorization<P extends AgentAuthorizationSFCProps> (
       reducer,
       generateTokenOnPendingToken,
       authorizeOnPendingAuthorization,
+      callHandlerOnEvent('AUTHORIZING', 'onAuthorization', always(true)),
+      callHandlerOnEvent(
+        (_, event) => isTerminateAuthorizationEvent(event),
+        'onAuthorization',
+        always(false)
+      ),
       callHandlerOnEvent('ERROR', 'onError')
     ),
     () => tap(log('agent-authorization:state:')),
@@ -101,4 +107,14 @@ export function agentAuthorization<P extends AgentAuthorizationSFCProps> (
     ),
     () => tap(log('agent-authorization:view-props:'))
   )
+}
+
+const TERMINATE_AUTHORIZATION_EVENTS = [
+  'CANCEL',
+  'ERROR',
+  'AUTHORIZATION_REJECTED',
+  'AUTHORIZATION_RESOLVED'
+]
+function isTerminateAuthorizationEvent ({ type }: StandardAction<any>) {
+  return TERMINATE_AUTHORIZATION_EVENTS.indexOf(type) >= 0
 }

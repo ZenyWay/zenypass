@@ -24,12 +24,14 @@ import { Observer } from 'rxjs'
 export interface AgentAuthorizationHocProps {
   session?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
+  onAuthorization?: (pending?: boolean) => void
   onError?: (error: any) => void
 }
 
 const SELECTED_PROPS: (keyof AgentAuthorizationHocProps)[] = [
   'session',
   'onAuthenticationRequest',
+  'onAuthorization',
   'onError'
 ]
 

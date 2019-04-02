@@ -42,7 +42,13 @@ const AGENTS = [
   'Explorer',
   'Opera Neon',
   'Opera Linux'
-].map((identifier, index) => ({ _id: `${index}`, identifier, certified: DATE }))
+]
+  .map((identifier, index) => ({
+    _id: `${index}`,
+    identifier,
+    certified: DATE
+  }))
+  .map(agent => ({ _id: agent._id, agent }))
 
 const attrs = {
   session: USERNAME,

@@ -23,12 +23,14 @@ import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
-export interface AgentAuthorizationCardProps extends CardProps {
+export interface AgentAuthorizationCardProps {
+  locale: string
   error?: string
   pending?: boolean
   token?: string
-  locale: string
+  className?: string
   onClick?: (event: MouseEvent) => void
+  [prop: string]: unknown
 }
 
 const shadowOnHover = style({
@@ -56,13 +58,13 @@ export function AgentAuthorizationCard ({
   return (
     <article
       className={classes('col-12 col-sm-6 col-lg-4 col-xl-3 p-1', className)}
+      {...attrs}
     >
       <Card
         align='center'
         bg='white'
         border={error ? 'danger' : pending && 'info'}
         className={cardClassNames}
-        {...attrs}
       >
         <CardHeader bg='transparent' className='border-0 px-3' />
         <CardBody className={classes('px-3', authorizing && 'py-0')}>

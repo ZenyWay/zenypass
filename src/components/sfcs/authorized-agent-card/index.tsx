@@ -22,10 +22,12 @@ import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
-export interface AuthorizedAgentCardProps extends CardProps {
-  certified?: number
-  identifier?: string
+export interface AuthorizedAgentCardProps {
   locale: string
+  identifier?: string
+  certified?: number
+  className?: string
+  [prop: string]: unknown
 }
 
 const DATE_OPTIONS = {
@@ -63,8 +65,9 @@ export function AuthorizedAgentCard ({
   return (
     <article
       className={classes('col-12 col-sm-6 col-lg-4 col-xl-3 p-1', className)}
+      {...attrs}
     >
-      <Card align='center' bg='white' className={cardClassNames} {...attrs}>
+      <Card align='center' bg='white' className={cardClassNames}>
         <CardHeader bg='transparent' className='border-0'>
           <strong>{identifier}</strong>
         </CardHeader>
