@@ -89,7 +89,7 @@ export function ConnectionModal ({
   const href = copy ? url : void 0
 
   return (
-    <Modal isOpen={open} toggle={onCancel} {...attrs}>
+    <Modal isOpen={open} toggle={onCancel} fade={false} {...attrs}>
       <ModalHeader toggle={onCancel} className='bg-info text-white'>
         {t('Login')}
       </ModalHeader>

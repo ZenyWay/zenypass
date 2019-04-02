@@ -53,6 +53,7 @@ export function InfoModal ({
     <Modal
       isOpen={expanded}
       toggle={onCancel}
+      fade={false}
       onOpened={onOpened}
       onClosed={onClosed}
     >

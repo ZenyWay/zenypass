@@ -54,12 +54,13 @@ export function AuthenticationModal ({
   onChange,
   onSubmit,
   onInputRef,
-  onCancel
+  onCancel,
+  ...attrs
 }: AuthenticationModalProps) {
   const t = l10ns[locale]
 
   return (
-    <Modal isOpen={open} toggle={onCancel}>
+    <Modal isOpen={open} toggle={onCancel} fade={false} {...attrs}>
       <ModalHeader toggle={onCancel} className='bg-info text-white'>
         {t('Authorization')}
       </ModalHeader>

@@ -93,7 +93,7 @@ export function ConsentsModal ({
 }: ConsentsModalProps & UnknownProps) {
   const t = l10ns[locale]
   return (
-    <Modal isOpen={display} toggle={onCancel} size='lg' {...attrs}>
+    <Modal isOpen={display} toggle={onCancel} fade={false} size='lg' {...attrs}>
       <ModalHeader toggle={onCancel} className='bg-info text-white'>
         {t('T&Cs')}
       </ModalHeader>
