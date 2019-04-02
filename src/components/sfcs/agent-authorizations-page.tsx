@@ -31,7 +31,6 @@ export interface AgentAuthorizationsPageProps {
   session?: string
   className?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
-  onAuthorization?: (pending?: boolean) => void
   onClose?: (event?: MouseEvent) => void
   onError?: (error: any) => void
 }
@@ -53,7 +52,6 @@ export function AgentAuthorizationsPage ({
   session,
   className,
   onAuthenticationRequest,
-  onAuthorization,
   onClose,
   onError,
   ...attrs
@@ -79,7 +77,6 @@ export function AgentAuthorizationsPage ({
             locale={locale}
             session={session}
             onAuthenticationRequest={onAuthenticationRequest}
-            onAuthorization={onAuthorization}
             onError={onError}
           />
           <AgentAuthorizations locale={locale} agents={agents} />

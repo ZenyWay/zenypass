@@ -24,11 +24,8 @@ import componentFromEvents, {
   connect,
   redux
 } from 'component-from-events'
-import {
-  createActionDispatchers,
-  createActionFactory
-} from 'basic-fsa-factories'
-import { callHandlerOnEvent, tapOnEvent } from 'utils'
+import { createActionDispatchers } from 'basic-fsa-factories'
+import { callHandlerOnEvent } from 'utils'
 import { tap } from 'rxjs/operators'
 import { Observer } from 'rxjs'
 const log = label => console.log.bind(console, label)
@@ -45,7 +42,6 @@ export interface AgentAuthorizationsSFCProps
 
 export interface AgentAuthorizationsSFCHandlerProps {
   onAuthenticationRequest?: (res$: Observer<string>) => void
-  onAuthorization?: (pending?: boolean) => void
   onError?: (error: any) => void
 }
 
@@ -75,9 +71,6 @@ function mapStateToProps ({
   return { ...attrs, agents, session, onAuthenticationRequest, onError }
 }
 
-const authorizing = createActionFactory('AUTHORIZING')
-const notAuthorizing = createActionFactory('NOT_AUTHORIZING')
-
 export function agentAuthorizations<P extends AgentAuthorizationsSFCProps> (
   AgentAuthorizationsPage: SFC<P>
 ): ComponentConstructor<AgentAuthorizationsProps<P>> {
@@ -87,15 +80,13 @@ export function agentAuthorizations<P extends AgentAuthorizationsSFCProps> (
     redux(
       reducer,
       injectAgentsFromService,
-      // work-around for Safari scrolling to bottom when starting authorization
-      tapOnEvent('AUTHORIZING', () => window.scrollTo(0, 0)),
       callHandlerOnEvent('ERROR', 'onError')
     ),
     () => tap(log('agent-authorizations:state:')),
     connect<AgentAuthorizationsState, AgentAuthorizationsSFCProps>(
       mapStateToProps,
       createActionDispatchers({
-        onAuthorization: pending => (pending ? authorizing : notAuthorizing)()
+        /* no handlers */
       })
     ),
     () => tap(log('agent-authorizations:props:'))
