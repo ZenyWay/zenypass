@@ -41,11 +41,11 @@ export const csv: InputSerializer<string[]> = {
 const MODHEX_SPLIT_REGEXP = new RegExp(`.{${MODHEX_PERIOD}}`, 'g')
 const MODHEX_SPLIT_REPLACEMENT = `$&${MODHEX_SEPARATOR}`
 
-function stringifyModhex (hex: string): string {
+function stringifyModhex (hex: string = ''): string {
   return hex.replace(MODHEX_SPLIT_REGEXP, MODHEX_SPLIT_REPLACEMENT).trim()
 }
 
-function parseModhex (str: string): string {
+function parseModhex (str: string = ''): string {
   return str
     .toUpperCase()
     .split(MODHEX_SEPARATOR_REGEXP)
@@ -54,8 +54,8 @@ function parseModhex (str: string): string {
     .join('')
 }
 
-function stringifyCsv (arr: string[]) {
-  return !arr ? '' : arr.join(CSV_SEPARATOR)
+function stringifyCsv (arr: string[] = []) {
+  return arr.join(CSV_SEPARATOR)
 }
 
 function parseCsv (str: string = '') {
