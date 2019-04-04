@@ -35,7 +35,7 @@ const l10ns = createL10ns(require('./locales.json'), { debug })
 
 export interface AuthenticationModalProps {
   open?: boolean
-  value?: string
+  passphrase?: string
   error?: boolean
   pending?: boolean
   locale: string
@@ -47,7 +47,7 @@ export interface AuthenticationModalProps {
 
 export function AuthenticationModal ({
   open,
-  value,
+  passphrase,
   pending,
   error,
   locale,
@@ -74,7 +74,7 @@ export function AuthenticationModal ({
               className={`border-${
                 error ? 'danger' : 'info'
               } rounded form-control`}
-              value={value}
+              value={passphrase}
               onChange={onChange}
               innerRef={onInputRef}
               autoFocus

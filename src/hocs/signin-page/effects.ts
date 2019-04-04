@@ -14,15 +14,14 @@
  * Limitations under the License.
  */
 
-import { ValidityFsm } from './reducer'
+import { SigninFsm } from './reducer'
 import zenypass from 'zenypass-service'
 import { StandardAction, createActionFactory } from 'basic-fsa-factories'
-import { stateOnEvent, ERROR_STATUS } from 'utils'
+import { ERROR_STATUS } from 'utils'
 import {
   catchError,
   filter,
   map,
-  startWith,
   switchMap
   // tap
 } from 'rxjs/operators'
@@ -31,33 +30,30 @@ import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
 const zenypass$ = observableFrom(zenypass)
 
-const signingIn = createActionFactory<void>('SIGNING_IN')
 const signedIn = createActionFactory<void>('SIGNED_IN')
 const unauthorized = createActionFactory<void>('UNAUTHORIZED')
 const notFound = createActionFactory<void>('NOT_FOUND')
 const error = createActionFactory<any>('ERROR')
 
-export function serviceSigninOnSubmitFromValid (
+const SIGNIN_ERRORS = {
+  [ERROR_STATUS.UNAUTHORIZED]: unauthorized,
+  [ERROR_STATUS.NOT_FOUND]: notFound
+}
+
+export function serviceSigninOnSigningIn (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  return stateOnEvent(({ type }) => type === 'SUBMIT')(event$, state$).pipe(
-    filter(({ valid }) => valid === ValidityFsm.Submittable),
+  return state$.pipe(
+    filter(({ state }) => state === SigninFsm.SigningIn),
     switchMap(({ email, password }) =>
       zenypass$.pipe(
         switchMap(({ signin }) => signin(email, password)),
         map(() => signedIn(email)),
-        catchError(err => observableOf(unauthorizedNotFoundOrError(err))),
-        startWith(signingIn())
+        catchError(err =>
+          observableOf(((err && SIGNIN_ERRORS[err.status]) || error)(err))
+        )
       )
     )
   )
-}
-
-function unauthorizedNotFoundOrError (err: any) {
-  return err && err.status !== ERROR_STATUS.UNAUTHORIZED
-    ? err && err.status !== ERROR_STATUS.NOT_FOUND
-      ? error(err)
-      : notFound()
-    : unauthorized()
 }

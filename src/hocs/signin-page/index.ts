@@ -14,8 +14,13 @@
  * Limitations under the License.
  */
 
-import reducer, { ValidityFsm, SigninFsm, SigninPageHocProps } from './reducer'
-import { serviceSigninOnSubmitFromValid } from './effects'
+import reducer, {
+  RetryFsm,
+  SigninFsm,
+  SigninPageError,
+  SigninPageHocProps
+} from './reducer'
+import { serviceSigninOnSigningIn } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -52,8 +57,6 @@ export interface SigninPageSFCProps extends SigninPageSFCHandlerProps {
   error?: SigninPageError | unknown
 }
 
-export type SigninPageError = 'email' | 'password' | 'credentials' | 'submit'
-
 export type SigninInputs = 'email' | 'password'
 
 export interface SigninPageSFCHandlerProps {
@@ -71,49 +74,44 @@ interface SigninPageState extends SigninPageHocProps {
     SigninPageProps<SigninPageSFCProps>,
     Exclude<keyof SigninPageProps<SigninPageSFCProps>, keyof SigninPageHocProps>
   >
+  state: SigninFsm
+  retry: RetryFsm
   email?: string
   password?: string
-  valid: ValidityFsm
-  signin: SigninFsm
+  error?: string
   inputs?: { [key in SigninInputs]: HTMLElement }
 }
 
-const VALID_STATE_TO_ERROR: Partial<
-  { [state in ValidityFsm]: SigninPageError }
-> = {
-  [ValidityFsm.Invalid]: 'credentials',
-  [ValidityFsm.InvalidEmail]: 'email',
-  [ValidityFsm.EmptyPassword]: 'password'
-}
-const SIGNIN_STATE_TO_ERROR: Partial<
-  { [state in SigninFsm]: SigninPageError }
-> = {
-  [SigninFsm.Alert]: 'submit',
-  [SigninFsm.RetryError]: 'submit',
-  [SigninFsm.Error]: 'submit'
+const STATE_TO_ERROR: Partial<{ [state in SigninFsm]: SigninPageError }> = {
+  [SigninFsm.PristinePasswordInvalidEmail]: 'email',
+  [SigninFsm.PristineEmailInvalidPassword]: 'password',
+  [SigninFsm.Invalid]: 'email',
+  [SigninFsm.InvalidEmail]: 'email',
+  [SigninFsm.InvalidPassword]: 'password'
 }
 
 function mapStateToProps ({
   attrs,
-  valid,
-  signin,
+  state,
+  retry,
   email,
-  password
+  password,
+  error
 }: SigninPageState): Rest<SigninPageSFCProps, SigninPageSFCHandlerProps> {
   return {
     ...attrs,
     email,
     password,
-    pending: signin === SigninFsm.Pending || signin === SigninFsm.PendingRetry,
-    enabled: !isInvalidEmailState(valid),
-    retry: signin === SigninFsm.Alert,
-    error: SIGNIN_STATE_TO_ERROR[signin] || VALID_STATE_TO_ERROR[valid]
+    pending: state === SigninFsm.SigningIn,
+    enabled: true,
+    retry: retry === RetryFsm.Alert,
+    error: STATE_TO_ERROR[state] || error
   }
 }
 
 const CHANGE_ACTIONS = createActionFactories({
-  email: 'CHANGE_EMAIL',
-  password: 'CHANGE_PASSWORD'
+  email: 'CHANGE_EMAIL_INPUT',
+  password: 'CHANGE_PASSWORD_INPUT'
 })
 
 const mapDispatchToProps: (
@@ -149,8 +147,8 @@ export function signinPage<P extends SigninPageSFCProps> (
         'INPUT_REF',
         compose.into(0)(
           focus,
-          ({ inputs, valid }) =>
-            inputs[isInvalidEmailState(valid) ? 'email' : 'password'],
+          ({ inputs, state }) =>
+            inputs[isPristineOrInvalidEmail(state) ? 'email' : 'password'],
           pluck('1')
         )
       ),
@@ -158,11 +156,11 @@ export function signinPage<P extends SigninPageSFCProps> (
         'UNAUTHORIZED',
         compose.into(0)(focus, pluck('1', 'inputs', 'password'))
       ),
-      serviceSigninOnSubmitFromValid,
+      serviceSigninOnSigningIn,
       callHandlerOnEvent('AUTHORIZE', 'onAuthorize'),
       callHandlerOnEvent('SIGNED_IN', 'onSignedIn'),
       callHandlerOnEvent('SIGNUP', 'onSignup'),
-      callHandlerOnEvent('CHANGE_EMAIL', 'onEmailChange'),
+      callHandlerOnEvent('CHANGE_EMAIL_INPUT', 'onEmailChange'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
     () => tap(log('signin-page:state:')),
@@ -175,8 +173,17 @@ export function signinPage<P extends SigninPageSFCProps> (
   )
 }
 
-function isInvalidEmailState (valid: ValidityFsm): boolean {
-  return valid === ValidityFsm.Invalid || valid === ValidityFsm.InvalidEmail
+const PRISTINE_OR_INVALID_EMAIL: SigninFsm[] = [
+  SigninFsm.Pristine,
+  SigninFsm.PristineEmail,
+  SigninFsm.PristineEmailInvalidPassword,
+  SigninFsm.PristinePasswordInvalidEmail,
+  SigninFsm.Invalid,
+  SigninFsm.InvalidEmail
+]
+
+function isPristineOrInvalidEmail (state: SigninFsm) {
+  return PRISTINE_OR_INVALID_EMAIL.indexOf(state) >= 0
 }
 
 function focus (element?: HTMLElement) {

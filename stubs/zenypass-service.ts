@@ -56,6 +56,7 @@ const MIN_PASSWORD_LENGTH = 4
 const TOKEN = 'BCDE FGHI JKLN'
 const UNAUTHORIZED = newStatusError(401, 'UNAUTHORIZED')
 const FORBIDDEN = newStatusError(403, 'FORBIDDEN')
+const NOT_FOUND = newStatusError(404, 'NOT_FOUND')
 const MAX_CERTIFIED_MS = 90 * 24 * 60 * 60 * 1000 // 90 days in ms
 const AUTHORIZATIONS = [
   'Ubuntu Opera',
@@ -217,9 +218,7 @@ function requestAccess (
   secret: string
 ): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
-    username === USERNAME && secret === RAW_TOKEN
-      ? observableOf(username)
-      : throwError(FORBIDDEN)
+    secret === RAW_TOKEN ? observableOf(username) : throwError(UNAUTHORIZED)
   ).toPromise()
 }
 
@@ -234,7 +233,9 @@ function signup (username: string, passphrase: string): Promise<string> {
 
 function signin (username: string, passphrase: string): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
-    username === USERNAME && passphrase === PASSWORD
+    username !== USERNAME
+      ? throwError(NOT_FOUND)
+      : passphrase === PASSWORD
       ? observableOf(username)
       : throwError(UNAUTHORIZED)
   ).toPromise()

@@ -38,7 +38,7 @@ export function authenticateOnAuthenticating (
   _: any,
   state$: Observable<{
     state: AuthenticationFsmState
-    value: string
+    passphrase: string
     session: string
   }>
 ) {
@@ -50,9 +50,9 @@ export function authenticateOnAuthenticating (
   )
 }
 
-function authenticate ({ value, session }): Promise<StandardAction<any>> {
+function authenticate ({ passphrase, session }): Promise<StandardAction<any>> {
   return getService(session)
-    .then(service => service.unlock(value))
+    .then(service => service.unlock(passphrase))
     .then(authenticated)
     .catch(err =>
       err && err.status === ERROR_STATUS.UNAUTHORIZED

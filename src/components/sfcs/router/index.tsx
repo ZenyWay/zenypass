@@ -127,6 +127,7 @@ function CoreRouter ({
           onError={onError}
           onAuthorized={onAuthorized}
           onSelectLocale={onSelectMenuItem}
+          onSignedIn={onSignedIn}
           onSignin={onSignin}
           onSignup={onSignup}
         />

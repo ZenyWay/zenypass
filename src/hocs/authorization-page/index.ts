@@ -15,11 +15,14 @@
  */
 
 import reducer, {
-  ValidityFsm,
   AuthorizationFsm,
+  AuthorizationPageError,
   AuthorizationPageHocProps
 } from './reducer'
-import { serviceAuthorizeOnSubmitFromSubmittable } from './effects'
+import {
+  serviceAuthorizeOnAuthorizing,
+  serviceSigninOnSigningIn
+} from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -34,7 +37,6 @@ import {
 import compose from 'basic-compose'
 import {
   callHandlerOnEvent,
-  isString,
   pluck,
   preventDefault,
   shallowEqual,
@@ -60,13 +62,6 @@ export interface AuthorizationPageSFCProps
   error?: AuthorizationPageError | false | unknown
 }
 
-export type AuthorizationPageError =
-  | 'email'
-  | 'password'
-  | 'credentials'
-  | 'token'
-  | 'submit'
-
 export type AuthorizationInputs = 'email' | 'password'
 
 export interface AuthorizationPageSFCHandlerProps {
@@ -74,7 +69,6 @@ export interface AuthorizationPageSFCHandlerProps {
   onChange?: (value: string, target?: HTMLElement) => void
   // onSelectEmail?: (item?: HTMLElement) => void
   onSubmit?: (event?: Event) => void
-  onToggleConsent?: (event: Event) => void
   onTogglePage?: (event?: MouseEvent) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
@@ -89,69 +83,54 @@ interface AuthorizationPageState extends AuthorizationPageHocProps {
       keyof AuthorizationPageHocProps
     >
   >
+  state: AuthorizationFsm
   email?: string
   password?: string
   token?: string
-  valid: ValidityFsm
-  authorization: AuthorizationFsm
+  error?: string
   inputs?: { [key in AuthorizationInputs]: HTMLElement }
 }
 
 const STATE_TO_ERROR: Partial<
-  {
-    [state in AuthorizationFsm]: Partial<
-      {
-        [state in ValidityFsm]:
-          | AuthorizationPageError
-          | ((state?: AuthorizationPageState) => AuthorizationPageError | '')
-      }
-    >
-  }
+  { [state in AuthorizationFsm]: AuthorizationPageError }
 > = {
-  [AuthorizationFsm.Idle]: {
-    [ValidityFsm.Invalid]: ({ email, password }) =>
-      (email && password && 'credentials') ||
-      (email && 'email') ||
-      (password && 'password'),
-    [ValidityFsm.InvalidEmail]: ({ email }) => email && 'email',
-    [ValidityFsm.InvalidPassword]: ({ password }) => password && 'password',
-    [ValidityFsm.InvalidToken]: ({ token }) => token && 'token'
-  },
-  [AuthorizationFsm.Error]: {
-    [ValidityFsm.InvalidToken]: 'submit'
-  }
+  [AuthorizationFsm.PristinePasswordInvalidEmail]: 'email',
+  [AuthorizationFsm.PristineEmailInvalidPassword]: 'password',
+  [AuthorizationFsm.Invalid]: 'email',
+  [AuthorizationFsm.InvalidEmail]: 'email',
+  [AuthorizationFsm.InvalidPassword]: 'password',
+  [AuthorizationFsm.InvalidToken]: 'token'
 }
 
-function mapStateToProps (
-  state: AuthorizationPageState
-): Rest<AuthorizationPageSFCProps, AuthorizationPageSFCHandlerProps> {
-  const { attrs, valid, authorization, email, password, token } = state
-  const error = get(STATE_TO_ERROR, authorization, valid)
+function mapStateToProps ({
+  attrs,
+  state,
+  email,
+  password,
+  token,
+  error
+}: AuthorizationPageState): Rest<
+  AuthorizationPageSFCProps,
+  AuthorizationPageSFCHandlerProps
+> {
+  const pending =
+    state === AuthorizationFsm.Authorizing ||
+    state === AuthorizationFsm.SigningIn
   return {
     ...attrs,
     email,
     password,
     token,
-    pending: authorization === AuthorizationFsm.Pending,
-    enabled:
-      !isInvalidEmailState(valid) && valid !== ValidityFsm.InvalidPassword,
-    error: !error || isString(error) ? error : error(state)
+    pending,
+    enabled: true,
+    error: STATE_TO_ERROR[state] || error
   }
-}
-
-function get (obj: any, ...keys: string[]): any {
-  let res: any = obj
-  for (const key of keys) {
-    if (!res) return
-    res = res[key]
-  }
-  return res
 }
 
 const CHANGE_ACTIONS = createActionFactories({
-  email: 'CHANGE_EMAIL',
-  password: 'CHANGE_PASSWORD',
-  token: 'CHANGE_TOKEN'
+  email: 'CHANGE_EMAIL_INPUT',
+  password: 'CHANGE_PASSWORD_INPUT',
+  token: 'CHANGE_TOKEN_INPUT'
 })
 
 const mapDispatchToProps: (
@@ -164,8 +143,6 @@ const mapDispatchToProps: (
   onSignin: 'SIGNIN',
   onSignup: 'SIGNUP',
   onSubmit: ['SUBMIT', preventDefault],
-  onToggleConsent: ({ currentTarget }) =>
-    CHANGE_ACTIONS[currentTarget.dataset.id](),
   onEmailInputRef: ['INPUT_REF', inputRef('email')],
   onPasswordInputRef: ['INPUT_REF', inputRef('password')],
   onTokenInputRef: ['INPUT_REF', inputRef('token')]
@@ -185,14 +162,15 @@ export function authorizationPage<P extends AuthorizationPageSFCProps> (
     () => tap(log('authorization-page:event:')),
     redux(
       reducer,
-      serviceAuthorizeOnSubmitFromSubmittable,
+      serviceSigninOnSigningIn,
+      serviceAuthorizeOnAuthorizing,
       tapOnMount(() => window.scrollTo(0, 0)),
       tapOnEvent(
         'INPUT_REF',
         compose.into(0)(
           focus,
-          ({ inputs, valid }) =>
-            inputs[isInvalidEmailState(valid) ? 'email' : 'password'],
+          ({ inputs, state }) =>
+            inputs[isPristineOrInvalidEmail(state) ? 'email' : 'password'],
           pluck('1')
         )
       ),
@@ -201,9 +179,10 @@ export function authorizationPage<P extends AuthorizationPageSFCProps> (
         compose.into(0)(focus, pluck('1', 'inputs', 'password'))
       ),
       callHandlerOnEvent('AUTHORIZED', 'onAuthorized'),
+      callHandlerOnEvent('SIGNED_IN', 'onSignedIn'),
       callHandlerOnEvent('SIGNIN', 'onSignin'),
       callHandlerOnEvent('SIGNUP', 'onSignup'),
-      callHandlerOnEvent('CHANGE_EMAIL', 'onEmailChange'),
+      callHandlerOnEvent('CHANGE_EMAIL_INPUT', 'onEmailChange'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
     () => tap(log('authorization-page:state:')),
@@ -216,8 +195,17 @@ export function authorizationPage<P extends AuthorizationPageSFCProps> (
   )
 }
 
-function isInvalidEmailState (valid: ValidityFsm): boolean {
-  return valid === ValidityFsm.Invalid || valid === ValidityFsm.InvalidEmail
+const PRISTINE_OR_INVALID_EMAIL: AuthorizationFsm[] = [
+  AuthorizationFsm.Pristine,
+  AuthorizationFsm.PristineEmail,
+  AuthorizationFsm.PristineEmailInvalidPassword,
+  AuthorizationFsm.PristinePasswordInvalidEmail,
+  AuthorizationFsm.Invalid,
+  AuthorizationFsm.InvalidEmail
+]
+
+function isPristineOrInvalidEmail (state: AuthorizationFsm) {
+  return PRISTINE_OR_INVALID_EMAIL.indexOf(state) >= 0
 }
 
 function focus (element?: HTMLElement) {

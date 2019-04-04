@@ -46,7 +46,7 @@ export type AuthenticationModalProps<
 export interface AuthenticationModalSFCProps
   extends AuthenticationModalSFCHandlerProps {
   open?: boolean
-  value?: string
+  passphrase?: string
   error?: boolean
   pending?: boolean
 }
@@ -69,7 +69,7 @@ interface AuthenticationModalState extends AuthenticationModalHocProps {
     >
   >
   state: AuthenticationFsmState
-  value?: string
+  passphrase?: string
   error?: string
   input?: HTMLElement
 }
@@ -77,19 +77,20 @@ interface AuthenticationModalState extends AuthenticationModalHocProps {
 function mapStateToProps ({
   attrs,
   authenticate: open,
-  value,
+  passphrase,
   error,
   state
 }: AuthenticationModalState): Rest<
   AuthenticationModalSFCProps,
   AuthenticationModalSFCHandlerProps
 > {
+  const pending = state === AuthenticationFsmState.Authenticating
   return {
     ...attrs,
     open,
-    value,
+    passphrase: pending ? '' : passphrase,
     error: !!error,
-    pending: state === AuthenticationFsmState.Authenticating
+    pending
   }
 }
 

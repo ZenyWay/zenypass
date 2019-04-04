@@ -14,8 +14,12 @@
  * Limitations under the License.
  */
 
-import reducer, { ValidityFsm, SignupFsm, SignupPageHocProps } from './reducer'
-import { serviceSignupOnSubmitFromSubmittable } from './effects'
+import reducer, {
+  SignupFsm,
+  SignupPageError,
+  SignupPageHocProps
+} from './reducer'
+import { serviceSignupOnSigningUp } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -37,7 +41,6 @@ import {
   tapOnMount
 } from 'utils'
 import { tap, distinctUntilChanged } from 'rxjs/operators'
-import { isString } from 'utils'
 const log = label => console.log.bind(console, label)
 
 export type SignupPageProps<P extends SignupPageSFCProps> = SignupPageHocProps &
@@ -56,13 +59,6 @@ export interface SignupPageSFCProps extends SignupPageSFCHandlerProps {
   retry?: boolean
   error?: SignupPageError | false | unknown
 }
-
-export type SignupPageError =
-  | 'email'
-  | 'password'
-  | 'credentials'
-  | 'confirm'
-  | 'submit'
 
 export type SignupInputs = 'email' | 'password'
 
@@ -84,46 +80,34 @@ interface SignupPageState extends SignupPageHocProps {
     SignupPageProps<SignupPageSFCProps>,
     Exclude<keyof SignupPageProps<SignupPageSFCProps>, keyof SignupPageHocProps>
   >
+  state: SignupFsm
   email?: string
   password?: string
   confirm?: string
   news?: boolean
-  valid: ValidityFsm
-  signup: SignupFsm
+  error?: string
   inputs?: { [key in SignupInputs]: HTMLElement }
 }
 
-const STATE_TO_ERROR: Partial<
-  {
-    [state in SignupFsm]: Partial<
-      {
-        [state in ValidityFsm]:
-          | SignupPageError
-          | ((state?: SignupPageState) => SignupPageError | '')
-      }
-    >
-  }
-> = {
-  [SignupFsm.Idle]: {
-    [ValidityFsm.Invalid]: ({ email, password }) =>
-      (email && password && 'credentials') ||
-      (email && 'email') ||
-      (password && 'password'),
-    [ValidityFsm.InvalidEmail]: ({ email }) => email && 'email',
-    [ValidityFsm.InvalidPassword]: ({ password }) => password && 'password',
-    [ValidityFsm.Tbc]: ({ confirm }) => confirm && 'confirm'
-  },
-  [SignupFsm.Error]: {
-    [ValidityFsm.Tbc]: 'submit'
-  }
+const STATE_TO_ERROR: Partial<{ [state in SignupFsm]: SignupPageError }> = {
+  [SignupFsm.PristinePasswordInvalidEmail]: 'email',
+  [SignupFsm.PristineEmailInvalidPassword]: 'password',
+  [SignupFsm.Invalid]: 'email',
+  [SignupFsm.InvalidEmail]: 'email',
+  [SignupFsm.InvalidPassword]: 'password',
+  [SignupFsm.InvalidConfirm]: 'confirm'
 }
 
-function mapStateToProps (
-  state: SignupPageState
-): Rest<SignupPageSFCProps, SignupPageSFCHandlerProps> {
-  const { attrs, valid, signup, email, password, confirm, news } = state
-  const error = get(STATE_TO_ERROR, signup, valid)
-  const terms = valid === ValidityFsm.Submittable
+function mapStateToProps ({
+  attrs,
+  state,
+  email,
+  password,
+  confirm,
+  news,
+  error
+}: SignupPageState): Rest<SignupPageSFCProps, SignupPageSFCHandlerProps> {
+  const terms = state === SignupFsm.Submittable
   return {
     ...attrs,
     email,
@@ -131,27 +115,17 @@ function mapStateToProps (
     confirm,
     news,
     terms,
-    consents: terms || valid === ValidityFsm.Consents,
-    pending: signup === SignupFsm.Pending,
-    enabled:
-      !isInvalidEmailState(valid) && valid !== ValidityFsm.InvalidPassword,
-    error: !error || isString(error) ? error : error(state)
+    consents: terms || state === SignupFsm.Consents,
+    pending: state === SignupFsm.SigningUp,
+    enabled: true,
+    error: STATE_TO_ERROR[state] || error
   }
-}
-
-function get (obj: any, ...keys: string[]): any {
-  let res: any = obj
-  for (const key of keys) {
-    if (!res) return
-    res = res[key]
-  }
-  return res
 }
 
 const CHANGE_ACTIONS = createActionFactories({
-  email: 'CHANGE_EMAIL',
-  password: 'CHANGE_PASSWORD',
-  confirm: 'CHANGE_CONFIRM',
+  email: 'CHANGE_EMAIL_INPUT',
+  password: 'CHANGE_PASSWORD_INPUT',
+  confirm: 'CHANGE_CONFIRM_INPUT',
   news: 'TOGGLE_NEWS',
   terms: 'TOGGLE_TERMS'
 })
@@ -192,8 +166,8 @@ export function signupPage<P extends SignupPageSFCProps> (
         'INPUT_REF',
         compose.into(0)(
           focus,
-          ({ inputs, valid }) =>
-            inputs[isInvalidEmailState(valid) ? 'email' : 'password'],
+          ({ inputs, state }) =>
+            inputs[isPristineOrInvalidEmail(state) ? 'email' : 'password'],
           pluck('1')
         )
       ),
@@ -201,11 +175,11 @@ export function signupPage<P extends SignupPageSFCProps> (
         'UNAUTHORIZED',
         compose.into(0)(focus, pluck('1', 'inputs', 'password'))
       ),
-      serviceSignupOnSubmitFromSubmittable,
+      serviceSignupOnSigningUp,
       callHandlerOnEvent('AUTHORIZE', 'onAuthorize'),
       callHandlerOnEvent('SIGNIN', 'onSignin'),
       callHandlerOnEvent('SIGNED_UP', 'onSignedUp'),
-      callHandlerOnEvent('CHANGE_EMAIL', 'onEmailChange'),
+      callHandlerOnEvent('CHANGE_EMAIL_INPUT', 'onEmailChange'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
     () => tap(log('signup-page:state:')),
@@ -218,8 +192,17 @@ export function signupPage<P extends SignupPageSFCProps> (
   )
 }
 
-function isInvalidEmailState (valid: ValidityFsm): boolean {
-  return valid === ValidityFsm.Invalid || valid === ValidityFsm.InvalidEmail
+const PRISTINE_OR_INVALID_EMAIL: SignupFsm[] = [
+  SignupFsm.Pristine,
+  SignupFsm.PristineEmail,
+  SignupFsm.PristineEmailInvalidPassword,
+  SignupFsm.PristinePasswordInvalidEmail,
+  SignupFsm.Invalid,
+  SignupFsm.InvalidEmail
+]
+
+function isPristineOrInvalidEmail (state: SignupFsm) {
+  return PRISTINE_OR_INVALID_EMAIL.indexOf(state) >= 0
 }
 
 function focus (element?: HTMLElement) {

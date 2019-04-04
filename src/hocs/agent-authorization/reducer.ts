@@ -25,7 +25,7 @@ import {
   mergePayload,
   omit,
   pick,
-  ERROR_STATUS
+  stringifyError
 } from 'utils'
 import { Observer } from 'rxjs'
 
@@ -93,9 +93,3 @@ export default compose.into(0)(
     )
   )
 )
-
-function stringifyError (err: any): string {
-  const str = err && err.toString()
-  const status = err && err.status
-  return status ? `${str} (${status})` : str
-}

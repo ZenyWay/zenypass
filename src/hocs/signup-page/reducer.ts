@@ -27,6 +27,7 @@ import {
   not,
   omit,
   pick,
+  stringifyError,
   withEventGuards
 } from 'utils'
 
@@ -39,20 +40,23 @@ export interface SignupPageHocProps {
   onSignin?: () => void
 }
 
-export enum ValidityFsm {
-  Invalid = 'INVALID',
-  InvalidEmail = 'INVALID_EMAIL',
-  InvalidPassword = 'INVALID_PASSWORD',
-  Tbc = 'TBC',
-  Confirmed = 'CONFIRMED',
-  Consents = 'CONSENTS',
-  Submittable = 'SUBMITTABLE'
-}
+export type SignupPageError = 'email' | 'password' | 'confirm' | 'submit'
 
 export enum SignupFsm {
-  Idle = 'IDLE',
-  Pending = 'PENDING',
-  Error = 'ERROR'
+  Pristine = 'PRISTINE',
+  PristineEmail = 'PRISTINE_EMAIL', // valid password
+  PristinePassword = 'PRISTINE_PASSWORD', // valid email
+  PristineEmailInvalidPassword = 'PRISTINE_EMAIL_INVALID_PASSWORD',
+  PristinePasswordInvalidEmail = 'PRISTINE_PASSWORD_INVALID_EMAIL',
+  Invalid = 'INVALID',
+  InvalidEmail = 'INVALID_EMAIL', // valid password
+  InvalidPassword = 'INVALID_PASSWORD', // valid email
+  PendingConfirm = 'PENDING_CONFIRM',
+  InvalidConfirm = 'INVALID_CONFIRM',
+  Confirmed = 'CONFIRMED',
+  Consents = 'CONSENTS',
+  Submittable = 'SUBMITTABLE',
+  SigningUp = 'SIGNING_UP'
 }
 
 const MIN_PASSWORD_LENGTH = 4
@@ -60,9 +64,12 @@ const isInvalidPassword = password =>
   !password || password.length < MIN_PASSWORD_LENGTH
 const isInvalidConfirm = (password, confirm) =>
   !password || confirm !== password
-const isEmailChange = (email, previous) =>
-  email !== (previous && previous.email)
+const isEmailChange = (previous = '', email) => email !== previous
 
+const stringifyErrorPayloadIntoError = into('error')(mapPayload(stringifyError))
+const mapIntoError = (error?: SignupPageError) =>
+  into('error')(mapPayload(always(error)))
+const clearError = mapIntoError(void 0)
 const mapPayloadIntoEmail = into('email')(mapPayload())
 const mapPayloadIntoPassword = into('password')(mapPayload())
 const clearPassword = propCursor('password')(always(''))
@@ -70,60 +77,97 @@ const mapPayloadIntoConfirm = into('confirm')(mapPayload())
 const clearConfirm = propCursor('confirm')(always(''))
 const toggleNews = propCursor('news')(not())
 
-const validityFsm: AutomataSpec<ValidityFsm> = {
-  [ValidityFsm.Invalid]: {
-    VALID_EMAIL: ValidityFsm.InvalidPassword,
-    VALID_PASSWORD: ValidityFsm.InvalidEmail
+const automata: AutomataSpec<SignupFsm> = {
+  [SignupFsm.Pristine]: {
+    SUBMIT: SignupFsm.PristinePasswordInvalidEmail,
+    INVALID_EMAIL: SignupFsm.PristinePasswordInvalidEmail,
+    INVALID_PASSWORD: [SignupFsm.PristineEmailInvalidPassword, clearPassword],
+    VALID_EMAIL: SignupFsm.PristinePassword,
+    VALID_PASSWORD: SignupFsm.PristineEmail
   },
-  [ValidityFsm.InvalidEmail]: {
-    INVALID_PASSWORD: ValidityFsm.Invalid,
-    VALID_EMAIL: ValidityFsm.Tbc
+  [SignupFsm.PristinePasswordInvalidEmail]: {
+    INVALID_PASSWORD: SignupFsm.Invalid,
+    VALID_EMAIL: SignupFsm.PristinePassword,
+    VALID_PASSWORD: SignupFsm.InvalidEmail
   },
-  [ValidityFsm.InvalidPassword]: {
-    INVALID_EMAIL: [ValidityFsm.Invalid, clearConfirm],
-    VALID_EMAIL: clearPassword,
-    clearConfirm,
-    VALID_PASSWORD: ValidityFsm.Tbc
+  [SignupFsm.PristineEmailInvalidPassword]: {
+    INVALID_EMAIL: SignupFsm.Invalid,
+    INVALID_PASSWORD: clearPassword,
+    VALID_EMAIL: SignupFsm.InvalidPassword,
+    VALID_PASSWORD: SignupFsm.PendingConfirm
   },
-  [ValidityFsm.Tbc]: {
-    INVALID_EMAIL: [ValidityFsm.InvalidEmail, clearConfirm],
-    INVALID_PASSWORD: ValidityFsm.InvalidPassword,
-    VALID_EMAIL: clearConfirm,
-    VALID_CONFIRM: ValidityFsm.Confirmed
+  [SignupFsm.PristineEmail]: {
+    SUBMIT: SignupFsm.InvalidEmail,
+    INVALID_EMAIL: SignupFsm.InvalidEmail,
+    INVALID_PASSWORD: [SignupFsm.PristineEmailInvalidPassword, clearPassword],
+    VALID_EMAIL: SignupFsm.PendingConfirm
   },
-  [ValidityFsm.Confirmed]: {
-    INVALID_EMAIL: [ValidityFsm.InvalidEmail, clearConfirm],
-    INVALID_PASSWORD: ValidityFsm.InvalidPassword,
-    INVALID_CONFIRM: ValidityFsm.Tbc,
-    VALID_EMAIL: [ValidityFsm.Tbc, clearConfirm],
-    VALID_PASSWORD: ValidityFsm.Tbc,
-    SUBMIT: ValidityFsm.Consents
+  [SignupFsm.PristinePassword]: {
+    CHANGE_EMAIL_PROP: clearError,
+    CHANGE_PASSWORD_INPUT: clearError,
+    SUBMIT: SignupFsm.InvalidPassword,
+    INVALID_EMAIL: SignupFsm.PristinePasswordInvalidEmail,
+    INVALID_PASSWORD: [SignupFsm.InvalidPassword, clearPassword],
+    VALID_PASSWORD: SignupFsm.PendingConfirm
   },
-  [ValidityFsm.Consents]: {
+  [SignupFsm.Invalid]: {
+    VALID_EMAIL: [SignupFsm.InvalidPassword, clearPassword],
+    VALID_PASSWORD: SignupFsm.InvalidEmail
+  },
+  [SignupFsm.InvalidEmail]: {
+    INVALID_PASSWORD: SignupFsm.Invalid,
+    VALID_EMAIL: SignupFsm.PendingConfirm
+  },
+  [SignupFsm.InvalidPassword]: {
+    INVALID_EMAIL: SignupFsm.Invalid,
+    INVALID_PASSWORD: clearPassword,
+    VALID_PASSWORD: SignupFsm.PendingConfirm
+  },
+  [SignupFsm.PendingConfirm]: {
+    SUBMIT: SignupFsm.InvalidConfirm,
+    INVALID_EMAIL: SignupFsm.InvalidEmail,
+    INVALID_PASSWORD: [SignupFsm.InvalidPassword, clearPassword],
+    INVALID_CONFIRM: SignupFsm.InvalidConfirm,
+    VALID_CONFIRM: SignupFsm.Confirmed
+  },
+  [SignupFsm.InvalidConfirm]: {
+    INVALID_EMAIL: SignupFsm.InvalidEmail,
+    INVALID_PASSWORD: [SignupFsm.InvalidPassword, clearPassword],
+    VALID_CONFIRM: SignupFsm.Confirmed
+  },
+  [SignupFsm.Confirmed]: {
+    INVALID_EMAIL: SignupFsm.InvalidEmail,
+    INVALID_PASSWORD: [SignupFsm.InvalidPassword, clearPassword],
+    INVALID_CONFIRM: SignupFsm.InvalidConfirm,
+    VALID_EMAIL: SignupFsm.InvalidConfirm,
+    VALID_PASSWORD: SignupFsm.InvalidConfirm,
+    SUBMIT: SignupFsm.Consents
+  },
+  [SignupFsm.Consents]: {
     TOGGLE_NEWS: toggleNews,
-    TOGGLE_TERMS: ValidityFsm.Submittable,
-    CANCEL: [ValidityFsm.Tbc, clearConfirm]
+    TOGGLE_TERMS: SignupFsm.Submittable,
+    CANCEL: [SignupFsm.PendingConfirm, clearConfirm]
   },
-  [ValidityFsm.Submittable]: {
+  [SignupFsm.Submittable]: {
     TOGGLE_NEWS: toggleNews,
-    TOGGLE_TERMS: ValidityFsm.Consents,
-    CANCEL: [ValidityFsm.Tbc, clearConfirm],
-    ERROR: [ValidityFsm.Tbc, clearConfirm],
-    SIGNED_UP: [ValidityFsm.InvalidPassword, clearPassword, clearConfirm]
-  }
-}
-
-const signupFsm: AutomataSpec<SignupFsm> = {
-  [SignupFsm.Idle]: {
-    ERROR: SignupFsm.Error,
-    SIGNING_UP: SignupFsm.Pending
+    TOGGLE_TERMS: SignupFsm.Consents,
+    CANCEL: [SignupFsm.PendingConfirm, clearConfirm],
+    SUBMIT: SignupFsm.SigningUp
   },
-  [SignupFsm.Pending]: {
-    ERROR: SignupFsm.Error,
-    SIGNED_UP: SignupFsm.Idle
-  },
-  [SignupFsm.Error]: {
-    SIGNING_UP: SignupFsm.Pending
+  [SignupFsm.SigningUp]: {
+    UNAUTHORIZED: [
+      SignupFsm.PristinePassword,
+      clearPassword,
+      clearConfirm,
+      mapIntoError('submit')
+    ],
+    ERROR: [
+      SignupFsm.PristinePassword,
+      clearPassword,
+      clearConfirm,
+      stringifyErrorPayloadIntoError
+    ],
+    SIGNED_UP: [SignupFsm.InvalidPassword, clearPassword, clearConfirm]
   }
 }
 
@@ -136,13 +180,15 @@ const SELECTED_PROPS: (keyof SignupPageHocProps)[] = [
 ]
 
 const reducer = compose.into(0)(
-  createAutomataReducer(validityFsm, ValidityFsm.Invalid, { key: 'valid' }),
-  createAutomataReducer(signupFsm, SignupFsm.Idle, { key: 'signup' }),
-  forType('CHANGE_CONFIRM')(mapPayloadIntoConfirm),
-  forType('CHANGE_PASSWORD')(
+  createAutomataReducer(automata, SignupFsm.Pristine),
+  forType('INVALID_CONFIRM')(clearConfirm),
+  forType('CHANGE_CONFIRM_INPUT')(mapPayloadIntoConfirm),
+  forType('CHANGE_PASSWORD_INPUT')(
     compose.into(0)(clearConfirm, mapPayloadIntoPassword)
   ),
-  forType('CHANGE_EMAIL')(compose.into(0)(clearConfirm, mapPayloadIntoEmail)),
+  forType('CHANGE_EMAIL_PROP')(
+    compose.into(0)(clearConfirm, mapPayloadIntoEmail)
+  ),
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(
     compose.into(0)(
@@ -152,7 +198,7 @@ const reducer = compose.into(0)(
   )
 )
 
-const changeEmail = createActionFactory('CHANGE_EMAIL')
+const changeEmailProp = createActionFactory('CHANGE_EMAIL_PROP')
 const invalidEmail = createActionFactory('INVALID_EMAIL')
 const validEmail = createActionFactory('VALID_EMAIL')
 const invalidPassword = createActionFactory('INVALID_PASSWORD')
@@ -162,10 +208,13 @@ const validConfirm = createActionFactory('VALID_CONFIRM')
 
 export default withEventGuards({
   PROPS: ({ email }, state: any) =>
-    isEmailChange(email, state) && changeEmail(email),
-  CHANGE_EMAIL: email => (isInvalidEmail(email) ? invalidEmail : validEmail)(),
-  CHANGE_PASSWORD: password =>
+    isEmailChange(state && state.email, email) && changeEmailProp(email),
+  CHANGE_EMAIL_PROP: email =>
+    (isInvalidEmail(email) ? invalidEmail : validEmail)(),
+  CHANGE_PASSWORD_INPUT: password =>
     (isInvalidPassword(password) ? invalidPassword : validPassword)(),
-  CHANGE_CONFIRM: (confirm, { password }) =>
-    (isInvalidConfirm(password, confirm) ? invalidConfirm : validConfirm)()
+  CHANGE_CONFIRM_INPUT: (confirm, state: any) =>
+    (isInvalidConfirm(state && state.password, confirm)
+      ? invalidConfirm
+      : validConfirm)()
 })(reducer)

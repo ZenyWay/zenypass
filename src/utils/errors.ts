@@ -36,3 +36,9 @@ export function newStatusError (
   err.status = status
   return err
 }
+
+export function stringifyError (err?: any): string {
+  const str = err && err.toString()
+  const status = err && err.status
+  return status ? `${str} (${status})` : str
+}

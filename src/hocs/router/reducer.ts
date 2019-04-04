@@ -42,6 +42,7 @@ const clearSession = into('session')(always())
 const routeAutomata: AutomataSpec<RouteAutomataState> = {
   [RouteAutomataState.Authorize]: {
     // AUTHORIZED: // TODO add state for Signin from Authorized
+    SIGNED_IN: [RouteAutomataState.SignedIn, into('session')(mapPayload())],
     SIGNIN: RouteAutomataState.Signin,
     SIGNUP: RouteAutomataState.Signup,
     PATH_NOT_FOUND: RouteAutomataState.Signin,

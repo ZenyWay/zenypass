@@ -47,41 +47,11 @@ export interface AuthenticationFormProps {
   onSubmit?: (event: Event) => void
 }
 
-export type AuthenticationFormError =
-  | 'email'
-  | 'password'
-  | 'credentials'
-  | 'confirm'
-  | 'token'
-  | 'submit'
+export type AuthenticationFormError = AuthenticationFormField | 'submit'
 
 export type AuthenticationFormField = 'email' | 'password' | 'confirm' | 'token'
 
 export type UnknownProps = { [prop: string]: unknown }
-
-const ERROR_TO_FIELDS: {
-  [error in AuthenticationFormError]: Partial<
-    { [field in AuthenticationFormField]: boolean }
-  >
-} = {
-  email: {
-    email: true
-  },
-  password: {
-    password: true
-  },
-  credentials: {
-    email: true,
-    password: true
-  },
-  confirm: {
-    confirm: true
-  },
-  token: {
-    token: true
-  },
-  submit: {}
-}
 
 const ERRORS = {
   email: {
@@ -172,12 +142,7 @@ export function AuthenticationForm ({
         icon={dropdown ? 'fa fa-user' : 'user'}
         placeholder={t('Enter your email address')}
         value={email}
-        error={
-          email &&
-          error &&
-          ERROR_TO_FIELDS[error].email &&
-          t(ERRORS.email[type])
-        }
+        error={error === 'email' && t(ERRORS.email[type])}
         data-id='email'
         onChange={onChange}
         locale={locale}
@@ -191,12 +156,7 @@ export function AuthenticationForm ({
         icon='lock'
         placeholder={t('Enter your password')}
         value={password}
-        error={
-          password &&
-          error &&
-          ERROR_TO_FIELDS[error].password &&
-          t(ERRORS.password[type])
-        }
+        error={error === 'password' && t(ERRORS.password[type])}
         data-id='password'
         onChange={onChange}
         locale={locale}
@@ -212,12 +172,7 @@ export function AuthenticationForm ({
           flip='vertical'
           placeholder={t('Enter the authorization code')}
           value={token}
-          error={
-            token &&
-            error &&
-            ERROR_TO_FIELDS[error].token &&
-            t(ERRORS.token[type])
-          }
+          error={error === 'token' && t(ERRORS.token[type])}
           data-id='token'
           onChange={onChange}
           locale={locale}
@@ -232,12 +187,7 @@ export function AuthenticationForm ({
           icon='lock'
           placeholder={t('Confirm your password')}
           value={confirm}
-          error={
-            confirm &&
-            error &&
-            ERROR_TO_FIELDS[error].confirm &&
-            t(ERRORS.confirm[type])
-          }
+          error={error === 'confirm' && t(ERRORS.confirm[type])}
           data-id='confirm'
           onChange={onChange}
           locale={locale}
@@ -250,9 +200,7 @@ export function AuthenticationForm ({
           <small className='text-danger'>
             {t('Unauthorized access')}:<br />
             {t(
-              `Please verify your email address and enter your ${
-                authorize ? 'authorization code' : 'password'
-              } again`
+              `Please verify your email address and enter your password again`
             )}
             .
           </small>

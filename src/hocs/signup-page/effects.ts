@@ -14,15 +14,14 @@
  * Limitations under the License.
  */
 
-import { ValidityFsm } from './reducer'
+import { SignupFsm } from './reducer'
 import zenypass from 'zenypass-service'
-import { StandardAction, createActionFactory } from 'basic-fsa-factories'
-import { stateOnEvent } from 'utils'
+import { createActionFactory } from 'basic-fsa-factories'
+import { ERROR_STATUS } from 'utils'
 import {
   catchError,
   filter,
   map,
-  startWith,
   switchMap
   // tap
 } from 'rxjs/operators'
@@ -31,22 +30,24 @@ import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
 const zenypass$ = observableFrom(zenypass)
 
-const signingUp = createActionFactory<void>('SIGNING_UP')
 const signedUp = createActionFactory<void>('SIGNED_UP')
+const unauthorized = createActionFactory<void>('UNAUTHORIZED')
 const error = createActionFactory<any>('ERROR')
 
-export function serviceSignupOnSubmitFromSubmittable (
-  event$: Observable<StandardAction<any>>,
-  state$: Observable<any>
-) {
-  return stateOnEvent(({ type }) => type === 'SUBMIT')(event$, state$).pipe(
-    filter<any>(({ valid }) => valid === ValidityFsm.Submittable),
+export function serviceSignupOnSigningUp (_: any, state$: Observable<any>) {
+  return state$.pipe(
+    filter<any>(({ state }) => state === SignupFsm.SigningUp),
     switchMap(({ email, password }) =>
       zenypass$.pipe(
         switchMap(({ signup }) => signup(email, password)),
         map(() => signedUp(email)),
-        catchError(err => observableOf(error(err))),
-        startWith(signingUp())
+        catchError(err =>
+          observableOf(
+            err && err.status !== ERROR_STATUS.UNAUTHORIZED
+              ? error(err)
+              : unauthorized()
+          )
+        )
       )
     )
   )

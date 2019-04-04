@@ -17,15 +17,7 @@
 //
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
-import {
-  always,
-  forType,
-  mapPayload,
-  mergePayload,
-  omit,
-  pick,
-  pluck
-} from 'utils'
+import { always, forType, mapPayload, mergePayload, omit, pick } from 'utils'
 import compose from 'basic-compose'
 
 export interface AuthenticationModalHocProps {
@@ -41,23 +33,23 @@ export enum AuthenticationFsmState {
   Authenticating = 'AUTHENTICATING'
 }
 
-const mapPayloadIntoValue = into('value')(mapPayload())
-const clearValue = into('value')(always(void 0))
+const mapPayloadIntoPassphrase = into('passphrase')(mapPayload())
+const clearPassphrase = into('passphrase')(always(void 0))
 const clearError = into('error')(always(void 0))
 
 const automata: AutomataSpec<AuthenticationFsmState> = {
   [AuthenticationFsmState.Idle]: {
-    CANCEL: [clearValue, clearError],
-    CHANGE: [clearError, mapPayloadIntoValue],
+    CANCEL: [clearPassphrase, clearError],
+    CHANGE: [clearError, mapPayloadIntoPassphrase],
     SUBMIT: AuthenticationFsmState.Authenticating
   },
   [AuthenticationFsmState.Authenticating]: {
     UNAUTHORIZED: [
       AuthenticationFsmState.Idle,
-      clearValue,
+      clearPassphrase,
       into('error')(mapPayload())
     ],
-    AUTHENTICATED: [AuthenticationFsmState.Idle, clearValue]
+    AUTHENTICATED: [AuthenticationFsmState.Idle, clearPassphrase]
   }
 }
 

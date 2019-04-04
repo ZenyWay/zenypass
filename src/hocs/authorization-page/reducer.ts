@@ -27,6 +27,7 @@ import {
   mergePayload,
   omit,
   pick,
+  stringifyError,
   withEventGuards
 } from 'utils'
 
@@ -35,85 +36,148 @@ const TOKEN_LENGTH = 12
 export interface AuthorizationPageHocProps {
   email?: string
   onAuthorized?: () => void
+  onSignedIn?: (session?: string) => void
   onSignin?: () => void
   onSignup?: () => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
 }
 
-export enum ValidityFsm {
-  Invalid = 'INVALID',
-  InvalidEmail = 'INVALID_EMAIL',
-  InvalidPassword = 'INVALID_PASSWORD',
-  InvalidToken = 'INVALID_TOKEN',
-  Submittable = 'SUBMITTABLE'
-}
+export type AuthorizationPageError = 'email' | 'password' | 'token' | 'submit'
 
 export enum AuthorizationFsm {
-  Idle = 'IDLE',
-  Pending = 'PENDING',
-  Error = 'ERROR'
+  Pristine = 'PRISTINE',
+  PristineEmail = 'PRISTINE_EMAIL', // valid password
+  PristinePassword = 'PRISTINE_PASSWORD', // valid email
+  PristineEmailInvalidPassword = 'PRISTINE_EMAIL_INVALID_PASSWORD',
+  PristinePasswordInvalidEmail = 'PRISTINE_PASSWORD_INVALID_EMAIL',
+  Invalid = 'INVALID',
+  InvalidEmail = 'INVALID_EMAIL', // valid password
+  InvalidPassword = 'INVALID_PASSWORD', // valid email
+  PendingToken = 'PENDING_TOKEN',
+  InvalidToken = 'INVALID_TOKEN',
+  Submittable = 'SUBMITTABLE',
+  SigningIn = 'SIGNIN_IN',
+  Authorizing = 'AUTHORIZING'
 }
 
 const isInvalidToken = token =>
   !token || token.length !== TOKEN_LENGTH || !isPureModhex(token)
-const isEmailChange = (email, previous) =>
-  email !== (previous && previous.email)
+const isEmailChange = (previous = '', email) => email !== previous
 
+const stringifyErrorPayloadIntoError = into('error')(mapPayload(stringifyError))
+const mapIntoError = (error?: AuthorizationPageError) =>
+  into('error')(mapPayload(always(error)))
+const clearError = mapIntoError(void 0)
 const mapPayloadIntoEmail = into('email')(mapPayload())
 const mapPayloadIntoPassword = into('password')(mapPayload())
 const clearPassword = propCursor('password')(always(''))
 const mapPayloadIntoToken = into('token')(mapPayload())
 const clearToken = propCursor('token')(always(''))
 
-const validityFsm: AutomataSpec<ValidityFsm> = {
-  [ValidityFsm.Invalid]: {
-    VALID_EMAIL: ValidityFsm.InvalidPassword,
-    VALID_PASSWORD: ValidityFsm.InvalidEmail
+const automata: AutomataSpec<AuthorizationFsm> = {
+  [AuthorizationFsm.Pristine]: {
+    SUBMIT: AuthorizationFsm.PristinePasswordInvalidEmail,
+    INVALID_EMAIL: AuthorizationFsm.PristinePasswordInvalidEmail,
+    INVALID_PASSWORD: [
+      AuthorizationFsm.PristineEmailInvalidPassword,
+      clearPassword
+    ],
+    VALID_EMAIL: AuthorizationFsm.PristinePassword,
+    VALID_PASSWORD: AuthorizationFsm.PristineEmail
   },
-  [ValidityFsm.InvalidEmail]: {
-    INVALID_PASSWORD: ValidityFsm.Invalid,
-    VALID_EMAIL: ValidityFsm.InvalidToken
+  [AuthorizationFsm.PristinePasswordInvalidEmail]: {
+    INVALID_PASSWORD: AuthorizationFsm.Invalid,
+    VALID_EMAIL: AuthorizationFsm.PristinePassword,
+    VALID_PASSWORD: AuthorizationFsm.InvalidEmail
   },
-  [ValidityFsm.InvalidPassword]: {
-    INVALID_EMAIL: [ValidityFsm.Invalid, clearToken],
-    VALID_EMAIL: clearPassword,
-    clearConfirm: clearToken,
-    VALID_PASSWORD: ValidityFsm.InvalidToken
+  [AuthorizationFsm.PristineEmailInvalidPassword]: {
+    INVALID_EMAIL: AuthorizationFsm.Invalid,
+    INVALID_PASSWORD: clearPassword,
+    VALID_EMAIL: AuthorizationFsm.InvalidPassword,
+    VALID_PASSWORD: AuthorizationFsm.PendingToken
   },
-  [ValidityFsm.InvalidToken]: {
-    INVALID_EMAIL: [ValidityFsm.InvalidEmail, clearToken],
-    INVALID_PASSWORD: ValidityFsm.InvalidPassword,
-    VALID_EMAIL: clearToken,
-    VALID_TOKEN: ValidityFsm.Submittable
+  [AuthorizationFsm.PristineEmail]: {
+    SUBMIT: AuthorizationFsm.InvalidEmail,
+    INVALID_EMAIL: AuthorizationFsm.InvalidEmail,
+    INVALID_PASSWORD: [
+      AuthorizationFsm.PristineEmailInvalidPassword,
+      clearPassword
+    ],
+    VALID_EMAIL: AuthorizationFsm.PendingToken
   },
-  [ValidityFsm.Submittable]: {
-    INVALID_EMAIL: [ValidityFsm.InvalidEmail, clearToken],
-    INVALID_PASSWORD: ValidityFsm.InvalidPassword,
-    INVALID_TOKEN: ValidityFsm.InvalidToken,
-    VALID_EMAIL: [ValidityFsm.InvalidToken, clearToken],
-    VALID_PASSWORD: ValidityFsm.InvalidToken,
-    ERROR: [ValidityFsm.InvalidToken, clearToken],
-    SIGNED_UP: [ValidityFsm.InvalidPassword, clearPassword, clearToken]
-  }
-}
-
-const authorizationFsm: AutomataSpec<AuthorizationFsm> = {
-  [AuthorizationFsm.Idle]: {
-    ERROR: AuthorizationFsm.Error,
-    AUTHORIZING: AuthorizationFsm.Pending
+  [AuthorizationFsm.PristinePassword]: {
+    CHANGE_EMAIL_PROP: clearError,
+    CHANGE_PASSWORD_INPUT: clearError,
+    SUBMIT: AuthorizationFsm.InvalidPassword,
+    INVALID_EMAIL: AuthorizationFsm.PristinePasswordInvalidEmail,
+    INVALID_PASSWORD: [AuthorizationFsm.InvalidPassword, clearPassword],
+    VALID_PASSWORD: AuthorizationFsm.PendingToken
   },
-  [AuthorizationFsm.Pending]: {
-    ERROR: AuthorizationFsm.Error,
-    AUTHORIZED: AuthorizationFsm.Idle
+  [AuthorizationFsm.Invalid]: {
+    VALID_EMAIL: [AuthorizationFsm.InvalidPassword, clearPassword],
+    VALID_PASSWORD: AuthorizationFsm.InvalidEmail
   },
-  [AuthorizationFsm.Error]: {
-    AUTHORIZING: AuthorizationFsm.Pending
+  [AuthorizationFsm.InvalidEmail]: {
+    INVALID_PASSWORD: AuthorizationFsm.Invalid,
+    VALID_EMAIL: AuthorizationFsm.PendingToken
+  },
+  [AuthorizationFsm.InvalidPassword]: {
+    INVALID_EMAIL: AuthorizationFsm.Invalid,
+    INVALID_PASSWORD: clearPassword,
+    VALID_PASSWORD: AuthorizationFsm.PendingToken
+  },
+  [AuthorizationFsm.PendingToken]: {
+    SUBMIT: AuthorizationFsm.InvalidToken,
+    INVALID_EMAIL: AuthorizationFsm.InvalidEmail,
+    INVALID_PASSWORD: [AuthorizationFsm.InvalidPassword, clearPassword],
+    INVALID_TOKEN: AuthorizationFsm.InvalidToken,
+    VALID_TOKEN: AuthorizationFsm.Submittable
+  },
+  [AuthorizationFsm.InvalidToken]: {
+    INVALID_EMAIL: AuthorizationFsm.InvalidEmail,
+    INVALID_PASSWORD: [AuthorizationFsm.InvalidPassword, clearPassword],
+    VALID_TOKEN: AuthorizationFsm.Submittable
+  },
+  [AuthorizationFsm.Submittable]: {
+    INVALID_EMAIL: AuthorizationFsm.InvalidEmail,
+    INVALID_PASSWORD: [AuthorizationFsm.InvalidPassword, clearPassword],
+    INVALID_TOKEN: AuthorizationFsm.InvalidToken,
+    VALID_EMAIL: AuthorizationFsm.InvalidToken,
+    VALID_PASSWORD: AuthorizationFsm.InvalidToken,
+    SUBMIT: AuthorizationFsm.SigningIn
+  },
+  [AuthorizationFsm.SigningIn]: {
+    NOT_FOUND: AuthorizationFsm.Authorizing,
+    UNAUTHORIZED: AuthorizationFsm.Authorizing, // TODO when service signin fixed
+    ERROR: [
+      AuthorizationFsm.PristinePassword,
+      clearPassword,
+      clearToken,
+      stringifyErrorPayloadIntoError
+    ],
+    SIGNED_IN: [AuthorizationFsm.PristinePassword, clearPassword, clearToken]
+  },
+  [AuthorizationFsm.Authorizing]: {
+    UNAUTHORIZED: [
+      AuthorizationFsm.PristinePassword,
+      clearPassword,
+      clearToken,
+      mapIntoError('submit')
+    ],
+    ERROR: [
+      AuthorizationFsm.PristinePassword,
+      clearPassword,
+      clearToken,
+      stringifyErrorPayloadIntoError
+    ],
+    AUTHORIZED: [AuthorizationFsm.PristinePassword, clearPassword, clearToken]
   }
 }
 
 const SELECTED_PROPS: (keyof AuthorizationPageHocProps)[] = [
   'onAuthorized',
+  'onSignedIn',
   'onSignin',
   'onSignup',
   'onEmailChange',
@@ -121,15 +185,14 @@ const SELECTED_PROPS: (keyof AuthorizationPageHocProps)[] = [
 ]
 
 const reducer = compose.into(0)(
-  createAutomataReducer(validityFsm, ValidityFsm.Invalid, { key: 'valid' }),
-  createAutomataReducer(authorizationFsm, AuthorizationFsm.Idle, {
-    key: 'authorization'
-  }),
-  forType('CHANGE_TOKEN')(mapPayloadIntoToken),
-  forType('CHANGE_PASSWORD')(
+  createAutomataReducer(automata, AuthorizationFsm.Pristine),
+  forType('CHANGE_TOKEN_INPUT')(mapPayloadIntoToken),
+  forType('CHANGE_PASSWORD_INPUT')(
     compose.into(0)(clearToken, mapPayloadIntoPassword)
   ),
-  forType('CHANGE_EMAIL')(compose.into(0)(clearToken, mapPayloadIntoEmail)),
+  forType('CHANGE_EMAIL_PROP')(
+    compose.into(0)(clearToken, mapPayloadIntoEmail)
+  ),
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(
     compose.into(0)(
@@ -139,7 +202,7 @@ const reducer = compose.into(0)(
   )
 )
 
-const changeEmail = createActionFactory('CHANGE_EMAIL')
+const changeEmailProp = createActionFactory('CHANGE_EMAIL_PROP')
 const invalidEmail = createActionFactory('INVALID_EMAIL')
 const validEmail = createActionFactory('VALID_EMAIL')
 const invalidPassword = createActionFactory('INVALID_PASSWORD')
@@ -149,8 +212,11 @@ const validToken = createActionFactory('VALID_TOKEN')
 
 export default withEventGuards({
   PROPS: ({ email }, state: any) =>
-    isEmailChange(email, state) && changeEmail(email),
-  CHANGE_EMAIL: email => (isInvalidEmail(email) ? invalidEmail : validEmail)(),
-  CHANGE_PASSWORD: password => (!password ? invalidPassword : validPassword)(),
-  CHANGE_TOKEN: token => (isInvalidToken(token) ? invalidToken : validToken)()
+    isEmailChange(state && state.email, email) && changeEmailProp(email),
+  CHANGE_EMAIL_PROP: email =>
+    (isInvalidEmail(email) ? invalidEmail : validEmail)(),
+  CHANGE_PASSWORD_INPUT: password =>
+    (!password ? invalidPassword : validPassword)(),
+  CHANGE_TOKEN_INPUT: token =>
+    (isInvalidToken(token) ? invalidToken : validToken)()
 })(reducer)
