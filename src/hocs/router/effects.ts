@@ -17,31 +17,32 @@
 import { RouteAutomataState } from './reducer'
 import { getService } from 'zenypass-service'
 import { LOCALES } from './options'
-import { createActionFactories, createActionFactory } from 'basic-fsa-factories'
+import {
+  createActionFactories,
+  createActionFactory,
+  StandardAction
+} from 'basic-fsa-factories'
 import {
   catchError,
   distinctUntilChanged,
   distinctUntilKeyChanged,
   filter,
+  ignoreElements,
   pluck,
   map,
   share,
   startWith,
   tap
 } from 'rxjs/operators'
-import { Observable, fromEvent, merge, of as observableOf } from 'rxjs'
+import {
+  Observable,
+  combineLatest,
+  fromEvent,
+  merge,
+  of as observableOf
+} from 'rxjs'
 import { always, isString, ERROR_STATUS } from 'utils'
 const log = (label: string) => console.log.bind(console, label)
-
-export const enum Route {
-  HOMEPAGE = '/',
-  AUTHORIZATIONS = '/authorizations',
-  AUTHORIZE = '/authorize',
-  FATAL = '/fatal',
-  SIGNIN = '/signin',
-  SIGNUP = '/signup',
-  STORAGE = '/storage'
-}
 
 const QS_PARAM_VALIDATORS = {
   email: always(true),
@@ -55,19 +56,10 @@ const QS_PARAM_ACTIONS = createActionFactories({
   onboarding: ['ONBOARDING', val => val === 'true']
 })
 
-const paths = createActionFactories({
-  [Route.HOMEPAGE]: 'HOMEPAGE',
-  [Route.AUTHORIZATIONS]: 'AUTHORIZATIONS',
-  [Route.AUTHORIZE]: 'AUTHORIZE',
-  [Route.FATAL]: 'FATAL',
-  [Route.SIGNIN]: 'SIGNIN',
-  [Route.SIGNUP]: 'SIGNUP',
-  [Route.STORAGE]: 'STORAGE'
-})
 const fatalError = createActionFactory('FATAL_ERROR')
 const unauthorized = createActionFactory('UNAUTHORIZED')
-const pathNotFound = createActionFactory('PATH_NOT_FOUND')
 const signedOut = createActionFactory('SIGNED_OUT')
+const urlPathUpdate = createActionFactory('URL_PATH_UPDATE')
 
 export function signoutOnSigningOut (_: any, state$: Observable<any>) {
   return state$.pipe(
@@ -115,18 +107,32 @@ export function injectPathAndQueryParamsFromLocationHash () {
     map(parsePathFromLocationHash),
     startWith(parsePathFromLocationHash()),
     distinctUntilChanged(),
-    map(path => (paths[path] || pathNotFound)())
+    map(path => urlPathUpdate(path))
   )
   return merge(path$, ...param$s).pipe(
     catchError(err => observableOf(fatalError(err)))
   )
 }
 
-function isValidBoolean (value: string) {
-  return !value || value === 'true' || value === 'false'
+export function updateLocationHashPathOnUrlPathUpdateOrPathState (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<any>
+) {
+  const path$ = state$.pipe(
+    pluck('path'),
+    distinctUntilChanged()
+  )
+  const urlPathUpdate$ = event$.pipe(
+    filter(({ type }) => type === 'URL_PATH_UPDATE')
+  )
+  return combineLatest(path$, urlPathUpdate$).pipe(
+    pluck('0'),
+    tap(updateLocationHashPath),
+    ignoreElements()
+  )
 }
 
-export function updateLocationHashPath (update: string) {
+function updateLocationHashPath (update: string) {
   const path = parsePathFromLocationHash()
   if (update === path) return
   updateLocationHash(update)
@@ -174,4 +180,8 @@ function getSearchParam (params: URLSearchParams, key: string): string {
         .get(key)
         .trim()
         .toLowerCase()
+}
+
+function isValidBoolean (value: string) {
+  return !value || value === 'true' || value === 'false'
 }

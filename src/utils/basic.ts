@@ -64,6 +64,8 @@ export function identity (v: any): typeof v {
   return v
 }
 
+export function noop () {}
+
 export function values<T extends {} = {}> (entries: T): T[keyof T][] {
   const values = Object.keys(entries) as any[]
   let i = values.length
