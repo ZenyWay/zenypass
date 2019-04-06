@@ -20,6 +20,7 @@ import { AgentAuthorizationsPage } from '../../agent-authorizations-page'
 import { HomePage, MenuSpecs, DropdownItemSpec } from '../../home-page'
 import { SigninPage } from '../../signin-page'
 import { SignupPage } from '../../signup-page'
+import { SignupDonePage } from '../signup-done-page'
 import { ErrorPage } from '../error-page'
 import { InfoModal } from '../info-modal'
 import { newStatusError } from 'utils'
@@ -156,6 +157,8 @@ function CoreRouter ({
           onSignin={onSignin}
         />
       )
+    case '/signup/done':
+      return <SignupDonePage locale={locale} onClose={onClose} />
     case '/signin':
       return (
         <SigninPage
