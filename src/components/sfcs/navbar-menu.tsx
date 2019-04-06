@@ -29,10 +29,12 @@ import { MenuItemIcon, DropdownItemSpec } from './dropdown'
 import { Dropdown } from '../dropdown'
 import { FAIconButton } from './fa-icon'
 import { ZENYPASS_LOGO_WHITE_SVG } from 'static'
+import { classes } from 'utils'
 
 export interface NavbarMenuProps {
   menu?: MenuSpecs
   expanded?: boolean
+  className?: string
   children?: any
   onClickItem?: (event: MouseEvent) => void
   onSelectItem?: (target: HTMLElement) => void
@@ -53,12 +55,20 @@ export function NavbarMenu ({
   onSelectItem,
   onClickToggle,
   innerRef,
+  className,
   children,
   ...attrs
 }: NavbarMenuProps) {
   return (
-    <Navbar color='info' dark expand='md' innerRef={innerRef} {...attrs}>
-      <NavbarBrand>
+    <Navbar
+      color='info'
+      dark
+      expand='md'
+      className={classes('px-md-2 px-lg-3', className)}
+      innerRef={innerRef}
+      {...attrs}
+    >
+      <NavbarBrand className='mr-2'>
         <img height='32' src={ZENYPASS_LOGO_WHITE_SVG} />
         <small>&nbsp;ZenyPass</small>
       </NavbarBrand>
