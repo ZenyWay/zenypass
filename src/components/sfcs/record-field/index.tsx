@@ -15,7 +15,7 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { IconLabelInputGroup } from '../icon-label-input-group'
+import { IconLabelInputGroup, IconColor } from '../icon-label-input-group'
 import { DropdownItemSpec } from '../../dropdown'
 import { ControlledInput, ControlledInputProps } from '../../controlled-input'
 import createL10ns, { L10nTag } from 'basic-l10n'
@@ -46,6 +46,7 @@ export interface RecordFieldProps extends ControlledInputProps {
   placeholder?: string
   buttonTitle?: string
   icon?: string
+  iconColor?: IconColor | '' | false
   rotate?: '90' | '180' | '270' | '' | false
   flip?: 'horizontal' | 'vertical' | '' | false
   animate?: 'spin' | 'pulse' | '' | false
@@ -70,6 +71,7 @@ export function RecordField ({
   error,
   placeholder,
   icon,
+  iconColor,
   rotate,
   flip,
   animate,
@@ -91,6 +93,7 @@ export function RecordField ({
     <IconLabelInputGroup
       id={id}
       className={className}
+      color={iconColor}
       size={size}
       options={options}
       icon={icon || DEFAULT_ICONS[type]}

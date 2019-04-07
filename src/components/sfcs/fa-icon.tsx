@@ -16,10 +16,12 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { Button, ButtonProps } from 'bootstrap'
+import { BasicColor } from 'bootstrap/types'
 import { classes } from 'utils'
 
 export interface FAIconProps {
   icon?: string[] | string
+  color?: IconColor | '' | false
   size?: IconSize | '' | false
   rotate?: '90' | '180' | '270' | '' | false
   flip?: 'horizontal' | 'vertical' | '' | false
@@ -33,9 +35,17 @@ export interface FAIconProps {
 }
 
 export type IconSize = 'xs' | 'sm' | 'lg' | '2x' | '3x' | '5x' | '7x' | '10x'
+export type IconColor =
+  | BasicColor
+  | 'body'
+  | 'muted'
+  | 'white'
+  | 'black-50'
+  | 'white-50'
 
 export function FAIcon ({
   icon,
+  color,
   size,
   rotate,
   flip,
@@ -51,6 +61,7 @@ export function FAIcon ({
   const classNames = classes(
     'fa',
     `fa-${icon}`,
+    color && `text-${color}`,
     size && `fa-${size}`,
     rotate && `fa-rotate-${rotate}`,
     flip && `fa-flip-${flip}`,

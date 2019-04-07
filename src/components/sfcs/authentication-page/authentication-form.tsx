@@ -140,6 +140,7 @@ export function AuthenticationForm ({
         className='mb-2'
         options={emails}
         icon={dropdown ? 'fa fa-user' : 'user'}
+        iconColor='info'
         placeholder={t('Enter your email address')}
         value={email}
         error={error === 'email' && t(ERRORS.email[type])}
@@ -154,6 +155,7 @@ export function AuthenticationForm ({
         id='password'
         className='mb-2'
         icon='lock'
+        iconColor='info'
         placeholder={t('Enter your password')}
         value={password}
         error={error === 'password' && t(ERRORS.password[type])}
@@ -169,6 +171,7 @@ export function AuthenticationForm ({
           id='token'
           className='mb-2'
           icon='key'
+          iconColor='info'
           flip='vertical'
           placeholder={t('Enter the authorization code')}
           value={token}
@@ -185,6 +188,7 @@ export function AuthenticationForm ({
           id='confirm'
           className='mb-2'
           icon='lock'
+          iconColor='info'
           placeholder={t('Confirm your password')}
           value={confirm}
           error={error === 'confirm' && t(ERRORS.confirm[type])}

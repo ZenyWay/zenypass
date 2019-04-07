@@ -16,9 +16,11 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { InputGroup, InputGroupText, InputGroupPrepend } from 'bootstrap'
-import { FAIcon, FAIconButton } from './fa-icon'
+import { FAIcon, FAIconButton, IconColor } from './fa-icon'
 import { Dropdown, DropdownItemSpec } from '../dropdown'
 import { classes } from 'utils'
+
+export { IconColor }
 
 export interface IconLabelInputGroupProps {
   id?: string
@@ -27,6 +29,7 @@ export interface IconLabelInputGroupProps {
    * TODO implement support for rotate, flip & animate in Dropdown
    */
   icon?: string
+  color?: IconColor | '' | false
   rotate?: '90' | '180' | '270' | '' | false
   flip?: 'horizontal' | 'vertical' | '' | false
   animate?: 'spin' | 'pulse' | '' | false
@@ -46,6 +49,7 @@ export function IconLabelInputGroup ({
   id,
   options,
   icon,
+  color,
   rotate,
   flip,
   animate,
@@ -61,6 +65,7 @@ export function IconLabelInputGroup ({
 }: IconLabelInputGroupProps) {
   const iconProps = {
     icon: invalid ? 'times' : icon,
+    color: !invalid && color,
     rotate: !invalid && rotate,
     flip: !invalid && flip,
     animate: !invalid && animate
