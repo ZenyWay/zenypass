@@ -31,6 +31,15 @@ const foreground = style({
   zIndex: 5
 })
 
+const inputFocusStyle = style({
+  $nest: {
+    '&:focus': {
+      boxShadow: 'unset',
+      borderColor: '#17a2b8' // info
+    }
+  }
+})
+
 const iconSpanClassName = `d-flex align-items-center ${foreground} ml-n4 pr-1`
 
 export function ClearableInput ({
@@ -49,7 +58,11 @@ export function ClearableInput ({
       <Input
         value={value}
         disabled={disabled}
-        className={classes('pr-4', invalid && 'border-danger', className)}
+        className={classes(
+          `${inputFocusStyle} pr-4`,
+          invalid && 'border-danger',
+          className
+        )}
         innerRef={inputRef}
         {...attrs}
       />
