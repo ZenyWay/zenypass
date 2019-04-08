@@ -39,7 +39,6 @@ import {
   MenuSpec,
   applyHandlerOnEvent,
   callHandlerOnEvent,
-  mapPayload,
   tapOnEvent
 } from 'utils'
 import { Observer } from 'rxjs'
@@ -68,8 +67,7 @@ export interface HomePageSFCHandlerProps {
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onError?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
-  onCancel?: (event?: MouseEvent) => void
-  onModalToggled?: () => void
+  onCloseModal?: (event?: MouseEvent) => void
   onCloseOnboarding?: (event?: MouseEvent) => void
 }
 
@@ -88,6 +86,13 @@ const HOME_PAGE_FSM_STATE_TO_BUSY_STATE: {
 } = {
   [HomePageFsmState.PendingNewRecord]: BusyState.CreatingNewRecord,
   [HomePageFsmState.PendingRecords]: BusyState.LoadingRecords
+}
+
+const HOME_PAGE_FSM_STATE_TO_ERROR: {
+  [state in HomePageFsmState]?: 'offline' | 'limit'
+} = {
+  [HomePageFsmState.OfflineError]: 'offline',
+  [HomePageFsmState.RecordLimitError]: 'limit'
 }
 
 function mapStateToProps ({
@@ -111,7 +116,7 @@ function mapStateToProps ({
     session,
     busy: HOME_PAGE_FSM_STATE_TO_BUSY_STATE[state],
     onboarding,
-    error,
+    error: HOME_PAGE_FSM_STATE_TO_ERROR[state] || error,
     // pass-through
     onAuthenticationRequest,
     onError
@@ -128,9 +133,8 @@ const MENU_ACTIONS = createActionFactories({
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => HomePageSFCHandlerProps = createActionDispatchers({
-  onCancel: 'CANCEL',
+  onCloseModal: 'CLOSE_MODAL',
   onCloseOnboarding: ['UPDATE_SETTING', () => ['onboarding', false]],
-  onModalToggled: 'MODAL_TOGGLED',
   onSelectMenuItem (item: HTMLElement): StandardAction<any> {
     const action = MENU_ACTIONS[item.dataset.id] || selectMenuItem
     return action(item)
@@ -150,9 +154,15 @@ export function homePage<P extends HomePageSFCProps> (
       persistSettings$ToService,
       createRecordOnCreateRecordRequested,
       tapOnEvent('CREATE_RECORD_RESOLVED', () => window.scrollTo(0, 0)),
-      applyHandlerOnEvent('UPDATE_SETTING', 'onUpdateSetting', mapPayload()),
+      applyHandlerOnEvent('UPDATE_SETTING', 'onUpdateSetting'),
       callHandlerOnEvent('SELECT_MENU_ITEM', 'onSelectMenuItem'),
-      callHandlerOnEvent('ERROR', 'onError')
+      callHandlerOnEvent('LOGOUT', 'onLogout'),
+      callHandlerOnEvent(
+        ({ state }, { type }) =>
+          state === HomePageFsmState.RecordLimitError && type === 'CLOSE_MODAL',
+        'onStorage'
+      ),
+      callHandlerOnEvent('FATAL_ERROR', 'onError')
     ),
     () => tap(log('home-page:state:')),
     connect<HomePageState, HomePageSFCProps>(

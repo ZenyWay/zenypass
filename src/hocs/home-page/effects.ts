@@ -21,7 +21,11 @@ import {
   PouchVaultChange,
   ZenypassRecord
 } from 'zenypass-service'
-import { createActionFactory, StandardAction } from 'basic-fsa-factories'
+import {
+  createActionFactories,
+  createActionFactory,
+  StandardAction
+} from 'basic-fsa-factories'
 import {
   ERROR_STATUS,
   createPrivilegedRequest,
@@ -69,11 +73,24 @@ export interface SettingsDoc extends PouchDoc {
 const SETTINGS_DOC_ID = 'settings'
 const updateSetting = createActionFactory<any>('UPDATE_SETTING')
 const settingsPersisted = createActionFactory<any>('SETTINGS_PERSISTED')
-const persistSettingsError = createActionFactory<any>('PERSIST_SETTINGS_ERROR')
 const createRecordResolved = createActionFactory<any>('CREATE_RECORD_RESOLVED')
 const createRecordRejected = createActionFactory<any>('CREATE_RECORD_REJECTED')
 const updateRecords = createActionFactory('UPDATE_RECORDS')
-const error = createActionFactory('ERROR')
+const logout = createActionFactory('LOGOUT')
+const fatalError = createActionFactory('FATAL_ERROR')
+
+const logoutOnClientClosedRequestOrFatalError = err =>
+  (err && err.status !== ERROR_STATUS.CLIENT_CLOSED_REQUEST
+    ? fatalError
+    : logout)(err)
+
+const NEW_RECORD_ERRORS: Partial<
+  { [status in ERROR_STATUS]: StandardAction<any> }
+> = createActionFactories({
+  [ERROR_STATUS.FORBIDDEN]: 'FORBIDDEN',
+  [ERROR_STATUS.CLIENT_CLOSED_REQUEST]: 'CLIENT_CLOSED_REQUEST',
+  [ERROR_STATUS.GATEWAY_TIMEOUT]: 'GATEWAY_TIMEOUT'
+})
 
 const createRecord$ = createPrivilegedRequest<ZenypassRecord>(
   (username: string) =>
@@ -107,14 +124,12 @@ export function createRecordOnCreateRecordRequested (
         map(() => createRecordResolved()),
         catchError(err =>
           observableOf(
-            err && err.status !== ERROR_STATUS.FORBIDDEN
-              ? createRecordRejected(err)
-              : error(err)
+            (NEW_RECORD_ERRORS[err && err.status] || createRecordRejected)(err)
           )
         )
       )
     ),
-    catchError(err => observableOf(error(err)))
+    catchError(err => observableOf(fatalError(err)))
   )
 }
 
@@ -152,10 +167,14 @@ export function injectRecordsFromService (
             sortIndexedRecordsByName(toIndexedRecordsArray(records), locale)
           )
         ),
-        catchError(err => observableOf(error(err)))
+        catchError(err =>
+          observableOf(logoutOnClientClosedRequestOrFatalError(err))
+        )
       )
     ),
-    catchError(err => observableOf(error(err)))
+    catchError(err =>
+      observableOf(logoutOnClientClosedRequestOrFatalError(err))
+    )
   )
 }
 
@@ -223,10 +242,12 @@ export function injectSettings$FromService (
           entries({ locale: lang, onboarding: !noOnboarding })
         ),
         map(setting => updateSetting(setting)),
-        catchError(err => observableOf(error(err)))
+        catchError(err =>
+          observableOf(logoutOnClientClosedRequestOrFatalError(err))
+        )
       )
     ),
-    catchError(err => observableOf(error(err)))
+    catchError(err => observableOf(fatalError(err)))
   )
 }
 
@@ -268,14 +289,10 @@ export function persistSettings$ToService (_: any, state$: Observable<any>) {
       ).pipe(
         map(settings => settingsPersisted(settings)),
         catchError(err =>
-          observableOf(
-            err && err.status !== ERROR_STATUS.FORBIDDEN
-              ? error(err)
-              : persistSettingsError(err)
-          )
+          observableOf(logoutOnClientClosedRequestOrFatalError(err))
         )
       )
     ),
-    catchError(err => observableOf(error(err)))
+    catchError(err => observableOf(fatalError(err)))
   )
 }

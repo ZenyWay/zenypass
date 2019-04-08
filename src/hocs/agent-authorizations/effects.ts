@@ -18,7 +18,7 @@
 //
 import { getService, AuthorizationDoc } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import { createPrivilegedRequest, toProjection } from 'utils'
+import { createPrivilegedRequest, toProjection, ERROR_STATUS } from 'utils'
 import {
   catchError,
   debounceTime,
@@ -33,7 +33,13 @@ const DEBOUNCE_TIME_ON_AGENT = 1500 // ms
 
 const agent = createActionFactory('AGENT')
 const debounce = createActionFactory('DEBOUNCE')
+const close = createActionFactory('CLOSE')
 const error = createActionFactory('ERROR')
+
+const closeOnClientClosedRequestOrError = err =>
+  (err && err.status !== ERROR_STATUS.CLIENT_CLOSED_REQUEST ? error : close)(
+    err
+  )
 
 const getAgent$ = createPrivilegedRequest<AuthorizationDoc>(
   (username: string) =>
@@ -48,14 +54,14 @@ export function injectAgentsFromService (
 ) {
   return state$.pipe(
     distinctUntilKeyChanged('session'),
-    switchMap(({ onAuthenticationRequest, session, locale }) =>
+    switchMap(({ onAuthenticationRequest, session }) =>
       getAgent$(
         toProjection(onAuthenticationRequest),
         session,
         true // unrestricted
       ).pipe(
         map(doc => agent(doc)),
-        catchError(err => observableOf(error(err)))
+        catchError(err => observableOf(closeOnClientClosedRequestOrError(err)))
       )
     ),
     catchError(err => observableOf(error(err)))

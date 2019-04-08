@@ -57,11 +57,13 @@ export interface RouterSFCHandlerProps {
   onCloseInfo?: (event?: MouseEvent) => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
+  onLogout?: (error?: any) => void
+  onSelectMenuItem?: (target: HTMLElement) => void
   onSignedIn?: (session?: string) => void
   onSignedUp?: () => void
   onSignin?: () => void
   onSignup?: () => void
-  onSelectMenuItem?: (target: HTMLElement) => void
+  onStorage?: () => void
   onUpdateSetting?: (key?: string, value?: any) => void
 }
 
@@ -117,11 +119,13 @@ const mapDispatchToProps: (
   onCloseInfo: 'CLOSE_INFO',
   onEmailChange: ['UPDATE_QUERY_PARAM', email => ['email', email]],
   onError: actionFromError,
+  onLogout: 'LOGOUT',
+  onSelectMenuItem: actionFromMenuItem,
   onSignedIn: 'SIGNED_IN',
   onSignedUp: 'SIGNED_UP',
   onSignin: 'SIGNIN',
   onSignup: 'SIGNUP',
-  onSelectMenuItem: actionFromMenuItem,
+  onStorage: 'STORAGE',
   onUpdateSetting: [
     'UPDATE_QUERY_PARAM',
     (key, val) => UPDATE_QUERY_PARAM_PAYLOADS[key](val)

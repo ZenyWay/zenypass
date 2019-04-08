@@ -27,7 +27,7 @@ import {
 import { Onboarding } from '../onboarding'
 import { InfoModal } from '../info-modal'
 import { ProgressBar, Row } from 'bootstrap'
-import { classes, isString } from 'utils'
+import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
@@ -35,12 +35,19 @@ export { FilteredRecordEntry, Record, MenuSpecs, DropdownItemSpec }
 
 const DEFAULT_DEBOUNCE = 300 // ms
 
+const ERRORS = {
+  limit:
+    "You have reached the website storage limit of your ZenyPass account: you can purchase additional storage from the 'storage' menu.",
+  offline:
+    'This device seems to be offline. The ZenyPass server cannot be reached. Please check your connection and try again.'
+}
+
 export interface HomePageProps extends FilteredRecordCardsProps {
   locale: string
   menu: MenuSpecs
   records?: FilteredRecordEntry[]
   busy?: BusyState
-  error?: any
+  error?: string
   tokens?: string[]
   onboarding?: boolean
   debounce?: string | number
@@ -92,11 +99,13 @@ export function HomePage ({
             <p>{t(busy)}</p>
             <ProgressBar ratio={'100'} animated striped bg='info' />
           </Fragment>
+        ) : error in ERRORS ? (
+          <p>{t(ERRORS[error])}</p>
         ) : (
           <p>
-            {t('Sorry, something went wrong')}
+            {t('Sorry, something went wrong')!}
             <br />
-            {isString(error) ? error : error && error.toString()}
+            {t(error)}
           </p>
         )}
       </InfoModal>

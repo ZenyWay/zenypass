@@ -25,6 +25,7 @@ import { IndexedAgentEntry } from '.'
 export interface AgentAuthorizationsHocProps {
   session?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
+  onClose?: () => void
   onError?: (error: any) => void
 }
 
@@ -38,13 +39,15 @@ const automata: AutomataSpec<AgentAuthorizationsFsm> = {
     DEBOUNCE: AgentAuthorizationsFsm.Idle
   },
   [AgentAuthorizationsFsm.Idle]: {
-    // dead-end
+    CLOSE: AgentAuthorizationsFsm.Init,
+    ERROR: AgentAuthorizationsFsm.Init
   }
 }
 
 const SELECTED_PROPS: (keyof AgentAuthorizationsHocProps)[] = [
   'session',
   'onAuthenticationRequest',
+  'onClose',
   'onError'
 ]
 

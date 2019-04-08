@@ -25,7 +25,8 @@ import {
   mapPayload,
   mergePayload,
   mergeMenus,
-  pick
+  pick,
+  stringifyError
 } from 'utils'
 import compose from 'basic-compose'
 import createL10ns from 'basic-l10n'
@@ -38,7 +39,9 @@ export interface HomePageHocProps {
   session?: string
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onError?: (error?: any) => void
+  onLogout?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
+  onStorage?: () => void
   onUpdateSetting?: (key?: string, value?: any) => void
 }
 
@@ -46,34 +49,48 @@ export enum HomePageFsmState {
   Idle = 'IDLE',
   PendingRecords = 'PENDING_RECORDS',
   PendingNewRecord = 'PENDING_NEW_RECORD',
+  OfflineError = 'OFFLINE_ERROR',
+  RecordLimitError = 'RECORD_LIMIT_ERROR',
   NewRecordError = 'NEW_RECORD_ERROR'
 }
+
+const intoError = value => into('error')(always(value))
+const clearError = intoError(void 0)
 
 const homemenu = localizeMenu(
   createL10ns(require('./locales.json')),
   require('./options.json')
 )
 
-const mapPayloadToError = into('error')(mapPayload())
-const clearError = into('error')(always())
-
 const automata: AutomataSpec<HomePageFsmState> = {
   [HomePageFsmState.PendingRecords]: {
     UPDATE_RECORDS: HomePageFsmState.Idle
   },
   [HomePageFsmState.Idle]: {
-    CREATE_RECORD_REQUESTED: HomePageFsmState.PendingNewRecord
+    CREATE_RECORD_REQUESTED: HomePageFsmState.PendingNewRecord,
+    LOGOUT: HomePageFsmState.PendingNewRecord,
+    FATAL_ERROR: HomePageFsmState.PendingNewRecord
   },
   [HomePageFsmState.PendingNewRecord]: {
     CREATE_RECORD_RESOLVED: HomePageFsmState.Idle,
+    CLIENT_CLOSED_REQUEST: HomePageFsmState.Idle,
+    GATEWAY_TIMEOUT: HomePageFsmState.OfflineError,
+    FORBIDDEN: HomePageFsmState.RecordLimitError,
     CREATE_RECORD_REJECTED: [
       HomePageFsmState.NewRecordError,
-      mapPayloadToError
+      into('error')(mapPayload(stringifyError))
     ],
-    ERROR: [HomePageFsmState.NewRecordError, mapPayloadToError]
+    LOGOUT: HomePageFsmState.PendingNewRecord,
+    FATAL_ERROR: HomePageFsmState.PendingNewRecord
+  },
+  [HomePageFsmState.OfflineError]: {
+    CLOSE_MODAL: HomePageFsmState.Idle
+  },
+  [HomePageFsmState.RecordLimitError]: {
+    CLOSE_MODAL: HomePageFsmState.Idle
   },
   [HomePageFsmState.NewRecordError]: {
-    CANCEL: [HomePageFsmState.Idle, clearError]
+    CLOSE_MODAL: [HomePageFsmState.Idle, clearError]
   }
 }
 
@@ -84,7 +101,9 @@ const SELECTED_PROPS: (keyof HomePageHocProps)[] = [
   'onboarding',
   'onAuthenticationRequest',
   'onError',
+  'onLogout',
   'onSelectMenuItem',
+  'onStorage',
   'onUpdateSetting'
 ]
 

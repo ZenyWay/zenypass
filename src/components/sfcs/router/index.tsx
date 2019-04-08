@@ -48,11 +48,13 @@ export interface CoreRouterProps {
   onClose: (event?: MouseEvent) => void
   onEmailChange?: (email?: string) => void
   onError?: (error?: any) => void
+  onLogout?: (error?: any) => void
+  onSelectMenuItem?: (target: HTMLElement) => void
   onSignedIn?: (session?: string) => void
   onSignedUp?: () => void
   onSignin?: () => void
   onSignup?: () => void
-  onSelectMenuItem?: (target: HTMLElement) => void
+  onStorage?: () => void
   onUpdateSetting?: (key?: string, value?: any) => void
 }
 
@@ -92,15 +94,17 @@ function CoreRouter ({
   children = null,
   onAuthenticationRequest,
   onAuthorize,
+  onAuthorized,
   onClose,
   onEmailChange,
   onError,
-  onAuthorized,
+  onLogout,
+  onSelectMenuItem,
   onSignedIn,
   onSignedUp,
   onSignin,
   onSignup,
-  onSelectMenuItem,
+  onStorage,
   onUpdateSetting,
   attrs
 }: CoreRouterProps & { [prop: string]: unknown }) {
@@ -114,7 +118,9 @@ function CoreRouter ({
           onboarding={onboarding}
           onAuthenticationRequest={onAuthenticationRequest}
           onError={onError}
+          onLogout={onLogout}
           onSelectMenuItem={onSelectMenuItem}
+          onStorage={onStorage}
           onUpdateSetting={onUpdateSetting}
         />
       )

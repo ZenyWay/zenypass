@@ -46,7 +46,8 @@ export interface AgentAuthorizationsSFCProps
 
 export interface AgentAuthorizationsSFCHandlerProps {
   onAuthenticationRequest?: (res$: Observer<string>) => void
-  onError?: (error: any) => void
+  onError?: (error?: any) => void
+  onClose?: (event?: MouseEvent) => void
 }
 
 export interface IndexedAgentEntry {
@@ -88,13 +89,14 @@ export function agentAuthorizations<P extends AgentAuthorizationsSFCProps> (
       reducer,
       injectAgentsFromService,
       debounceOnAgent,
+      callHandlerOnEvent('CLOSE', 'onClose'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
     () => tap(log('agent-authorizations:state:')),
     connect<AgentAuthorizationsState, AgentAuthorizationsSFCProps>(
       mapStateToProps,
       createActionDispatchers({
-        /* no handlers */
+        onClose: 'CLOSE'
       })
     ),
     () => tap(log('agent-authorizations:props:'))

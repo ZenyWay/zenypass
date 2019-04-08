@@ -106,10 +106,7 @@ export function callHandlerOnEvent<S = any> (
 export function applyHandlerOnEvent<S = any> (
   type: string | string[] | ((state: S, event: StandardAction<any>) => boolean),
   handler: string | string[] | ((state: S) => Handler),
-  payload = mapPayload(v => [v]) as (
-    state: S,
-    event: StandardAction<any>
-  ) => any[]
+  payload = mapPayload() as (state: S, event: StandardAction<any>) => any[]
 ) {
   return !isFunction(handler)
     ? applyHandlerOnEvent(type, select(handler), payload)
