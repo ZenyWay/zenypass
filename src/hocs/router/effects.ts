@@ -85,7 +85,7 @@ function signout (username: string): Promise<void> {
 // support url hash in storybook (iframe in development mode)
 const win = window.top
 
-export function injectPathAndQueryParamsFromLocationHash () {
+export function urlPathUpdateAndQsParamActionsFromLocationHash () {
   const hash$ = fromEvent(win, 'hashchange').pipe(
     map(() => win.location.hash.slice(1)), // remove leading hash
     share()
@@ -114,7 +114,7 @@ export function injectPathAndQueryParamsFromLocationHash () {
   )
 }
 
-export function updateLocationHashPathOnUrlPathUpdateOrPathState (
+export function replaceLocationHashPathOnUrlPathUpdateOrPathState (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
@@ -127,37 +127,39 @@ export function updateLocationHashPathOnUrlPathUpdateOrPathState (
   )
   return combineLatest(path$, urlPathUpdate$).pipe(
     pluck('0'),
-    tap(updateLocationHashPath),
+    tap(replaceLocationHashPath),
     ignoreElements()
   )
 }
 
-function updateLocationHashPath (update: string) {
+function replaceLocationHashPath (update: string) {
   const path = parsePathFromLocationHash()
   if (update === path) return
-  updateLocationHash(update)
+  replaceLocationHash(update)
 }
 
-export function udpateLocationHashQueryParam (key: string, value: any) {
+export function replaceLocationHashQueryParam (key: string, value: any) {
   const params = parseQueryParamsFromLocationHash()
   const param = getSearchParam(params, key)
   const update = '' + value
   if (update === param || (!value && !param)) return
   if (update === 'false') params.delete(key)
   else params.set(key, update)
-  updateLocationHash(params)
+  replaceLocationHash(params)
 }
 
-function updateLocationHash (path: string)
-function updateLocationHash (params: URLSearchParams)
-function updateLocationHash (update: string | URLSearchParams) {
+function replaceLocationHash (path: string)
+function replaceLocationHash (params: URLSearchParams)
+function replaceLocationHash (update: string | URLSearchParams) {
   const isPathUpdate = isString(update)
   const path = isPathUpdate ? update : parsePathFromLocationHash()
   const params = (!isPathUpdate
     ? update
     : parseQueryParamsFromLocationHash()
   ).toString()
-  win.location.hash = `#${path}${!params.length ? '' : `?${params.toString()}`}`
+  const url = new URL(win.location.toString())
+  url.hash = `#${path}${!params.length ? '' : `?${params.toString()}`}`
+  win.location.replace(url.toString())
 }
 
 function parsePathFromLocationHash () {

@@ -17,10 +17,10 @@
 import reducer, { RouteAutomataState, LinkAutomataState } from './reducer'
 import { actionFromMenuItem, actionFromError } from './dispatchers'
 import {
-  injectPathAndQueryParamsFromLocationHash,
+  urlPathUpdateAndQsParamActionsFromLocationHash,
   signoutOnSigningOut,
-  udpateLocationHashQueryParam,
-  updateLocationHashPathOnUrlPathUpdateOrPathState
+  replaceLocationHashQueryParam,
+  replaceLocationHashPathOnUrlPathUpdateOrPathState
 } from './effects'
 import MENUS, { DEFAULT_LOCALE } from './options'
 import componentFromEvents, {
@@ -136,10 +136,10 @@ export function router<P extends RouterSFCProps> (
     () => tap(log('router:event:')),
     redux(
       reducer,
-      injectPathAndQueryParamsFromLocationHash,
-      updateLocationHashPathOnUrlPathUpdateOrPathState,
+      urlPathUpdateAndQsParamActionsFromLocationHash,
+      replaceLocationHashPathOnUrlPathUpdateOrPathState,
       tapOnEvent('UPDATE_QUERY_PARAM', ([key, value]) =>
-        udpateLocationHashQueryParam(key, value)
+        replaceLocationHashQueryParam(key, value)
       ),
       tapOnEvent(
         'CLOSE_INFO',
