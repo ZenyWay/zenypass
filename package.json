@@ -1,7 +1,7 @@
 {
   "name": "@zenyway/zenypass",
   "configPublish": "http://npm.zenyway.com:5984",
-  "version": "2.0.0-alpha.32",
+  "version": "2.0.0-alpha.33",
   "description": "zero-knowledge open source password manager web-app that syncs and runs everywhere",
   "main": "dist/index.js",
   "scripts": {
