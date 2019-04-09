@@ -40,7 +40,12 @@ export interface SignupPageHocProps {
   onSignin?: () => void
 }
 
-export type SignupPageError = 'email' | 'password' | 'confirm' | 'submit'
+export type SignupPageError =
+  | 'email'
+  | 'password'
+  | 'confirm'
+  | 'submit'
+  | 'offline'
 
 export enum SignupFsm {
   Pristine = 'PRISTINE',
@@ -155,11 +160,17 @@ const automata: AutomataSpec<SignupFsm> = {
     SUBMIT: SignupFsm.SigningUp
   },
   [SignupFsm.SigningUp]: {
-    UNAUTHORIZED: [
+    CONFLICT: [
       SignupFsm.PristinePassword,
       clearPassword,
       clearConfirm,
       mapIntoError('submit')
+    ],
+    GATEWAY_TIMEOUT: [
+      SignupFsm.PristinePassword,
+      clearPassword,
+      clearConfirm,
+      mapIntoError('offline')
     ],
     ERROR: [
       SignupFsm.PristinePassword,

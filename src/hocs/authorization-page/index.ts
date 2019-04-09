@@ -56,7 +56,6 @@ export interface AuthorizationPageSFCProps
   email?: string
   password?: string
   token?: string
-  enabled?: boolean
   pending?: boolean
   retry?: boolean
   error?: AuthorizationPageError | false | unknown
@@ -122,7 +121,6 @@ function mapStateToProps ({
     password,
     token,
     pending,
-    enabled: true,
     error: STATE_TO_ERROR[state] || error
   }
 }

@@ -36,7 +36,6 @@ export interface AuthenticationFormProps {
   confirm?: string
   token?: string
   enabled?: boolean
-  created?: boolean
   cleartext?: boolean
   error?: AuthenticationFormError | false
   onChange?: (value: string, target: HTMLElement) => void
@@ -47,13 +46,16 @@ export interface AuthenticationFormProps {
   onSubmit?: (event: Event) => void
 }
 
-export type AuthenticationFormError = AuthenticationFormField | 'submit'
+export type AuthenticationFormError =
+  | AuthenticationFormField
+  | 'submit'
+  | 'offline'
 
 export type AuthenticationFormField = 'email' | 'password' | 'confirm' | 'token'
 
 export type UnknownProps = { [prop: string]: unknown }
 
-const ERRORS = {
+const FIELD_ERRORS = {
   email: {
     [AuthenticationPageType.Authorize]: 'Please enter a valid email address',
     [AuthenticationPageType.Signup]: 'Please enter a valid email address',
@@ -71,6 +73,35 @@ const ERRORS = {
   token: {
     [AuthenticationPageType.Authorize]:
       'Please enter the authorization code as displayed on the authorizing device'
+  }
+}
+
+const SUBMIT_ERRORS = {
+  [AuthenticationPageType.Authorize]: {
+    submit: [
+      'Access not authorized',
+      'Please verify that your authorizing device is online, double-check your email address and enter your password and authorization code again'
+    ],
+    offline: [
+      'Connection error',
+      'This device appears to be offline. The ZenyPass server cannot be accessed. Please check your connection and try again'
+    ]
+  },
+  [AuthenticationPageType.Signup]: {
+    submit: [
+      'A ZenyPass account already exists for this email',
+      'Please verify your email address and enter your password again'
+    ],
+    offline: [
+      'Connection error',
+      'This device appears to be offline. The ZenyPass server cannot be accessed. Please check your connection and try again'
+    ]
+  },
+  [AuthenticationPageType.Signin]: {
+    submit: [
+      'Unauthorized access',
+      'Please verify your email address and enter your password again'
+    ]
   }
 }
 
@@ -97,7 +128,6 @@ export function AuthenticationForm ({
   token,
   cleartext,
   enabled,
-  created,
   error,
   onChange,
   onSubmit,
@@ -111,29 +141,14 @@ export function AuthenticationForm ({
   const t = l10ns[locale]
   const authorize = type === 'authorize'
   const dropdown = emails && emails.length
-  const unauthorized = error === 'submit'
   const info = INFO[type]
+  const fieldError = error && (FIELD_ERRORS[error] || {})[type]
+  const submitError =
+    error &&
+    !fieldError &&
+    (SUBMIT_ERRORS[type][error] || ['Something went wrong', error])
   return (
     <form noValidate {...attrs} onSubmit={onSubmit}>
-      {!created ? null : (
-        <Fragment>
-          <p>
-            {t('An email was just sent to you')}:<br />
-            {t(
-              'follow the instructions in that email to validate your account, then login below'
-            )}
-            .
-          </p>
-          <p className='text-muted'>
-            <small>
-              {t(
-                "If you haven't received the validation email, sent from the address info@zenyway.com, please check your spam folder"
-              )}
-              .
-            </small>
-          </p>
-        </Fragment>
-      )}
       <RecordField
         type='email'
         id='email'
@@ -143,7 +158,7 @@ export function AuthenticationForm ({
         iconColor='info'
         placeholder={t('Enter your email address')}
         value={email}
-        error={error === 'email' && t(ERRORS.email[type])}
+        error={error === 'email' && t(fieldError)}
         data-id='email'
         onChange={onChange}
         locale={locale}
@@ -158,7 +173,7 @@ export function AuthenticationForm ({
         iconColor='info'
         placeholder={t('Enter your password')}
         value={password}
-        error={error === 'password' && t(ERRORS.password[type])}
+        error={error === 'password' && t(fieldError)}
         data-id='password'
         onChange={onChange}
         locale={locale}
@@ -175,7 +190,7 @@ export function AuthenticationForm ({
           flip='vertical'
           placeholder={t('Enter the authorization code')}
           value={token}
-          error={error === 'token' && t(ERRORS.token[type])}
+          error={error === 'token' && t(fieldError)}
           data-id='token'
           onChange={onChange}
           locale={locale}
@@ -191,7 +206,7 @@ export function AuthenticationForm ({
           iconColor='info'
           placeholder={t('Confirm your password')}
           value={confirm}
-          error={error === 'confirm' && t(ERRORS.confirm[type])}
+          error={error === 'confirm' && t(fieldError)}
           data-id='confirm'
           onChange={onChange}
           locale={locale}
@@ -200,13 +215,10 @@ export function AuthenticationForm ({
         />
       )}
       <p>
-        {!unauthorized ? null : (
+        {!submitError ? null : (
           <small className='text-danger'>
-            {t('Unauthorized access')}:<br />
-            {t(
-              `Please verify your email address and enter your password again`
-            )}
-            .
+            {t(submitError[0])}:<br />
+            {t(submitError[1])}.
           </small>
         )}
       </p>

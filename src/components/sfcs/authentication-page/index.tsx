@@ -36,7 +36,6 @@ export interface AuthenticationPageProps {
   locales?: DropdownItemSpec[]
   type?: AuthenticationPageType
   consents?: boolean
-  created?: boolean
   cleartext?: boolean
   emails?: DropdownItemSpec[]
   email?: string
@@ -48,16 +47,14 @@ export interface AuthenticationPageProps {
   pending?: boolean
   retry?: boolean
   error?: AuthenticationFormError
-  enabled?: boolean
   onAuthorize?: (event: Event) => void
   onCancel?: (event: MouseEvent) => void
   onChange?: (value: string, target: HTMLElement) => void
-  onSelectEmail?: (item?: HTMLElement) => void
   onSelectLocale?: (item?: HTMLElement) => void
-  onSubmit?: (event: Event) => void
-  onToggleConsent?: (event: Event) => void
   onSignin?: (event: Event) => void
   onSignup?: (event: Event) => void
+  onSubmit?: (event: Event) => void
+  onToggleConsent?: (event: Event) => void
   onConfirmInputRef?: (target: HTMLElement) => void
   onEmailInputRef?: (target: HTMLElement) => void
   onPasswordInputRef?: (target: HTMLElement) => void
@@ -83,7 +80,6 @@ export function AuthenticationPage ({
   locales,
   type = AuthenticationPageType.Signin,
   consents,
-  created,
   emails,
   email,
   password,
@@ -93,14 +89,12 @@ export function AuthenticationPage ({
   news,
   cleartext,
   pending,
-  enabled,
   retry,
   error,
   onAuthorize,
   onCancel,
   onChange,
   onSelectLocale,
-  onSelectEmail,
   onSignin,
   onSignup,
   onSubmit,
@@ -153,7 +147,6 @@ export function AuthenticationPage ({
                 confirm={confirm}
                 token={token}
                 cleartext={cleartext}
-                created={created}
                 error={error}
                 enabled={!pending}
                 locale={locale}
@@ -175,7 +168,7 @@ export function AuthenticationPage ({
                 type='submit'
                 form='authentication-form'
                 color='info'
-                disabled={!enabled || pending}
+                disabled={pending}
                 className='float-right'
               >
                 {!pending ? null : (

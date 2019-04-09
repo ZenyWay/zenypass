@@ -43,7 +43,12 @@ export interface AuthorizationPageHocProps {
   onError?: (error?: any) => void
 }
 
-export type AuthorizationPageError = 'email' | 'password' | 'token' | 'submit'
+export type AuthorizationPageError =
+  | 'email'
+  | 'password'
+  | 'token'
+  | 'submit'
+  | 'offline'
 
 export enum AuthorizationFsm {
   Pristine = 'PRISTINE',
@@ -159,7 +164,13 @@ const automata: AutomataSpec<AuthorizationFsm> = {
     SIGNED_IN: [AuthorizationFsm.PristinePassword, clearPassword, clearToken]
   },
   [AuthorizationFsm.Authorizing]: {
-    UNAUTHORIZED: [
+    GATEWAY_TIMEOUT: [
+      AuthorizationFsm.PristinePassword,
+      clearPassword,
+      clearToken,
+      mapIntoError('offline')
+    ],
+    FORBIDDEN: [
       AuthorizationFsm.PristinePassword,
       clearPassword,
       clearToken,

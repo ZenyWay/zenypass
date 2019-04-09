@@ -16,7 +16,7 @@
 
 import { SignupFsm } from './reducer'
 import zenypass from 'zenypass-service'
-import { createActionFactory } from 'basic-fsa-factories'
+import { createActionFactory, createActionFactories } from 'basic-fsa-factories'
 import { ERROR_STATUS } from 'utils'
 import {
   catchError,
@@ -31,8 +31,12 @@ import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 const zenypass$ = observableFrom(zenypass)
 
 const signedUp = createActionFactory<void>('SIGNED_UP')
-const unauthorized = createActionFactory<void>('UNAUTHORIZED')
 const error = createActionFactory<any>('ERROR')
+
+const SIGNUP_ERRORS = createActionFactories({
+  [ERROR_STATUS.CONFLICT]: 'CONFLICT',
+  [ERROR_STATUS.GATEWAY_TIMEOUT]: 'GATEWAY_TIMEOUT'
+})
 
 export function serviceSignupOnSigningUp (_: any, state$: Observable<any>) {
   return state$.pipe(
@@ -42,11 +46,7 @@ export function serviceSignupOnSigningUp (_: any, state$: Observable<any>) {
         switchMap(({ signup }) => signup(email, password)),
         map(() => signedUp(email)),
         catchError(err =>
-          observableOf(
-            err && err.status !== ERROR_STATUS.UNAUTHORIZED
-              ? error(err)
-              : unauthorized()
-          )
+          observableOf(((err && SIGNUP_ERRORS[err.status]) || error)(err))
         )
       )
     )

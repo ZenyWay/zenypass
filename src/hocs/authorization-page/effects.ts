@@ -16,7 +16,7 @@
 
 import { AuthorizationFsm } from './reducer'
 import zenypass from 'zenypass-service'
-import { createActionFactory } from 'basic-fsa-factories'
+import { createActionFactory, createActionFactories } from 'basic-fsa-factories'
 import { ERROR_STATUS } from 'utils'
 import {
   catchError,
@@ -39,14 +39,17 @@ const DELAY_AFTER_SUCCESSFUL_AUTHORIZATION = 5000 // ms
 
 const authorized = createActionFactory<void>('AUTHORIZED')
 const signedIn = createActionFactory<void>('SIGNED_IN')
-const unauthorized = createActionFactory<void>('UNAUTHORIZED')
-const notFound = createActionFactory<any>('NOT_FOUND')
 const error = createActionFactory<any>('ERROR')
 
-const SIGNIN_ERRORS = {
-  [ERROR_STATUS.UNAUTHORIZED]: unauthorized,
-  [ERROR_STATUS.NOT_FOUND]: notFound
-}
+const SIGNIN_ERRORS = createActionFactories({
+  [ERROR_STATUS.UNAUTHORIZED]: 'UNAUTHORIZED',
+  [ERROR_STATUS.NOT_FOUND]: 'NOT_FOUND'
+})
+
+const AUTHORIZATION_ERRORS = createActionFactories({
+  [ERROR_STATUS.FORBIDDEN]: 'FORBIDDEN',
+  [ERROR_STATUS.GATEWAY_TIMEOUT]: 'GATEWAY_TIMEOUT'
+})
 
 export function serviceSigninOnSigningIn (_: any, state$: Observable<any>) {
   return state$.pipe(
@@ -76,9 +79,7 @@ export function serviceAuthorizeOnAuthorizing (
         map(() => authorized(email)),
         catchError(err =>
           observableOf(
-            err && err.status !== ERROR_STATUS.UNAUTHORIZED
-              ? error(err)
-              : unauthorized()
+            ((err && AUTHORIZATION_ERRORS[err.status]) || error)(err)
           )
         )
       )
