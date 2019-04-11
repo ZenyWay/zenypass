@@ -113,6 +113,7 @@ export {
   StorageOfferCard as StorageOfferCardSFC,
   StorageOfferCardProps as StorageOfferCardSFCProps
 } from './sfcs/storage-offer-card'
+export { StorageOfferCard, StorageOfferCardProps } from './storage-offer-card'
 export {
   StoragePage as StoragePageSFC,
   StoragePageProps as StoragePageSFCProps

@@ -19,7 +19,7 @@ import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import withL10n from 'zenyway-storybook-addon-l10n'
-import { StorageOfferCardSFC } from 'components'
+import { StorageOfferCard } from 'components'
 
 const attrs = {
   country: 'FR',
@@ -30,40 +30,12 @@ const attrs = {
   onInput: action('INPUT')
 }
 
-storiesOf('StorageOfferCard (SFC)', module)
+storiesOf('StorageOfferCard', module)
   .addDecorator(withL10n({ locales: ['fr', 'en'] }))
-  .add('A-la-Carte_1', () => ({ locale }) => (
-    <StorageOfferCardSFC
-      locale={locale}
-      uiid='UNIT'
-      quantity={1}
-      price={99}
-      {...attrs}
-    />
-  ))
-  .add('A-la-Carte_1_Processing', () => ({ locale }) => (
-    <StorageOfferCardSFC
-      locale={locale}
-      uiid='UNIT'
-      quantity={1}
-      price={99}
-      processing
-      {...attrs}
-    />
-  ))
-  .add('A-la-Carte_1_Offline', () => ({ locale }) => (
-    <StorageOfferCardSFC
-      locale={locale}
-      uiid='UNIT'
-      quantity={1}
-      price={99}
-      offline
-      {...attrs}
-    />
-  ))
   .add('A-la-Carte_5', () => ({ locale }) => (
-    <StorageOfferCardSFC
+    <StorageOfferCard
       locale={locale}
+      ucid='LAUNCH'
       uiid='UNIT'
       quantity={5}
       price={349}
@@ -71,7 +43,7 @@ storiesOf('StorageOfferCard (SFC)', module)
     />
   ))
   .add('A-la-Carte_Custom', () => ({ locale }) => (
-    <StorageOfferCardSFC
+    <StorageOfferCard
       locale={locale}
       ucid='LAUNCH'
       uiid='UNIT'
@@ -82,7 +54,7 @@ storiesOf('StorageOfferCard (SFC)', module)
     />
   ))
   .add('Premium', () => ({ locale }) => (
-    <StorageOfferCardSFC
+    <StorageOfferCard
       locale={locale}
       ucid='LAUNCH'
       uiid='PREM'

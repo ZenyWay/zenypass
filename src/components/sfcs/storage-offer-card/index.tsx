@@ -15,28 +15,17 @@
  */
 
 /** @jsx createElement */
-import { createElement, Fragment } from 'create-element'
-import {
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Input,
-  InputGroup,
-  InputGroupPrepend,
-  InputGroupAppend
-} from 'bootstrap'
+import { createElement } from 'create-element'
+import { QuantityInput } from './quantity-input'
+import localizePrice, { Currency, l10ns } from './formaters'
+import { Card, CardBody, CardFooter, CardHeader, CardTitle } from 'bootstrap'
 import { FAIconButton } from '../fa-icon'
 import { style } from 'typestyle'
 import { ZENYPASS_PREMIUM_SVG, ZENYPASS_A_LA_CARTE_SVG } from 'static'
 import { classes } from 'utils'
-import createL10ns from 'basic-l10n'
-const l10ns = createL10ns(require('./locales.json'))
 
-export interface StorageOfferCardProps extends StorageOffer {
+export interface StorageOfferCardProps extends StorageOfferSpec {
   locale: string
-  ucid?: string
   country?: string
   currency?: Currency
   offline?: boolean
@@ -48,7 +37,7 @@ export interface StorageOfferCardProps extends StorageOffer {
   onInput?: (event?: Event) => void
 }
 
-export interface StorageOffer {
+export interface StorageOfferSpec {
   uiid?: Uiid
   quantity?: number
   price?: number
@@ -60,10 +49,6 @@ export enum Uiid {
   Unit = 'UNIT'
 }
 
-export enum Currency {
-  Euro = 'EUR'
-}
-
 const mh_4_5_rem = style({
   minHeight: '4.5rem'
 })
@@ -73,7 +58,6 @@ export function StorageOfferCard ({
   uiid = Uiid.Premium,
   quantity,
   price,
-  ucid,
   country,
   currency = Currency.Euro,
   editable,
@@ -88,7 +72,7 @@ export function StorageOfferCard ({
 }: StorageOfferCardProps) {
   const t = l10ns[locale]
   const premium = uiid === Uiid.Premium
-  const disabled = offline || processing || !ucid
+  const disabled = offline || processing
 
   return (
     <article
@@ -134,9 +118,7 @@ export function StorageOfferCard ({
                 )
               : `${t(
                   'Additional storage space to add'
-                )} ${t`${quantity} websites`}`
-            // TODO quantity input
-            }
+                )} ${t`${quantity} websites`}`}
             .
           </p>
         </CardBody>
@@ -161,90 +143,10 @@ export function StorageOfferCard ({
               ? t(offline ? 'Disconnected' : 'Processing')
               : !price
               ? `${t('Activate')} ${t(uiid)}`
-              : `${t('Buy for')} ${price}` // TODO localize price
-            }
+              : `${t('Buy for')} ${localizePrice(locale, currency, price)}`}
           </FAIconButton>
         </CardFooter>
       </Card>
     </article>
-  )
-}
-
-const hideSpinButtons = style({
-  $nest: {
-    '&::-webkit-inner-spin-button': {
-      '-webkit-appearance': 'none',
-      margin: '0'
-    },
-    '&::-webkit-outer-spin-button': {
-      '-webkit-appearance': 'none',
-      margin: '0'
-    }
-  }
-})
-
-const customQuantityInputClassName = classes(
-  'form-control border-info text-center font-weight-bold',
-  hideSpinButtons,
-  style({
-    maxWidth: '3rem',
-    $nest: {
-      '&:focus': { boxShadow: 'unset' }
-    }
-  })
-)
-
-interface CustomQuantityInputProps {
-  value: number
-  disabled?: boolean
-  invisible?: boolean
-  onClickMinus?: (event?: MouseEvent) => void
-  onClickPlus?: (event?: MouseEvent) => void
-  onInput?: (event?: Event) => void
-}
-
-function QuantityInput ({
-  value,
-  disabled,
-  invisible,
-  onClickMinus,
-  onClickPlus,
-  onInput
-}: CustomQuantityInputProps) {
-  return (
-    <InputGroup className='justify-content-center'>
-      {disabled ? null : (
-        <InputGroupPrepend>
-          <FAIconButton
-            icon='minus'
-            color='info'
-            outline
-            onClick={onClickMinus}
-          />
-        </InputGroupPrepend>
-      )}
-      <Input
-        type='number'
-        value={'' + value}
-        readOnly={disabled}
-        autoCorrect='off'
-        autoComplete='off'
-        className={classes(
-          customQuantityInputClassName,
-          invisible && 'invisible'
-        )}
-        onInput={onInput}
-      />
-      {disabled ? null : (
-        <InputGroupAppend>
-          <FAIconButton
-            icon='plus'
-            color='info'
-            outline
-            onClick={onClickPlus}
-          />
-        </InputGroupAppend>
-      )}
-    </InputGroup>
   )
 }

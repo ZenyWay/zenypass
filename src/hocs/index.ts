@@ -42,6 +42,7 @@ export { recordCard, RecordCardProps } from './record-card'
 export { router, RouterProps } from './router'
 export { signinPage, SigninPageProps } from './signin-page'
 export { signupPage, SignupPageProps } from './signup-page'
+export { storageOffer, StorageOfferProps } from './storage-offer'
 export {
   withAuthentication,
   AuthenticationProviderProps
