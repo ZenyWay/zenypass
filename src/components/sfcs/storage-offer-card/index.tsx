@@ -64,6 +64,10 @@ export enum Currency {
   Euro = 'EUR'
 }
 
+const mh_4_5_rem = style({
+  minHeight: '4.5rem'
+})
+
 export function StorageOfferCard ({
   locale,
   uiid = Uiid.Premium,
@@ -96,15 +100,14 @@ export function StorageOfferCard ({
           <CardTitle>
             {t(premium ? 'ZenyPass Premium' : 'ZenyPass "A-la-Carte"')}
           </CardTitle>
-          {premium ? null : (
-            <QuantityInput
-              value={quantity}
-              editable={editable}
-              onClickMinus={onClickMinus}
-              onClickPlus={onClickPlus}
-              onInput={onInput}
-            />
-          )}
+          <QuantityInput
+            value={quantity}
+            disabled={!editable}
+            invisible={premium}
+            onClickMinus={onClickMinus}
+            onClickPlus={onClickPlus}
+            onInput={onInput}
+          />
         </CardHeader>
         <CardBody className='py-0'>
           <img
@@ -124,7 +127,7 @@ export function StorageOfferCard ({
                 : 'Express checkout'
             )}
           </p>
-          <p>
+          <p className={mh_4_5_rem}>
             {premium
               ? t(
                   'Unlimited storage space for adding websites without constraint'
@@ -193,7 +196,8 @@ const customQuantityInputClassName = classes(
 
 interface CustomQuantityInputProps {
   value: number
-  editable?: boolean
+  disabled?: boolean
+  invisible?: boolean
   onClickMinus?: (event?: MouseEvent) => void
   onClickPlus?: (event?: MouseEvent) => void
   onInput?: (event?: Event) => void
@@ -201,14 +205,15 @@ interface CustomQuantityInputProps {
 
 function QuantityInput ({
   value,
-  editable,
+  disabled,
+  invisible,
   onClickMinus,
   onClickPlus,
   onInput
 }: CustomQuantityInputProps) {
   return (
     <InputGroup className='justify-content-center'>
-      {!editable ? null : (
+      {disabled ? null : (
         <InputGroupPrepend>
           <FAIconButton
             icon='minus'
@@ -221,13 +226,16 @@ function QuantityInput ({
       <Input
         type='number'
         value={'' + value}
-        readOnly={!editable}
+        readOnly={disabled}
         autoCorrect='off'
         autoComplete='off'
-        className={customQuantityInputClassName}
+        className={classes(
+          customQuantityInputClassName,
+          invisible && 'invisible'
+        )}
         onInput={onInput}
       />
-      {!editable ? null : (
+      {disabled ? null : (
         <InputGroupAppend>
           <FAIconButton
             icon='plus'
