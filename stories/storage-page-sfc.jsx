@@ -13,8 +13,16 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-//
-export const ZENYPASS_LOGO_WHITE_SVG = require('./zenypass-icon-white.svg')
-export const ZENYPASS_LOGO_CYAN_SVG = require('./icon_zenypass_fill21A0B7.svg')
-export const ZENYPASS_PREMIUM_SVG = require('./zw-premium.svg')
-export const ZENYPASS_A_LA_CARTE_SVG = require('./zw-a-la-carte.svg')
+
+/** @jsx createElement */
+import { createElement } from 'create-element'
+import { storiesOf } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
+import withL10n from 'zenyway-storybook-addon-l10n'
+import { StoragePageSFC } from 'components'
+
+const attrs = {}
+
+storiesOf('StoragePage (SFC)', module)
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('TODO', () => ({ locale }) => <StoragePageSFC locale={locale} />)

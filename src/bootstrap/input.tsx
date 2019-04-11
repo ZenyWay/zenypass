@@ -24,9 +24,10 @@ export interface InputProps {
   defaultChecked?: boolean
   placeholder?: string
   rows?: string
+  readOnly?: boolean
   autoFocus?: boolean
-  autocomplete?: 'off' | 'on' | '' | false
-  autocorrect?: 'off' | 'on' | '' | false
+  autoComplete?: 'off' | 'on' | '' | false
+  autoCorrect?: 'off' | 'on' | '' | false
   disabled?: boolean
   invalid?: boolean
   className?: string
@@ -42,12 +43,14 @@ export function Input ({
   ...attrs
 }: InputProps) {
   const Tag = (type === 'textarea' ? type : 'input') as 'input'
+  if (!attrs.autoComplete) delete attrs.autoComplete
+  if (!attrs.autoCorrect) delete attrs.autoCorrect
   return (
     <Tag
       ref={innerRef}
       type={type}
       className={classes(invalid && 'is-invalid', className)}
-      {...attrs}
+      {...attrs as any}
     />
   )
 }

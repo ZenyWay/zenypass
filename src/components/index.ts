@@ -109,4 +109,12 @@ export { SignupDonePage, SignupDonePageProps } from './sfcs/signup-done-page'
 export { SigninPage, SigninPageProps } from './signin-page'
 export { SignupPage, SignupPageProps } from './signup-page'
 export { SplashCard, SplashCardProps } from './sfcs/splash-card'
+export {
+  StorageOfferCard as StorageOfferCardSFC,
+  StorageOfferCardProps as StorageOfferCardSFCProps
+} from './sfcs/storage-offer-card'
+export {
+  StoragePage as StoragePageSFC,
+  StoragePageProps as StoragePageSFCProps
+} from './sfcs/storage-page'
 export { withAuthenticationModal } from './sfcs/with-authentication'
