@@ -17,12 +17,16 @@
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { createActionFactories } from 'basic-fsa-factories'
 import { always, forType, mapPayload, mergePayload, omit, pick } from 'utils'
 
-export interface StorageOfferHocProps {
+export interface StorageOfferHocProps extends HoistedStorageOfferHocProps {
   ucid?: string
   quantity?: number
+}
+
+export interface HoistedStorageOfferHocProps {
+  session?: string
+  onToggleOffline?: () => void
 }
 
 export enum StorageOfferAutomataState {
@@ -33,14 +37,17 @@ const automata: AutomataSpec<StorageOfferAutomataState> = {
   [StorageOfferAutomataState.Idle]: {}
 }
 
-const SELECTED_PROPS: (keyof StorageOfferHocProps)[] = []
+const HOISTED_PROPS: (keyof HoistedStorageOfferHocProps)[] = [
+  'session',
+  'onToggleOffline'
+]
 
 export default compose.into(0)(
   createAutomataReducer(automata, StorageOfferAutomataState.Idle),
   forType('PROPS')(
     compose.into(0)(
-      mergePayload(pick(SELECTED_PROPS)),
-      into('attrs')(mapPayload(omit(SELECTED_PROPS)))
+      mergePayload(pick(HOISTED_PROPS)),
+      into('attrs')(mapPayload(omit(HOISTED_PROPS)))
     )
   )
 )

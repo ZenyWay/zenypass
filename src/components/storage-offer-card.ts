@@ -21,8 +21,12 @@ import {
 } from './sfcs/storage-offer-card'
 import {
   storageOffer,
+  Currency,
+  StorageOfferSpec,
   StorageOfferProps as GenericStorageOfferProps
 } from 'hocs'
+
+export { Currency, StorageOfferSpec }
 
 export const StorageOfferCard = storageOffer<StorageOfferCardSFCProps>(
   StorageOfferCardSFC

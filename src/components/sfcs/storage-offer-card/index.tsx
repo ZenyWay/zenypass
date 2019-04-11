@@ -24,12 +24,15 @@ import { style } from 'typestyle'
 import { ZENYPASS_PREMIUM_SVG, ZENYPASS_A_LA_CARTE_SVG } from 'static'
 import { classes } from 'utils'
 
+export { Currency }
+
 export interface StorageOfferCardProps extends StorageOfferSpec {
   locale: string
   country?: string
   currency?: Currency
   offline?: boolean
   processing?: boolean
+  id?: string
   className?: string
   onCheckout?: (event?: MouseEvent) => void
   onClickMinus?: (event?: MouseEvent) => void

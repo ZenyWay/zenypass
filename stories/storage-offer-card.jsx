@@ -24,10 +24,7 @@ import { StorageOfferCard } from 'components'
 const attrs = {
   country: 'FR',
   currency: 'EUR',
-  onCheckout: action('CHECKOUT'),
-  onClickMinus: action('CLICK_MINUS'),
-  onClickPlus: action('CLICK_PLUS'),
-  onInput: action('INPUT')
+  onToggleOffline: action('TOGGLE_OFFLINE')
 }
 
 storiesOf('StorageOfferCard', module)

@@ -15,6 +15,7 @@
  */
 
 import reducer, {
+  HoistedStorageOfferHocProps,
   StorageOfferHocProps,
   StorageOfferAutomataState
 } from './reducer'
@@ -26,7 +27,7 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { pluck, shallowEqual, tapOnEvent } from 'utils'
+import { callHandlerOnEvent, shallowEqual } from 'utils'
 import { distinctUntilChanged, tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
@@ -37,7 +38,6 @@ export type StorageOfferProps<
 export interface StorageOfferSFCProps
   extends StorageOfferSpec,
     StorageOfferSFCHandlerProps {
-  ucid?: string
   country?: string
   currency?: Currency
   offline?: boolean
@@ -67,8 +67,10 @@ export interface StorageOfferSFCHandlerProps {
   onInput?: (event?: Event) => void
 }
 
-interface StorageOfferState {
-  attrs: StorageOfferProps<StorageOfferSFCProps>
+interface StorageOfferState extends HoistedStorageOfferHocProps {
+  attrs: Partial<
+    Rest<StorageOfferProps<StorageOfferSFCProps>, HoistedStorageOfferHocProps>
+  >
   state: StorageOfferAutomataState
 }
 
@@ -86,7 +88,8 @@ const mapDispatchToProps: (
 ) => StorageOfferSFCHandlerProps = createActionDispatchers({
   onCheckout: 'CHECKOUT',
   onClickMinus: 'CLICK_MINUS',
-  onClickPlus: 'CLICK_PLUS'
+  onClickPlus: 'CLICK_PLUS',
+  onInput: 'INPUT'
 })
 
 export function storageOffer<P extends StorageOfferSFCProps> (
@@ -95,7 +98,7 @@ export function storageOffer<P extends StorageOfferSFCProps> (
   return componentFromEvents<StorageOfferProps<P>, P>(
     StorageOfferSFC,
     () => tap(log('storage-offer:event:')),
-    redux(reducer),
+    redux(reducer, callHandlerOnEvent('TOGGLE_OFFLINE', 'onToggleOffline')),
     () => tap(log('storage-offer:state:')),
     connect<StorageOfferState, StorageOfferSFCProps>(
       mapStateToProps,
