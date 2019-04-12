@@ -68,3 +68,6 @@ storiesOf('StoragePage (SFC)', module)
   .add('default', () => ({ locale }) => (
     <StoragePageSFC locale={locale} {...attrs} offers={offers} maxdocs={15} />
   ))
+  .add('premium', () => ({ locale }) => (
+    <StoragePageSFC locale={locale} {...attrs} maxdocs={Infinity} />
+  ))

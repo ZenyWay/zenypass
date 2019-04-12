@@ -77,6 +77,7 @@ export function StoragePage ({
   ...attrs
 }: StoragePageProps) {
   const t = l10ns[locale]
+  const premium = maxdocs && !Number.isFinite(maxdocs)
   return (
     <section>
       <header className='sticky-top'>
@@ -91,41 +92,50 @@ export function StoragePage ({
           <strong>{t('Pay once, use forever')}</strong>
         </h3>
         <p className='text-center lead'>
-          {t('Remaining space')}:{' '}
-          {!maxdocs ? '...' : `${maxdocs - docs}/${maxdocs}`}
+          {premium
+            ? t('Unlimited storage')
+            : `${t('Remaining space')}: ${
+                !maxdocs ? '...' : `${maxdocs - docs}/${maxdocs}`
+              }`}
         </p>
-        <Row className='justify-content-center px-1'>
-          <InputGroup className='col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mt-1 px-0 shadow-sm'>
-            <InputGroupPrepend>
-              <InputGroupText>
-                <FAIcon icon='percent' />
-              </InputGroupText>
-            </InputGroupPrepend>
-            <Input
-              innerRef={inputRef}
-              type='text'
-              placeholder={t('Enter your promotional code')}
-              value={value}
-              className='form-control'
-              onInput={onInput}
-            />
-          </InputGroup>
-        </Row>
-        <p className='text-center lead'>{t(code)}</p>
-        <Row
-          className={classes(
-            'align-items-center justify-content-center',
-            className
-          )}
-          mb='2'
-          {...attrs}
-        >
-          <StorageOfferCards
-            locale={locale}
-            offers={offers}
-            onToggleOffline={onToggleOffline}
-          />
-        </Row>
+        {premium ? (
+          t('')
+        ) : (
+          <Fragment>
+            <Row className='justify-content-center px-1'>
+              <InputGroup className='col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mt-1 px-0 shadow-sm'>
+                <InputGroupPrepend>
+                  <InputGroupText>
+                    <FAIcon icon='percent' />
+                  </InputGroupText>
+                </InputGroupPrepend>
+                <Input
+                  innerRef={inputRef}
+                  type='text'
+                  placeholder={t('Enter your promotional code')}
+                  value={value}
+                  className='form-control'
+                  onInput={onInput}
+                />
+              </InputGroup>
+            </Row>
+            <p className='text-center lead'>{t(code)}</p>
+            <Row
+              className={classes(
+                'align-items-center justify-content-center',
+                className
+              )}
+              mb='2'
+              {...attrs}
+            >
+              <StorageOfferCards
+                locale={locale}
+                offers={offers}
+                onToggleOffline={onToggleOffline}
+              />
+            </Row>
+          </Fragment>
+        )}
       </main>
     </section>
   )
