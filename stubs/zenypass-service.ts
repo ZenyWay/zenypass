@@ -42,6 +42,7 @@ import {
   ZenypassRecordService,
   ZenypassService
 } from '@zenyway/zenypass-service'
+import payments from './payment-service'
 const log = label => console.log.bind(console, label)
 
 export { AuthorizationDoc, PouchDoc, PouchVaultChange, ZenypassRecord }
@@ -52,6 +53,7 @@ const PASSWORD = '!!!'
 const AUTHENTICATION_DELAY = 1500 // ms
 const AUTHORIZATION_DELAY = 10000 // ms
 const RECORD_SERVICE_DELAY = 500 // ms
+const STORAGE_INFO_DELAY = 1500 // ms
 const MIN_PASSWORD_LENGTH = 4
 const TOKEN = 'BCDE FGHI JKLN'
 const UNAUTHORIZED = newStatusError(401, 'UNAUTHORIZED')
@@ -71,6 +73,8 @@ const AUTHORIZATIONS = [
   },
   {} as KVMap<AuthorizationDoc>
 )
+const DOCS = 14
+const MAX_DOCS = 15
 const RECORD_PASSWORD = 'p@ssW0rd!012345678#012345678990123456789'
 const RECORDS = [
   {
@@ -186,7 +190,9 @@ const zenypass = Promise.resolve({
       authorize,
       getAuthToken,
       cancelAuthorization: noop,
-      getAgentInfo$
+      getAgentInfo$,
+      getStorageInfo$,
+      payments
     }
   }
 })
@@ -278,6 +284,17 @@ export function getAuthorizations$ (
 
 function getAgentInfo$ () {
   return observableFrom(AGENTS)
+}
+
+export interface StorageInfo {
+  docs: number
+  maxdocs: number
+}
+
+function getStorageInfo$ (): Observable<StorageInfo> {
+  return observableOf({ docs: DOCS, maxdocs: MAX_DOCS }).pipe(
+    delay(STORAGE_INFO_DELAY)
+  )
 }
 
 const recordsUpdate$ = new Subject<RecordsUpdate>()

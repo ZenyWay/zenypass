@@ -17,42 +17,44 @@
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
 import {
-  Input,
   InputGroup,
   InputGroupPrepend,
   InputGroupText,
   ProgressBar,
   Row
 } from 'bootstrap'
+import { ControlledInput } from '../../controlled-input'
 import { FAIcon } from '../fa-icon'
 import { InfoModal } from '../info-modal'
 import { NavbarMenu } from '../navbar-menu'
 import {
   StorageOfferCard,
-  Currency,
+  StorageOfferBaseSpec,
   StorageOfferSpec
 } from '../../storage-offer-card'
-import { classes } from 'utils'
+import { classes, Rest } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
-export interface StoragePageProps {
+const DEFAULT_DEBOUNCE = 300 // ms
+
+export interface StoragePageProps extends StorageOfferBaseSpec {
   locale: string
-  docs: number
-  maxdocs: number
-  code?: string
-  offers?: StorageOfferSpec[]
+  docs?: number
+  maxdocs?: number
+  discount?: string
+  offers?: Rest<StorageOfferSpec, StorageOfferBaseSpec>[]
   value?: string
-  country?: string
-  currency?: Currency
+  debounce?: number
   offline?: boolean
   init?: boolean
   session?: string
   className?: string
   onClose?: (event?: MouseEvent) => void
   onError?: (error?: any) => void
-  onInput?: (event?: KeyboardEvent) => void
-  onToggleOffline?: () => void
+  onChange?: (value: string, item?: HTMLElement) => void
+  onOfferQuantityChange?: (id: string, quantity?: number) => void
+  onToggleOffline?: (offline?: boolean) => void
   inputRef?: (target?: HTMLElement | null) => void
 }
 
@@ -60,18 +62,21 @@ export function StoragePage ({
   locale,
   docs,
   maxdocs,
-  code,
+  discount,
   offers = [],
   value,
+  ucid,
   country,
   currency,
+  debounce = DEFAULT_DEBOUNCE,
   offline,
   init,
   session,
   className,
   onClose,
   onError,
-  onInput,
+  onChange,
+  onOfferQuantityChange,
   onToggleOffline,
   inputRef,
   ...attrs
@@ -109,17 +114,19 @@ export function StoragePage ({
                     <FAIcon icon='percent' />
                   </InputGroupText>
                 </InputGroupPrepend>
-                <Input
-                  innerRef={inputRef}
+                <ControlledInput
                   type='text'
+                  innerRef={inputRef}
                   placeholder={t('Enter your promotional code')}
+                  autoFocus
                   value={value}
+                  debounce={debounce}
                   className='form-control'
-                  onInput={onInput}
+                  onChange={onChange}
                 />
               </InputGroup>
             </Row>
-            <p className='text-center lead'>{t(code)}</p>
+            <p className='text-center lead'>{t(discount)}</p>
             <Row
               className={classes(
                 'align-items-center justify-content-center',
@@ -131,6 +138,10 @@ export function StoragePage ({
               <StorageOfferCards
                 locale={locale}
                 offers={offers}
+                ucid={ucid}
+                country={country}
+                currency={currency}
+                onChange={onOfferQuantityChange}
                 onToggleOffline={onToggleOffline}
               />
             </Row>
@@ -141,28 +152,35 @@ export function StoragePage ({
   )
 }
 
-interface StorageOfferCardsProps {
+interface StorageOfferCardsProps extends StorageOfferBaseSpec {
   locale: string
-  offers?: StorageOfferSpec[]
+  offers?: Rest<StorageOfferSpec, StorageOfferBaseSpec>[]
+  onChange?: (id: string, quantity?: number) => void
   onToggleOffline?: () => void
 }
 
 function StorageOfferCards ({
   locale,
   offers,
+  ucid,
+  country,
+  currency,
+  onChange,
   onToggleOffline
 }: StorageOfferCardsProps) {
   let i = offers.length
   const cards = new Array(i)
   while (i--) {
     const offer = offers[i]
-    const id = `card_${offer.uiid}_${offer.quantity}`
     cards[i] = (
       <StorageOfferCard
-        key={id}
-        id={id}
+        key={offer.id}
         locale={locale}
         {...offer}
+        country={country}
+        currency={currency}
+        ucid={ucid}
+        onChange={onChange}
         onToggleOffline={onToggleOffline}
       />
     )

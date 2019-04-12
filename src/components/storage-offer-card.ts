@@ -22,11 +22,13 @@ import {
 import {
   storageOffer,
   Currency,
+  StorageOfferBaseSpec,
   StorageOfferSpec,
-  StorageOfferProps as GenericStorageOfferProps
+  StorageOfferProps as GenericStorageOfferProps,
+  Uiid
 } from 'hocs'
 
-export { Currency, StorageOfferSpec }
+export { Currency, StorageOfferBaseSpec, StorageOfferSpec, Uiid }
 
 export const StorageOfferCard = storageOffer<StorageOfferCardSFCProps>(
   StorageOfferCardSFC

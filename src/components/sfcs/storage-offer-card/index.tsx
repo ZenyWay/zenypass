@@ -28,11 +28,9 @@ export { Currency }
 
 export interface StorageOfferCardProps extends StorageOfferSpec {
   locale: string
-  country?: string
-  currency?: Currency
+  editable?: boolean
   offline?: boolean
   processing?: boolean
-  id?: string
   className?: string
   onCheckout?: (event?: MouseEvent) => void
   onClickMinus?: (event?: MouseEvent) => void
@@ -42,9 +40,9 @@ export interface StorageOfferCardProps extends StorageOfferSpec {
 
 export interface StorageOfferSpec {
   uiid?: Uiid
+  currency?: Currency
   quantity?: number
   price?: number
-  editable?: boolean
 }
 
 export enum Uiid {
@@ -61,7 +59,6 @@ export function StorageOfferCard ({
   uiid = Uiid.Premium,
   quantity,
   price,
-  country,
   currency = Currency.Euro,
   editable,
   offline,
@@ -116,13 +113,14 @@ export function StorageOfferCard ({
           </p>
           <p className={mh_4_5_rem}>
             {premium
-              ? t(
+              ? `${t(
                   'Unlimited storage space for adding websites without constraint'
-                )
+                )}.`
+              : Number.isNaN(quantity)
+              ? null
               : `${t(
                   'Additional storage space to add'
-                )} ${t`${quantity} websites`}`}
-            .
+                )} ${t`${quantity} websites`}.`}
           </p>
         </CardBody>
         <CardFooter className='bg-transparent border-0'>

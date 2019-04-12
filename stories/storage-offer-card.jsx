@@ -20,10 +20,14 @@ import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import withL10n from 'zenyway-storybook-addon-l10n'
 import { StorageOfferCard } from 'components'
+import { USERNAME } from '../stubs/zenypass-service'
 
 const attrs = {
+  session: USERNAME,
+  ucid: 'LAUNCH',
   country: 'FR',
   currency: 'EUR',
+  onChange: action('CHANGE'),
   onToggleOffline: action('TOGGLE_OFFLINE')
 }
 
@@ -32,7 +36,7 @@ storiesOf('StorageOfferCard', module)
   .add('A-la-Carte_5', () => ({ locale }) => (
     <StorageOfferCard
       locale={locale}
-      ucid='LAUNCH'
+      id='UNIT_5'
       uiid='UNIT'
       quantity={5}
       price={349}
@@ -42,7 +46,7 @@ storiesOf('StorageOfferCard', module)
   .add('A-la-Carte_Custom', () => ({ locale }) => (
     <StorageOfferCard
       locale={locale}
-      ucid='LAUNCH'
+      id='UNIT_CUSTOM'
       uiid='UNIT'
       quantity={10}
       price={694}
@@ -53,7 +57,7 @@ storiesOf('StorageOfferCard', module)
   .add('Premium', () => ({ locale }) => (
     <StorageOfferCard
       locale={locale}
-      ucid='LAUNCH'
+      id='PREM_1'
       uiid='PREM'
       quantity={1}
       price={4900}

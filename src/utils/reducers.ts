@@ -14,8 +14,7 @@
  * Limitations under the License.
  */
 //
-import compose from 'basic-compose'
-import { identity, isFunction, isString, shallowEqual } from './basic'
+import { identity, isFunction, shallowEqual } from './basic'
 
 export type Reducer<A = any, V = any> = (acc: A, value: V) => A
 

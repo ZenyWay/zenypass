@@ -48,11 +48,15 @@ export interface ZenypassService {
   cancelAuthorization(): void
   getAuthToken(length?: number): string
   getAgentInfo$(): Observable<AuthorizationDoc>
-  // getStorageInfo$(): Observable<StorageInfo>;
+  getStorageInfo$(): Observable<StorageInfo>
   username: string
   meta: DocVault
   records: ZenypassRecordService
-  // payments: PaymentService;
+  payments: PaymentService
+}
+export interface StorageInfo {
+  docs: number
+  maxdocs: number
 }
 export interface DocVault {
   upsert<D extends PouchDoc>(doc: D): Promise<D>
@@ -115,4 +119,49 @@ export interface PouchDoc extends PouchDocId {
 export interface PouchDocId {
   _id: string
 }
+export interface PaymentService {
+  url: any // not used
+  getPricing(opts?: Partial<PricingSpec>): Promise<Pricing>
+  checkout(
+    document: Document,
+    locale: Locale,
+    lang: string,
+    spec: PaymentSpec
+  ): Promise<void>
+  getPaymentNotification$(): any // not used
+}
+export interface Pricing {
+  ucid: string
+  i18nkey: string
+  getCountrySpec(): CountrySpec
+  getPaymentSpec(uiid: string, quantity: number): PaymentSpec
+}
+export interface PaymentSpec extends PricingSpec {
+  quantity: number
+  price: number
+}
+export interface PricingSpec {
+  country: string
+  currency: 'EUR'
+  uiid: string
+  ucid: string
+}
+export interface CountrySpec {
+  country: string
+  currency: 'EUR'
+  vat: number
+}
+export interface Locale {
+  localize(
+    lang: Exclude<keyof LocaleMap, number>,
+    currency: string,
+    cents: number
+  ): string
+  localize(
+    lang: Exclude<keyof LocaleMaps, number>,
+    key: Exclude<keyof LocaleMap, number>
+  ): string
+}
+export declare type LocaleMaps = { [lang: string]: LocaleMap }
+export declare type LocaleMap = { [key: string]: string }
 export type IndexedMap<V> = { [key: string]: V }

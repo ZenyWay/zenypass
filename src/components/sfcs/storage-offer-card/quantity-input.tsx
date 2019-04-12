@@ -52,7 +52,7 @@ const quantityInputClassName = classes(
   'form-control border-info text-center font-weight-bold',
   hideSpinButtons,
   style({
-    maxWidth: '3rem',
+    maxWidth: '4.5rem',
     $nest: {
       '&:focus': { boxShadow: 'unset' }
     }
@@ -81,7 +81,7 @@ export function QuantityInput ({
       )}
       <Input
         type='number'
-        value={'' + value}
+        value={Number.isNaN(value) ? '' : '' + value}
         readOnly={disabled}
         autoCorrect='off'
         autoComplete='off'

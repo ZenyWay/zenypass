@@ -16,29 +16,18 @@
 //
 
 import { getService } from 'zenypass-service'
-import {
-  createActionFactories,
-  createActionFactory,
-  StandardAction
-} from 'basic-fsa-factories'
+import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   catchError,
   distinctUntilChanged,
-  distinctUntilKeyChanged,
   filter,
   ignoreElements,
   pluck,
   map,
-  share,
+  switchMap,
   startWith,
   tap
 } from 'rxjs/operators'
-import {
-  Observable,
-  combineLatest,
-  fromEvent,
-  merge,
-  of as observableOf
-} from 'rxjs'
-import { always, isString, ERROR_STATUS } from 'utils'
+import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
+import { pick, ERROR_STATUS, shallowEqual } from 'utils'
 const log = (label: string) => console.log.bind(console, label)

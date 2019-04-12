@@ -118,4 +118,5 @@ export {
   StoragePage as StoragePageSFC,
   StoragePageProps as StoragePageSFCProps
 } from './sfcs/storage-page'
+export { StoragePage, StoragePageProps } from './storage-page'
 export { withAuthenticationModal } from './sfcs/with-authentication'

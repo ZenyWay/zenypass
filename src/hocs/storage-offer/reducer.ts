@@ -17,28 +17,66 @@
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload, mergePayload, omit, pick } from 'utils'
+import { forType, mapPayload, mergePayload, omit, pick } from 'utils'
 
-export interface StorageOfferHocProps extends HoistedStorageOfferHocProps {
-  ucid?: string
+export interface StorageOfferHocProps extends HoistedStorageOfferHocProps {}
+
+export interface StorageOfferSpec extends StorageOfferBaseSpec {
+  id: string
+  editable?: boolean
+  uiid?: Uiid
   quantity?: number
+  price?: number
 }
 
-export interface HoistedStorageOfferHocProps {
+export interface StorageOfferBaseSpec {
+  ucid?: string
+  country?: string
+  currency?: Currency
+}
+
+export enum Uiid {
+  Premium = 'PREM',
+  Unit = 'UNIT'
+}
+
+export enum Currency {
+  Euro = 'EUR'
+}
+
+export interface HoistedStorageOfferHocProps extends StorageOfferSpec {
+  offline?: boolean
   session?: string
-  onToggleOffline?: () => void
+  onChange?: (id?: string, quantity?: number) => void
+  onToggleOffline?: (offline?: boolean) => void
 }
 
 export enum StorageOfferAutomataState {
-  Idle = 'IDLE'
+  Idle = 'IDLE',
+  PendingCheckout = 'PENDING_CHECKOUT'
 }
 
 const automata: AutomataSpec<StorageOfferAutomataState> = {
-  [StorageOfferAutomataState.Idle]: {}
+  [StorageOfferAutomataState.Idle]: {
+    CHECKOUT: StorageOfferAutomataState.PendingCheckout
+  },
+  [StorageOfferAutomataState.PendingCheckout]: {
+    CHECKOUT_RESOLVED: StorageOfferAutomataState.Idle
+  }
 }
 
 const HOISTED_PROPS: (keyof HoistedStorageOfferHocProps)[] = [
+  'id',
+  'country',
+  'currency',
+  'editable',
+  'offline',
+  'price',
+  'quantity',
   'session',
+  'ucid',
+  'uiid',
+  'onChange',
   'onToggleOffline'
 ]
 
