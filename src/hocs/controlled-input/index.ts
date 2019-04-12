@@ -13,7 +13,11 @@
  * Limitations under the License.
  */
 //
-import reducer, { ControlledInputFsmState } from './reducer'
+import reducer, {
+  ControlledInputFsmState,
+  ControlledInputHocProps,
+  HoistedControlledInputProps
+} from './reducer'
 import { debounceInputWhenDebounce } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
@@ -45,19 +49,7 @@ import {
 
 export type ControlledInputProps<
   P extends InputProps
-> = ControlledInputControllerProps & Rest<P, InputProps>
-
-export interface ControlledInputControllerProps {
-  value?: string
-  debounce?: string | number
-  autoFocus?: boolean
-  autocorrect?: 'off' | 'on' | '' | false
-  autocomplete?: 'off' | 'on' | '' | false
-  spellcheck?: 'true' | 'false' | '' | false
-  innerRef?: (ref: HTMLElement) => void
-  onChange?: (value: string, item?: HTMLElement) => void
-  onKeyDown?: (event: KeyboardEvent) => void
-}
+> = ControlledInputHocProps & Rest<P, InputProps>
 
 export interface InputProps extends InputHandlerProps {
   value?: string
@@ -83,31 +75,21 @@ const DEFAULT_PROPS: ControlledInputProps<InputProps> = {
   spellcheck: 'false'
 }
 
-interface ControlledInputState {
-  props: Partial<
-    Pick<
-      ControlledInputProps<InputProps>,
-      Exclude<
-        keyof ControlledInputProps<InputProps>,
-        'debounce' | 'blurOnEnterKey' | 'innerRef' | 'onChange' | 'onKeyDown'
-      >
-    >
+interface ControlledInputState extends HoistedControlledInputProps {
+  attrs: Partial<
+    Rest<ControlledInputProps<InputProps>, HoistedControlledInputProps>
   >
   state: ControlledInputFsmState
   value?: string
-  blurOnEnterKey?: boolean
-  debounce?: string | number
   icon?: HTMLElement
   input?: HTMLElement
-  onChange?: (value: string, item?: HTMLElement) => void
-  onKeyDown?: (event: KeyboardEvent) => void
 }
 
 function mapStateToProps ({
-  props,
+  attrs,
   value
 }: ControlledInputState): Rest<InputProps, InputHandlerProps> {
-  return { ...props, value }
+  return { ...attrs, value }
 }
 
 const keyDown = createActionFactory('KEY_DOWN')
@@ -180,7 +162,7 @@ function isDirtyAndChangeTriggerEventOrControlledInputBlur (
   event: StandardAction<FocusEvent>
 ): boolean {
   return (
-    state.props.value !== state.value &&
+    state.attrs.value !== state.value &&
     (CHANGE_TRIGGER_EVENTS.indexOf(event.type) >= 0 ||
       isControlledInputBlur(state, event))
   )

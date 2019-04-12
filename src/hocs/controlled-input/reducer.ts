@@ -16,7 +16,30 @@
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
-import { always, omit, forType, mapPayload, pluck } from 'utils'
+import {
+  always,
+  forType,
+  mapPayload,
+  mergePayload,
+  omit,
+  pluck,
+  pick
+} from 'utils'
+
+export interface ControlledInputHocProps extends HoistedControlledInputProps {
+  value?: string
+  autoFocus?: boolean
+  autocorrect?: 'off' | 'on' | '' | false
+  autocomplete?: 'off' | 'on' | '' | false
+  spellcheck?: 'true' | 'false' | '' | false
+}
+
+export interface HoistedControlledInputProps {
+  debounce?: string | number
+  innerRef?: (ref: HTMLElement) => void
+  onChange?: (value: string, item?: HTMLElement) => void
+  onKeyDown?: (event: KeyboardEvent) => void
+}
 
 export enum ControlledInputFsmState {
   Pristine = 'PRISTINE',
@@ -40,28 +63,21 @@ const automata: AutomataSpec<ControlledInputFsmState> = {
   }
 }
 
+const HOISTED_PROPS: (keyof HoistedControlledInputProps)[] = [
+  'debounce',
+  'innerRef',
+  'onChange',
+  'onKeyDown'
+]
+
 export default compose.into(0)(
   createAutomataReducer(automata, ControlledInputFsmState.Pristine),
   forType('ESCAPE_KEY')(clearValue),
   forType('CLEAR')(clearValue),
   forType('PROPS')(
     compose.into(0)(
-      into('props')(
-        mapPayload(
-          omit(
-            'debounce',
-            'blurOnEnterKey',
-            'innerRef',
-            'onChange',
-            'onKeyDown'
-          )
-        )
-      ),
-      into('debounce')(mapPayload(pluck('debounce'))),
-      into('blurOnEnterKey')(mapPayload(pluck('blurOnEnterKey'))),
-      into('innerRef')(mapPayload(pluck('innerRef'))),
-      into('onChange')(mapPayload(pluck('onChange'))),
-      into('onKeyDown')(mapPayload(pluck('onKeyDown')))
+      mergePayload(pick(HOISTED_PROPS)),
+      into('props')(mapPayload(omit(HOISTED_PROPS)))
     )
   ),
   forType('INPUT_REF')(into('input')(mapPayload())),
