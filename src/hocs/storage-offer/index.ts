@@ -128,8 +128,8 @@ export function storageOffer<P extends StorageOfferSFCProps> (
             !isNaN(quantity)
               ? quantity + payload
               : payload < 0
-              ? -Infinity
-              : Infinity
+              ? Infinity
+              : -Infinity
           )
         ]
       ),

@@ -19,56 +19,17 @@ import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import withL10n from 'zenyway-storybook-addon-l10n'
-import { StoragePageSFC } from 'components'
+import { StoragePage } from 'components'
 import { USERNAME } from '../stubs/zenypass-service'
 
 const attrs = {
-  docs: 14,
-  code: 'code-pei6vt0kf/oreh0z',
   session: USERNAME,
-  onChange: action('CHANGE'),
   onClose: action('CLOSE'),
-  onError: action('ERROR'),
-  onOfferQuantityChange: action('OFFER_QUANTITY_CHANGE'),
-  onToggleOffline: action('TOGGLE_OFFLINE'),
-  inputRef: action('INPUT_REF')
+  onError: action('ERROR')
 }
 
-const offers = [
-  {
-    uiid: 'UNIT',
-    quantity: 1,
-    price: 99
-  },
-  {
-    uiid: 'UNIT',
-    quantity: 5,
-    price: 349
-  },
-  {
-    uiid: 'UNIT',
-    quantity: 10,
-    price: 694,
-    editable: true
-  },
-  {
-    uiid: 'PREM',
-    quantity: 1,
-    price: 4900
-  }
-].map(offer => ({ ...offer, id: `${offer.uiid}_${offer.quantity}` }))
-
-storiesOf('StoragePage (SFC)', module)
+storiesOf('StoragePage', module)
   .addDecorator(withL10n({ locales: ['fr', 'en'] }))
-  .add('init', () => ({ locale }) => (
-    <StoragePageSFC locale={locale} {...attrs} init />
-  ))
-  .add('pending-maxdocs', () => ({ locale }) => (
-    <StoragePageSFC locale={locale} {...attrs} offers={offers} />
-  ))
   .add('default', () => ({ locale }) => (
-    <StoragePageSFC locale={locale} {...attrs} offers={offers} maxdocs={15} />
-  ))
-  .add('premium', () => ({ locale }) => (
-    <StoragePageSFC locale={locale} {...attrs} maxdocs={Infinity} />
+    <StoragePage locale={locale} {...attrs} />
   ))

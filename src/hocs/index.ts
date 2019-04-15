@@ -45,9 +45,12 @@ export { signupPage, SignupPageProps } from './signup-page'
 export {
   storageOffer,
   Currency,
+  StorageOfferBaseSpec,
   StorageOfferSpec,
-  StorageOfferProps
+  StorageOfferProps,
+  Uiid
 } from './storage-offer'
+export { storagePage, StoragePageProps } from './storage-page'
 export {
   withAuthentication,
   AuthenticationProviderProps
