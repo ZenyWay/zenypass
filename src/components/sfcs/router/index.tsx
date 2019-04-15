@@ -21,6 +21,7 @@ import { HomePage, MenuSpecs, DropdownItemSpec } from '../../home-page'
 import { SigninPage } from '../../signin-page'
 import { SignupPage } from '../../signup-page'
 import { SignupDonePage } from '../signup-done-page'
+import { StoragePage } from '../../storage-page'
 import { ErrorPage } from '../error-page'
 import { InfoModal } from '../info-modal'
 import { newStatusError } from 'utils'
@@ -177,6 +178,15 @@ function CoreRouter ({
           onSelectLocale={onSelectMenuItem}
           onSignedIn={onSignedIn}
           onSignup={onSignup}
+        />
+      )
+    case '/storage':
+      return (
+        <StoragePage
+          locale={locale}
+          session={session}
+          onClose={onClose}
+          onError={onError}
         />
       )
     case '/fatal':
