@@ -123,18 +123,15 @@ export function controlledInput<P extends InputProps> (
     redux(
       reducer,
       applyHandlerOnEvent(
-        isDirtyAndChangeTriggerEventOrControlledInputBlur,
+        isChangeTriggerEventOrControlledInputBlur,
         'onChange',
         ({ value, input }) => [value, input]
       ),
       callHandlerOnEvent(isControlledInputBlur, 'onBlur'),
       callHandlerOnEvent(['KEY_DOWN', 'ESCAPE_KEY', 'ENTER_KEY'], 'onKeyDown'),
+      tapOnEvent('CLEAR', compose.into(0)(focus, pluck('1', 'input'))),
       tapOnEvent(
-        ['ESCAPE_KEY', 'CLEAR'],
-        compose.into(0)(focus, pluck('1', 'input'))
-      ),
-      tapOnEvent(
-        ({ props }, { type }) => props.autoFocus && type === 'INPUT_REF',
+        ({ autoFocus }, { type }) => autoFocus && type === 'INPUT_REF',
         focus
       ),
       callHandlerOnEvent('INPUT_REF', 'innerRef'),
@@ -157,14 +154,13 @@ export function controlledInput<P extends InputProps> (
 
 const CHANGE_TRIGGER_EVENTS = ['DEBOUNCE', 'CLEAR', 'ESCAPE_KEY', 'ENTER_KEY']
 
-function isDirtyAndChangeTriggerEventOrControlledInputBlur (
+function isChangeTriggerEventOrControlledInputBlur (
   state: ControlledInputState,
   event: StandardAction<FocusEvent>
 ): boolean {
   return (
-    state.attrs.value !== state.value &&
-    (CHANGE_TRIGGER_EVENTS.indexOf(event.type) >= 0 ||
-      isControlledInputBlur(state, event))
+    CHANGE_TRIGGER_EVENTS.indexOf(event.type) >= 0 ||
+    isControlledInputBlur(state, event)
   )
 }
 

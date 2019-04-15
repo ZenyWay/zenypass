@@ -28,13 +28,13 @@ import {
 
 export interface ControlledInputHocProps extends HoistedControlledInputProps {
   value?: string
-  autoFocus?: boolean
   autocorrect?: 'off' | 'on' | '' | false
   autocomplete?: 'off' | 'on' | '' | false
   spellcheck?: 'true' | 'false' | '' | false
 }
 
 export interface HoistedControlledInputProps {
+  autoFocus?: boolean
   debounce?: string | number
   innerRef?: (ref: HTMLElement) => void
   onChange?: (value: string, item?: HTMLElement) => void
@@ -55,15 +55,18 @@ const clearValue = intoValue(always(''))
 const automata: AutomataSpec<ControlledInputFsmState> = {
   [ControlledInputFsmState.Pristine]: {
     PROPS: intoValue(mapPayload(pluck('value'))),
-    INPUT: [ControlledInputFsmState.Dirty, mapInputValueIntoValue]
+    INPUT: ControlledInputFsmState.Dirty
   },
   [ControlledInputFsmState.Dirty]: {
-    INPUT: mapInputValueIntoValue,
-    BLUR: ControlledInputFsmState.Pristine
+    BLUR: ControlledInputFsmState.Pristine,
+    CLEAR: ControlledInputFsmState.Pristine,
+    DEBOUNCE: ControlledInputFsmState.Pristine,
+    ESCAPE_KEY: ControlledInputFsmState.Pristine
   }
 }
 
 const HOISTED_PROPS: (keyof HoistedControlledInputProps)[] = [
+  'autoFocus',
   'debounce',
   'innerRef',
   'onChange',
@@ -72,12 +75,13 @@ const HOISTED_PROPS: (keyof HoistedControlledInputProps)[] = [
 
 export default compose.into(0)(
   createAutomataReducer(automata, ControlledInputFsmState.Pristine),
+  forType('INPUT')(mapInputValueIntoValue),
   forType('ESCAPE_KEY')(clearValue),
   forType('CLEAR')(clearValue),
   forType('PROPS')(
     compose.into(0)(
       mergePayload(pick(HOISTED_PROPS)),
-      into('props')(mapPayload(omit(HOISTED_PROPS)))
+      into('attrs')(mapPayload(omit(HOISTED_PROPS)))
     )
   ),
   forType('INPUT_REF')(into('input')(mapPayload())),
