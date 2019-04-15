@@ -91,7 +91,10 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
     username: string,
     service: CoreZenypassService
   ): ZenypassService {
-    const wrapped: ZenypassService = Object.create(service)
+    const wrapped: ZenypassService = Object.create(
+      Object.getPrototypeOf(service)
+    )
+    Object.defineProperties(wrapped, Object.getOwnPropertyDescriptors(service))
     wrapped.signout = () => {
       service.signout()
       delete this._services[username]
