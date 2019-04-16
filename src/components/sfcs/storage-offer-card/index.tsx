@@ -73,6 +73,7 @@ export function StorageOfferCard ({
   const t = l10ns[locale]
   const premium = uiid === Uiid.Premium
   const disabled = offline || processing
+  const title = t(premium ? 'ZenyPass Premium' : 'ZenyPass "A-la-Carte"')
 
   return (
     <article
@@ -81,9 +82,7 @@ export function StorageOfferCard ({
     >
       <Card className='rounded text-center' bg='white'>
         <CardHeader className='bg-transparent border-0 px-1'>
-          <CardTitle>
-            {t(premium ? 'ZenyPass Premium' : 'ZenyPass "A-la-Carte"')}
-          </CardTitle>
+          <CardTitle>{title}</CardTitle>
           <QuantityInput
             value={quantity}
             disabled={!editable}
@@ -143,7 +142,7 @@ export function StorageOfferCard ({
             {disabled
               ? t(offline ? 'Disconnected' : 'Processing')
               : !price
-              ? `${t('Activate')} ${t(uiid)}`
+              ? `${t('Activate')} ${title}`
               : `${t('Buy for')} ${localizePrice(locale, currency, price)}`}
           </FAIconButton>
         </CardFooter>
