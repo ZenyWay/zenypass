@@ -32,7 +32,7 @@ import {
   StorageOfferBaseSpec,
   StorageOfferSpec
 } from '../../storage-offer-card'
-import { classes, Rest } from 'utils'
+import { classes, isNumber, Rest } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
@@ -42,7 +42,7 @@ export interface StoragePageProps extends StorageOfferBaseSpec {
   locale: string
   docs?: number
   maxdocs?: number
-  discount?: string
+  i18nkey?: string
   offers?: Rest<StorageOfferSpec, StorageOfferBaseSpec>[]
   value?: string
   debounce?: number
@@ -62,7 +62,7 @@ export function StoragePage ({
   locale,
   docs,
   maxdocs,
-  discount,
+  i18nkey,
   offers = [],
   value,
   ucid,
@@ -83,6 +83,7 @@ export function StoragePage ({
 }: StoragePageProps) {
   const t = l10ns[locale]
   const premium = maxdocs && !Number.isFinite(maxdocs)
+  const discount = t(`code-${i18nkey}`)
   return (
     <section>
       <header className='sticky-top'>
@@ -126,7 +127,7 @@ export function StoragePage ({
                 />
               </InputGroup>
             </Row>
-            <p className='text-center lead'>{t(discount)}</p>
+            <p className='text-center lead'>{discount}</p>
             <Row
               className={classes(
                 'align-items-center justify-content-center',
@@ -137,6 +138,7 @@ export function StoragePage ({
             >
               <StorageOfferCards
                 locale={locale}
+                session={session}
                 offers={offers}
                 ucid={ucid}
                 country={country}
@@ -154,6 +156,7 @@ export function StoragePage ({
 
 interface StorageOfferCardsProps extends StorageOfferBaseSpec {
   locale: string
+  session: string
   offers?: Rest<StorageOfferSpec, StorageOfferBaseSpec>[]
   onChange?: (id: string, quantity?: number) => void
   onToggleOffline?: () => void
@@ -161,6 +164,7 @@ interface StorageOfferCardsProps extends StorageOfferBaseSpec {
 
 function StorageOfferCards ({
   locale,
+  session,
   offers,
   ucid,
   country,
@@ -172,10 +176,11 @@ function StorageOfferCards ({
   const cards = new Array(i)
   while (i--) {
     const offer = offers[i]
-    cards[i] = (
+    cards[i] = !isNumber(offer.price) ? null : (
       <StorageOfferCard
         key={offer.id}
         locale={locale}
+        session={session}
         {...offer}
         country={country}
         currency={currency}

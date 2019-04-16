@@ -56,6 +56,10 @@ export function isBoolean (v: any): v is Boolean | boolean {
   return typeof (v && v.valueOf()) === 'boolean'
 }
 
+export function isNumber (v: any): v is Number | number {
+  return typeof (v && v.valueOf()) === 'number'
+}
+
 export function isUndefined (v: any): v is void {
   return typeof v === 'undefined'
 }

@@ -14,9 +14,10 @@
  * Limitations under the License.
  */
 
-import createL10ns from 'basic-l10n'
-
-export const l10ns = createL10ns(require('./locales.json'))
+export enum Locale {
+  en = 'EN',
+  fr = 'FR'
+}
 
 export enum Currency {
   Euro = 'EUR'
@@ -30,7 +31,7 @@ const DEFAULT_FORMATERS = CURRENCIES.reduce(function (formaters, currency) {
 }, {})
 
 function createFormaters (currency: Currency) {
-  return Object.keys(l10ns).reduce(function (formaters, locale) {
+  return Object.keys(Locale).reduce(function (formaters, locale) {
     formaters[locale] = new Intl.NumberFormat(locale, {
       style: 'currency',
       currency
@@ -39,12 +40,12 @@ function createFormaters (currency: Currency) {
   }, {})
 }
 
-export default function localizePrice (
+export function localizePrice (
   locale: string,
   currency: Currency = Currency.Euro,
-  cent: number
+  cents: number
 ) {
-  const price = Math.floor(cent) / 100
+  const price = Math.floor(cents) / 100
   const formaters = DEFAULT_FORMATERS[currency]
   const formater =
     (formaters && formaters[locale]) ||

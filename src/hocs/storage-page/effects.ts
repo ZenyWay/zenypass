@@ -15,67 +15,100 @@
  */
 //
 
-import { getService } from 'zenypass-service'
-import { createActionFactory, StandardAction } from 'basic-fsa-factories'
+import { getService, ZenypassService } from 'zenypass-service'
+import {
+  createActionFactories,
+  createActionFactory,
+  StandardAction
+} from 'basic-fsa-factories'
 import {
   catchError,
+  concat,
+  delay,
   distinctUntilChanged,
   filter,
-  ignoreElements,
   pluck,
   map,
-  switchMap,
-  startWith,
-  tap
+  retryWhen,
+  switchMap
+  // tap
 } from 'rxjs/operators'
-import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
+import { Observable, defer, of as observableOf } from 'rxjs'
 import { pick, ERROR_STATUS, shallowEqual } from 'utils'
-const log = (label: string) => console.log.bind(console, label)
+// const log = (label: string) => console.log.bind(console, label)
 
+const RETRY_DELAY = 3000 // ms
+const service = createActionFactory('SERVICE')
 const pricing = createActionFactory('PRICING')
 const info = createActionFactory('INFO')
 const error = createActionFactory('ERROR')
-const offline = createActionFactory('OFFLINE')
+const ERRORS = createActionFactories({
+  [ERROR_STATUS.GATEWAY_TIMEOUT]: 'OFFLINE',
+  [ERROR_STATUS.NOT_FOUND]: 'NOT_FOUND'
+})
+const offline = ERRORS[ERROR_STATUS.GATEWAY_TIMEOUT]
+
+export function injectServiceOnSessionProp (
+  event$: Observable<StandardAction<any>>
+) {
+  return event$.pipe(
+    filter(({ type }) => type === 'PROPS'),
+    pluck('payload', 'session'),
+    distinctUntilChanged(),
+    switchMap(getService),
+    map(service),
+    catchError(err => observableOf(error(err)))
+  )
+}
 
 export function injectPricingFactoryOnSpecUpdate (
   _: any,
   state$: Observable<any>
 ) {
   return state$.pipe(
-    map(pick('session', 'country', 'currency', 'ucid', 'uiid')),
+    map(pick('service', 'value')),
     distinctUntilChanged(shallowEqual),
-    switchMap(({ session, ...spec }) =>
-      observableFrom(getService(session)).pipe(
-        switchMap(service => service.payments.getPricing({ ucid: spec.ucid })),
-        map(factory => pricing(factory)),
-        catchError(err =>
-          observableOf(
-            (err && err.status !== ERROR_STATUS.GATEWAY_TIMEOUT
-              ? error
-              : offline)(err)
+    filter(({ service }) => !!service),
+    switchMap(({ service, value }) => getPricing$(service, value))
+  )
+}
+
+function getPricing$ (service: ZenypassService, ucid: string) {
+  return defer(() => service.payments.getPricing({ ucid })).pipe(
+    map(factory => pricing(factory)),
+    catchError((err, retry$) =>
+      isOfflineError(err)
+        ? observableOf((ERRORS[err && err.status] || error)(err))
+        : observableOf(offline(err)).pipe(
+            delay(RETRY_DELAY),
+            concat(retry$)
           )
-        )
-      )
     )
   )
 }
 
 export function injectStorageStatusOnMount (_: any, state$: Observable<any>) {
   return state$.pipe(
-    pluck('session'),
+    pluck('service'),
     distinctUntilChanged(),
-    switchMap(session =>
-      observableFrom(getService(session)).pipe(
-        switchMap(service => observableFrom(service.getStorageInfo$())),
-        map(status => info(status)),
-        catchError(err =>
-          observableOf(
-            (err && err.status !== ERROR_STATUS.GATEWAY_TIMEOUT
-              ? error
-              : offline)(err)
-          )
-        )
-      )
-    )
+    filter(Boolean),
+    switchMap(getStorageInfo$)
   )
+}
+
+function getStorageInfo$ (service: ZenypassService) {
+  return defer(() => service.getStorageInfo$()).pipe(
+    map(status => info(status)),
+    retryWhen(err$ =>
+      err$.pipe(
+        filter(isOfflineError),
+        delay(RETRY_DELAY)
+      )
+    ),
+    catchError(err => observableOf(error(err)))
+  )
+}
+
+function isOfflineError (err: any) {
+  return err && err.status !== ERROR_STATUS.GATEWAY_TIMEOUT
 }

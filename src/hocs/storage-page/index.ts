@@ -21,6 +21,7 @@ import reducer, {
 } from './reducer'
 import {
   injectPricingFactoryOnSpecUpdate,
+  injectServiceOnSessionProp,
   injectStorageStatusOnMount
 } from './effects'
 import { Currency, Uiid, StorageOfferSpec } from '../storage-offer'
@@ -32,7 +33,7 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { callHandlerOnEvent, pluck, shallowEqual } from 'utils'
+import { callHandlerOnEvent, shallowEqual } from 'utils'
 import { distinctUntilChanged, tap } from 'rxjs/operators'
 const log = label => console.log.bind(console, label)
 
@@ -45,7 +46,8 @@ export interface StoragePageSFCProps extends StoragePageSFCHandlerProps {
   value?: string
   docs?: number
   maxdocs?: number
-  discount?: string
+  ucid?: string
+  i18nkey?: string
   offers?: StorageOfferSpec[]
   country?: string
   currency?: Currency
@@ -70,7 +72,8 @@ interface StoragePageState extends HoistedStoragePageHocProps {
   input?: HTMLElement
   docs?: number
   maxdocs?: number
-  discount?: string
+  ucid?: string
+  i18nkey?: string
   offers?: StorageOfferSpec[]
   country?: string
   currency?: Currency
@@ -80,26 +83,28 @@ function mapStateToProps ({
   attrs,
   country,
   currency,
-  discount,
+  i18nkey,
   docs,
   offers,
   maxdocs,
   session,
   state,
-  value
+  value,
+  ucid
 }: StoragePageState): Rest<StoragePageSFCProps, StoragePageSFCHandlerProps> {
-  const init = state === StoragePageAutomataState.Pending
   return {
     ...attrs,
     country,
     currency,
-    discount,
+    i18nkey,
     docs,
-    init,
+    init: state === StoragePageAutomataState.Pending,
     offers,
+    offline: state === StoragePageAutomataState.Offline,
     maxdocs,
     session,
-    value
+    value,
+    ucid
   }
 }
 
@@ -124,6 +129,7 @@ export function storagePage<P extends StoragePageSFCProps> (
     () => tap(log('storage-page:event:')),
     redux(
       reducer,
+      injectServiceOnSessionProp,
       injectStorageStatusOnMount,
       injectPricingFactoryOnSpecUpdate,
       callHandlerOnEvent('TOGGLE_OFFLINE', 'onToggleOffline'),

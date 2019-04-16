@@ -45,7 +45,13 @@ import {
 import payments from './payment-service'
 const log = label => console.log.bind(console, label)
 
-export { AuthorizationDoc, PouchDoc, PouchVaultChange, ZenypassRecord }
+export {
+  AuthorizationDoc,
+  PouchDoc,
+  PouchVaultChange,
+  ZenypassRecord,
+  ZenypassService
+}
 export type KVMap<V> = { [key: string]: V }
 
 export const USERNAME = 'me@zw.fr'

@@ -17,12 +17,14 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { QuantityInput } from './quantity-input'
-import localizePrice, { Currency, l10ns } from './formaters'
 import { Card, CardBody, CardFooter, CardHeader, CardTitle } from 'bootstrap'
 import { FAIconButton } from '../fa-icon'
 import { style } from 'typestyle'
 import { ZENYPASS_PREMIUM_SVG, ZENYPASS_A_LA_CARTE_SVG } from 'static'
-import { classes } from 'utils'
+import createL10ns from 'basic-l10n'
+import { Currency, classes, localizePrice } from 'utils'
+
+const l10ns = createL10ns(require('./locales.json'))
 
 export { Currency }
 

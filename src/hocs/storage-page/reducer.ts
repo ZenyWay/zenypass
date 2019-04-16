@@ -37,15 +37,21 @@ export interface HoistedStoragePageHocProps {
 
 export enum StoragePageAutomataState {
   Pending = 'PENDING',
-  Idle = 'IDLE'
+  Idle = 'IDLE',
+  Offline = 'OFFLINE'
 }
 
 const automata: AutomataSpec<StoragePageAutomataState> = {
   [StoragePageAutomataState.Pending]: {
+    // NOT_FOUND: TODO consider how to handle 404 during init
     PRICING: StoragePageAutomataState.Idle
   },
   [StoragePageAutomataState.Idle]: {
-    //
+    OFFLINE: StoragePageAutomataState.Offline
+  },
+  [StoragePageAutomataState.Offline]: {
+    PRICING: StoragePageAutomataState.Idle,
+    INFO: StoragePageAutomataState.Idle
   }
 }
 
@@ -62,13 +68,17 @@ export default compose.into(0)(
   forType('PRICING')(
     compose.into(0)(
       into('offers')(updatePrices),
-      mergePayload((pricing: any) => pricing.getCountrySpec()),
-      mergePayload(pick('ucid', 'i18nkey')),
+      mergePayload((pricing: any) => ({
+        ...pricing.getCountrySpec(),
+        ucid: pricing.ucid,
+        i18nkey: pricing.i18nkey && pricing.i18nkey.toLowerCase()
+      })),
       into('pricing')(mapPayload())
     )
   ),
   forType('CHANGE')(into('value')(mapPayload())),
   forType('INPUT_REF')(into('input')(mapPayload())),
+  forType('SERVICE')(into('service')(mapPayload())),
   forType('PROPS')(
     compose.into(0)(
       mergePayload(pick(HOISTED_PROPS)),
