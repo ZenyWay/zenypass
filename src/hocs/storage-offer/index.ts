@@ -23,7 +23,10 @@ import reducer, {
   StorageOfferSpec,
   Uiid
 } from './reducer'
-// import { } from './effects'
+import {
+  injectServiceOnSessionProp,
+  checkoutOnPendingCheckout
+} from './effects'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -53,6 +56,7 @@ export interface StorageOfferSFCProps
       StorageOfferSpec,
       Exclude<keyof StorageOfferSpec, 'country' | 'id' | 'ucid'>
     > {
+  locale: string
   id?: string
   offline?: boolean
   processing?: boolean
@@ -76,6 +80,7 @@ interface StorageOfferState extends HoistedStorageOfferHocProps {
 function mapStateToProps ({
   attrs,
   state,
+  locale,
   currency,
   editable,
   id,
@@ -87,6 +92,7 @@ function mapStateToProps ({
   const processing = state === StorageOfferAutomataState.PendingCheckout
   return {
     ...attrs,
+    locale,
     currency,
     editable,
     id,
@@ -119,6 +125,8 @@ export function storageOffer<P extends StorageOfferSFCProps> (
     () => tap(log('storage-offer:event:')),
     redux(
       reducer,
+      injectServiceOnSessionProp,
+      checkoutOnPendingCheckout,
       applyHandlerOnEvent(
         'ADD',
         'onChange',
@@ -137,7 +145,7 @@ export function storageOffer<P extends StorageOfferSFCProps> (
         id,
         payload
       ]),
-      callHandlerOnEvent('TOGGLE_OFFLINE', 'onToggleOffline'),
+      callHandlerOnEvent('OFFLINE', 'onToggleOffline'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
     () => tap(log('storage-offer:state:')),

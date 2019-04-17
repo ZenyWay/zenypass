@@ -45,6 +45,7 @@ export enum Currency {
 }
 
 export interface HoistedStorageOfferHocProps extends StorageOfferSpec {
+  locale: string
   offline?: boolean
   session?: string
   onChange?: (id?: string, quantity?: number) => void
@@ -61,7 +62,8 @@ const automata: AutomataSpec<StorageOfferAutomataState> = {
     CHECKOUT: StorageOfferAutomataState.PendingCheckout
   },
   [StorageOfferAutomataState.PendingCheckout]: {
-    CHECKOUT_RESOLVED: StorageOfferAutomataState.Idle
+    CHECKOUT_RESOLVED: StorageOfferAutomataState.Idle,
+    OFFLINE: StorageOfferAutomataState.Idle
   }
 }
 
@@ -70,6 +72,7 @@ const HOISTED_PROPS: (keyof HoistedStorageOfferHocProps)[] = [
   'country',
   'currency',
   'editable',
+  'locale',
   'offline',
   'price',
   'quantity',
@@ -82,6 +85,7 @@ const HOISTED_PROPS: (keyof HoistedStorageOfferHocProps)[] = [
 
 export default compose.into(0)(
   createAutomataReducer(automata, StorageOfferAutomataState.Idle),
+  forType('SERVICE')(into('service')(mapPayload())),
   forType('PROPS')(
     compose.into(0)(
       mergePayload(pick(HOISTED_PROPS)),
