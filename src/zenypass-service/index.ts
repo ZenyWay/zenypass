@@ -23,6 +23,8 @@ import getZenypassServiceAccess, {
   ZenypassServiceAccess
 } from '@zenyway/zenypass-service'
 import { newStatusError, ERROR_STATUS } from 'utils'
+import { NEVER, Observable, interval, of as observableOf } from 'rxjs'
+import { concat, map, shareReplay, take, takeUntil } from 'rxjs/operators'
 
 export { AuthorizationDoc, PouchDoc, PouchVaultChange, ZenypassRecord }
 
@@ -39,7 +41,16 @@ export interface ZenypassServiceFactory {
 
 export interface ZenypassService extends CoreZenypassService {
   signout(): void
+  getSingleRunCountdown(spec?: SingleRunCountdownSpec): Observable<number>
 }
+
+export interface SingleRunCountdownSpec {
+  start?: number
+  period?: number
+  cancel$?: Observable<any>
+}
+
+const SINGLE_RUN_COUNTDOWN_PERIOD = 1000 // ms
 
 // tslint:disable-next-line:class-name
 class _ZenypassServiceFactory implements ZenypassServiceFactory {
@@ -59,7 +70,7 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
       .signin({ username, passphrase })
       .then(
         service =>
-          (this._services[username] = this._wrapSignout(username, service))
+          (this._services[username] = this._wrapService(username, service))
       )
   }
 
@@ -87,7 +98,7 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
     this.getService = this.getService.bind(this)
   }
 
-  private _wrapSignout (
+  private _wrapService (
     username: string,
     service: CoreZenypassService
   ): ZenypassService {
@@ -95,9 +106,28 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
       Object.getPrototypeOf(service)
     )
     Object.defineProperties(wrapped, Object.getOwnPropertyDescriptors(service))
+
     wrapped.signout = () => {
       service.signout()
       delete this._services[username]
+    }
+
+    let countdown$: Observable<number>
+    wrapped.getSingleRunCountdown = function ({
+      start = 0,
+      period = SINGLE_RUN_COUNTDOWN_PERIOD,
+      cancel$ = NEVER
+    }: SingleRunCountdownSpec) {
+      if (!countdown$) {
+        countdown$ = interval(period).pipe(
+          take(start + 1), // from start to zero
+          takeUntil(cancel$),
+          map(ticks => start - ticks),
+          concat(observableOf(0)),
+          shareReplay(0)
+        )
+      }
+      return countdown$
     }
     return wrapped
   }

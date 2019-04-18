@@ -49,7 +49,7 @@ import {
   switchMap,
   take,
   takeUntil,
-  // tap,
+  tap,
   withLatestFrom
 } from 'rxjs/operators'
 import {
@@ -59,10 +59,11 @@ import {
   identity,
   interval,
   of as observableOf,
+  merge,
   throwError
 } from 'rxjs'
 
-// const log = (label: string) => console.log.bind(console, label)
+const log = (label: string) => console.log.bind(console, label)
 
 export interface IndexedRecordEntry {
   _id: string
@@ -204,20 +205,21 @@ function toIndexedRecordsArray (
 
 export function unrestrictedCountdownOnInitialIdle (
   event$: Observable<StandardAction<any>>,
-  state$: Observable<{ state: HomePageFsmState }>
+  state$: Observable<{ session: string; state: HomePageFsmState }>
 ) {
-  const cancel$ = event$.pipe(filter(({ type }) => type === 'CANCEL_COUNTDOWN'))
+  const cancel$ = merge(
+    event$.pipe(filter(({ type }) => type === 'CANCEL_COUNTDOWN')),
+    event$.pipe(last()) // unmount
+  )
+
   return state$.pipe(
     filter(({ state }) => state === HomePageFsmState.Idle),
     first(),
-    switchMap(() =>
-      interval(1000 /* ms */).pipe(
-        // starts at zero
-        take(UNRESTRICTED_COUNTDOWN + 1), // zero to UNRESTRICTED_COUNTDOWN
-        takeUntil(cancel$),
-        map(ticks => unrestrictedCountdown(UNRESTRICTED_COUNTDOWN - ticks))
-      )
-    )
+    switchMap(({ session }) => getService(session)),
+    switchMap(service =>
+      service.getSingleRunCountdown({ start: UNRESTRICTED_COUNTDOWN, cancel$ })
+    ),
+    map(count => unrestrictedCountdown(count))
   )
 }
 
