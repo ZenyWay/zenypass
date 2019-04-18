@@ -20,6 +20,7 @@ import {
   injectRecordsFromService,
   injectSettings$FromService,
   persistSettings$ToService,
+  unrestrictedCountdownOnInitialIdle,
   IndexedRecordEntry
 } from './effects'
 import componentFromEvents, {
@@ -54,6 +55,7 @@ export interface HomePageSFCProps extends HomePageSFCHandlerProps {
   session?: string
   records?: IndexedRecordEntry[]
   onboarding?: boolean
+  unrestricted?: number
   busy?: BusyState
   error?: string
 }
@@ -67,6 +69,7 @@ export interface HomePageSFCHandlerProps {
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onError?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
+  onCancelCountDown?: (event?: Event) => void
   onCloseModal?: (event?: MouseEvent) => void
   onCloseOnboarding?: (event?: MouseEvent) => void
 }
@@ -78,6 +81,7 @@ interface HomePageState extends HomePageHocProps {
   >
   state: HomePageFsmState
   records?: IndexedRecordEntry[]
+  unrestricted?: number
   error?: string
 }
 
@@ -103,6 +107,7 @@ function mapStateToProps ({
   locale,
   session,
   onboarding,
+  unrestricted,
   error,
   onAuthenticationRequest,
   onError
@@ -114,6 +119,7 @@ function mapStateToProps ({
     records,
     locale,
     session,
+    unrestricted,
     busy: HOME_PAGE_FSM_STATE_TO_BUSY_STATE[state],
     onboarding,
     error: HOME_PAGE_FSM_STATE_TO_ERROR[state] || error,
@@ -133,6 +139,7 @@ const MENU_ACTIONS = createActionFactories({
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => HomePageSFCHandlerProps = createActionDispatchers({
+  onCancelCountDown: 'CANCEL_COUNTDOWN',
   onCloseModal: 'CLOSE_MODAL',
   onCloseOnboarding: ['UPDATE_SETTING', () => ['onboarding', false]],
   onSelectMenuItem (item: HTMLElement): StandardAction<any> {
@@ -151,6 +158,7 @@ export function homePage<P extends HomePageSFCProps> (
       reducer,
       injectRecordsFromService,
       injectSettings$FromService,
+      unrestrictedCountdownOnInitialIdle,
       persistSettings$ToService,
       createRecordOnCreateRecordRequested,
       tapOnEvent('CREATE_RECORD_RESOLVED', () => window.scrollTo(0, 0)),

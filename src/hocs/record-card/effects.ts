@@ -229,22 +229,23 @@ export function cleartextOnPendingCleartextOrConnect (
     filter(({ connect }) => connect === ConnectFsmState.PendingConnect)
   )
   return merge(cleartextOrEdit$, connect$).pipe(
-    switchMap(({ props: { onAuthenticationRequest, session, record } }) =>
-      cleartext(
-        toProjection(onAuthenticationRequest),
-        session,
-        record.unrestricted,
-        record
-      ).pipe(
-        map(({ password }: ZenypassRecord) => cleartextResolved(password)),
-        catchError((err: any) =>
-          observableOf(
-            err && err.status !== ERROR_STATUS.CLIENT_CLOSED_REQUEST
-              ? error(err)
-              : cleartextRejected()
+    switchMap(
+      ({ props: { onAuthenticationRequest, session, record, unrestricted } }) =>
+        cleartext(
+          toProjection(onAuthenticationRequest),
+          session,
+          unrestricted || record.unrestricted,
+          record
+        ).pipe(
+          map(({ password }: ZenypassRecord) => cleartextResolved(password)),
+          catchError((err: any) =>
+            observableOf(
+              err && err.status !== ERROR_STATUS.CLIENT_CLOSED_REQUEST
+                ? error(err)
+                : cleartextRejected()
+            )
           )
         )
-      )
     ),
     catchError(err => observableOf(error(err)))
   )

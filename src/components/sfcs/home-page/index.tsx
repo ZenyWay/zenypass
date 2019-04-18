@@ -18,6 +18,7 @@ import { createElement, Fragment } from 'create-element'
 import { IconLabelInputGroup } from '../icon-label-input-group'
 import { SerializedInput } from '../../serialized-input'
 import { NavbarMenu, MenuSpecs, DropdownItemSpec } from '../../navbar-menu'
+import { FAIconButton } from '../fa-icon'
 import {
   FilteredRecordCards,
   FilteredRecordCardsProps,
@@ -27,6 +28,7 @@ import {
 import { Onboarding } from '../onboarding'
 import { InfoModal } from '../info-modal'
 import { ProgressBar, Row } from 'bootstrap'
+import { style } from 'typestyle'
 import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
@@ -42,16 +44,22 @@ const ERRORS = {
     'This device seems to be offline. The ZenyPass server cannot be reached. Please check your connection and try again.'
 }
 
-export interface HomePageProps extends FilteredRecordCardsProps {
+export interface HomePageProps
+  extends Pick<
+    FilteredRecordCardsProps,
+    Exclude<keyof FilteredRecordCardsProps, 'unrestricted'>
+  > {
   locale: string
   menu: MenuSpecs
   records?: FilteredRecordEntry[]
+  unrestricted?: number
   busy?: BusyState
   error?: string
   tokens?: string[]
   onboarding?: boolean
   debounce?: string | number
   className?: string
+  onCancelCountDown?: (event?: Event) => void
   onSelectMenuItem?: (target: HTMLElement) => void
   onSearchFieldRef?: (ref: HTMLElement) => void
   onTokensChange?: (tokens: string[]) => void
@@ -65,16 +73,23 @@ export enum BusyState {
   LoadingRecords = 'loading-records'
 }
 
+const countdownButtonStyle = classes(
+  'p-1',
+  style({ width: '2.5rem', lineHeight: '0.75rem' })
+)
+
 export function HomePage ({
   locale,
   menu,
   records = [],
+  unrestricted,
   busy,
   error,
   tokens,
   onboarding,
   debounce = DEFAULT_DEBOUNCE,
   className,
+  onCancelCountDown,
   onSelectMenuItem,
   onSearchFieldRef,
   onTokensChange,
@@ -115,7 +130,22 @@ export function HomePage ({
             menu={menu}
             onSelectItem={onSelectMenuItem}
             className='shadow'
-          />
+          >
+            {!unrestricted ? null : (
+              <FAIconButton
+                icon={'unlock'}
+                color='light'
+                outline
+                className={countdownButtonStyle}
+                onClick={onCancelCountDown}
+              >
+                <small>
+                  <br />
+                  {unrestricted}s
+                </small>
+              </FAIconButton>
+            )}
+          </NavbarMenu>
           <div className='container-fluid bg-transparent'>
             <Row className='justify-content-center px-1'>
               <IconLabelInputGroup
@@ -142,7 +172,12 @@ export function HomePage ({
               className
             )}
           >
-            <FilteredRecordCards locale={locale} records={records} {...attrs} />
+            <FilteredRecordCards
+              locale={locale}
+              records={records}
+              unrestricted={!!unrestricted}
+              {...attrs}
+            />
           </Row>
           <Row
             className={classes(

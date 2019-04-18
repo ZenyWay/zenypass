@@ -14,6 +14,7 @@
  * Limitations under the License.
  */
 //
+import { HomePageFsmState } from './reducer'
 import sortIndexedRecordsByName from './sort'
 import {
   getService,
@@ -46,6 +47,8 @@ import {
   skip,
   startWith,
   switchMap,
+  take,
+  takeUntil,
   // tap,
   withLatestFrom
 } from 'rxjs/operators'
@@ -54,6 +57,7 @@ import {
   from as observableFrom,
   combineLatest,
   identity,
+  interval,
   of as observableOf,
   throwError
 } from 'rxjs'
@@ -70,9 +74,13 @@ export interface SettingsDoc extends PouchDoc {
   noOnboarding?: boolean
 }
 
+const UNRESTRICTED_COUNTDOWN = 45 // s
 const SETTINGS_DOC_ID = 'settings'
 const updateSetting = createActionFactory<any>('UPDATE_SETTING')
 const settingsPersisted = createActionFactory<any>('SETTINGS_PERSISTED')
+const unrestrictedCountdown = createActionFactory<number>(
+  'UNRESTRICTED_COUNTDOWN'
+)
 const createRecordResolved = createActionFactory<any>('CREATE_RECORD_RESOLVED')
 const createRecordRejected = createActionFactory<any>('CREATE_RECORD_REJECTED')
 const updateRecords = createActionFactory('UPDATE_RECORDS')
@@ -192,6 +200,25 @@ function toIndexedRecordsArray (
     result[i] = { _id, record }
   }
   return result
+}
+
+export function unrestrictedCountdownOnInitialIdle (
+  event$: Observable<StandardAction<any>>,
+  state$: Observable<{ state: HomePageFsmState }>
+) {
+  const cancel$ = event$.pipe(filter(({ type }) => type === 'CANCEL_COUNTDOWN'))
+  return state$.pipe(
+    filter(({ state }) => state === HomePageFsmState.Idle),
+    first(),
+    switchMap(() =>
+      interval(1000 /* ms */).pipe(
+        // starts at zero
+        take(UNRESTRICTED_COUNTDOWN + 1), // zero to UNRESTRICTED_COUNTDOWN
+        takeUntil(cancel$),
+        map(ticks => unrestrictedCountdown(UNRESTRICTED_COUNTDOWN - ticks))
+      )
+    )
+  )
 }
 
 const getSettings$ = createPrivilegedRequest<SettingsDoc>((username: string) =>

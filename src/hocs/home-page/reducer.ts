@@ -109,6 +109,8 @@ const SELECTED_PROPS: (keyof HomePageHocProps)[] = [
 
 export default compose.into(0)(
   createAutomataReducer(automata, HomePageFsmState.PendingRecords),
+  forType('CANCEL_COUNTDOWN')(into('unrestricted')(mapPayload(always(0)))),
+  forType('UNRESTRICTED_COUNTDOWN')(into('unrestricted')(mapPayload())),
   forType('UPDATE_RECORDS')(into('records')(mapPayload())),
   forType('PROPS')(
     compose.into(0)(
