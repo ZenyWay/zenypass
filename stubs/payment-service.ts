@@ -13,7 +13,13 @@
  * Limitations under the License.
  */
 
-import { Pricing, PaymentSpec } from '@zenyway/zenypass-service'
+import {
+  Locale,
+  Pricing,
+  PricingSpec,
+  PaymentService,
+  PaymentSpec
+} from './@zenyway/zenypass-service'
 import { delay } from 'rxjs/operators'
 import { of as observableOf } from 'rxjs'
 
@@ -33,40 +39,6 @@ const PRICING_SPEC = {
     10: 694
   }
 }
-
-// TODO export these interfaces from '@zenyway/zenypass-service'
-export interface PaymentService {
-  url: any // not used
-  getPricing(opts?: Partial<PricingSpec>): Promise<Pricing>
-  checkout(
-    document: Document,
-    locale: Locale,
-    lang: string,
-    spec: PaymentSpec
-  ): Promise<void>
-  getPaymentNotification$(): any // not used
-}
-
-export interface PricingSpec {
-  country: string
-  currency: 'EUR'
-  uiid: string
-  ucid: string
-}
-
-export interface Locale {
-  localize(
-    lang: Exclude<keyof LocaleMap, number>,
-    currency: string,
-    cents: number
-  ): string
-  localize(
-    lang: Exclude<keyof LocaleMaps, number>,
-    key: Exclude<keyof LocaleMap, number>
-  ): string
-}
-export declare type LocaleMaps = { [lang: string]: LocaleMap }
-export declare type LocaleMap = { [key: string]: string }
 
 export default {
   getPricing,
