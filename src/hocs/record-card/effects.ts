@@ -16,7 +16,7 @@
 //
 import { RecordFsmState, ConnectFsmState } from './reducer'
 import { errorsFromRecord } from './validators'
-import zenypass, { PouchDoc, ZenypassRecord } from 'zenypass-service'
+import { PouchDoc, ZenypassRecord, getService } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import {
   EMPTY,
@@ -73,8 +73,6 @@ const updateRecordRejected = createActionFactory('UPDATE_RECORD_REJECTED')
 const deleteRecordResolved = createActionFactory('DELETE_RECORD_RESOLVED')
 const deleteRecordRejected = createActionFactory('DELETE_RECORD_REJECTED')
 const error = createActionFactory('ERROR')
-
-const zenypass$ = observableFrom(zenypass)
 
 export function timeoutCleartextOnReadonlyCleartext (
   _: any,
@@ -151,14 +149,9 @@ export function validateRecordOnThumbnailWhenNotPendingContent (
 
 const updateRecord = createPrivilegedRequest(
   (username: string, record: ZenypassRecord) =>
-    zenypass$.pipe(
-      map(({ getService }) => username && getService(username)),
-      switchMap(service =>
-        !service
-          ? throwError(newStatusError(ERROR_STATUS.FORBIDDEN))
-          : service.records.putRecord(record)
-      )
-    )
+    getService(username)
+      .catch(rejectAsForbidden)
+      .then(service => service.records.putRecord(record))
 )
 
 export function saveRecordOnPendingSaveOrDeleteRecord (
@@ -202,14 +195,9 @@ export function saveRecordOnPendingSaveOrDeleteRecord (
 }
 
 const cleartext = createPrivilegedRequest((username: string, ref: PouchDoc) =>
-  zenypass$.pipe(
-    map(({ getService }) => username && getService(username)),
-    switchMap(service =>
-      !service
-        ? throwError(newStatusError(ERROR_STATUS.FORBIDDEN))
-        : service.records.getRecord(ref)
-    )
-  )
+  getService(username)
+    .catch(rejectAsForbidden)
+    .then(service => service.records.getRecord(ref))
 )
 
 export function cleartextOnPendingCleartextOrConnect (
@@ -248,5 +236,11 @@ export function cleartextOnPendingCleartextOrConnect (
         )
     ),
     catchError(err => observableOf(error(err)))
+  )
+}
+
+function rejectAsForbidden (err: any) {
+  return Promise.reject(
+    newStatusError(ERROR_STATUS.FORBIDDEN, err && err.message)
   )
 }
