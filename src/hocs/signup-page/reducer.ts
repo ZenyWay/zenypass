@@ -27,7 +27,6 @@ import {
   not,
   omit,
   pick,
-  stringifyError,
   withEventGuards
 } from 'utils'
 
@@ -48,33 +47,18 @@ export type SignupPageError =
   | 'offline'
 
 export enum SignupFsm {
-  Pristine = 'PRISTINE',
-  PristineEmail = 'PRISTINE_EMAIL', // valid password
-  PristinePassword = 'PRISTINE_PASSWORD', // valid email
-  PristineEmailInvalidPassword = 'PRISTINE_EMAIL_INVALID_PASSWORD',
-  PristinePasswordInvalidEmail = 'PRISTINE_PASSWORD_INVALID_EMAIL',
-  Invalid = 'INVALID',
-  InvalidEmail = 'INVALID_EMAIL', // valid password
-  InvalidPassword = 'INVALID_PASSWORD', // valid email
-  PendingConfirm = 'PENDING_CONFIRM',
+  Editing = 'EDITING',
+  InvalidEmail = 'INVALID_EMAIL',
+  InvalidPassword = 'INVALID_PASSWORD',
   InvalidConfirm = 'INVALID_CONFIRM',
-  Confirmed = 'CONFIRMED',
+  Conflict = 'CONFLICT',
+  Offline = 'OFFLINE',
   Consents = 'CONSENTS',
   Submittable = 'SUBMITTABLE',
   SigningUp = 'SIGNING_UP'
 }
 
 const MIN_PASSWORD_LENGTH = 4
-const isInvalidPassword = password =>
-  !password || password.length < MIN_PASSWORD_LENGTH
-const isInvalidConfirm = (password, confirm) =>
-  !password || confirm !== password
-const isEmailChange = (previous = '', email) => email !== previous
-
-const stringifyErrorPayloadIntoError = into('error')(mapPayload(stringifyError))
-const mapIntoError = (error?: SignupPageError) =>
-  into('error')(mapPayload(always(error)))
-const clearError = mapIntoError(void 0)
 const mapPayloadIntoEmail = into('email')(mapPayload())
 const mapPayloadIntoPassword = into('password')(mapPayload())
 const clearPassword = propCursor('password')(always(''))
@@ -83,102 +67,43 @@ const clearConfirm = propCursor('confirm')(always(''))
 const toggleNews = propCursor('news')(not())
 
 const automata: AutomataSpec<SignupFsm> = {
-  [SignupFsm.Pristine]: {
-    SUBMIT: SignupFsm.PristinePasswordInvalidEmail,
-    INVALID_EMAIL: SignupFsm.PristinePasswordInvalidEmail,
-    INVALID_PASSWORD: [SignupFsm.PristineEmailInvalidPassword, clearPassword],
-    VALID_EMAIL: SignupFsm.PristinePassword,
-    VALID_PASSWORD: SignupFsm.PristineEmail
-  },
-  [SignupFsm.PristinePasswordInvalidEmail]: {
-    INVALID_PASSWORD: SignupFsm.Invalid,
-    VALID_EMAIL: SignupFsm.PristinePassword,
-    VALID_PASSWORD: SignupFsm.InvalidEmail
-  },
-  [SignupFsm.PristineEmailInvalidPassword]: {
-    INVALID_EMAIL: SignupFsm.Invalid,
-    INVALID_PASSWORD: clearPassword,
-    VALID_EMAIL: SignupFsm.InvalidPassword,
-    VALID_PASSWORD: SignupFsm.PendingConfirm
-  },
-  [SignupFsm.PristineEmail]: {
-    SUBMIT: SignupFsm.InvalidEmail,
+  [SignupFsm.Editing]: {
     INVALID_EMAIL: SignupFsm.InvalidEmail,
-    INVALID_PASSWORD: [SignupFsm.PristineEmailInvalidPassword, clearPassword],
-    VALID_EMAIL: SignupFsm.PendingConfirm
-  },
-  [SignupFsm.PristinePassword]: {
-    CHANGE_EMAIL_PROP: clearError,
-    CHANGE_PASSWORD_INPUT: clearError,
-    SUBMIT: SignupFsm.InvalidPassword,
-    INVALID_EMAIL: SignupFsm.PristinePasswordInvalidEmail,
     INVALID_PASSWORD: [SignupFsm.InvalidPassword, clearPassword],
-    VALID_PASSWORD: SignupFsm.PendingConfirm
-  },
-  [SignupFsm.Invalid]: {
-    VALID_EMAIL: [SignupFsm.InvalidPassword, clearPassword],
-    VALID_PASSWORD: SignupFsm.InvalidEmail
+    INVALID_CONFIRM: [SignupFsm.InvalidConfirm, clearConfirm],
+    VALID_CONFIRM: SignupFsm.Consents
   },
   [SignupFsm.InvalidEmail]: {
-    INVALID_PASSWORD: SignupFsm.Invalid,
-    VALID_EMAIL: SignupFsm.PendingConfirm
+    SUBMIT: SignupFsm.Editing
   },
   [SignupFsm.InvalidPassword]: {
-    INVALID_EMAIL: SignupFsm.Invalid,
-    INVALID_PASSWORD: clearPassword,
-    VALID_PASSWORD: SignupFsm.PendingConfirm
-  },
-  [SignupFsm.PendingConfirm]: {
-    SUBMIT: SignupFsm.InvalidConfirm,
-    INVALID_EMAIL: SignupFsm.InvalidEmail,
-    INVALID_PASSWORD: [SignupFsm.InvalidPassword, clearPassword],
-    INVALID_CONFIRM: SignupFsm.InvalidConfirm,
-    VALID_CONFIRM: SignupFsm.Confirmed
+    SUBMIT: SignupFsm.Editing
   },
   [SignupFsm.InvalidConfirm]: {
-    INVALID_EMAIL: SignupFsm.InvalidEmail,
-    INVALID_PASSWORD: [SignupFsm.InvalidPassword, clearPassword],
-    VALID_CONFIRM: SignupFsm.Confirmed
+    SUBMIT: SignupFsm.Editing
   },
-  [SignupFsm.Confirmed]: {
-    INVALID_EMAIL: SignupFsm.InvalidEmail,
-    INVALID_PASSWORD: [SignupFsm.InvalidPassword, clearPassword],
-    INVALID_CONFIRM: SignupFsm.InvalidConfirm,
-    VALID_EMAIL: SignupFsm.InvalidConfirm,
-    VALID_PASSWORD: SignupFsm.InvalidConfirm,
-    SUBMIT: SignupFsm.Consents
+  [SignupFsm.Conflict]: {
+    SUBMIT: SignupFsm.Editing
+  },
+  [SignupFsm.Offline]: {
+    SUBMIT: SignupFsm.Editing
   },
   [SignupFsm.Consents]: {
     TOGGLE_NEWS: toggleNews,
     TOGGLE_TERMS: SignupFsm.Submittable,
-    CANCEL: [SignupFsm.PendingConfirm, clearConfirm]
+    CANCEL: [SignupFsm.Editing, clearConfirm]
   },
   [SignupFsm.Submittable]: {
     TOGGLE_NEWS: toggleNews,
     TOGGLE_TERMS: SignupFsm.Consents,
-    CANCEL: [SignupFsm.PendingConfirm, clearConfirm],
+    CANCEL: [SignupFsm.Editing, clearConfirm],
     SUBMIT: SignupFsm.SigningUp
   },
   [SignupFsm.SigningUp]: {
-    CONFLICT: [
-      SignupFsm.PristinePassword,
-      clearPassword,
-      clearConfirm,
-      mapIntoError('submit')
-    ],
-    GATEWAY_TIMEOUT: [
-      SignupFsm.PristinePassword,
-      clearPassword,
-      clearConfirm,
-      mapIntoError('offline')
-    ],
-    ERROR: [
-      SignupFsm.PristinePassword,
-      clearPassword,
-      clearConfirm,
-      stringifyErrorPayloadIntoError
-    ],
-    SIGNED_UP: [SignupFsm.InvalidPassword, clearPassword, clearConfirm]
+    CONFLICT: [SignupFsm.Conflict, clearPassword, clearConfirm],
+    GATEWAY_TIMEOUT: [SignupFsm.Offline, clearPassword, clearConfirm],
+    ERROR: [SignupFsm.Editing, clearPassword, clearConfirm],
+    SIGNED_UP: [SignupFsm.Editing, clearPassword, clearConfirm]
   }
 }
 
@@ -191,15 +116,13 @@ const SELECTED_PROPS: (keyof SignupPageHocProps)[] = [
 ]
 
 const reducer = compose.into(0)(
-  createAutomataReducer(automata, SignupFsm.Pristine),
+  createAutomataReducer(automata, SignupFsm.Editing),
   forType('INVALID_CONFIRM')(clearConfirm),
+  forType('INVALID_PASSWORD')(clearPassword),
   forType('CHANGE_CONFIRM_INPUT')(mapPayloadIntoConfirm),
-  forType('CHANGE_PASSWORD_INPUT')(
-    compose.into(0)(clearConfirm, mapPayloadIntoPassword)
-  ),
-  forType('CHANGE_EMAIL_PROP')(
-    compose.into(0)(clearConfirm, mapPayloadIntoEmail)
-  ),
+  forType('CHANGE_PASSWORD_INPUT')(mapPayloadIntoPassword),
+  forType('CHANGE_EMAIL_PROP')(mapPayloadIntoEmail),
+  forType('CHANGE_EMAIL_INPUT')(mapPayloadIntoEmail),
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(
     compose.into(0)(
@@ -217,15 +140,23 @@ const validPassword = createActionFactory('VALID_PASSWORD')
 const invalidConfirm = createActionFactory('INVALID_CONFIRM')
 const validConfirm = createActionFactory('VALID_CONFIRM')
 
+const isEmailChange = (previous = '', email) => email !== previous
+const isInvalidPassword = password =>
+  !password || password.length < MIN_PASSWORD_LENGTH
+const isInvalidConfirm = (password, confirm) =>
+  !password || confirm !== password
+const validateEmail = email =>
+  (isInvalidEmail(email) ? invalidEmail : validEmail)()
+const validatePassword = password =>
+  (isInvalidPassword(password) ? invalidPassword : validPassword)()
+const validateConfirm = (password, confirm) =>
+  (isInvalidConfirm(password, confirm) ? invalidConfirm : validConfirm)()
+
 export default withEventGuards({
   PROPS: ({ email }, state: any) =>
     isEmailChange(state && state.email, email) && changeEmailProp(email),
-  CHANGE_EMAIL_PROP: email =>
-    (isInvalidEmail(email) ? invalidEmail : validEmail)(),
-  CHANGE_PASSWORD_INPUT: password =>
-    (isInvalidPassword(password) ? invalidPassword : validPassword)(),
-  CHANGE_CONFIRM_INPUT: (confirm, state: any) =>
-    (isInvalidConfirm(state && state.password, confirm)
-      ? invalidConfirm
-      : validConfirm)()
+  SUBMIT: (_, { email }) => validateEmail(email),
+  VALID_EMAIL: (_, { password }) => validatePassword(password),
+  VALID_PASSWORD: (_, { password, confirm }) =>
+    validateConfirm(password, confirm)
 })(reducer)

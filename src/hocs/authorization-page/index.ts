@@ -86,19 +86,17 @@ interface AuthorizationPageState extends AuthorizationPageHocProps {
   email?: string
   password?: string
   token?: string
-  error?: string
   inputs?: { [key in AuthorizationInputs]: HTMLElement }
 }
 
 const STATE_TO_ERROR: Partial<
   { [state in AuthorizationFsm]: AuthorizationPageError }
 > = {
-  [AuthorizationFsm.PristinePasswordInvalidEmail]: 'email',
-  [AuthorizationFsm.PristineEmailInvalidPassword]: 'password',
-  [AuthorizationFsm.Invalid]: 'email',
   [AuthorizationFsm.InvalidEmail]: 'email',
   [AuthorizationFsm.InvalidPassword]: 'password',
-  [AuthorizationFsm.InvalidToken]: 'token'
+  [AuthorizationFsm.InvalidToken]: 'token',
+  [AuthorizationFsm.Forbidden]: 'submit',
+  [AuthorizationFsm.Offline]: 'offline'
 }
 
 function mapStateToProps ({
@@ -106,8 +104,7 @@ function mapStateToProps ({
   state,
   email,
   password,
-  token,
-  error
+  token
 }: AuthorizationPageState): Rest<
   AuthorizationPageSFCProps,
   AuthorizationPageSFCHandlerProps
@@ -121,7 +118,7 @@ function mapStateToProps ({
     password,
     token,
     pending,
-    error: STATE_TO_ERROR[state] || error
+    error: STATE_TO_ERROR[state]
   }
 }
 
@@ -167,13 +164,20 @@ export function authorizationPage<P extends AuthorizationPageSFCProps> (
         'INPUT_REF',
         compose.into(0)(
           focus,
-          ({ inputs, state }) =>
-            inputs[isPristineOrInvalidEmail(state) ? 'email' : 'password'],
+          ({ inputs, email }) => inputs[!email ? 'email' : 'password'],
           pluck('1')
         )
       ),
       tapOnEvent(
-        'UNAUTHORIZED',
+        'SUBMIT',
+        compose.into(0)(
+          focus,
+          ({ inputs, state }) => inputs[STATE_TO_ERROR[state]],
+          pluck('1')
+        )
+      ),
+      tapOnEvent(
+        'FORBIDDEN',
         compose.into(0)(focus, pluck('1', 'inputs', 'password'))
       ),
       callHandlerOnEvent('AUTHORIZED', 'onAuthorized'),
@@ -191,19 +195,6 @@ export function authorizationPage<P extends AuthorizationPageSFCProps> (
     () => distinctUntilChanged(shallowEqual),
     () => tap(log('authorization-page:view-props:'))
   )
-}
-
-const PRISTINE_OR_INVALID_EMAIL: AuthorizationFsm[] = [
-  AuthorizationFsm.Pristine,
-  AuthorizationFsm.PristineEmail,
-  AuthorizationFsm.PristineEmailInvalidPassword,
-  AuthorizationFsm.PristinePasswordInvalidEmail,
-  AuthorizationFsm.Invalid,
-  AuthorizationFsm.InvalidEmail
-]
-
-function isPristineOrInvalidEmail (state: AuthorizationFsm) {
-  return PRISTINE_OR_INVALID_EMAIL.indexOf(state) >= 0
 }
 
 function focus (element?: HTMLElement) {

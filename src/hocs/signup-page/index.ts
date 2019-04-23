@@ -85,17 +85,15 @@ interface SignupPageState extends SignupPageHocProps {
   password?: string
   confirm?: string
   news?: boolean
-  error?: string
   inputs?: { [key in SignupInputs]: HTMLElement }
 }
 
 const STATE_TO_ERROR: Partial<{ [state in SignupFsm]: SignupPageError }> = {
-  [SignupFsm.PristinePasswordInvalidEmail]: 'email',
-  [SignupFsm.PristineEmailInvalidPassword]: 'password',
-  [SignupFsm.Invalid]: 'email',
   [SignupFsm.InvalidEmail]: 'email',
   [SignupFsm.InvalidPassword]: 'password',
-  [SignupFsm.InvalidConfirm]: 'confirm'
+  [SignupFsm.InvalidConfirm]: 'confirm',
+  [SignupFsm.Conflict]: 'submit',
+  [SignupFsm.Offline]: 'offline'
 }
 
 function mapStateToProps ({
@@ -104,8 +102,7 @@ function mapStateToProps ({
   email,
   password,
   confirm,
-  news,
-  error
+  news
 }: SignupPageState): Rest<SignupPageSFCProps, SignupPageSFCHandlerProps> {
   const terms = state === SignupFsm.Submittable
   return {
@@ -118,7 +115,7 @@ function mapStateToProps ({
     consents: terms || state === SignupFsm.Consents,
     pending: state === SignupFsm.SigningUp,
     enabled: true,
-    error: STATE_TO_ERROR[state] || error
+    error: STATE_TO_ERROR[state]
   }
 }
 
@@ -166,14 +163,21 @@ export function signupPage<P extends SignupPageSFCProps> (
         'INPUT_REF',
         compose.into(0)(
           focus,
-          ({ inputs, state }) =>
-            inputs[isPristineOrInvalidEmail(state) ? 'email' : 'password'],
+          ({ inputs, email }) => inputs[!email ? 'email' : 'password'],
           pluck('1')
         )
       ),
       tapOnEvent(
-        'UNAUTHORIZED',
-        compose.into(0)(focus, pluck('1', 'inputs', 'password'))
+        'SUBMIT',
+        compose.into(0)(
+          focus,
+          ({ inputs, state }) => inputs[STATE_TO_ERROR[state]],
+          pluck('1')
+        )
+      ),
+      tapOnEvent(
+        'CONFLICT',
+        compose.into(0)(focus, pluck('1', 'inputs', 'email'))
       ),
       serviceSignupOnSigningUp,
       callHandlerOnEvent('AUTHORIZE', 'onAuthorize'),
@@ -190,19 +194,6 @@ export function signupPage<P extends SignupPageSFCProps> (
     () => distinctUntilChanged(shallowEqual),
     () => tap(log('signup-page:view-props:'))
   )
-}
-
-const PRISTINE_OR_INVALID_EMAIL: SignupFsm[] = [
-  SignupFsm.Pristine,
-  SignupFsm.PristineEmail,
-  SignupFsm.PristineEmailInvalidPassword,
-  SignupFsm.PristinePasswordInvalidEmail,
-  SignupFsm.Invalid,
-  SignupFsm.InvalidEmail
-]
-
-function isPristineOrInvalidEmail (state: SignupFsm) {
-  return PRISTINE_OR_INVALID_EMAIL.indexOf(state) >= 0
 }
 
 function focus (element?: HTMLElement) {

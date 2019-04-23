@@ -78,16 +78,13 @@ interface SigninPageState extends SigninPageHocProps {
   retry: RetryFsm
   email?: string
   password?: string
-  error?: string
   inputs?: { [key in SigninInputs]: HTMLElement }
 }
 
 const STATE_TO_ERROR: Partial<{ [state in SigninFsm]: SigninPageError }> = {
-  [SigninFsm.PristinePasswordInvalidEmail]: 'email',
-  [SigninFsm.PristineEmailInvalidPassword]: 'password',
-  [SigninFsm.Invalid]: 'email',
   [SigninFsm.InvalidEmail]: 'email',
-  [SigninFsm.InvalidPassword]: 'password'
+  [SigninFsm.InvalidPassword]: 'password',
+  [SigninFsm.Unautorized]: 'submit'
 }
 
 function mapStateToProps ({
@@ -95,8 +92,7 @@ function mapStateToProps ({
   state,
   retry,
   email,
-  password,
-  error
+  password
 }: SigninPageState): Rest<SigninPageSFCProps, SigninPageSFCHandlerProps> {
   return {
     ...attrs,
@@ -105,7 +101,7 @@ function mapStateToProps ({
     pending: state === SigninFsm.SigningIn,
     enabled: true,
     retry: retry === RetryFsm.Alert,
-    error: STATE_TO_ERROR[state] || error
+    error: STATE_TO_ERROR[state]
   }
 }
 
@@ -147,8 +143,15 @@ export function signinPage<P extends SigninPageSFCProps> (
         'INPUT_REF',
         compose.into(0)(
           focus,
-          ({ inputs, state }) =>
-            inputs[isPristineOrInvalidEmail(state) ? 'email' : 'password'],
+          ({ inputs, email }) => inputs[!email ? 'email' : 'password'],
+          pluck('1')
+        )
+      ),
+      tapOnEvent(
+        'SUBMIT',
+        compose.into(0)(
+          focus,
+          ({ inputs, state }) => inputs[STATE_TO_ERROR[state]],
           pluck('1')
         )
       ),
@@ -171,19 +174,6 @@ export function signinPage<P extends SigninPageSFCProps> (
     () => distinctUntilChanged(shallowEqual),
     () => tap(log('signin-page:view-props:'))
   )
-}
-
-const PRISTINE_OR_INVALID_EMAIL: SigninFsm[] = [
-  SigninFsm.Pristine,
-  SigninFsm.PristineEmail,
-  SigninFsm.PristineEmailInvalidPassword,
-  SigninFsm.PristinePasswordInvalidEmail,
-  SigninFsm.Invalid,
-  SigninFsm.InvalidEmail
-]
-
-function isPristineOrInvalidEmail (state: SigninFsm) {
-  return PRISTINE_OR_INVALID_EMAIL.indexOf(state) >= 0
 }
 
 function focus (element?: HTMLElement) {

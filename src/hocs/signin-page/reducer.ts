@@ -23,10 +23,8 @@ import {
   forType,
   mapPayload,
   mergePayload,
-  not,
   omit,
   pick,
-  stringifyError,
   withEventGuards
 } from 'utils'
 import { createActionFactory } from 'basic-fsa-factories'
@@ -43,15 +41,10 @@ export interface SigninPageHocProps {
 export type SigninPageError = 'email' | 'password' | 'submit'
 
 export enum SigninFsm {
-  Pristine = 'PRISTINE',
-  PristineEmail = 'PRISTINE_EMAIL', // valid password
-  PristinePassword = 'PRISTINE_PASSWORD', // valid email
-  PristineEmailInvalidPassword = 'PRISTINE_EMAIL_INVALID_PASSWORD',
-  PristinePasswordInvalidEmail = 'PRISTINE_PASSWORD_INVALID_EMAIL',
-  Invalid = 'INVALID',
-  InvalidEmail = 'INVALID_EMAIL', // valid password
-  InvalidPassword = 'INVALID_PASSWORD', // valid email
-  Submittable = 'SUBMITTABLE',
+  Editing = 'EDITING',
+  InvalidEmail = 'INVALID_EMAIL',
+  InvalidPassword = 'INVALID_PASSWORD',
+  Unautorized = 'UNAUTHORIZED',
   SigningIn = 'SIGNING_IN'
 }
 
@@ -61,85 +54,30 @@ export enum RetryFsm {
   Alert = 'ALERT'
 }
 
-const isEmailChange = (previous = '', email) => email !== previous
-
-const stringifyErrorPayloadIntoError = into('error')(mapPayload(stringifyError))
-const mapIntoError = (error?: SigninPageError) =>
-  into('error')(mapPayload(always(error)))
-const clearError = mapIntoError(void 0)
 const mapPayloadIntoEmail = into('email')(mapPayload())
 const mapPayloadIntoPassword = into('password')(mapPayload())
 const clearPassword = propCursor('password')(always(''))
 
 const signinFsm: AutomataSpec<SigninFsm> = {
-  [SigninFsm.Pristine]: {
-    SUBMIT: SigninFsm.PristinePasswordInvalidEmail,
-    INVALID_EMAIL: SigninFsm.PristinePasswordInvalidEmail,
-    INVALID_PASSWORD: [SigninFsm.PristineEmailInvalidPassword, clearPassword],
-    VALID_EMAIL: SigninFsm.PristinePassword,
-    VALID_PASSWORD: SigninFsm.PristineEmail
-  },
-  [SigninFsm.PristinePasswordInvalidEmail]: {
-    INVALID_PASSWORD: SigninFsm.Invalid,
-    VALID_EMAIL: SigninFsm.PristinePassword,
-    VALID_PASSWORD: SigninFsm.InvalidEmail
-  },
-  [SigninFsm.PristineEmailInvalidPassword]: {
-    INVALID_EMAIL: SigninFsm.Invalid,
-    INVALID_PASSWORD: clearPassword,
-    VALID_EMAIL: SigninFsm.InvalidPassword,
-    VALID_PASSWORD: SigninFsm.Submittable
-  },
-  [SigninFsm.PristineEmail]: {
-    SUBMIT: SigninFsm.InvalidEmail,
-    INVALID_EMAIL: SigninFsm.InvalidEmail,
-    INVALID_PASSWORD: [SigninFsm.PristineEmailInvalidPassword, clearPassword],
-    VALID_EMAIL: SigninFsm.Submittable
-  },
-  [SigninFsm.PristinePassword]: {
-    CHANGE_EMAIL_PROP: clearError,
-    CHANGE_PASSWORD_INPUT: clearError,
-    SUBMIT: SigninFsm.InvalidPassword,
-    INVALID_EMAIL: SigninFsm.PristinePasswordInvalidEmail,
-    INVALID_PASSWORD: [SigninFsm.InvalidPassword, clearPassword],
-    VALID_PASSWORD: SigninFsm.Submittable
-  },
-  [SigninFsm.Invalid]: {
-    VALID_EMAIL: [SigninFsm.InvalidPassword, clearPassword],
-    VALID_PASSWORD: SigninFsm.InvalidEmail
-  },
-  [SigninFsm.InvalidEmail]: {
-    INVALID_PASSWORD: SigninFsm.Invalid,
-    VALID_EMAIL: SigninFsm.Submittable
-  },
-  [SigninFsm.InvalidPassword]: {
-    INVALID_EMAIL: SigninFsm.Invalid,
-    INVALID_PASSWORD: clearPassword,
-    VALID_PASSWORD: SigninFsm.Submittable
-  },
-  [SigninFsm.Submittable]: {
+  [SigninFsm.Editing]: {
     INVALID_EMAIL: SigninFsm.InvalidEmail,
     INVALID_PASSWORD: SigninFsm.InvalidPassword,
-    VALID_EMAIL: SigninFsm.InvalidPassword,
-    SUBMIT: SigninFsm.SigningIn
+    VALID_PASSWORD: SigninFsm.SigningIn
+  },
+  [SigninFsm.InvalidEmail]: {
+    SUBMIT: SigninFsm.Editing
+  },
+  [SigninFsm.InvalidPassword]: {
+    SUBMIT: SigninFsm.Editing
+  },
+  [SigninFsm.Unautorized]: {
+    SUBMIT: SigninFsm.Editing
   },
   [SigninFsm.SigningIn]: {
-    ERROR: [
-      SigninFsm.PristinePassword,
-      clearPassword,
-      stringifyErrorPayloadIntoError
-    ],
-    UNAUTHORIZED: [
-      SigninFsm.PristinePassword,
-      clearPassword,
-      mapIntoError('submit')
-    ],
-    NOT_FOUND: [
-      SigninFsm.PristinePassword,
-      clearPassword,
-      mapIntoError('submit')
-    ],
-    SIGNED_IN: [SigninFsm.PristinePassword, clearPassword]
+    ERROR: [SigninFsm.Editing, clearPassword],
+    UNAUTHORIZED: [SigninFsm.Unautorized, clearPassword],
+    NOT_FOUND: [SigninFsm.Unautorized, clearPassword],
+    SIGNED_IN: [SigninFsm.Editing, clearPassword]
   }
 }
 
@@ -169,9 +107,10 @@ const SELECTED_PROPS: (keyof SigninPageHocProps)[] = [
 ]
 
 const reducer = compose.into(0)(
-  createAutomataReducer(signinFsm, SigninFsm.Pristine),
+  createAutomataReducer(signinFsm, SigninFsm.Editing),
   createAutomataReducer(retryFsm, RetryFsm.Idle, { key: 'retry' }),
   forType('CHANGE_PASSWORD_INPUT')(mapPayloadIntoPassword),
+  forType('CHANGE_EMAIL_INPUT')(mapPayloadIntoEmail),
   forType('CHANGE_EMAIL_PROP')(mapPayloadIntoEmail),
   forType('INPUT_REF')(propCursor('inputs')(mergePayload())),
   forType('PROPS')(
@@ -188,11 +127,15 @@ const validEmail = createActionFactory('VALID_EMAIL')
 const invalidPassword = createActionFactory('INVALID_PASSWORD')
 const validPassword = createActionFactory('VALID_PASSWORD')
 
+const isEmailChange = (previous = '', email) => email !== previous
+const validateEmail = email =>
+  (isInvalidEmail(email) ? invalidEmail : validEmail)()
+const validatePassword = password =>
+  (!password ? invalidPassword : validPassword)()
+
 export default withEventGuards({
   PROPS: ({ email = '' }, state: any) =>
     isEmailChange(state && state.email, email) && changeEmailProp(email),
-  CHANGE_EMAIL_PROP: email =>
-    (isInvalidEmail(email) ? invalidEmail : validEmail)(),
-  CHANGE_PASSWORD_INPUT: password =>
-    (!password ? invalidPassword : validPassword)()
+  SUBMIT: (_, { email }) => validateEmail(email),
+  VALID_EMAIL: (_, { password }) => validatePassword(password)
 })(reducer)
