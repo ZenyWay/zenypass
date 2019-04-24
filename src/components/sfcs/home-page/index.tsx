@@ -16,7 +16,7 @@
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
 import { IconLabelInputGroup } from '../icon-label-input-group'
-import { SerializedInput } from '../../serialized-input'
+import { ControlledInput } from '../../controlled-input'
 import { NavbarMenu, MenuSpecs, DropdownItemSpec } from '../../navbar-menu'
 import { FAIconButton } from '../fa-icon'
 import {
@@ -55,14 +55,14 @@ export interface HomePageProps
   unrestricted?: number
   busy?: BusyState
   error?: string
-  tokens?: string[]
+  tokens?: string
   onboarding?: boolean
   debounce?: string | number
   className?: string
   onCancelCountDown?: (event?: Event) => void
   onSelectMenuItem?: (target: HTMLElement) => void
   onSearchFieldRef?: (ref: HTMLElement) => void
-  onTokensChange?: (tokens: string[]) => void
+  onTokensChange?: (value: string, item?: HTMLElement) => void
   onCloseOnboarding?: (event?: MouseEvent) => void
   onCloseModal?: (event: MouseEvent) => void
   onModalToggled?: () => void
@@ -152,9 +152,9 @@ export function HomePage ({
                 icon='search'
                 className='col-12 col-sm-10 col-md-8 col-lg-6 col-xl-4 mt-1 px-0 shadow'
               >
-                <SerializedInput
+                <ControlledInput
                   innerRef={onSearchFieldRef}
-                  type='csv'
+                  type='text'
                   className='form-control'
                   value={tokens}
                   debounce={debounce}

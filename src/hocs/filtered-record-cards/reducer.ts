@@ -18,6 +18,7 @@ import getFilteredRecords, {
   FilteredRecordEntry,
   IndexedRecordEntry
 } from './filter'
+import { csv } from '../serialized-input/serializers'
 import { into } from 'basic-cursors'
 import { forType, mapPayload } from 'utils'
 import compose from 'basic-compose'
@@ -25,7 +26,7 @@ import compose from 'basic-compose'
 export { FilteredRecordEntry, IndexedRecordEntry }
 
 const updateFilter = ({ props, tokens }: any) =>
-  getFilteredRecords(tokens, props.records)
+  getFilteredRecords(csv.parse(tokens), props.records)
 
 export default compose.into(0)(
   forType('TOKENS')(

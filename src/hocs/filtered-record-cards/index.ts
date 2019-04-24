@@ -38,18 +38,18 @@ export interface FilteredRecordCardsHocProps {
 
 export interface FilteredRecordCardsSFCProps
   extends Partial<FilteredRecordCardsSFCHandlerProps> {
-  tokens?: string[]
+  tokens?: string
   records?: FilteredRecordEntry[]
 }
 
 export interface FilteredRecordCardsSFCHandlerProps {
-  onTokensChange?: (tokens: string[]) => void
+  onTokensChange?: (value: string) => void
   onSearchFieldRef?: (ref: HTMLElement) => void
 }
 
 interface FilteredRecordCardsState {
   props: FilteredRecordCardsProps<FilteredRecordCardsSFCProps>
-  tokens?: string[]
+  tokens?: string
   records?: FilteredRecordEntry[]
 }
 
