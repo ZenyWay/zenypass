@@ -101,7 +101,7 @@ export function RecordCard ({
   ...attrs
 }: RecordCardProps) {
   const t = l10ns[locale]
-  const { _id, name, url, username, password } = record
+  const { _id, name, url, username, password, unrestricted } = record
   const hasPassword = password !== ''
   const isBookmarkCard = url && !hasPassword
   const isClickableThumbnail = !expanded && (hasPassword || isBookmarkCard)
@@ -134,7 +134,8 @@ export function RecordCard ({
               >
                 <strong>{name}</strong>
               </span>
-              {expanded || (!hasPassword && !isBookmarkCard) ? null : (
+              {expanded ||
+              (!isBookmarkCard && (!hasPassword || unrestricted)) ? null : (
                 <FAIconButton
                   color='none'
                   icon={isBookmarkCard ? 'bookmark' : 'lock'}

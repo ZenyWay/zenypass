@@ -59,6 +59,27 @@ storiesOf('RecordCard (SFC)', module)
   .add('thumbnail', () => ({ locale }) => (
     <RecordCard locale={locale} record={RECORD} {...attrs} />
   ))
+  .add('thumbnail-bookmark', () => ({ locale }) => (
+    <RecordCard
+      locale={locale}
+      record={{ ...RECORD, password: '' }}
+      {...attrs}
+    />
+  ))
+  .add('thumbnail-unrestricted', () => ({ locale }) => (
+    <RecordCard
+      locale={locale}
+      record={{ ...RECORD, unrestricted: true }}
+      {...attrs}
+    />
+  ))
+  .add('thumbnail-bookmark-unrestricted', () => ({ locale }) => (
+    <RecordCard
+      locale={locale}
+      record={{ ...RECORD, password: '', unrestricted: true }}
+      {...attrs}
+    />
+  ))
   .add('expanded-readonly', () => ({ locale }) => (
     <RecordCard locale={locale} record={RECORD} {...attrs} expanded />
   ))
