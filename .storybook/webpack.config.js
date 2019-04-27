@@ -54,9 +54,9 @@ module.exports = (baseConfig, env, config) => {
     'react-dom': 'inferno-compat',
     '@zenyway/zenypass-service': path.resolve(
       __dirname,
-      '../stubs/@zenyway/zenypass-service'
+      '../stubs/zenypass-service'
     ),
-    'zenypass-service': path.resolve(__dirname, '../stubs/zenypass-service')
+    'zenypass-service': path.resolve(__dirname, '../stubs')
   })
 
   config.resolve.aliasFields = (config.resolve.aliasFields || []).concat(

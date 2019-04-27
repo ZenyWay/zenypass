@@ -26,15 +26,22 @@ import {
 } from 'rxjs/operators'
 import {
   AuthorizationDoc,
+  Credentials,
   PouchDoc,
   PouchVaultChange,
   ZenypassRecord,
-  ZenypassService
+  ZenypassService,
+  ZenypassServiceAccess
 } from './@zenyway/zenypass-service'
 import getRecordService, { KVMap, USERNAME } from './records'
 import meta from './meta'
 import payments from './payment-service'
-import { UNAUTHORIZED, FORBIDDEN, NOT_FOUND } from './status-error'
+import {
+  UNAUTHORIZED,
+  FORBIDDEN,
+  NOT_FOUND,
+  newStatusError
+} from './status-error'
 import { stall } from './utils'
 // const log = label => console.log.bind(console, label)
 
@@ -45,10 +52,11 @@ export {
   PouchVaultChange,
   USERNAME,
   ZenypassRecord,
-  ZenypassService
+  ZenypassService,
+  ZenypassServiceAccess
 }
 
-const PASSWORD = '!!!'
+export const PASSWORD = '!!!'
 const AUTHENTICATION_DELAY = 1500 // ms
 const AUTHORIZATION_DELAY = 10000 // ms
 const STORAGE_INFO_DELAY = 1500 // ms
@@ -90,13 +98,18 @@ const AGENTS = [
     } as AuthorizationDoc)
 )
 
-const zenypass = Promise.resolve({
-  requestAccess,
-  signup,
-  signin,
-  getService (username: string): Partial<ZenypassService> {
-    return (
-      username === USERNAME && {
+export default function (opts?: any): Promise<ZenypassServiceAccess> {
+  return Promise.resolve({
+    requestAccess,
+    signup,
+    signin
+  })
+}
+
+export function getService (username: string): Promise<ZenypassService> {
+  return username === USERNAME
+    ? Promise.resolve({
+        username,
         unlock,
         records: getRecordService(username),
         signout: noop,
@@ -107,25 +120,8 @@ const zenypass = Promise.resolve({
         getStorageInfo$,
         meta,
         payments
-      }
-    )
-  }
-})
-
-export default zenypass
-
-export function getService (
-  username?: string
-): Promise<Partial<ZenypassService>> {
-  return zenypass
-    .then(({ getService }) => username && getService(username))
-    .then(service =>
-      !service
-        ? Promise.reject(
-            new Error(`SERVICE NOT FOUND FOR USERNAME: ${username}`)
-          )
-        : Promise.resolve(service)
-    )
+      })
+    : Promise.reject(newStatusError(404, 'NOT_FOUND'))
 }
 
 const RAW_TOKEN = TOKEN.split(' ')
@@ -134,8 +130,7 @@ const RAW_TOKEN = TOKEN.split(' ')
   .join('')
 
 function requestAccess (
-  username: string,
-  passphrase: string,
+  { username, passphrase },
   secret: string
 ): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
@@ -143,7 +138,10 @@ function requestAccess (
   ).toPromise()
 }
 
-function signup (username: string, passphrase: string): Promise<string> {
+function signup (
+  { username, passphrase }: Credentials,
+  opts?: any
+): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
     username !== USERNAME &&
     (passphrase && passphrase.length >= MIN_PASSWORD_LENGTH)
@@ -152,12 +150,15 @@ function signup (username: string, passphrase: string): Promise<string> {
   ).toPromise()
 }
 
-function signin (username: string, passphrase: string): Promise<string> {
+function signin (
+  { username, passphrase }: Credentials,
+  opts?: any
+): Promise<ZenypassService> {
   return stall(AUTHENTICATION_DELAY)(() =>
     username !== USERNAME
       ? throwError(NOT_FOUND)
       : passphrase === PASSWORD
-      ? observableOf(username)
+      ? observableFrom(getService(username))
       : throwError(UNAUTHORIZED)
   ).toPromise()
 }
