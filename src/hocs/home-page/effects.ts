@@ -37,6 +37,7 @@ import {
 import {
   catchError,
   concatMap,
+  debounceTime,
   defaultIfEmpty,
   distinctUntilChanged,
   distinctUntilKeyChanged,
@@ -48,7 +49,7 @@ import {
   skip,
   startWith,
   switchMap,
-  tap,
+  // tap,
   withLatestFrom
 } from 'rxjs/operators'
 import {
@@ -60,7 +61,7 @@ import {
   throwError
 } from 'rxjs'
 
-const log = (label: string) => console.log.bind(console, label)
+// const log = (label: string) => console.log.bind(console, label)
 
 export interface IndexedRecordEntry {
   _id: string
@@ -74,6 +75,8 @@ export interface SettingsDoc extends PouchDoc {
 
 const UNRESTRICTED_COUNTDOWN = 45 // s
 const SETTINGS_DOC_ID = 'settings'
+const SETTINGS_PERSIST_DEBOUNCE = 1500 // s
+
 const updateSetting = createActionFactory<any>('UPDATE_SETTING')
 const settingsPersisted = createActionFactory<any>('SETTINGS_PERSISTED')
 const unrestrictedCountdown = createActionFactory<number>(
@@ -306,6 +309,7 @@ export function persistSettings$ToService (_: any, state$: Observable<any>) {
   )
   return combineLatest(...setting$s).pipe(
     skip(1), // initial state
+    debounceTime(SETTINGS_PERSIST_DEBOUNCE),
     withLatestFrom(state$),
     concatMap(([[lang, onboarding], { onAuthenticationRequest, session }]) =>
       upsertSettings$(
