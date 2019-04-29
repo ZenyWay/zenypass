@@ -30,13 +30,15 @@ const randomFilter = entry => ({ ...entry, exclude: Math.random() > 0.33 })
 
 const attrs = {
   menu: MENU,
-  onAuthenticationRequest: action('AUTHENTICATION_REQUESTED'),
   onCancelCountdown: action('CANCEL_COUNTDOWN'),
+  onCloseModal: action('CLOSE_MODAL'),
+  onCloseOnboarding: action('CLOSE_ONBOARDING'),
+  onError: action('ERROR'),
+  onModalToggled: action('MODAL_TOGGLED'),
   onSelectMenuItem: preventDefaultAction('MENU_ITEM_SELECTED'),
   onSearchFieldRef: action('SEARCH_FIELD_REF'),
-  onTokensChange: action('TOKENS_CHANGE'),
-  onTokensClear: action('TOKENS_CLEAR'),
-  onToggleFilter: action('TOGGLE_FILTER')
+  onToggleFilter: action('TOGGLE_FILTER'),
+  onTokensChange: action('TOKENS_CHANGE')
 }
 
 const HomePage = withAuthentication(withAuthenticationModal(HomePageSFC))
@@ -80,6 +82,9 @@ storiesOf('HomePage (SFC)', module)
       {...attrs}
     />
   ))
-  .add('error', () => ({ locale }) => (
-    <HomePage locale={locale} records={records} error='ouch !' {...attrs} />
+  .add('limit-error', () => ({ locale }) => (
+    <HomePage locale={locale} records={records} error='limit' {...attrs} />
+  ))
+  .add('offline-error', () => ({ locale }) => (
+    <HomePage locale={locale} records={records} error='offline' {...attrs} />
   ))
