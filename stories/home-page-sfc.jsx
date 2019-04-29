@@ -31,6 +31,7 @@ const randomFilter = entry => ({ ...entry, exclude: Math.random() > 0.33 })
 const attrs = {
   menu: MENU,
   onAuthenticationRequest: action('AUTHENTICATION_REQUESTED'),
+  onCancelCountdown: action('CANCEL_COUNTDOWN'),
   onSelectMenuItem: preventDefaultAction('MENU_ITEM_SELECTED'),
   onSearchFieldRef: action('SEARCH_FIELD_REF'),
   onTokensChange: action('TOKENS_CHANGE'),
@@ -60,6 +61,9 @@ storiesOf('HomePage (SFC)', module)
       busy='loading-records'
       {...attrs}
     />
+  ))
+  .add('countdown', () => ({ locale }) => (
+    <HomePage locale={locale} records={records} unrestricted={42} {...attrs} />
   ))
   .add('creating-new-record', () => ({ locale }) => (
     <HomePage

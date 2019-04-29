@@ -1,5 +1,8 @@
 {
   "fr": {
+    "Activate Strict-Lock": "Activer le Verrouillage Strict",
+    "automatic in": "Automatique dans",
+    "countdown-info-link": "https://medium.com/zenypass-fr/fonctionnement-du-verrouillage-des-sites-enregistrés-dans-zenypass-d098c0edd0f1",
     "creating-new-record": "Création d'une nouvelle fiche",
     "Error": "Erreur",
     "Please wait": "Veuillez patienter",
@@ -9,6 +12,9 @@
     "You have reached the website storage limit of your ZenyPass account: you can purchase additional storage from the 'storage' menu.": "Vous avez atteint la limite de stockage de sites de votre compte ZenyPass: vous pouvez acheter plus d'espace de stockage depuis le menu 'stockage'."
   },
   "en": {
+    "Activate Strict-Lock": "Activate Strict-Lock",
+    "automatic in": "automatic in",
+    "countdown-info-link": "https://medium.com/zenypass-en/how-lock-settings-for-sites-recorded-in-zenypass-work-5cdad587e1be",
     "creating-new-record": "Creating a new card",
     "Error": "Error",
     "loading-records": "Decrypting your data",

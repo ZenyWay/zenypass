@@ -69,7 +69,7 @@ export interface HomePageSFCHandlerProps {
   onAuthenticationRequest?: (res$: Observer<string>) => void
   onError?: (error?: any) => void
   onSelectMenuItem?: (target: HTMLElement) => void
-  onCancelCountDown?: (event?: Event) => void
+  onCancelCountdown?: (event?: Event) => void
   onCloseModal?: (event?: MouseEvent) => void
   onCloseOnboarding?: (event?: MouseEvent) => void
 }
@@ -139,7 +139,7 @@ const MENU_ACTIONS = createActionFactories({
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => HomePageSFCHandlerProps = createActionDispatchers({
-  onCancelCountDown: 'CANCEL_COUNTDOWN',
+  onCancelCountdown: 'CANCEL_COUNTDOWN',
   onCloseModal: 'CLOSE_MODAL',
   onCloseOnboarding: ['UPDATE_SETTING', () => ['onboarding', false]],
   onSelectMenuItem (item: HTMLElement): StandardAction<any> {

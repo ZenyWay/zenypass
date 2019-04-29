@@ -27,7 +27,7 @@ import {
 } from '../filtered-record-cards'
 import { Onboarding } from '../onboarding'
 import { InfoModal } from '../info-modal'
-import { ProgressBar, Row } from 'bootstrap'
+import { ProgressBar, Row, Label } from 'bootstrap'
 import { style } from 'typestyle'
 import { classes } from 'utils'
 import createL10ns from 'basic-l10n'
@@ -59,7 +59,7 @@ export interface HomePageProps
   onboarding?: boolean
   debounce?: string | number
   className?: string
-  onCancelCountDown?: (event?: Event) => void
+  onCancelCountdown?: (event?: Event) => void
   onSelectMenuItem?: (target: HTMLElement) => void
   onSearchFieldRef?: (ref: HTMLElement) => void
   onTokensChange?: (value: string, item?: HTMLElement) => void
@@ -73,10 +73,9 @@ export enum BusyState {
   LoadingRecords = 'loading-records'
 }
 
-const countdownButtonStyle = classes(
-  'p-1',
-  style({ width: '2.5rem', lineHeight: '0.75rem' })
-)
+const smallLineHeight = style({
+  lineHeight: '0.75rem'
+})
 
 export function HomePage ({
   locale,
@@ -89,7 +88,7 @@ export function HomePage ({
   onboarding,
   debounce = DEFAULT_DEBOUNCE,
   className,
-  onCancelCountDown,
+  onCancelCountdown,
   onSelectMenuItem,
   onSearchFieldRef,
   onTokensChange,
@@ -130,22 +129,7 @@ export function HomePage ({
             menu={menu}
             onSelectItem={onSelectMenuItem}
             className='shadow'
-          >
-            {!unrestricted ? null : (
-              <FAIconButton
-                icon={'unlock'}
-                color='light'
-                outline
-                className={countdownButtonStyle}
-                onClick={onCancelCountDown}
-              >
-                <small>
-                  <br />
-                  {unrestricted}s
-                </small>
-              </FAIconButton>
-            )}
-          </NavbarMenu>
+          />
           <div className='container-fluid bg-transparent'>
             <Row className='justify-content-center px-1'>
               <IconLabelInputGroup
@@ -188,6 +172,32 @@ export function HomePage ({
             <Onboarding locale={locale} onClose={onCloseOnboarding} />
           </Row>
         </main>
+        {!unrestricted ? null : (
+          <footer className='fixed-bottom position-sticky container-fluid bg-light'>
+            <Row className='justify-content-center text-center text-info py-1 border-top border-info'>
+              <FAIconButton
+                icon={'lock'}
+                fw
+                color='info'
+                onClick={onCancelCountdown}
+              />
+              <Label className={classes('px-2', smallLineHeight)}>
+                <small>
+                  {t('Activate Strict-Lock')}
+                  <br />({t('automatic in')} {unrestricted}s)
+                </small>
+              </Label>
+              <FAIconButton
+                icon='info-circle'
+                outline
+                color='secondary'
+                href={t('countdown-info-link')}
+                target='_blank'
+                rel='noopener noreferer'
+              />
+            </Row>
+          </footer>
+        )}
       </section>
     </Fragment>
   )
