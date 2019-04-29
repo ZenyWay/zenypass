@@ -149,7 +149,9 @@ export function HomePage ({
             </Row>
           </div>
         </header>
-        <main className='container-fluid mt-1'>
+        <main
+          className={classes('container-fluid mt-1', !!unrestricted && 'pb-5')}
+        >
           <Row
             className={classes(
               'align-items-start justify-content-center',
@@ -173,7 +175,7 @@ export function HomePage ({
           </Row>
         </main>
         {!unrestricted ? null : (
-          <footer className='fixed-bottom position-sticky container-fluid bg-light'>
+          <footer className='fixed-bottom container-fluid bg-light'>
             <Row className='justify-content-center text-center text-info py-1 border-top border-info'>
               <FAIconButton
                 icon={'lock'}
