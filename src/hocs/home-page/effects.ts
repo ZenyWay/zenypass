@@ -31,6 +31,7 @@ import {
   ERROR_STATUS,
   createPrivilegedRequest,
   entries,
+  isUndefined,
   toProjection
 } from 'utils'
 import {
@@ -47,8 +48,6 @@ import {
   skip,
   startWith,
   switchMap,
-  take,
-  takeUntil,
   tap,
   withLatestFrom
 } from 'rxjs/operators'
@@ -56,8 +55,6 @@ import {
   Observable,
   from as observableFrom,
   combineLatest,
-  identity,
-  interval,
   of as observableOf,
   merge,
   throwError
@@ -246,7 +243,7 @@ const getSettings$ = createPrivilegedRequest<SettingsDoc>((username: string) =>
             })
           ).pipe(
             pluck<PouchVaultChange<SettingsDoc>, SettingsDoc>('doc'),
-            change && change.doc ? startWith(change.doc) : identity
+            startWith((change && change.doc) || ({} as SettingsDoc))
           )
         )
       )
@@ -266,10 +263,11 @@ export function injectSettings$FromService (
         session,
         true // unrestricted
       ).pipe(
-        filter(({ _deleted }) => !_deleted),
+        filter(doc => !doc || !doc._deleted),
         concatMap(({ lang, noOnboarding }: SettingsDoc) =>
           entries({ locale: lang, onboarding: !noOnboarding })
         ),
+        filter(([_, val]) => !isUndefined(val)),
         map(setting => updateSetting(setting)),
         catchError(err =>
           observableOf(logoutOnClientClosedRequestOrFatalError(err))
@@ -288,7 +286,7 @@ const upsertSettings$ = createPrivilegedRequest<SettingsDoc>(
           catchError(err =>
             err && err.status !== ERROR_STATUS.NOT_FOUND
               ? throwError(err)
-              : observableOf({ lang, noOnboarding } as SettingsDoc)
+              : observableOf({ _id: SETTINGS_DOC_ID } as SettingsDoc)
           ),
           filter(doc => doc.lang !== lang || doc.noOnboarding !== noOnboarding),
           concatMap(({ _id, _rev }) =>

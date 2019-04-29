@@ -13,18 +13,32 @@
  * Limitations under the License.
  */
 
-import { Subject } from 'rxjs'
-import { DocVault } from './@zenyway/zenypass-service'
+import { first, map } from 'rxjs/operators'
+import { Subject, EMPTY } from 'rxjs'
+import { DocVault, PouchDoc } from './@zenyway/zenypass-service'
+import { NOT_FOUND } from './status-error'
 
 const meta = {
   // TODO
-  getChange$
+  getChange$,
+  get,
+  put
 } as DocVault
 
 export default meta
 
-const change$ = new Subject()
+const change$ = new Subject<any>()
 
-function getChange$ () {
-  return change$.asObservable()
+function getChange$ ({ live }) {
+  return !live ? EMPTY : change$.pipe(map(doc => ({ doc })))
+}
+
+function get<D extends PouchDoc> (ref: string | PouchDoc): Promise<D> {
+  return Promise.reject(NOT_FOUND)
+}
+
+function put<D extends PouchDoc> (doc: D): Promise<D> {
+  const res = change$.pipe(first()).toPromise()
+  change$.next(doc)
+  return res
 }

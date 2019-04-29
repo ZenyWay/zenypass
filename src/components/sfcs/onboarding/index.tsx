@@ -39,7 +39,10 @@ export function Onboarding ({
   const nextSteps = { __html: t('next-steps') }
   return (
     <article
-      className={classes('col-12 py-1 px-0 px-sm-1', className)}
+      className={classes(
+        'col-xs-12 col-md-10 col-lg-8 col-xl-6 py-1 px-0 px-sm-1',
+        className
+      )}
       {...attrs}
     >
       <Card className='px-0 shadow-sm'>
