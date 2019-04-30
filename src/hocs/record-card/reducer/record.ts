@@ -14,18 +14,17 @@
  * Limitations under the License.
  */
 //
-import { isValidRecordEntry } from './validators'
-import formatRecordEntry from './formaters'
+import formatRecordEntry from '../formaters'
+import { isValidRecordEntry } from '../validators'
 import { ZenypassRecord } from 'zenypass-service'
-import { createActionFactory } from 'basic-fsa-factories'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
+import { createActionFactory } from 'basic-fsa-factories'
 import { propCursor, into } from 'basic-cursors'
 import compose from 'basic-compose'
 import {
   Reducer,
   alt,
   always,
-  forType,
   mapPayload,
   mergePayload,
   pluck,
@@ -33,17 +32,6 @@ import {
   withEventGuards
 } from 'utils'
 
-/**
- * type                           url   identifier   password   action after decrypting password   example
- * note                           no    no           no         no action
- * access code                    no    no           yes        open connection modal              wifi password, tablet or smartphone password, code for a vault or facility access
- * ???                            no    yes          no         no action
- * credentials                    no    yes          yes        open connection modal              credit card, desktop app
- * bookmark                       yes   no           no         no action
- * ???                            yes   no           yes        open connection modal
- * password-less online account   yes   yes          no         open connection modal              medium
- * standard online account        yes   yes          yes        open connection modal
- */
 export enum RecordFsmState {
   PendingRecord = 'PENDING_RECORD',
   Thumbnail = 'THUMBNAIL',
@@ -58,9 +46,6 @@ export enum RecordFsmState {
   PendingSave = 'PENDING_SAVE',
   PendingDelete = 'PENDING_DELETE'
 }
-
-const validChange = createActionFactory('VALID_CHANGE')
-const invalidChange = createActionFactory('INVALID_CHANGE')
 
 const inChanges = prop =>
   compose<Reducer<any>>(
@@ -104,8 +89,7 @@ const RecordFsmStateEdit = {
 
 const recordAutomata: AutomataSpec<RecordFsmState> = {
   [RecordFsmState.PendingRecord]: {
-    PROPS_PENDING_RECORD: into('props')(mapPayload()),
-    PROPS: RecordFsmState.Thumbnail
+    READY: RecordFsmState.Thumbnail
   },
   [RecordFsmState.Thumbnail]: {
     TOGGLE_EXPANDED: RecordFsmState.ReadonlyConcealed,
@@ -163,39 +147,22 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
   }
 }
 
-/**
- * restriction: connect may only be triggered from locked record state,
- * i.e. `thumbnail` or `readonly:concealed`
- */
-export type ConnectAutomataState = 'locked' | 'connect' | 'pending:connect'
-export enum ConnectFsmState {
-  Idle = 'IDLE',
-  Connecting = 'CONNECTING',
-  PendingConnect = 'PENDING_CONNECT',
-  PendingClearClipboard = 'PENDING_CLEAR_CLIPBOARD'
-}
+const reducer = createAutomataReducer(
+  recordAutomata,
+  RecordFsmState.PendingRecord
+)
 
-const connectAutomata: AutomataSpec<ConnectFsmState> = {
-  [ConnectFsmState.Idle]: {
-    CONNECT: ConnectFsmState.PendingConnect,
-    PASSWORD_COPIED: ConnectFsmState.PendingClearClipboard
-  },
-  [ConnectFsmState.Connecting]: {
-    CLEAN_CONNECT_CANCEL: [ConnectFsmState.Idle, clearPassword],
-    CLEAN_CONNECT_CLOSE: [ConnectFsmState.Idle, clearPassword],
-    DIRTY_CONNECT_CLOSE: [ConnectFsmState.PendingClearClipboard, clearPassword],
-    CLIPBOARD_CLEARED: [ConnectFsmState.Idle, clearPassword],
-    CLIPBOARD_COPY_ERROR: [ConnectFsmState.PendingClearClipboard, clearPassword]
-  },
-  [ConnectFsmState.PendingConnect]: {
-    CLEARTEXT_REJECTED: [ConnectFsmState.Idle, mapPayloadToError],
-    CLEARTEXT_RESOLVED: [ConnectFsmState.Connecting, mapPayloadToPassword]
-  },
-  [ConnectFsmState.PendingClearClipboard]: {
-    CLIPBOARD_CLEARED: ConnectFsmState.Idle,
-    CLIPBOARD_COPY_ERROR: ConnectFsmState.Idle // TODO
-  }
-}
+const ready = createActionFactory('READY')
+const validChange = createActionFactory('VALID_CHANGE')
+const invalidChange = createActionFactory('INVALID_CHANGE')
+
+export default withEventGuards({
+  PROPS: props => !props.pending && ready(),
+  CHANGE: ([key, value]) =>
+    isValidRecordEntry(key, value)
+      ? validChange(toChangeError(key, formatRecordEntry(key, value)))
+      : invalidChange(toChangeError(key, value, true))
+})(reducer)
 
 type Errors = { [id in keyof ZenypassRecord]: boolean }
 
@@ -225,24 +192,6 @@ function updateErrors (errors: Partial<Errors>, updates = {}) {
   }
   return !updated ? errors : Object.keys(result).length ? result : void 0
 }
-
-const reducer = compose.into(0)(
-  createAutomataReducer(recordAutomata, RecordFsmState.PendingRecord),
-  createAutomataReducer(connectAutomata, ConnectFsmState.Idle, 'connect'),
-  forType('PROPS')(into('props')(mapPayload()))
-) as Reducer
-
-const connect = createActionFactory('CONNECT')
-const open = createActionFactory('OPEN')
-
-export default withEventGuards({
-  CHANGE: ([key, value]) =>
-    isValidRecordEntry(key, value)
-      ? validChange(toChangeError(key, formatRecordEntry(key, value)))
-      : invalidChange(toChangeError(key, value, true)),
-  CONNECT_REQUEST: (_, { props: { record: { password } = {} as any } }) =>
-    (password || password === '' ? open : connect)()
-})(reducer)
 
 function toChangeError (key: string, value: any, error?: boolean) {
   return { change: { [key]: value }, error: { [key]: !!error } }

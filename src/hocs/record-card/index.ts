@@ -24,7 +24,7 @@ import {
   timeoutCleartextOnReadonlyCleartext,
   saveRecordOnPendingSaveOrDeleteRecord
 } from './effects'
-import componentFromStream from 'component-from-props'
+import componentFromEvents from 'component-from-events'
 import {
   ComponentConstructor,
   Rest,
@@ -46,8 +46,8 @@ import {
   createActionFactory
 } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
-// import { tap } from 'rxjs/operators'
-// const log = (label: string) => console.log.bind(console, label)
+import { tap } from 'rxjs/operators'
+const log = (label: string) => console.log.bind(console, label)
 
 export type RecordCardProps<P extends RecordCardSFCProps> = RecordCardHocProps &
   Rest<P, RecordCardSFCProps>
@@ -253,19 +253,12 @@ const mapDispatchToProps: (
   onDeleteRecordRequest: 'DELETE_RECORD_REQUESTED'
 })
 
-const propsPendingRecord = createActionFactory<RecordCardProps<any>>(
-  'PROPS_PENDING_RECORD'
-)
-const props = createActionFactory<RecordCardProps<any>>('PROPS')
-
 export function recordCard<P extends RecordCardSFCProps> (
   RecordCardSFC: SFC<P>
 ): ComponentConstructor<RecordCardProps<P>> {
-  return componentFromStream(
+  return componentFromEvents(
     RecordCardSFC,
-    ({ pending, ...attrs }: RecordCardProps<P>) =>
-      (pending ? propsPendingRecord : props)(attrs),
-    // () => tap(log('record-card:event:')),
+    () => tap(log('record-card:event:')),
     redux(
       reducer,
       callHandlerOnEvent('ERROR', ['props', 'onError']),
@@ -277,11 +270,11 @@ export function recordCard<P extends RecordCardSFCProps> (
       timeoutCleartextOnReadonlyCleartext,
       saveRecordOnPendingSaveOrDeleteRecord
     ),
-    // () => tap(log('record-card:state:')),
+    () => tap(log('record-card:state:')),
     connect<RecordCardState, RecordCardSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // () => tap(log('record-card:view-props:'))
+    ),
+    () => tap(log('record-card:view-props:'))
   )
 }
