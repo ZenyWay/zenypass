@@ -15,17 +15,9 @@
  */
 //
 import { RecordFsmState, ConnectFsmState } from './reducer'
-import { errorsFromRecord } from './validators'
 import { PouchDoc, ZenypassRecord, getService } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import {
-  EMPTY,
-  Observable,
-  from as observableFrom,
-  of as observableOf,
-  merge,
-  throwError
-} from 'rxjs'
+import { EMPTY, Observable, of as observableOf, merge } from 'rxjs'
 import {
   catchError,
   concatMap,
@@ -64,7 +56,6 @@ const l10ns = createL10ns({
 
 const clipboardCleared = createActionFactory('CLIPBOARD_CLEARED')
 const clipboardCopyError = createActionFactory('CLIPBOARD_COPY_ERROR')
-const invalidRecord = createActionFactory('INVALID_RECORD')
 const toggleCleartext = createActionFactory('TOGGLE_CLEARTEXT')
 const cleartextResolved = createActionFactory('CLEARTEXT_RESOLVED')
 const cleartextRejected = createActionFactory('CLEARTEXT_REJECTED')
@@ -129,22 +120,6 @@ function copyUsernameAndOpenWindow (href: string, username?: string) {
     // mitigate reverse tab-nabbing (https://www.owasp.org/index.php/Reverse_Tabnabbing)
     ref.opener = null
   }
-}
-
-export function validateRecordOnThumbnailWhenNotPendingContent (
-  _: any,
-  state$: Observable<any>
-) {
-  return state$.pipe(
-    distinctUntilKeyChanged('state'),
-    filter(({ state }) => state === RecordFsmState.Thumbnail),
-    pluck('props'),
-    filter(({ pending }) => !pending),
-    pluck('record'),
-    map(errorsFromRecord),
-    filter(Boolean),
-    map(errors => invalidRecord(errors))
-  )
 }
 
 const updateRecord = createPrivilegedRequest(

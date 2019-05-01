@@ -19,7 +19,6 @@ import reducer, { ConnectFsmState, RecordFsmState } from './reducer'
 import {
   clearClipboardOnDirtyConnectCancelOrClearClipboard,
   openBookmarkAndCopyUsernameOnConnectRequestWhenBookmark,
-  validateRecordOnThumbnailWhenNotPendingContent,
   cleartextOnPendingCleartextOrConnect,
   timeoutCleartextOnReadonlyCleartext,
   saveRecordOnPendingSaveOrDeleteRecord
@@ -122,6 +121,7 @@ interface RecordCardState {
   state: RecordFsmState
   connect: ConnectFsmState
   changes?: Partial<ZenypassRecord>
+  rev?: string
   error?: string
   errors?: Partial<RecordCardSFCErrors>
 }
@@ -265,7 +265,6 @@ export function recordCard<P extends RecordCardSFCProps> (
       tapOnEvent('DEFAULT_ACTION_BUTTON_REF', focus),
       clearClipboardOnDirtyConnectCancelOrClearClipboard,
       openBookmarkAndCopyUsernameOnConnectRequestWhenBookmark,
-      validateRecordOnThumbnailWhenNotPendingContent,
       cleartextOnPendingCleartextOrConnect,
       timeoutCleartextOnReadonlyCleartext,
       saveRecordOnPendingSaveOrDeleteRecord

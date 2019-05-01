@@ -14,8 +14,8 @@
  * Limitations under the License.
  */
 //
-import formatRecordEntry from '../formaters'
-import { isValidRecordEntry } from '../validators'
+import formatRecordEntry from './formaters'
+import { errorsFromRecord, isValidRecordEntry } from './validators'
 import { ZenypassRecord } from 'zenypass-service'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { createActionFactory } from 'basic-fsa-factories'
@@ -25,6 +25,7 @@ import {
   Reducer,
   alt,
   always,
+  forType,
   mapPayload,
   mergePayload,
   pluck,
@@ -69,10 +70,13 @@ const mergePayloadIntoErrors = <I, O>(project?: (val: I) => O) =>
 const toggleUnrestricted = inChanges('unrestricted')(not())
 const toggleRecordDeleted = inChanges('_deleted')(not())
 const mapPayloadToPassword = inChanges('password')(mapPayload(alt('')))
+const mapPayloadRevToRev = into('rev')(mapPayload(pluck('_rev')))
 const mapPayloadToError = into('error')(mapPayload())
 const reset = [clearChanges, clearPassword, clearErrors]
 
 const RecordFsmStateEdit = {
+  RECORD_PENDING: [RecordFsmState.PendingRecord, ...reset],
+  RECORD_READY: [RecordFsmState.Thumbnail, ...reset],
   VALID_CHANGE: [
     mergePayloadIntoChanges(pluck('change')),
     mergePayloadIntoErrors(pluck('error'))
@@ -89,9 +93,11 @@ const RecordFsmStateEdit = {
 
 const recordAutomata: AutomataSpec<RecordFsmState> = {
   [RecordFsmState.PendingRecord]: {
-    READY: RecordFsmState.Thumbnail
+    RECORD_READY: RecordFsmState.Thumbnail
   },
   [RecordFsmState.Thumbnail]: {
+    RECORD_PENDING: RecordFsmState.PendingRecord,
+    RECORD_READY: mapPayloadRevToRev,
     TOGGLE_EXPANDED: RecordFsmState.ReadonlyConcealed,
     INVALID_RECORD: [
       RecordFsmState.EditCleartext,
@@ -100,11 +106,15 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
     ]
   },
   [RecordFsmState.ReadonlyConcealed]: {
+    RECORD_PENDING: RecordFsmState.PendingRecord,
+    RECORD_READY: RecordFsmState.Thumbnail,
     TOGGLE_EXPANDED: RecordFsmState.Thumbnail,
     TOGGLE_CLEARTEXT: RecordFsmState.PendingCleartext,
     EDIT_RECORD_REQUESTED: RecordFsmState.PendingEdit
   },
   [RecordFsmState.ReadonlyCleartext]: {
+    RECORD_PENDING: [RecordFsmState.PendingRecord, clearPassword],
+    RECORD_READY: [RecordFsmState.Thumbnail, clearPassword],
     TOGGLE_EXPANDED: [RecordFsmState.Thumbnail, clearPassword],
     TOGGLE_CLEARTEXT: [RecordFsmState.ReadonlyConcealed, clearPassword],
     EDIT_RECORD_REQUESTED: RecordFsmState.EditCleartext
@@ -118,26 +128,38 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
     TOGGLE_CLEARTEXT: RecordFsmState.EditConcealed
   },
   [RecordFsmState.PendingCleartext]: {
+    RECORD_PENDING: RecordFsmState.PendingRecord,
+    RECORD_READY: RecordFsmState.Thumbnail,
     CLEARTEXT_REJECTED: [RecordFsmState.ReadonlyConcealed, mapPayloadToError],
     CLEARTEXT_RESOLVED: [RecordFsmState.ReadonlyCleartext, mapPayloadToPassword]
   },
   [RecordFsmState.PendingEdit]: {
+    RECORD_PENDING: RecordFsmState.PendingRecord,
+    RECORD_READY: RecordFsmState.Thumbnail,
     CLEARTEXT_REJECTED: [RecordFsmState.ReadonlyConcealed, mapPayloadToError],
     CLEARTEXT_RESOLVED: [RecordFsmState.EditConcealed, mapPayloadToPassword]
   },
   [RecordFsmState.PendingConfirmCancel]: {
+    RECORD_PENDING: [RecordFsmState.PendingRecord, ...reset],
+    RECORD_READY: [RecordFsmState.Thumbnail, ...reset],
     EDIT_RECORD_REQUESTED: RecordFsmState.EditConcealed,
     TOGGLE_EXPANDED: [RecordFsmState.Thumbnail, ...reset]
   },
   [RecordFsmState.PendingConfirmDelete]: {
+    RECORD_PENDING: [RecordFsmState.PendingRecord, ...reset],
+    RECORD_READY: [RecordFsmState.Thumbnail, ...reset],
     EDIT_RECORD_REQUESTED: RecordFsmState.EditConcealed,
     DELETE_RECORD_REQUESTED: [RecordFsmState.PendingDelete, toggleRecordDeleted]
   },
   [RecordFsmState.PendingSave]: {
+    RECORD_PENDING: [RecordFsmState.PendingRecord, ...reset],
+    RECORD_READY: [RecordFsmState.Thumbnail, ...reset],
     UPDATE_RECORD_REJECTED: [RecordFsmState.EditConcealed, mapPayloadToError],
     UPDATE_RECORD_RESOLVED: [RecordFsmState.Thumbnail, ...reset]
   },
   [RecordFsmState.PendingDelete]: {
+    RECORD_PENDING: [RecordFsmState.PendingRecord, ...reset],
+    RECORD_READY: [RecordFsmState.Thumbnail, ...reset],
     DELETE_RECORD_REJECTED: [
       RecordFsmState.EditConcealed,
       toggleRecordDeleted,
@@ -147,17 +169,26 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
   }
 }
 
-const reducer = createAutomataReducer(
-  recordAutomata,
-  RecordFsmState.PendingRecord
+const reducer = compose.into(0)(
+  createAutomataReducer(recordAutomata, RecordFsmState.PendingRecord),
+  forType('RECORD_PENDING')(mapPayloadRevToRev),
+  forType('RECORD_READY')(mapPayloadRevToRev)
 )
 
-const ready = createActionFactory('READY')
+const recordPending = createActionFactory('RECORD_PENDING')
+const recordReady = createActionFactory('RECORD_READY')
 const validChange = createActionFactory('VALID_CHANGE')
 const invalidChange = createActionFactory('INVALID_CHANGE')
+const invalidRecord = createActionFactory('INVALID_RECORD')
+const validateRecord = errors => errors && invalidRecord(errors)
 
 export default withEventGuards({
-  PROPS: props => !props.pending && ready(),
+  RECORD_READY: record => validateRecord(errorsFromRecord(record)),
+  PROPS: ({ pending, record }, { state, rev } = {} as any) =>
+    pending
+      ? recordPending(record)
+      : (state === RecordFsmState.PendingRecord || record._rev !== rev) &&
+        recordReady(record),
   CHANGE: ([key, value]) =>
     isValidRecordEntry(key, value)
       ? validChange(toChangeError(key, formatRecordEntry(key, value)))
