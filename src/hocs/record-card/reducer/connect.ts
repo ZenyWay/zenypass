@@ -71,7 +71,7 @@ const connectAutomata: AutomataSpec<ConnectFsmState> = {
 }
 
 const reducer = createAutomataReducer(connectAutomata, ConnectFsmState.Idle, {
-  key: 'connect '
+  key: 'connect'
 })
 
 const connect = createActionFactory('CONNECT')
