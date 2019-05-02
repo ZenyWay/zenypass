@@ -41,12 +41,11 @@ import {
 } from 'utils'
 import {
   createActionDispatchers,
-  createActionFactories,
-  createActionFactory
+  createActionFactories
 } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
-import { tap } from 'rxjs/operators'
-const log = (label: string) => console.log.bind(console, label)
+// import { tap } from 'rxjs/operators'
+// const log = (label: string) => console.log.bind(console, label)
 
 export type RecordCardProps<P extends RecordCardSFCProps> = RecordCardHocProps &
   Rest<P, RecordCardSFCProps>
@@ -258,7 +257,7 @@ export function recordCard<P extends RecordCardSFCProps> (
 ): ComponentConstructor<RecordCardProps<P>> {
   return componentFromEvents(
     RecordCardSFC,
-    () => tap(log('record-card:event:')),
+    // () => tap(log('record-card:event:')),
     redux(
       reducer,
       callHandlerOnEvent('ERROR', ['props', 'onError']),
@@ -269,11 +268,11 @@ export function recordCard<P extends RecordCardSFCProps> (
       timeoutCleartextOnReadonlyCleartext,
       saveRecordOnPendingSaveOrDeleteRecord
     ),
-    () => tap(log('record-card:state:')),
+    // () => tap(log('record-card:state:')),
     connect<RecordCardState, RecordCardSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    ),
-    () => tap(log('record-card:view-props:'))
+    )
+    // () => tap(log('record-card:view-props:'))
   )
 }
