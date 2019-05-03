@@ -118,7 +118,7 @@ export function StorageOfferCard ({
                   'Unlimited storage space for adding websites without constraint'
                 )}.`
               : Number.isNaN(quantity)
-              ? null
+              ? t('Enter the amount of additional storage space required')
               : `${t(
                   'Additional storage space to add'
                 )} ${t`${quantity} websites`}.`}
@@ -138,6 +138,7 @@ export function StorageOfferCard ({
             animate={disabled && !offline && 'spin'}
             disabled={disabled}
             color='info'
+            className={classes(Number.isNaN(price) && 'invisible')}
             onClick={onCheckout}
           >
             &nbsp;

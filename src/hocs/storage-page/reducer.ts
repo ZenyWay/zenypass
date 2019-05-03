@@ -19,6 +19,7 @@ import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
 import { forType, mapPayload, mergePayload, omit, pick } from 'utils'
+import { injectPricingFactoryOnSpecUpdate } from './effects'
 
 const DEFAULT_OFFERS: Partial<StorageOfferSpec>[] = [
   { uiid: Uiid.Unit, quantity: 1 },
@@ -102,8 +103,8 @@ function updatePrices ({
   const update = new Array(index) as StorageOfferSpec[]
   while (index--) {
     const { uiid, quantity, editable = false } = offers[index]
-    const id = getOfferId(uiid, quantity)
-    const { price } = pricing.getPaymentSpec(uiid, quantity)
+    const id = getOfferId(uiid, quantity, editable)
+    const price = getPrice(pricing, uiid, quantity)
     update[index] = { id, uiid, editable, quantity, price }
   }
   return update
@@ -115,12 +116,28 @@ function updateQuantityAndPrice (
 ) {
   const index = offers.findIndex(offer => offer.id === id)
   const offer = offers[index]
-  const { price } = pricing.getPaymentSpec(offer.uiid, quantity)
+  const price = getPrice(pricing, offer.uiid, quantity)
   const update = offers.slice()
   update[index] = { ...offer, quantity, price }
   return update
 }
 
-function getOfferId (uiid: string, quantity: number): string {
-  return `OFFER_${quantity}_${uiid}`
+function getPrice (
+  pricing: {
+    getPaymentSpec: (uiid: string, quantity: number) => { price: number }
+  },
+  uuid: string,
+  quantity: number
+): number {
+  return Number.isNaN(quantity)
+    ? NaN
+    : pricing.getPaymentSpec(uuid, quantity).price
+}
+
+function getOfferId (
+  uiid: string,
+  quantity: number,
+  editable?: boolean
+): string {
+  return `OFFER_${editable ? 'CUSTOM' : quantity}_${uiid}`
 }
