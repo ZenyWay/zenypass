@@ -83,7 +83,7 @@ export function StoragePage ({
 }: StoragePageProps) {
   const t = l10ns[locale]
   const premium = maxdocs && !Number.isFinite(maxdocs)
-  const discount = t(`code-${i18nkey}`)
+  const discount = i18nkey ? t(`code-${i18nkey}`) : ''
   return (
     <section>
       <header className='sticky-top'>
