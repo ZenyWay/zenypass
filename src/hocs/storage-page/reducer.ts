@@ -137,7 +137,7 @@ function getConstrainedPriceAndQuantity (
   quantity: number
 ) {
   const price = getPrice(pricing, uiid, quantity)
-  if (price < maxPrice) return { price, quantity }
+  if (Number.isNaN(price) || price < maxPrice) return { price, quantity }
   const step = price - getPrice(pricing, uiid, quantity - 1)
   const dq = Math.ceil((price - maxPrice) / step)
   return getConstrainedPriceAndQuantity(pricing, maxPrice, uiid, quantity - dq)
