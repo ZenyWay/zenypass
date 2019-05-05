@@ -29,7 +29,11 @@ import { concat, map, shareReplay, take, takeUntil } from 'rxjs/operators'
 export { AuthorizationDoc, PouchDoc, PouchVaultChange, ZenypassRecord }
 
 export interface ZenypassServiceFactory {
-  signup(username: string, passphrase: string): Promise<string>
+  signup(
+    username: string,
+    passphrase: string,
+    opts?: SignupSpec
+  ): Promise<string>
   signin(username: string, passphrase: string): Promise<ZenypassService>
   requestAccess(
     username: string,
@@ -37,6 +41,11 @@ export interface ZenypassServiceFactory {
     secret: string
   ): Promise<string>
   getService(username: string): ZenypassService
+}
+
+export interface SignupSpec {
+  locale: string
+  newsletter: boolean
 }
 
 export interface ZenypassService extends CoreZenypassService {
@@ -58,8 +67,18 @@ class _ZenypassServiceFactory implements ZenypassServiceFactory {
     return new _ZenypassServiceFactory(access)
   }
 
-  signup (username: string, passphrase: string): Promise<string> {
-    return this._access.signup({ username, passphrase })
+  signup (
+    username: string,
+    passphrase: string,
+    opts: SignupSpec = {} as any
+  ): Promise<string> {
+    return this._access.signup(
+      { username, passphrase },
+      {
+        lang: opts.locale,
+        newsletter: opts.newsletter
+      }
+    )
   }
 
   signin (username: string, passphrase: string): Promise<ZenypassService> {

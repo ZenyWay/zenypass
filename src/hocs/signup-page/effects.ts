@@ -41,9 +41,14 @@ const SIGNUP_ERRORS = createActionFactories({
 export function serviceSignupOnSigningUp (_: any, state$: Observable<any>) {
   return state$.pipe(
     filter<any>(({ state }) => state === SignupFsm.SigningUp),
-    switchMap(({ email, password }) =>
+    switchMap(({ email, password, news, attrs: { locale } }) =>
       zenypass$.pipe(
-        switchMap(({ signup }) => signup(email, password)),
+        switchMap(({ signup }) =>
+          signup(email, password, {
+            locale,
+            newsletter: news
+          })
+        ),
         map(() => signedUp(email)),
         catchError(err =>
           observableOf(((err && SIGNUP_ERRORS[err.status]) || error)(err))
