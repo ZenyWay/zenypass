@@ -109,7 +109,7 @@ const INFO = {
   [AuthenticationPageType.Authorize]: {
     link: 'authorize-help-link',
     message:
-      "To authorize access to your ZenyPass Vault from this browser, login to ZenyPass on a device that already has access, click on 'Authorizations' in the menu, then click on 'Add an authorization' and copy the resulting authorization code into the above field"
+      "To authorize access to your ZenyPass Vault from this browser, open your ZenyPass Vault on an already authorized device, click on 'Authorizations' in the menu, then click on 'Add an authorization' and copy the resulting authorization code into the above field"
   },
   [AuthenticationPageType.Signup]: {
     link: 'signup-help-link',

@@ -24,7 +24,7 @@ import { ConsentsModal } from './consents-modal'
 import { SplashCard, SplashFooterCard } from '../splash-card'
 import { InfoModal } from '../info-modal'
 import { Dropdown, DropdownItemSpec } from '../../dropdown'
-import { FAIcon } from '../fa-icon'
+import { FAIcon, FAIconButton } from '../fa-icon'
 import { Button, CardBody, CardTitle, Row } from 'bootstrap'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
@@ -137,10 +137,11 @@ export function AuthenticationPage ({
       <section className='container' {...attrs}>
         <Row className='justify-content-center'>
           <SplashCard>
-            <a class='text-info'>
-              <FAIcon icon='newspaper-o' className='mr-1' />
-              <small>{t('ZenyPass v2: discover the new features')}</small>
-            </a>
+            <FAIconButton icon='newspaper-o' color='info' href='#'>
+              <span className='ml-1'>
+                {t('ZenyPass v2: discover the new features')}
+              </span>
+            </FAIconButton>
             <CardTitle className='mt-3'>{title}</CardTitle>
             <CardBody className='px-0'>
               <AuthenticationForm
