@@ -137,7 +137,13 @@ export function AuthenticationPage ({
       <section className='container' {...attrs}>
         <Row className='justify-content-center'>
           <SplashCard>
-            <FAIconButton icon='newspaper-o' color='info' href='#'>
+            <FAIconButton
+              icon='newspaper-o'
+              color='info'
+              href={t('news-link')}
+              target='_blank'
+              rel='noopener noreferer'
+            >
               <span className='ml-1'>
                 {t('ZenyPass v2: discover the new features')}
               </span>
