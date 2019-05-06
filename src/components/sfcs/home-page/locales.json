@@ -9,7 +9,7 @@
     "loading-records": "Déchiffrement de vos données",
     "This device seems to be offline. The ZenyPass server cannot be reached. Please check your connection and try again.": "Cet appareil semble être déconnecté. Le serveur ZenyPass n’est pas joignable. Vérifiez votre connexion et essayez à nouveau.",
     "Sorry, something went wrong": "Désolé, il y a eu un problème",
-    "You have reached the website storage limit of your ZenyPass account: you can purchase additional storage from the 'storage' menu.": "Vous avez atteint la limite de stockage de sites de votre compte ZenyPass: vous pouvez acheter plus d'espace de stockage depuis le menu 'stockage'."
+    "You have reached the website storage limit of your ZenyPass Vault: you can purchase additional storage from the 'storage' menu.": "Vous avez atteint la limite de stockage de sites de votre Coffre-fort ZenyPass: vous pouvez acheter plus d'espace de stockage depuis le menu 'stockage'."
   },
   "en": {
     "Activate Strict-Lock": "Activate Strict-Lock",
@@ -21,6 +21,6 @@
     "Please wait": "Please wait",
     "This device seems to be offline. The ZenyPass server cannot be reached. Please check your connection and try again.": "This device seems to be offline. The ZenyPass server cannot be reached. Please check your connection and try again.",
     "Sorry, something went wrong": "Sorry, something went wrong",
-    "You have reached the website storage limit of your ZenyPass account: you can purchase additional storage from the 'storage' menu.": "You have reached the website storage limit of your ZenyPass account: you can purchase additional storage from the 'storage' menu."
+    "You have reached the website storage limit of your ZenyPass Vault: you can purchase additional storage from the 'storage' menu.": "You have reached the website storage limit of your ZenyPass Vault: you can purchase additional storage from the 'storage' menu."
   }
 }

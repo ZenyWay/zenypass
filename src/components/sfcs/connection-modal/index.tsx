@@ -187,10 +187,7 @@ export function ConnectionModal ({
         <ModalFooter className='justify-content-start'>
           <small>
             {t('Tip')}:{' '}
-            {t(
-              'If the destination permits, copy your password before your username'
-            )}
-            .
+            {t('If possible, copy your password before your username')}.
           </small>
         </ModalFooter>
       )}

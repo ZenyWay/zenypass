@@ -116,7 +116,7 @@ export function ConsentsModal ({
             id='terms'
             checked={terms}
             label={t('I have read and accept the T&Cs of ZenyPass')}
-            error={!terms && t('Required for creating an account')}
+            error={!terms && t('Required for creating a ZenyPass Vault')}
             onToggle={onToggle}
           />
           <ConsentCheckbox

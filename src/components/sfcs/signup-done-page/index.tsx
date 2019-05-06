@@ -35,24 +35,21 @@ export function SignupDonePage ({
     <section className='container' {...attrs}>
       <Row className='justify-content-center'>
         <SplashCard>
-          <CardTitle>{t('Account validation')}</CardTitle>
+          <CardTitle>{t('Activation of your ZenyPass Vault')}</CardTitle>
           <CardBody className='px-0'>
-            <p>{t('An account validation email was just sent to you')}.</p>
+            <p>{t('An email from info@zenyway.com was just sent to you')}.</p>
             <p>
               {t(
-                'To finalize the creation of your account, please follow the link in that email'
+                'To activate your ZenyPass Vault, please follow the link in that email'
               )}
               .
             </p>
             <small>
               <p>
                 {t(
-                  "If you haven't received the validation email, please check your spam folder"
+                  "If you haven't received that email, please check your spam folder"
                 )}
-                .<br />
-                {t(
-                  'The validation email is sent from the address info@zenyway.com'
-                )}
+                .
               </p>
             </small>
           </CardBody>

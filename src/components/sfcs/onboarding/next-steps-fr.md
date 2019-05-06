@@ -1,8 +1,8 @@
 _Cliquez sur chaque en-tête pour accéder à un tutoriel avec vidéo._
 
 1. <a href="https://medium.com/zenypass-fr/comment-autoriser-un-nouvel-appareil-ou-navigateur-%C3%A0-acc%C3%A9der-%C3%A0-son-compte-64c9c74c10cb" target="_blank" rel="noopener noreferer">**IMPORTANT:** Autorisez des appareils supplémentaires</a>
-   Vous avez maintenant accès à votre compte ZenyPass depuis ce navigateur sur cet appareil !
-   Nous vous recommandons d'en autoriser d'autres pour conserver l'accès à votre compte, même en cas de perte ou de remplacement de cet appareil.
+   Vous avez maintenant accès à votre Coffre-fort ZenyPass depuis ce navigateur sur cet appareil !
+   Nous vous recommandons d'en autoriser d'autres pour conserver l'accès à votre Coffre-fort ZenyPass, même en cas de perte ou de remplacement de cet appareil.
 
 2. <a href="https://medium.com/zenypass-fr/comment-ajouter-un-site-%C3%A0-zenypass-d7d40120efd" target="_blank" rel="noopener noreferer">Ajoutez vos sites Web</a>
    Pour chaque site que vous ajoutez, nous recommandons de définir un mot de passe unique et sécurisé:

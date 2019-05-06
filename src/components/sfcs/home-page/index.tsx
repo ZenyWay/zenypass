@@ -39,7 +39,7 @@ const DEFAULT_DEBOUNCE = 300 // ms
 
 const ERRORS = {
   limit:
-    "You have reached the website storage limit of your ZenyPass account: you can purchase additional storage from the 'storage' menu.",
+    "You have reached the website storage limit of your ZenyPass Vault: you can purchase additional storage from the 'storage' menu.",
   offline:
     'This device seems to be offline. The ZenyPass server cannot be reached. Please check your connection and try again.'
 }

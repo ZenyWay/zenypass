@@ -39,8 +39,8 @@ Commerce et des Sociétés de Nanterre sous le numéro 814 890 463 (« ZENYWAY �
 
 ## ARTICLE 3 – ACCEPTATION DES CONDITIONS GENERALES D’UTILISATION
 
-La création d’un Compte Utilisateur (tel que défini ci-après) ainsi que
-l’utilisation du Service ZenyPass nécessitent l’acceptation pleine et entière
+La création d’un Compte Utilisateur (tel que défini ci-après), aussi appelé Coffre-fort,
+ainsi que l’utilisation du Service ZenyPass nécessitent l’acceptation pleine et entière
 des présentes Conditions Générales d’Utilisation, qui constituent le contrat
 conclu entre ZENYWAY et l’Utilisateur.
 
@@ -79,17 +79,17 @@ Générales d’Utilisation et à la réglementation applicable.
 
 ## ARTICLE 4 – ACCES ET UTILISATION DU SERVICE ZENYPASS
 
-### 4.1 Création du Compte Utilisateur
+### 4.1 Création du Coffre-fort de l'Utilisateur
 
 Toute utilisation du Service ZenyPass nécessite obligatoirement que l’Utilisateur
-procède à la création d’un compte utilisateur (le « Compte Utilisateur »)
+procède à la création d’un coffre-fort ou compte utilisateur (le « Coffre-fort de l'Utilisateur » ou « Coffre-fort » ou « Compte Utilisateur »)
 via l’une des Applications ZenyPass.
 
 Pour cela, l’Utilisateur renseigne une adresse e-mail valide de correspondance
 et choisit un mot de passe unique (le « Mot de Passe ZenyPass »). Le Mot de Passe
 ZenyPass est une clé de chiffrement des différents Enregistrements de l’Utilisateur.
 
-Le Compte Utilisateur est strictement personnel. Tout accès au Compte Utilisateur
+Le Coffre-fort de l'Utilisateur est strictement personnel. Tout accès au Coffre-fort de l'Utilisateur
 à l’aide de l’adresse e-mail et du Mot de Passe ZenyPass sera réputé effectué par l’Utilisateur.
 
 L’Utilisateur s’engage à conserver le Mot de Passe ZenyPass secret et à ne le
@@ -103,7 +103,7 @@ depuis un serveur extérieur, et ainsi garantir la confidentialité des données
 l’Utilisateur. En conséquence, en cas de perte ou d’oubli du Mot de Passe ZenyPass,
 celui-ci ne pourra pas être réinitialisé par ZENYWAY. L’Utilisateur devra en
 conséquence réinitialiser son Compte Utilisateur, en en faisant la demande en
-envoyant un courrier électronique à l’adresse: contact@zenyway.com, et crée
+envoyant un courrier électronique à l’adresse: contact@zenyway.com, et créer
 un nouveau Mot de Passe ZenyPass, ce qui entraînera la suppression de l'accès à l’ensemble
 des Enregistrements, mais conservera la quantité d’Enregistrements disponibles pour
 ce Compte Utilisateur. L’Utilisateur sera ainsi contraint de procéder de nouveau
@@ -122,16 +122,16 @@ de l’ensemble de ses Enregistrements.
 
 Le Service ZenyPass permet notamment une connexion plus facile à certains sites
 internet accessibles via mots de passe. Pour cela, l’Utilisateur doit préalablement
-se connecter à son Compte Utilisateur et ajouter les sites internet auxquels
+se connecter à son Coffre-fort et ajouter les sites internet auxquels
 il souhaite pouvoir accéder via le Service ZenyPass
 (les « Sites Internet Enregistrés »).
 
 L’ajout de Sites Internet Enregistrés s’effectue par l’Utilisateur depuis son
-Compte Utilisateur, en renseignant une fiche (notamment adresse URL de la page
+Coffre-fort, en renseignant une fiche (notamment adresse URL de la page
 de connexion du site internet qu’il souhaite enregistrer et mot de passe correspondant).
 
 L’Utilisateur pourra ensuite accéder aux Sites Internet Enregistrés depuis son
-Compte Utilisateur, en cliquant sur l’icône de connexion du Site Internet
+Coffre-fort, en cliquant sur la vignette du Site Internet
 Enregistré auquel il souhaite accéder.
 
 Pour des raisons de sécurité et de confidentialité, les Applications ZenyPass
@@ -199,8 +199,8 @@ Tout accès frauduleux à ce dernier ou toute altération dudit système est int
 et susceptible de faire l’objet de poursuites pénales.
 
 ZENYWAY s’engage à recourir à des systèmes et procédures de sécurité adéquats
-pour assurer la protection et la sécurité des Enregistrements stockés sur le
-Compte Utilisateur, en particulier au moyen des procédures de chiffrement
+pour assurer la protection et la sécurité des Enregistrements stockés dans le
+Coffre-fort de l'Utilisateur, en particulier au moyen des procédures de chiffrement
 réalisées par les Applications ZenyPass. Les Enregistrements ne sont donc lisibles
 (en version déchiffrée) que par l’Utilisateur, ZENYWAY n’ayant accès qu’à une
 version chiffrée desdits Enregistrements.
@@ -212,17 +212,17 @@ Enregistrements ne sauraient engager la responsabilité de ZENYWAY, pour
 quelque cause que ce soit et pour quelque dommage que ce soit.
 
 En particulier, ZENYWAY ne saurait être tenue responsable dans l’hypothèse où un
-tiers accéderait à son Compte Utilisateur et aux Enregistrements, ni dans
+tiers accéderait au Coffre-fort de l'Utilisateur et aux Enregistrements, ni dans
 l’hypothèse où lesdits Enregistrements seraient divulgués pour une raison
 imputable aux Sites Internet Enregistrés.
 
 De son côté, l’Utilisateur s’engage à prendre toutes les précautions afin de protéger
 ses Enregistrements et à ne commettre aucun acte qui pourrait mettre en cause
-la sécurité du système et de son Compte Utilisateur.
+la sécurité du système et de son Coffre-fort.
 
 De façon générale, il est vivement recommandé à l’Utilisateur de s’assurer que
 le Mot de Passe ZenyPass choisi par ses soins pour lui permettre d’accéder
-au Compte Utilisateur est suffisamment complexe afin d’éviter toute interception
+à son Coffre-fort est suffisamment complexe afin d’éviter toute interception
 ou piratage par un tiers.
 
 Tout nouvel appareil sur lequel l’Utilisateur souhaite utiliser le Service
@@ -231,12 +231,12 @@ qui nécessite une validation via un appareil d’ores et déjà authentifié.
 Toutefois, il reste déconseillé à l’Utilisateur d’utiliser le Service ZenyPass
 sur un téléphone mobile ou un ordinateur dont il n’est pas propriétaire ou dont
 l’usage est partagé avec une tierce personne afin d’éviter toute connexion
-frauduleuse au Compte Utilisateur. En ce cas, ZENYWAY ne pourrait en aucun
+frauduleuse à son Coffre-fort. En ce cas, ZENYWAY ne pourrait en aucun
 cas être tenu responsable des dommages causés à l’Utilisateur.
 
 Lorsqu’il en a connaissance, l’Utilisateur s’oblige à informer sans délai ZENYWAY
 (à l’adresse suivante : contact@zenyway.com) de toute défaillance de son Compte
-Utilisateur ou de tout doute quant à un éventuel accès frauduleux à son Compte Utilisateur.
+Utilisateur ou de tout doute quant à un éventuel accès frauduleux à son Coffre-fort.
 
 ## ARTICLE 6 – PROPRIÉTÉ INTELLECTUELLE
 
@@ -329,7 +329,7 @@ portant atteinte aux droits des tiers, dès qu’elle en aura connaissance.
 
 En complément du Service ZenyPass gratuit, l’Utilisateur a la possibilité de
 souscrire à une offre payante s’il souhaite stocker plus de cinq (5)
-Enregistrements via son Compte Utilisateur. Dans ce cas, l’Utilisateur aura
+Enregistrements via son Coffre-fort. Dans ce cas, l’Utilisateur aura
 la faculté d’acheter de l’espace de stockage pour des Enregistrements
 supplémentaires (par exemple un Enregistrement supplémentaire pour 1,49 euros,
 cinq Enregistrements supplémentaires pour 4,99 euros, dix Enregistrements
@@ -374,5 +374,4 @@ adresser un email à contact@zenyway.com en précisant l’objet de sa demande e
 le cas échéant, le contenu considéré comme illicite.
 <br>
 <br>
-
-Conditions Générales d’Utilisation mises à jour le 11 avril 2018.
+Conditions Générales d’Utilisation mises à jour le 3 mai 2019.

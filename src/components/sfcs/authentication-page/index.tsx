@@ -64,14 +64,14 @@ export interface AuthenticationPageProps {
 export type UnknownProps = { [prop: string]: unknown }
 
 const TITLES: { [key in AuthenticationPageType]: string } = {
-  signin: 'Login to your ZenyPass account',
-  signup: 'Create your ZenyPass account',
-  authorize: 'Authorize access to your ZenyPass account'
+  signin: 'Access your ZenyPass Vault',
+  signup: 'Create your ZenyPass Vault',
+  authorize: 'Authorize access to your ZenyPass Vault'
 }
 
 const SUBMIT_ACTIONS: { [key in AuthenticationPageType]: string } = {
-  signin: 'Login',
-  signup: 'Create your account',
+  signin: 'Unlock',
+  signup: 'Create your Vault',
   authorize: 'Authorize this browser'
 }
 
@@ -129,7 +129,7 @@ export function AuthenticationPage ({
       >
         <p>
           {t(
-            'Please verify your email address and your password, or if necessary, authorize this browser to access your account'
+            'Please verify your email address and your password, or if necessary, authorize this browser to access your ZenyPass Vault'
           )}
           .
         </p>
@@ -137,6 +137,10 @@ export function AuthenticationPage ({
       <section className='container' {...attrs}>
         <Row className='justify-content-center'>
           <SplashCard>
+            <a class='text-info'>
+              <FAIcon icon='newspaper-o' className='mr-1' />
+              <small>{t('ZenyPass v2: discover the new features')}</small>
+            </a>
             <CardTitle className='mt-3'>{title}</CardTitle>
             <CardBody className='px-0'>
               <AuthenticationForm
@@ -261,16 +265,16 @@ const TOGGLE_PAGE_CARD_TEXT: {
   [key in AuthenticationPageType]: { question: string; title: string }
 } = {
   [AuthenticationPageType.Authorize]: {
-    question: 'This browser is not authorized to access your account',
+    question: 'This browser is not authorized to access your ZenyPass Vault',
     title: 'Authorize this browser'
   },
   [AuthenticationPageType.Signin]: {
-    question: 'Already have an account',
-    title: 'Login'
+    question: 'Already have a ZenyPass Vault',
+    title: 'Access your Vault'
   },
   [AuthenticationPageType.Signup]: {
-    question: "You don't have an account",
-    title: 'Create your account'
+    question: "You don't have a ZenyPass Vault",
+    title: 'Create your Vault'
   }
 }
 

@@ -42,7 +42,7 @@ Nanterre, France under the number 814 890 463 ("ZENYWAY").
 
 ## ARTICLE 3 - ACCEPTANCE OF THE GENERAL CONDITIONS OF USE
 
-The creation of a User Account (as defined below) as well as the
+The creation of a User Account (as defined below), also called Vault, as well as the
 use of the ZenyPass Service requires full acceptance
 of these General Terms and Conditions
 of Use, which constitute the contract
@@ -76,7 +76,7 @@ their full effects.
 
 In the event of failure to comply with any of the obligations provided for in
 these General Terms and Conditions of Use, ZENYWAY reserves the right to delete
-the user account of the User concerned.
+the User Account of the User concerned.
 
 The User declares to be of legal age, to have the legal capacity to
 use the ZenyPass Service in accordance with these General Terms and Conditions of Use
@@ -84,18 +84,18 @@ and applicable regulations.
 
 ## ARTICLE 4 - ACCESS AND USE OF THE ZENYPASS SERVICE
 
-### 4.1 Creation of a User Account
+### 4.1 Creation of a User Vault
 
 Any use of the ZenyPass Service necessarily requires
-the User to create a user account
-(The "User Account") through one of the ZenyPass Applications.
+the User to create a user vault, or user account
+(The "User Vault" or "Vault" or "User Account") through one of the ZenyPass Applications.
 
 To do this, the User must provide a valid email
 address, and choose a unique password
 (The "ZenyPass Password"). The ZenyPass Password is one of the keys
 used to encrypt the different User Records.
 
-The User Account is strictly personal. Any access to the User Account
+The User Vault is strictly personal. Any access to the User Vault
 using the ZenyPass e-mail address and password will
 be deemed to have been made by the User.
 
@@ -128,17 +128,17 @@ The ZenyPass Service provides the User with a simple and centralized reading
 of all his Records.
 
 The ZenyPass Service allows an easy connection to some websites accessible
-via passwords. To do this, the User must first connect to his User Account
+via passwords. To do this, the User must first connect to his Vault
 and add websites to which he wishes to be connected via the
 ZenyPass Service (the "Registered Web Sites").
 
 The addition of Registered Web Sites can be done by the User
-from his User Account, by filling
+from his Vault, by filling
 a form (including the URL address of the website's login page
 that he wishes to register and the corresponding password).
 
-The User may then access the Registered Web Sites from his User Account,
-by clicking the connection icon of the Registered Website
+The User may then access the Registered Web Sites from his Vault,
+by clicking the thumbnail of the Registered Website
 to which he wishes to connect.
 
 For security and privacy reasons, ZenyPass Applications
@@ -207,7 +207,7 @@ prohibited and liable to criminal prosecution.
 
 ZENYWAY commits to the use of adequate safety systems and procedures
 to ensure the protection and security of the records stored in the
-User account, in particular by means of the
+User Vault, in particular by means of the
 encryption processed by ZenyPass Applications. The Records are
 readable (in deciphered version) only by the User, ZENYWAY having
 access to the encrypted version of said records.
@@ -219,16 +219,16 @@ of the Records shall not incur the liability of ZENYWAY, for any reason
 whatsoever and for any damage whatsoever.
 
 In particular, ZENYWAY can not be held liable in the event that a
-third party accesses its User Account and its Records, or if the
+third party accesses its User Vault and its Records, or if the
 said Records would be disclosed for a reason attributable to the
 Registered Web Sites.
 
 The User agrees to take all precautions to protect his Records
 and not to commit any act that could jeopardize the security
-of the system and his User Account.
+of the system and his Vault.
 
 In general, it is strongly recommended that the User ensure
-that the ZenyPass Password he chose to access his User Account
+that the ZenyPass Password he chose to access his Vault
 is sufficiently complex to avoid any interception or piracy by a third party.
 
 Any new device on which the User wishes to use the ZenyPass Service must first
@@ -236,13 +236,13 @@ be authenticated by the User, by a procedure which requires validation via a
 device already authenticated. However, the User is advised not to use the
 ZenyPass Service on a mobile phone or a computer of which he is not the owner
 or whose use is shared with a third party, in order to avoid any fraudulent
-connection to his User Account. In this case, ZENYWAY can under no
+connection to his Vault. In this case, ZENYWAY can under no
 circumstances be held responsible for any damage caused to the User.
 
 Upon becoming aware of this, the User agrees to promptly inform ZENYWAY
 (at the following address: contact@zenyway.com) of any failure of
 his User Account or any doubt as to possible fraudulent access to his
-User Account.
+Vault.
 
 ## ARTICLE 6 - INTELLECTUAL PROPERTY
 
@@ -337,7 +337,7 @@ as soon as it becomes aware of it.
 
 In addition to the free ZenyPass Service, the User may upgrade
 to a paid offer if he wishes to store more than five (5) Records
-via his User Account. In this case, the User will have the option
+via his User Vault. In this case, the User will have the option
 to purchase storage for additional Records (for example, one additional
 Record for 1.49 euros, five additional Records for 4.99 euros, ten
 additional Records for 9, 94 euros).
@@ -380,5 +380,4 @@ to contact@zenyway.com specifying the subject of his request and,
 as applicable, the content considered illegal.
 <br>
 <br>
-
-General Terms and Conditions of Use updated on April 11th, 2018.
+General Terms and Conditions of Use updated on May 3rd, 2019.
