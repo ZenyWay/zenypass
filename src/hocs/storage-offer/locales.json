@@ -1,0 +1,12 @@
+{
+  "fr": {
+    "PREM": "ZenyPass Premium",
+    "UNIT": "ZenyPass \"A-la-Carte\"",
+    "vat": "dont TVA"
+  },
+  "en": {
+    "PREM": "ZenyPass Premium",
+    "UNIT": "ZenyPass \"A-la-Carte\"",
+    "vat": "including VAT"
+  }
+}

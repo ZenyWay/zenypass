@@ -1,0 +1,13 @@
+[
+  {
+    "data-id": "help",
+    "label": "help",
+    "icon": "fa fa-question-circle"
+  },
+  {
+    "data-id": "help/online-help",
+    "label": "online-help",
+    "icon": "fa fa-question-circle",
+    "href": "help-link"
+  }
+]

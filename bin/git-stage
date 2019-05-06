@@ -1,0 +1,50 @@
+#!/bin/bash
+
+display_usage() {
+  echo "Usage: $0 <repository> <directory> <env>"
+  echo -e "\npush the content of <directory> onto the master branch of <repository>.\n"
+  echo -e "<repository>\n  the target repository to deploy to, as given to git-clone"
+  echo -e "<directory>\n  the directory that should be deployed"
+  echo -e "<env>\n  environment setting: staging or production"
+}
+
+if [ $# -le 1 ]
+then
+  display_usage
+  exit 1
+fi
+
+if [[ ( $# == "--help" ) || ( $# == "-h" ) ]]
+then
+  display_usage
+  exit 0
+fi
+
+# set working directory to package root
+pushd $($(npm bin)/pkg-dir)
+
+# REMOTE="git.zenyway.com:staging-v2.zenypass.git"
+USER_NAME="$(git config user.name)"
+USER_EMAIL="$(git config user.email)"
+USER_KEY=$(git config user.signingkey)
+COMMIT_SIGN=$(git config commit.gpgsign)
+VERSION=$(node -p "require('./package.json').version")
+
+echo "removing existing directory $2"
+rm -rf $2
+git clone --no-checkout $1 $2
+
+npm run dist:$3
+
+cd $2
+
+git config --add user.name "${USER_NAME}"
+git config --add user.email "${USER_EMAIL}"
+git config --add user.signingkey ${USER_KEY}
+git config --add commit.gpgsign ${COMMIT_SIGN}
+
+git add .
+git commit -a -m $VERSION
+git push
+
+popd

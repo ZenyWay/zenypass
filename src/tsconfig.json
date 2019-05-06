@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["es2015", "dom"],
+    "types": ["inferno", "node"],
+    "baseUrl": ".",
+    "paths": {},
+    "jsx": "react",
+    "declaration": true,
+    "noEmitHelpers": false,
+    "importHelpers": false,
+    "emitDecoratorMetadata": false,
+    "experimentalDecorators": false,
+    "removeComments": true,
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "suppressImplicitAnyIndexErrors": true
+  }
+}

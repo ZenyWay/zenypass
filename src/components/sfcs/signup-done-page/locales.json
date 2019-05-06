@@ -1,0 +1,14 @@
+{
+  "fr": {
+    "Activation of your ZenyPass Vault": "Activation de votre Coffre-fort ZenyPass",
+    "An email from info@zenyway.com was just sent to you": "Un email de info@zenyway.com vient de vous être envoyé",
+    "If you haven't received that email, please check your spam folder": "Si vous n'avez pas reçu cet email, vérifiez s'il n'est pas dans votre dossier \"indésirables\"",
+    "To activate your ZenyPass Vault, please follow the link in that email": "Pour finaliser la création de votre compte, vous devez cliquer sur le lien fourni dans cet email"
+  },
+  "en": {
+    "Activation of your ZenyPass Vault": "Activation of your ZenyPass Vault",
+    "An email from info@zenyway.com was just sent to you": "An email from info@zenyway.com was just sent to you",
+    "If you haven't received that email, please check your spam folder": "If you haven't received that email, please check your spam folder",
+    "To activate your ZenyPass Vault, please follow the link in that email": "To activate your ZenyPass Vault, please follow the link in that email"
+  }
+}
