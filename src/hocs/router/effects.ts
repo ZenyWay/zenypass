@@ -56,6 +56,12 @@ const QS_PARAM_ACTIONS = createActionFactories({
   onboarding: ['ONBOARDING', val => val === 'true']
 })
 
+const V1_PARAMS = {
+  email: moveQSParamToHashQS,
+  lang: moveQSParamToHashQS,
+  signup: moveQSParamToHashPath
+}
+
 const fatalError = createActionFactory('FATAL_ERROR')
 const unauthorized = createActionFactory('UNAUTHORIZED')
 const signedOut = createActionFactory('SIGNED_OUT')
@@ -84,6 +90,7 @@ function signout (username: string): Promise<void> {
 
 // support url hash in storybook (iframe in development mode)
 const win = window.top
+importV1Params()
 
 export function urlPathUpdateAndQsParamActionsFromLocationHash () {
   const hash$ = fromEvent(win, 'hashchange').pipe(
@@ -153,12 +160,11 @@ function replaceLocationHash (params: URLSearchParams)
 function replaceLocationHash (update: string | URLSearchParams) {
   const isPathUpdate = isString(update)
   const path = isPathUpdate ? update : parsePathFromLocationHash()
-  const params = (!isPathUpdate
-    ? update
+  const params = !isPathUpdate
+    ? (update as URLSearchParams)
     : parseQueryParamsFromLocationHash()
-  ).toString()
   const url = new URL(win.location.toString())
-  url.hash = `#${path}${!params.length ? '' : `?${params.toString()}`}`
+  url.hash = `#${path}${toSearchString(params)}`
   win.location.replace(url.toString())
 }
 
@@ -184,6 +190,41 @@ function getSearchParam (params: URLSearchParams, key: string): string {
         .toLowerCase()
 }
 
+function toSearchString (params: URLSearchParams): string {
+  const stringified = params.toString()
+  return !stringified.length ? '' : `?${stringified}`
+}
+
 function isValidBoolean (value: string) {
   return !value || value === 'true' || value === 'false'
+}
+
+function importV1Params () {
+  const url = new URL(win.location.href)
+  for (const key of Object.keys(V1_PARAMS)) {
+    importV1ParamToHashQS(key, getSearchParam(url.searchParams, key))
+    url.searchParams.delete(key)
+  }
+  const qs = toSearchString(url.searchParams)
+  if (win.location.search === qs) return
+  url.hash = win.location.hash
+  win.location.replace(url.href)
+}
+
+function importV1ParamToHashQS (key: string, value: string) {
+  if (value === '') return
+  const moveQSParam = V1_PARAMS[key]
+  moveQSParam && moveQSParam(key, value)
+}
+
+function moveQSParamToHashQS (key: string, value: string) {
+  const params = parseQueryParamsFromLocationHash()
+  if (params.has(key)) return
+  params.append(key, value)
+  replaceLocationHash(params)
+}
+
+function moveQSParamToHashPath (key: string, value: string) {
+  if (value !== 'true' || parsePathFromLocationHash() !== '/') return
+  replaceLocationHash(`/${key}`)
 }
