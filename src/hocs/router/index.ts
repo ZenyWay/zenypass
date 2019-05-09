@@ -150,6 +150,11 @@ export function router<P extends RouterSFCProps> (
         'CLOSE_INFO',
         compose.into(0)(openItemLink, pluck('1', 'link'))
       ),
+      tapOnEvent('SIGNED_IN', () =>
+        // only added on first signin, subsequent requests are ignored
+        // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#Multiple_identical_event_listeners
+        window.addEventListener('beforeunload', beforeUnload)
+      ),
       signoutOnSigningOut
     ),
     log('state'),
@@ -160,4 +165,12 @@ export function router<P extends RouterSFCProps> (
     () => distinctUntilChanged(shallowEqual),
     log('view-props')
   )
+}
+
+/**
+ * warning on unwanted/unsolicited redirect
+ */
+function beforeUnload (event: Event) {
+  event.preventDefault()
+  event.returnValue = false
 }
