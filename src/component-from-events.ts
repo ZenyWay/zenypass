@@ -66,10 +66,13 @@ export default function<P, Q> (
   factory: OperatorFactory<StandardAction<P>, any, any>,
   ...factories: OperatorFactory<StandardAction<P>, any, any>[]
 ): ComponentConstructor<P> {
+  const definedFactories = [factory].concat(factories).filter(Boolean)
+  if (!definedFactories.length)
+    throw new Error('component-from-events: INVALID ARGUMENTS')
   return componentFromStream(
     render,
     createActionFactory('PROPS'),
-    factory,
-    ...factories.filter(Boolean)
+    definedFactories[0],
+    ...definedFactories.slice(1)
   )
 }

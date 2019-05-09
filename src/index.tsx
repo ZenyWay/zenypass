@@ -22,6 +22,8 @@ import { Router as App } from 'components'
 if (process.env.NODE_ENV !== 'production') {
   console.log('initializing dev-tools')
   initDevTools()
+} else {
+  require('debug').disable()
 }
 
 const app = removeChildNodes(document.getElementById('app')) // Inferno expects empty node
