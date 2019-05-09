@@ -24,6 +24,7 @@ import componentFromEvents, {
   Rest,
   SFC,
   connect,
+  // logger,
   redux
 } from 'component-from-events'
 import {
@@ -41,11 +42,8 @@ import {
   shallowEqual,
   tapOnEvent
 } from 'utils'
-import {
-  distinctUntilChanged
-  // tap
-} from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import { distinctUntilChanged } from 'rxjs/operators'
+// const log = logger('controlled-input')
 
 export type ControlledInputProps<
   P extends InputProps
@@ -119,7 +117,7 @@ export function controlledInput<P extends InputProps> (
 ): ComponentConstructor<ControlledInputProps<P>> {
   const ControlledInput = componentFromEvents<ControlledInputProps<P>, P>(
     Input,
-    // () => tap(log('controlled-input:event:')),
+    // log('event'),
     redux(
       reducer,
       applyHandlerOnEvent(
@@ -137,13 +135,13 @@ export function controlledInput<P extends InputProps> (
       callHandlerOnEvent('INPUT_REF', 'innerRef'),
       debounceInputWhenDebounce
     ),
-    // () => tap(log('controlled-input:state:')),
+    // log('state'),
     connect<ControlledInputState, InputProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
     () => distinctUntilChanged(shallowEqual)
-    // () => tap(log('controlled-input:view-props:'))
+    // log('view-props')
   )
   ;(ControlledInput as any).defaultProps = DEFAULT_PROPS as ControlledInputProps<
     P

@@ -28,6 +28,7 @@ import componentFromEvents, {
   Rest,
   SFC,
   connect,
+  logger,
   redux
 } from 'component-from-events'
 import {
@@ -43,8 +44,8 @@ import {
   tapOnEvent,
   tapOnMount
 } from 'utils'
-import { tap, distinctUntilChanged } from 'rxjs/operators'
-const log = label => console.log.bind(console, label)
+import { distinctUntilChanged } from 'rxjs/operators'
+const log = logger('authorization-page')
 
 export type AuthorizationPageProps<
   P extends AuthorizationPageSFCProps
@@ -154,7 +155,7 @@ export function authorizationPage<P extends AuthorizationPageSFCProps> (
 ): ComponentConstructor<AuthorizationPageProps<P>> {
   return componentFromEvents(
     AuthorizationPageSFC,
-    () => tap(log('authorization-page:event:')),
+    log('event'),
     redux(
       reducer,
       serviceSigninOnSigningIn,
@@ -187,13 +188,13 @@ export function authorizationPage<P extends AuthorizationPageSFCProps> (
       callHandlerOnEvent('CHANGE_EMAIL_INPUT', 'onEmailChange'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
-    () => tap(log('authorization-page:state:')),
+    log('state'),
     connect<AuthorizationPageState, AuthorizationPageSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
     () => distinctUntilChanged(shallowEqual),
-    () => tap(log('authorization-page:view-props:'))
+    log('view-props')
   )
 }
 

@@ -25,13 +25,13 @@ import componentFromEvents, {
   Rest,
   SFC,
   connect,
+  logger,
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { callHandlerOnEvent } from 'utils'
-import { tap } from 'rxjs/operators'
 import { Observer } from 'rxjs'
-const log = label => console.log.bind(console, label)
+const log = logger('agent-authorizations')
 
 export type AgentAuthorizationsProps<
   P extends AgentAuthorizationsSFCProps
@@ -84,7 +84,7 @@ export function agentAuthorizations<P extends AgentAuthorizationsSFCProps> (
 ): ComponentConstructor<AgentAuthorizationsProps<P>> {
   return componentFromEvents<AgentAuthorizationsProps<P>, P>(
     AgentAuthorizationsPage,
-    () => tap(log('agent-authorizations:event:')),
+    log('event'),
     redux(
       reducer,
       injectAgentsFromService,
@@ -92,13 +92,13 @@ export function agentAuthorizations<P extends AgentAuthorizationsSFCProps> (
       callHandlerOnEvent('CLOSE', 'onClose'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
-    () => tap(log('agent-authorizations:state:')),
+    log('state'),
     connect<AgentAuthorizationsState, AgentAuthorizationsSFCProps>(
       mapStateToProps,
       createActionDispatchers({
         onClose: 'CLOSE'
       })
     ),
-    () => tap(log('agent-authorizations:props:'))
+    log('view-props')
   )
 }

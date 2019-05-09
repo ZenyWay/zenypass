@@ -25,6 +25,7 @@ import componentFromEvents, {
   Rest,
   SFC,
   connect,
+  logger,
   redux
 } from 'component-from-events'
 import {
@@ -40,8 +41,8 @@ import {
   tapOnEvent,
   tapOnMount
 } from 'utils'
-import { tap, distinctUntilChanged } from 'rxjs/operators'
-const log = label => console.log.bind(console, label)
+import { distinctUntilChanged } from 'rxjs/operators'
+const log = logger('signup-page')
 
 export type SignupPageProps<P extends SignupPageSFCProps> = SignupPageHocProps &
   Rest<P, SignupPageSFCProps>
@@ -155,7 +156,7 @@ export function signupPage<P extends SignupPageSFCProps> (
 ): ComponentConstructor<SignupPageProps<P>> {
   return componentFromEvents(
     SignupPageSFC,
-    () => tap(log('signup-page:event:')),
+    log('event'),
     redux(
       reducer,
       tapOnMount(() => window.scrollTo(0, 0)),
@@ -186,13 +187,13 @@ export function signupPage<P extends SignupPageSFCProps> (
       callHandlerOnEvent('CHANGE_EMAIL_INPUT', 'onEmailChange'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
-    () => tap(log('signup-page:state:')),
+    log('state'),
     connect<SignupPageState, SignupPageSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
     () => distinctUntilChanged(shallowEqual),
-    () => tap(log('signup-page:view-props:'))
+    log('view-props')
   )
 }
 
