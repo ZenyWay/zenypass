@@ -28,13 +28,14 @@ import componentFromEvents, {
   Rest,
   SFC,
   connect,
+  logger,
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import compose from 'basic-compose'
 import { MenuSpec, openItemLink, pluck, shallowEqual, tapOnEvent } from 'utils'
-import { /* tap,*/ distinctUntilChanged } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import { distinctUntilChanged } from 'rxjs/operators'
+const log = logger('router')
 
 export type RouterProps<P extends RouterSFCProps> = Rest<P, RouterSFCProps>
 
@@ -137,7 +138,7 @@ export function router<P extends RouterSFCProps> (
 ): ComponentConstructor<RouterProps<P>> {
   return componentFromEvents<RouterProps<P>, P>(
     RouterSFC,
-    // () => tap(log('router:event:')),
+    log('event'),
     redux(
       reducer,
       urlPathUpdateAndQsParamActionsFromLocationHash,
@@ -149,14 +150,27 @@ export function router<P extends RouterSFCProps> (
         'CLOSE_INFO',
         compose.into(0)(openItemLink, pluck('1', 'link'))
       ),
+      tapOnEvent('SIGNED_IN', () =>
+        // only added on first signin, subsequent requests are ignored
+        // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#Multiple_identical_event_listeners
+        window.addEventListener('beforeunload', beforeUnload)
+      ),
       signoutOnSigningOut
     ),
-    // () => tap(log('router:state:')),
+    log('state'),
     connect<RouterState, RouterSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
-    () => distinctUntilChanged(shallowEqual)
-    // () => tap(log('router:view-props:'))
+    () => distinctUntilChanged(shallowEqual),
+    log('view-props')
   )
+}
+
+/**
+ * warning on unwanted/unsolicited redirect
+ */
+function beforeUnload (event: Event) {
+  event.preventDefault()
+  event.returnValue = false
 }

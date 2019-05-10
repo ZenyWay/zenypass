@@ -30,12 +30,13 @@ import componentFromEvents, {
   Rest,
   SFC,
   connect,
+  logger,
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import { callHandlerOnEvent, shallowEqual } from 'utils'
-import { /* tap,*/ distinctUntilChanged } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import { distinctUntilChanged } from 'rxjs/operators'
+const log = logger('storage-page')
 
 export type StoragePageProps<
   P extends StoragePageSFCProps
@@ -126,7 +127,7 @@ export function storagePage<P extends StoragePageSFCProps> (
 ): ComponentConstructor<StoragePageProps<P>> {
   return componentFromEvents<StoragePageProps<P>, P>(
     StoragePageSFC,
-    // () => tap(log('storage-page:event:')),
+    log('event'),
     redux(
       reducer,
       injectServiceOnSessionProp,
@@ -136,12 +137,12 @@ export function storagePage<P extends StoragePageSFCProps> (
       callHandlerOnEvent('CLOSE', 'onClose'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
-    // () => tap(log('storage-page:state:')),
+    log('state'),
     connect<StoragePageState, StoragePageSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
-    () => distinctUntilChanged(shallowEqual)
-    // () => tap(log('storage-page:view-props:'))
+    () => distinctUntilChanged(shallowEqual),
+    log('view-props')
   )
 }

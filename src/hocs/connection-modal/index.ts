@@ -27,6 +27,7 @@ import componentFromEvents, {
   Rest,
   SFC,
   connect,
+  logger,
   redux
 } from 'component-from-events'
 import {
@@ -40,11 +41,8 @@ import {
   shallowEqual,
   tapOnEvent
 } from 'utils'
-import {
-  distinctUntilChanged
-  // tap
-} from 'rxjs/operators'
-// const log = (label: string) => console.log.bind(console, label)
+import { distinctUntilChanged } from 'rxjs/operators'
+const log = logger('connection-modal')
 
 export type ConnectionModalProps<
   P extends ConnectionModalSFCProps
@@ -142,7 +140,7 @@ export function connectionModal<P extends ConnectionModalSFCProps> (
 ): ComponentConstructor<ConnectionModalProps<P>> {
   return componentFromEvents<ConnectionModalProps<P>, P>(
     ConnectionModal,
-    // () => tap(log('connection-modal:event:')),
+    log('event'),
     redux(
       reducer,
       tapOnEvent('DEFAULT_ACTION_BUTTON_REF', focus),
@@ -156,13 +154,13 @@ export function connectionModal<P extends ConnectionModalSFCProps> (
       openOnOpenProp,
       openWindowOnUsernameOrPasswordCopiedWhenNotManual
     ),
-    // () => tap(log('connection-modal:state:')),
+    log('state'),
     connect<ConnectionModalState, ConnectionModalSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
-    () => distinctUntilChanged(shallowEqual)
-    // () => tap(log('connection-modal:view-props:'))
+    () => distinctUntilChanged(shallowEqual),
+    log('view-props')
   )
 }
 

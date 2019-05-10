@@ -28,10 +28,7 @@ import {
 import { FAIconButton } from '../fa-icon'
 import { ControlledInput } from '../../controlled-input'
 import createL10ns from 'basic-l10n'
-const debug =
-  process.env.NODE_ENV !== 'production' &&
-  require('debug')('zenypass:components:access-authorization:')
-const l10ns = createL10ns(require('./locales.json'), { debug })
+const l10ns = createL10ns(require('./locales.json'))
 
 export interface AuthenticationModalProps {
   open?: boolean

@@ -25,7 +25,7 @@ import componentFromStream, {
   OperatorFactory,
   SFC
 } from './component-from-props'
-import { map } from 'rxjs/operators'
+import { map, tap } from 'rxjs/operators'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import compose from 'basic-compose'
 
@@ -53,15 +53,26 @@ export function connect<S = {}, P = {}> (
   return compose.into(0)(map, _connect(mapStateToProps, mapDispatchToProps))
 }
 
+const dev = process.env.NODE_ENV !== 'production'
+export function logger (label) {
+  return function (...args: any[]) {
+    const log = console.log.bind(console, label, ...args)
+    return dev && (() => tap(log))
+  }
+}
+
 export default function<P, Q> (
   render: SFC<Q>,
   factory: OperatorFactory<StandardAction<P>, any, any>,
   ...factories: OperatorFactory<StandardAction<P>, any, any>[]
 ): ComponentConstructor<P> {
+  const definedFactories = [factory].concat(factories).filter(Boolean)
+  if (!definedFactories.length)
+    throw new Error('component-from-events: INVALID ARGUMENTS')
   return componentFromStream(
     render,
     createActionFactory('PROPS'),
-    factory,
-    ...factories
+    definedFactories[0],
+    ...definedFactories.slice(1)
   )
 }

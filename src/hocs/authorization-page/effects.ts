@@ -18,16 +18,8 @@ import { AuthorizationFsm } from './reducer'
 import zenypass from 'zenypass-service'
 import { createActionFactory, createActionFactories } from 'basic-fsa-factories'
 import { ERROR_STATUS } from 'utils'
-import {
-  catchError,
-  delay,
-  filter,
-  map,
-  switchMap
-  // tap
-} from 'rxjs/operators'
+import { catchError, delay, filter, map, switchMap } from 'rxjs/operators'
 import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
-// const log = label => console.log.bind(console, label)
 
 const zenypass$ = observableFrom(zenypass)
 

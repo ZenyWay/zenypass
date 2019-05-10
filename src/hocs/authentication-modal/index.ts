@@ -25,6 +25,7 @@ import componentFromEvents, {
   Rest,
   SFC,
   connect,
+  // logger,
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
@@ -36,8 +37,7 @@ import {
   preventDefault,
   tapOnEvent
 } from 'utils'
-// import { tap } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+// const log = logger('authentication-modal')
 
 export type AuthenticationModalProps<
   P extends AuthenticationModalSFCProps
@@ -108,7 +108,7 @@ export function authenticationModal<P extends AuthenticationModalSFCProps> (
 ): ComponentConstructor<AuthenticationModalProps<P>> {
   return componentFromEvents<AuthenticationModalProps<P>, P>(
     Modal,
-    // () => tap(log('authentication-modal:event:')),
+    // log('event'),
     redux(
       reducer,
       authenticateOnAuthenticating,
@@ -117,11 +117,11 @@ export function authenticationModal<P extends AuthenticationModalSFCProps> (
       callHandlerOnEvent('AUTHENTICATED', 'onAuthenticated'),
       tapOnEvent('UNAUTHORIZED', compose.into(0)(focus, pluck('1', 'input')))
     ),
-    // () => tap(log('authentication-modal:state:')),
+    // log('state'),
     connect<AuthenticationModalState, AuthenticationModalSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     )
-    // () => tap(log('authentication-modal:view-props:'))
+    // log('view-props')
   )
 }

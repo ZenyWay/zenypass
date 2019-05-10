@@ -87,13 +87,11 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
   [RouteAutomataState.Authorizations]: {
     CLOSE: RouteAutomataState.Homepage,
     EMAIL: RouteAutomataState.SigningOut,
-    HOMEPAGE: RouteAutomataState.Homepage,
     FATAL_ERROR: RouteAutomataState.Fatal
   },
   [RouteAutomataState.Storage]: {
     CLOSE: RouteAutomataState.Homepage,
     EMAIL: RouteAutomataState.SigningOut,
-    HOMEPAGE: RouteAutomataState.Homepage,
     FATAL_ERROR: RouteAutomataState.Fatal
   },
   [RouteAutomataState.Fatal]: {
