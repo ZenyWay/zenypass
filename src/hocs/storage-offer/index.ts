@@ -32,6 +32,7 @@ import componentFromEvents, {
   Rest,
   SFC,
   connect,
+  logger,
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
@@ -41,8 +42,8 @@ import {
   callHandlerOnEvent,
   shallowEqual
 } from 'utils'
-import { /* tap,*/ distinctUntilChanged } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import { distinctUntilChanged } from 'rxjs/operators'
+const log = logger('storage-offer')
 
 export { Currency, StorageOfferBaseSpec, StorageOfferSpec, Uiid }
 
@@ -122,7 +123,7 @@ export function storageOffer<P extends StorageOfferSFCProps> (
 ): ComponentConstructor<StorageOfferProps<P>> {
   return componentFromEvents<StorageOfferProps<P>, P>(
     StorageOfferSFC,
-    // () => tap(log('storage-offer:event:')),
+    log('event'),
     redux(
       reducer,
       injectServiceOnSessionProp,
@@ -148,13 +149,13 @@ export function storageOffer<P extends StorageOfferSFCProps> (
       callHandlerOnEvent('OFFLINE', 'onToggleOffline'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
-    // () => tap(log('storage-offer:state:')),
+    log('state'),
     connect<StorageOfferState, StorageOfferSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
-    () => distinctUntilChanged(shallowEqual)
-    // () => tap(log('storage-offer:view-props:'))
+    () => distinctUntilChanged(shallowEqual),
+    log('view-props')
   )
 }
 

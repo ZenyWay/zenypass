@@ -201,12 +201,11 @@ function isValidBoolean (value: string) {
 
 function importV1Params () {
   const url = new URL(win.location.href)
+  if (!url.search) return
   for (const key of Object.keys(V1_PARAMS)) {
     importV1ParamToHashQS(key, getSearchParam(url.searchParams, key))
-    url.searchParams.delete(key)
   }
-  const qs = toSearchString(url.searchParams)
-  if (win.location.search === qs) return
+  url.search = ''
   url.hash = win.location.hash
   win.location.replace(url.href)
 }

@@ -28,6 +28,7 @@ import componentFromEvents, {
   Rest,
   SFC,
   connect,
+  logger,
   redux
 } from 'component-from-events'
 import {
@@ -43,8 +44,7 @@ import {
   tapOnEvent
 } from 'utils'
 import { Observer } from 'rxjs'
-// import { tap } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+const log = logger('home-page')
 
 export type HomePageProps<P extends HomePageSFCProps> = HomePageHocProps &
   Rest<P, HomePageSFCProps>
@@ -153,7 +153,7 @@ export function homePage<P extends HomePageSFCProps> (
 ): ComponentConstructor<HomePageProps<P>> {
   return componentFromEvents<HomePageProps<P>, P>(
     HomePageSFC,
-    // () => tap(log('home-page:event:')),
+    log('event'),
     redux(
       reducer,
       injectRecordsFromService,
@@ -172,11 +172,11 @@ export function homePage<P extends HomePageSFCProps> (
       ),
       callHandlerOnEvent('FATAL_ERROR', 'onError')
     ),
-    // () => tap(log('home-page:state:')),
+    log('state'),
     connect<HomePageState, HomePageSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // () => tap(log('home-page:view-props:'))
+    ),
+    log('view-props')
   )
 }

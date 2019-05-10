@@ -13,18 +13,18 @@
  * Limitations under the License.
  */
 import { into } from 'basic-cursors'
-import serializers, { InputSerializer } from './serializers'
+import serializers from './serializers'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
   SFC,
   connect,
+  // logger,
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
-import { applyHandlerOnEvent, forType, mapPayload, shallowEqual } from 'utils'
-import { distinctUntilChanged /*, tap */ } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import { applyHandlerOnEvent, forType, mapPayload } from 'utils'
+// const log = logger('serialized-input')
 
 export type SerializedInputProps<
   P extends ControlledInputProps
@@ -77,7 +77,7 @@ export function serializedInput<P extends ControlledInputProps> (
 ): ComponentConstructor<SerializedInputProps<P>> {
   return componentFromEvents<SerializedInputProps<P>, P>(
     ControlledInput,
-    // () => tap(log('serialized-input:EVENT:')),
+    // log('event'),
     redux(
       forType('PROPS')(into('props')(mapPayload())),
       applyHandlerOnEvent(
@@ -89,6 +89,7 @@ export function serializedInput<P extends ControlledInputProps> (
         ]
       )
     ),
+    // log('state'),
     // () => tap(log('serialized-input:STATE:')),
     connect<SerializedInputState, ControlledInputProps>(
       mapStateToProps,
@@ -96,6 +97,6 @@ export function serializedInput<P extends ControlledInputProps> (
     )
     // pass all updates, otherwise user input that yields an unchanged parsed value
     // hence an unchanged stringified output is not overwritten.
-    // () => tap(log('serialized-input:VIEW_PROPS:'))
+    // log('view-props')
   )
 }

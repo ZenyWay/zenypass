@@ -15,15 +15,8 @@
  */
 
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import {
-  distinctUntilChanged,
-  filter,
-  map,
-  pluck
-  // tap
-} from 'rxjs/operators'
+import { distinctUntilChanged, filter, map, pluck } from 'rxjs/operators'
 import { Observable } from 'rxjs'
-// const log = label => console.log.bind(console, label)
 
 const update = createActionFactory('UPDATE')
 

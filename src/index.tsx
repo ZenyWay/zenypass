@@ -22,17 +22,11 @@ import { Router as App } from 'components'
 if (process.env.NODE_ENV !== 'production') {
   console.log('initializing dev-tools')
   initDevTools()
+} else {
+  require('debug').disable()
 }
 
 const app = removeChildNodes(document.getElementById('app')) // Inferno expects empty node
-
-/**
- * warning on unwanted/unsolicited redirect
- */
-window.addEventListener('beforeunload', function (event) {
-  event.preventDefault()
-  event.returnValue = ''
-})
 
 window.addEventListener('touchstart', function isTouchDevice () {
   document.body.className += ' is-touch-device'

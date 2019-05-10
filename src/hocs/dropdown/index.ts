@@ -21,13 +21,14 @@ import componentFromEvents, {
   Rest,
   SFC,
   connect,
+  logger,
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import compose from 'basic-compose'
-import { callHandlerOnEvent, pluck, preventDefault } from 'utils'
-// import { tap } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import { callHandlerOnEvent, pluck, preventDefault, shallowEqual } from 'utils'
+import { distinctUntilChanged } from 'rxjs/operators'
+const log = logger('dropdown')
 
 export type DropdownProps<P extends DropdownSFCProps> = DropdownHocProps &
   Rest<P, DropdownSFCProps>
@@ -81,17 +82,18 @@ export function dropdown<P extends DropdownSFCProps> (
 ): ComponentConstructor<DropdownProps<P>> {
   return componentFromEvents<DropdownProps<P>, P>(
     DropdownSFC,
-    // () => tap(log('dropdown:event:')),
+    log('event'),
     redux(
       reducer,
       toggleBackdropHandlers,
       callHandlerOnEvent('CLICK_ITEM', ['props', 'onSelectItem'])
     ),
-    // () => tap(log('dropdown:state:')),
+    log('state'),
     connect<DropdownState, DropdownSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // () => tap(log('dropdown:view-props:'))
+    ),
+    () => distinctUntilChanged(shallowEqual),
+    log('view-props')
   )
 }

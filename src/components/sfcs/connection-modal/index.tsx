@@ -30,10 +30,7 @@ import {
 import { CopyButton } from '../../copy-button'
 import { RecordField } from '../record-field'
 import createL10ns from 'basic-l10n'
-const debug =
-  process.env.NODE_ENV !== 'production' &&
-  require('debug')('zenypass:components:access-authorization:')
-const l10ns = createL10ns(require('./locales.json'), { debug })
+const l10ns = createL10ns(require('./locales.json'))
 
 export interface ConnectionModalProps {
   name: string

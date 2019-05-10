@@ -26,6 +26,7 @@ import componentFromEvents, {
   Rest,
   SFC,
   connect,
+  logger,
   redux
 } from 'component-from-events'
 import {
@@ -41,8 +42,8 @@ import {
   tapOnEvent,
   tapOnMount
 } from 'utils'
-import { /* tap,*/ distinctUntilChanged } from 'rxjs/operators'
-// const log = label => console.log.bind(console, label)
+import { distinctUntilChanged } from 'rxjs/operators'
+const log = logger('signin-page')
 
 export type SigninPageProps<P extends SigninPageSFCProps> = SigninPageHocProps &
   Rest<P, SigninPageSFCProps>
@@ -135,7 +136,7 @@ export function signinPage<P extends SigninPageSFCProps> (
 ): ComponentConstructor<SigninPageProps<P>> {
   return componentFromEvents(
     SigninPageSFC,
-    // () => tap(log('signin-page:event:')),
+    log('event'),
     redux(
       reducer,
       tapOnMount(() => window.scrollTo(0, 0)),
@@ -166,13 +167,13 @@ export function signinPage<P extends SigninPageSFCProps> (
       callHandlerOnEvent('CHANGE_EMAIL_INPUT', 'onEmailChange'),
       callHandlerOnEvent('ERROR', 'onError')
     ),
-    // () => tap(log('signin-page:state:')),
+    log('state'),
     connect<SigninPageState, SigninPageSFCProps>(
       mapStateToProps,
       mapDispatchToProps
     ),
-    () => distinctUntilChanged(shallowEqual)
-    // () => tap(log('signin-page:view-props:'))
+    () => distinctUntilChanged(shallowEqual),
+    log('view-props')
   )
 }
 
