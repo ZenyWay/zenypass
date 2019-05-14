@@ -42,7 +42,7 @@ const attrs = {
   onTokenInputRef: action('TOKEN_INPUT_REF')
 }
 
-const emails = ['jane.doe@example.com', 'rob@hvsc.org']
+const emails = ['Jane.Doe@example.com', 'rob@hvsc.org']
   .map(email => ({
     'data-id': `email/${email}`,
     icon: 'fa fa-user',

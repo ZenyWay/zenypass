@@ -46,14 +46,14 @@ const log = (label: string) => console.log.bind(console, label)
 
 const QS_PARAM_VALIDATORS = {
   email: always(true),
-  lang: lang => LOCALES.indexOf(lang) >= 0,
+  lang: lang => LOCALES.indexOf(lang.toLowerCase()) >= 0,
   onboarding: isValidBoolean
 }
 
 const QS_PARAM_ACTIONS = createActionFactories({
   email: 'EMAIL',
-  lang: 'LOCALE',
-  onboarding: ['ONBOARDING', val => val === 'true']
+  lang: ['LOCALE', lang => lang.toLowerCase()],
+  onboarding: ['ONBOARDING', val => val.toLowerCase() === 'true']
 })
 
 const V1_PARAMS = {
@@ -182,12 +182,7 @@ function parseUrlFromLocationHash () {
 }
 
 function getSearchParam (params: URLSearchParams, key: string): string {
-  return !params.has(key)
-    ? ''
-    : params
-        .get(key)
-        .trim()
-        .toLowerCase()
+  return !params.has(key) ? '' : params.get(key).trim()
 }
 
 function toSearchString (params: URLSearchParams): string {
@@ -195,8 +190,9 @@ function toSearchString (params: URLSearchParams): string {
   return !stringified.length ? '' : `?${stringified}`
 }
 
-function isValidBoolean (value: string) {
-  return !value || value === 'true' || value === 'false'
+const BOOLEANS = ['true', 'false']
+function isValidBoolean (val: string) {
+  return !val || BOOLEANS.indexOf(val.toLowerCase()) >= 0
 }
 
 function importV1Params () {

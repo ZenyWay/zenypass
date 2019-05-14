@@ -32,7 +32,7 @@ const log = label => console.log.bind(console, label)
 
 export type KVMap<V> = { [key: string]: V }
 
-export const USERNAME = 'me@zw.fr'
+export const USERNAME = 'ME@zw.fr'
 const RECORD_SERVICE_DELAY = 500 // ms
 const RECORD_PASSWORD = 'p@ssW0rd!012345678#012345678990123456789'
 const RECORDS = [
