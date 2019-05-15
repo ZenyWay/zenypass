@@ -18,7 +18,7 @@
 import { AuthenticationFsmState } from './reducer'
 import { getService } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import { ERROR_STATUS, newStatusError } from 'utils'
+import { ERROR_STATUS } from 'utils'
 import {
   catchError,
   distinctUntilKeyChanged,

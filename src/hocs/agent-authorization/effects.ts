@@ -17,14 +17,9 @@
 /** @jsx createElement */
 //
 import { AgentAuthorizationFsm } from './reducer'
-import { getService } from 'zenypass-service'
+import { createPrivilegedRequest, getService } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import {
-  createPrivilegedRequest,
-  toProjection,
-  ERROR_STATUS,
-  newStatusError
-} from 'utils'
+import { toProjection, ERROR_STATUS, newStatusError } from 'utils'
 import {
   catchError,
   distinctUntilKeyChanged,
@@ -37,12 +32,7 @@ import {
   // tap,
   throwIfEmpty
 } from 'rxjs/operators'
-import {
-  Observable,
-  from as observableFrom,
-  of as observableOf,
-  throwError
-} from 'rxjs'
+import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 
 export { StandardAction }
 
@@ -56,13 +46,9 @@ const cancel = createActionFactory('CANCEL')
 // const log = (label: string) => console.log.bind(console, label)
 
 const authorize = createPrivilegedRequest(
-  (username: string, passphrase: string, secret: string) =>
-    observableFrom(getService(username)).pipe(
-      switchMap(service =>
-        observableFrom(service.authorize(passphrase, secret)).pipe(
-          finalize(() => service.cancelAuthorization())
-        )
-      )
+  (service, passphrase: string, secret: string) =>
+    observableFrom(service.authorize(passphrase, secret)).pipe(
+      finalize(() => service.cancelAuthorization())
     )
 )
 

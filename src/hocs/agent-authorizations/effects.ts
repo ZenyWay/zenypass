@@ -16,9 +16,9 @@
  */
 /** @jsx createElement */
 //
-import { getService, AuthorizationDoc } from 'zenypass-service'
+import { createPrivilegedRequest } from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
-import { createPrivilegedRequest, toProjection, ERROR_STATUS } from 'utils'
+import { toProjection, ERROR_STATUS } from 'utils'
 import {
   catchError,
   debounceTime,
@@ -27,7 +27,7 @@ import {
   map,
   switchMap
 } from 'rxjs/operators'
-import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
+import { Observable, of as observableOf } from 'rxjs'
 
 const DEBOUNCE_TIME_ON_AGENT = 1500 // ms
 
@@ -41,12 +41,7 @@ const closeOnClientClosedRequestOrError = err =>
     err
   )
 
-const getAgent$ = createPrivilegedRequest<AuthorizationDoc>(
-  (username: string) =>
-    observableFrom(getService(username)).pipe(
-      switchMap(service => service.getAgentInfo$())
-    )
-)
+const getAgent$ = createPrivilegedRequest(service => service.getAgentInfo$())
 
 export function injectAgentsFromService (
   event$: Observable<StandardAction<any>>,

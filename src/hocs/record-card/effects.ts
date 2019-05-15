@@ -15,7 +15,11 @@
  */
 //
 import { RecordFsmState, ConnectFsmState } from './reducer'
-import { PouchDoc, ZenypassRecord, getService } from 'zenypass-service'
+import {
+  createPrivilegedRequest,
+  PouchDoc,
+  ZenypassRecord
+} from 'zenypass-service'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import { EMPTY, Observable, of as observableOf, merge } from 'rxjs'
 import {
@@ -32,13 +36,7 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators'
-import {
-  ERROR_STATUS,
-  createPrivilegedRequest,
-  hasHandlerProp,
-  newStatusError,
-  toProjection
-} from 'utils'
+import { ERROR_STATUS, hasHandlerProp, toProjection } from 'utils'
 import copyToClipboard from 'clipboard-copy'
 import createL10ns from 'basic-l10n'
 // const log = (label: string) => console.log.bind(console, label)
@@ -123,10 +121,7 @@ function copyUsernameAndOpenWindow (href: string, username?: string) {
 }
 
 const updateRecord = createPrivilegedRequest(
-  (username: string, record: ZenypassRecord) =>
-    getService(username)
-      .catch(rejectAsForbidden)
-      .then(service => service.records.putRecord(record))
+  ({ records }, record: ZenypassRecord) => records.putRecord(record)
 )
 
 export function saveRecordOnPendingSaveOrDeleteRecord (
@@ -169,10 +164,8 @@ export function saveRecordOnPendingSaveOrDeleteRecord (
   }
 }
 
-const cleartext = createPrivilegedRequest((username: string, ref: PouchDoc) =>
-  getService(username)
-    .catch(rejectAsForbidden)
-    .then(service => service.records.getRecord(ref))
+const cleartext = createPrivilegedRequest(({ records }, ref: PouchDoc) =>
+  records.getRecord(ref)
 )
 
 export function cleartextOnPendingCleartextOrConnect (
@@ -211,11 +204,5 @@ export function cleartextOnPendingCleartextOrConnect (
         )
     ),
     catchError(err => observableOf(error(err)))
-  )
-}
-
-function rejectAsForbidden (err: any) {
-  return Promise.reject(
-    newStatusError(ERROR_STATUS.FORBIDDEN, err && err.message)
   )
 }

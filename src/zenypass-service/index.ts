@@ -23,8 +23,25 @@ import getZenypassServiceAccess, {
   ZenypassServiceAccess
 } from '@zenyway/zenypass-service'
 import { newStatusError, ERROR_STATUS } from 'utils'
-import { NEVER, Observable, interval, of as observableOf } from 'rxjs'
-import { concat, map, shareReplay, take, takeUntil } from 'rxjs/operators'
+import {
+  NEVER,
+  Observable,
+  defer,
+  interval,
+  from as observableFrom,
+  of as observableOf,
+  throwError
+} from 'rxjs'
+import {
+  concat,
+  map,
+  retryWhen,
+  shareReplay,
+  switchMap,
+  take,
+  takeUntil,
+  catchError
+} from 'rxjs/operators'
 
 export { AuthorizationDoc, PouchDoc, PouchVaultChange, ZenypassRecord }
 
@@ -166,4 +183,49 @@ export function getService (username?: string): Promise<ZenypassService> {
         ? Promise.reject(newStatusError(ERROR_STATUS.NOT_FOUND))
         : Promise.resolve(service)
     )
+}
+
+export function createPrivilegedRequest<T> (
+  request: (
+    service: ZenypassService,
+    ...args: any[]
+  ) => Observable<T> | Promise<T>
+) {
+  return function (
+    authenticate: (username: string) => Observable<string> | Promise<string>,
+    username: string,
+    unrestricted: boolean,
+    ...args: any[]
+  ): Observable<T> {
+    // curry request argument
+    return observableFrom(getService(username)).pipe(
+      catchError(err =>
+        throwError(
+          err && err.state !== ERROR_STATUS.NOT_FOUND
+            ? err
+            : ERROR_STATUS.FORBIDDEN
+        )
+      ),
+      switchMap(service =>
+        (!unrestricted
+          ? observableFrom(authenticate(username))
+          : observableOf(void 0)
+        ).pipe(
+          switchMap(() =>
+            defer(() => request(service, ...args)).pipe(
+              retryWhen((error$: Observable<any>) =>
+                error$.pipe(
+                  switchMap(error =>
+                    error && error.status !== 401
+                      ? throwError(error)
+                      : observableFrom(authenticate(username))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  }
 }

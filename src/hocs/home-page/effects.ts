@@ -17,6 +17,7 @@
 import { HomePageFsmState } from './reducer'
 import sortIndexedRecordsByName from './sort'
 import {
+  createPrivilegedRequest,
   getService,
   PouchDoc,
   PouchVaultChange,
@@ -27,13 +28,7 @@ import {
   createActionFactory,
   StandardAction
 } from 'basic-fsa-factories'
-import {
-  ERROR_STATUS,
-  createPrivilegedRequest,
-  entries,
-  isUndefined,
-  toProjection
-} from 'utils'
+import { ERROR_STATUS, entries, isUndefined, toProjection } from 'utils'
 import {
   catchError,
   concatMap,
@@ -101,9 +96,8 @@ const NEW_RECORD_ERRORS: Partial<
   [ERROR_STATUS.GATEWAY_TIMEOUT]: 'GATEWAY_TIMEOUT'
 })
 
-const createRecord$ = createPrivilegedRequest<ZenypassRecord>(
-  (username: string) =>
-    getService(username).then(({ records }) => records.newRecord())
+const createRecord$ = createPrivilegedRequest(({ records }) =>
+  records.newRecord()
 )
 
 export function createRecordOnCreateRecordRequested (
@@ -153,11 +147,7 @@ function includesDefinedRecord (record: ZenypassRecord) {
   }
 }
 
-const getRecords$ = createPrivilegedRequest((username: string) =>
-  observableFrom(getService(username)).pipe(
-    switchMap(({ records }) => records.records$)
-  )
-)
+const getRecords$ = createPrivilegedRequest(({ records }) => records.records$)
 
 export function injectRecordsFromService (
   event$: Observable<StandardAction<any>>,
@@ -223,32 +213,28 @@ export function unrestrictedCountdownOnInitialIdle (
   )
 }
 
-const getSettings$ = createPrivilegedRequest<SettingsDoc>((username: string) =>
-  observableFrom(getService(username)).pipe(
-    switchMap(({ meta }) =>
+const getSettings$ = createPrivilegedRequest<SettingsDoc>(({ meta }) =>
+  observableFrom(
+    meta.getChange$<SettingsDoc>({
+      doc_ids: [SETTINGS_DOC_ID],
+      include_docs: true,
+      live: false,
+      since: 0
+    })
+  ).pipe(
+    defaultIfEmpty<PouchVaultChange<SettingsDoc>>(void 0),
+    last<PouchVaultChange<SettingsDoc>>(),
+    concatMap(change =>
       observableFrom(
-        meta.getChange$<SettingsDoc>({
+        meta.getChange$({
           doc_ids: [SETTINGS_DOC_ID],
           include_docs: true,
-          live: false,
-          since: 0
+          live: true,
+          since: (change && change.seq) || 0
         })
       ).pipe(
-        defaultIfEmpty<PouchVaultChange<SettingsDoc>>(void 0),
-        last<PouchVaultChange<SettingsDoc>>(),
-        concatMap(change =>
-          observableFrom(
-            meta.getChange$({
-              doc_ids: [SETTINGS_DOC_ID],
-              include_docs: true,
-              live: true,
-              since: (change && change.seq) || 0
-            })
-          ).pipe(
-            pluck<PouchVaultChange<SettingsDoc>, SettingsDoc>('doc'),
-            startWith((change && change.doc) || ({} as SettingsDoc))
-          )
-        )
+        pluck<PouchVaultChange<SettingsDoc>, SettingsDoc>('doc'),
+        startWith((change && change.doc) || ({} as SettingsDoc))
       )
     )
   )
@@ -282,21 +268,15 @@ export function injectSettings$FromService (
 }
 
 const upsertSettings$ = createPrivilegedRequest<SettingsDoc>(
-  (username: string, { lang, noOnboarding }) =>
-    observableFrom(getService(username)).pipe(
-      switchMap(({ meta }) =>
-        observableFrom(meta.get<SettingsDoc>(SETTINGS_DOC_ID)).pipe(
-          catchError(err =>
-            err && err.status !== ERROR_STATUS.NOT_FOUND
-              ? throwError(err)
-              : observableOf({ _id: SETTINGS_DOC_ID } as SettingsDoc)
-          ),
-          filter(doc => doc.lang !== lang || doc.noOnboarding !== noOnboarding),
-          concatMap(({ _id, _rev }) =>
-            meta.put({ _id, _rev, lang, noOnboarding })
-          )
-        )
-      )
+  ({ meta }, { lang, noOnboarding }) =>
+    observableFrom(meta.get<SettingsDoc>(SETTINGS_DOC_ID)).pipe(
+      catchError(err =>
+        err && err.status !== ERROR_STATUS.NOT_FOUND
+          ? throwError(err)
+          : observableOf({ _id: SETTINGS_DOC_ID } as SettingsDoc)
+      ),
+      filter(doc => doc.lang !== lang || doc.noOnboarding !== noOnboarding),
+      concatMap(({ _id, _rev }) => meta.put({ _id, _rev, lang, noOnboarding }))
     )
 )
 
