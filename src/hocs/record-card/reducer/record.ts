@@ -101,7 +101,10 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
     TOGGLE_EXPANDED: RecordFsmState.ReadonlyConcealed,
     INVALID_RECORD: [
       RecordFsmState.EditCleartext,
-      into('changes')(into('username')(pluck('0', 'props', 'session'))),
+      compose(
+        inChanges('username')(pluck('1')),
+        pluck('0', 'props', 'session')
+      ),
       propCursor('password')(alt('')),
       mergePayloadIntoErrors()
     ]
