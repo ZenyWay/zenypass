@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 //
-export const ZENYPASS_LOGO_WHITE_SVG = require('./zenypass-icon-white.svg')
-export const ZENYPASS_LOGO_CYAN_SVG = require('./icon_zenypass_fill21A0B7.svg')
-export const ZENYPASS_PREMIUM_SVG = require('./zw-premium.svg')
-export const ZENYPASS_A_LA_CARTE_SVG = require('./zw-a-la-carte.svg')
+export const ZENYPASS_LOGO_WHITE_SVG = require('./inline/zenypass-icon-white.svg')
+export const ZENYPASS_LOGO_CYAN_SVG = require('./inline/icon_zenypass_fill21A0B7.svg')
+export const ZENYPASS_PREMIUM_SVG = require('./inline/zw-premium.svg')
+export const ZENYPASS_A_LA_CARTE_SVG = require('./inline/zw-a-la-carte.svg')
