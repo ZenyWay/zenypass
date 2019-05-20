@@ -351,7 +351,7 @@ The user will be able to benefit from the storage space purchased for
 as long as the ZenyPass Service will be available.
 
 The ZenyPass service is also available to companies, who can take out an annual
-subscription to a Business offer at €20 per year per User, to grant their employees
+subscription to a Business offer at €24 pre tax per year per User, to grant their employees
 ZenyPass Premium accounts that can be used throughout the duration of this subscription.
 
 Unless special conditions apply, the subscription is payable in advance, and, without
@@ -380,4 +380,5 @@ to contact@zenyway.com specifying the subject of his request and,
 as applicable, the content considered illegal.
 <br>
 <br>
-General Terms and Conditions of Use updated on May 3rd, 2019.
+
+General Terms and Conditions of Use updated on May 17th, 2019.

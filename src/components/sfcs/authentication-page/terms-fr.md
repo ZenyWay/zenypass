@@ -346,7 +346,7 @@ L’Utilisateur pourra bénéficier de l’espace de stockage acheté pendant
 toute la durée pendant laquelle le Service ZenyPass sera accessible.
 
 Le service ZenyPass est également proposé aux entreprises, qui peuvent
-souscrire sous forme d'abonnement annuel à une offre Business à 20€ par an et
+souscrire sous forme d'abonnement annuel à une offre Business à 24€ HT par an et
 par Utilisateur, pour attribuer à leurs collaborateurs des comptes ZenyPass Premium
 utilisables pendant toute la durée de cet abonnement.
 Sauf conditions particulières, l'abonnement est payable à l'avance, et, sans demande de résiliation envoyée par email
@@ -374,4 +374,5 @@ adresser un email à contact@zenyway.com en précisant l’objet de sa demande e
 le cas échéant, le contenu considéré comme illicite.
 <br>
 <br>
-Conditions Générales d’Utilisation mises à jour le 3 mai 2019.
+
+Conditions Générales d’Utilisation mises à jour le 17 mai 2019.
