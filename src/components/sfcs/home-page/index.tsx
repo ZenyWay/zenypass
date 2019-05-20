@@ -102,7 +102,9 @@ export function HomePage ({
     <Fragment>
       <InfoModal
         locale={locale}
-        title={t(busy ? 'Please wait' : 'Error')}
+        title={t(
+          busy ? 'Please wait' : error === 'limit' ? 'Vault full' : 'Error'
+        )}
         expanded={!!error || !!busy}
         onCancel={!busy && onCloseModal}
         onOpened={onModalToggled}

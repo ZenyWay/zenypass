@@ -14,7 +14,10 @@
  */
 
 import { USERNAME, PASSWORD } from './zenypass-service'
-import zenypass, { getService as _getService } from '../src/zenypass-service'
+import zenypass, {
+  getService as _getService,
+  createPrivilegedRequest
+} from '../src/zenypass-service'
 export {
   AuthorizationDoc,
   PouchDoc,
@@ -24,6 +27,8 @@ export {
   ZenypassService,
   ZenypassServiceFactory
 } from '../src/zenypass-service'
+
+export { createPrivilegedRequest }
 
 export default zenypass
 

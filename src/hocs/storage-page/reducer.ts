@@ -136,11 +136,37 @@ function getConstrainedPriceAndQuantity (
   uiid: string,
   quantity: number
 ) {
+  if (Number.isNaN(quantity)) {
+    return { price: NaN, quantity }
+  }
+  if (!Number.isFinite(quantity) || quantity <= 0) {
+    return getConstrainedPriceAndQuantity(
+      pricing,
+      maxPrice,
+      uiid,
+      quantity <= 0 ? 1 : getMaxQuantity(pricing, maxPrice, uiid)
+    )
+  }
   const price = getPrice(pricing, uiid, quantity)
-  if (Number.isNaN(price) || price < maxPrice) return { price, quantity }
+  if (price < maxPrice) return { price, quantity }
   const step = price - getPrice(pricing, uiid, quantity - 1)
   const dq = Math.ceil((price - maxPrice) / step)
   return getConstrainedPriceAndQuantity(pricing, maxPrice, uiid, quantity - dq)
+}
+
+function getMaxQuantity (
+  pricing: {
+    getPaymentSpec: (uiid: string, quantity: number) => { price: number }
+  },
+  maxPrice: number,
+  uiid: string,
+  quantity: number = 1
+) {
+  const unitPrice = getPrice(pricing, uiid, quantity) / quantity
+  const maxQuantity = Math.floor(maxPrice / unitPrice)
+  return maxQuantity > quantity
+    ? getMaxQuantity(pricing, maxPrice, uiid, maxQuantity)
+    : quantity
 }
 
 function getPrice (

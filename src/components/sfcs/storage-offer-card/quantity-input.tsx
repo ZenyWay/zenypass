@@ -36,6 +36,7 @@ export interface QuantityInputProps {
 }
 
 const hideSpinButtons = style({
+  '-moz-appearance': 'textfield',
   $nest: {
     '&::-webkit-inner-spin-button': {
       '-webkit-appearance': 'none',

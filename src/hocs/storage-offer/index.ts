@@ -115,9 +115,6 @@ const mapDispatchToProps: (
   onInput: ['INPUT', ({ currentTarget: { value } }) => parseInt(value, 10)]
 })
 
-const MAX_QUANTITY = 49
-const constrainWithinOneAndMaxQuantity = constrainWithin(1, MAX_QUANTITY)
-
 export function storageOffer<P extends StorageOfferSFCProps> (
   StorageOfferSFC: SFC<P>
 ): ComponentConstructor<StorageOfferProps<P>> {
@@ -133,13 +130,11 @@ export function storageOffer<P extends StorageOfferSFCProps> (
         'onChange',
         ({ id, quantity }, { payload }) => [
           id,
-          constrainWithinOneAndMaxQuantity(
-            !isNaN(quantity)
-              ? quantity + payload
-              : payload < 0
-              ? Infinity
-              : -Infinity
-          )
+          !isNaN(quantity)
+            ? quantity + payload
+            : payload < 0
+            ? Infinity
+            : -Infinity
         ]
       ),
       applyHandlerOnEvent('INPUT', 'onChange', ({ id }, { payload }) => [
@@ -157,10 +152,4 @@ export function storageOffer<P extends StorageOfferSFCProps> (
     () => distinctUntilChanged(shallowEqual),
     log('view-props')
   )
-}
-
-function constrainWithin (min: number, max: number) {
-  return function (val: number) {
-    return val < min ? min : val > max ? max : val
-  }
 }

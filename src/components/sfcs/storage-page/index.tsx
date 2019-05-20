@@ -95,7 +95,9 @@ export function StoragePage ({
       </InfoModal>
       <main className='container-fluid'>
         <h3 className='text-info text-center'>
-          <strong>{t('Pay once, use forever')}</strong>
+          <strong>
+            {t(premium ? 'ZenyPass Premium' : 'Pay once, use forever')}
+          </strong>
         </h3>
         <p className='text-center lead'>
           {premium
