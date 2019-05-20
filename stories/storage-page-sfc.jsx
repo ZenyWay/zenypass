@@ -28,6 +28,7 @@ const attrs = {
   session: USERNAME,
   onChange: action('CHANGE'),
   onClose: action('CLOSE'),
+  onContact: action('CONTACT'),
   onError: action('ERROR'),
   onOfferQuantityChange: action('OFFER_QUANTITY_CHANGE'),
   onToggleOffline: action('TOGGLE_OFFLINE'),
@@ -68,6 +69,15 @@ storiesOf('StoragePage (SFC)', module)
   ))
   .add('default', () => ({ locale }) => (
     <StoragePageSFC locale={locale} {...attrs} offers={offers} maxdocs={15} />
+  ))
+  .add('emailing', () => ({ locale }) => (
+    <StoragePageSFC
+      locale={locale}
+      {...attrs}
+      offers={offers}
+      maxdocs={15}
+      emailing
+    />
   ))
   .add('premium', () => ({ locale }) => (
     <StoragePageSFC locale={locale} {...attrs} maxdocs={Infinity} />

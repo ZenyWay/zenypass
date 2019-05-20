@@ -17,14 +17,16 @@
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
 import {
+  CardBody,
   InputGroup,
   InputGroupPrepend,
   InputGroupText,
   ProgressBar,
   Row
 } from 'bootstrap'
+import { SplashFooterCard } from '../splash-card'
 import { ControlledInput } from '../../controlled-input'
-import { FAIcon } from '../fa-icon'
+import { FAIcon, FAIconButton } from '../fa-icon'
 import { InfoModal } from '../info-modal'
 import { NavbarMenu } from '../navbar-menu'
 import {
@@ -48,11 +50,13 @@ export interface StoragePageProps extends StorageOfferBaseSpec {
   debounce?: number
   offline?: boolean
   init?: boolean
+  emailing?: boolean
   session?: string
   className?: string
   onClose?: (event?: MouseEvent) => void
   onError?: (error?: any) => void
   onChange?: (value: string, item?: HTMLElement) => void
+  onContact?: (event?: MouseEvent) => void
   onOfferQuantityChange?: (id: string, quantity?: number) => void
   onToggleOffline?: (offline?: boolean) => void
   inputRef?: (target?: HTMLElement | null) => void
@@ -71,11 +75,13 @@ export function StoragePage ({
   debounce = DEFAULT_DEBOUNCE,
   offline,
   init,
+  emailing,
   session,
   className,
   onClose,
   onError,
   onChange,
+  onContact,
   onOfferQuantityChange,
   onToggleOffline,
   inputRef,
@@ -149,11 +155,53 @@ export function StoragePage ({
                 onToggleOffline={onToggleOffline}
               />
             </Row>
+            <Row className='justify-content-center'>
+              <SplashFooterCard>
+                <CardBody>
+                  <p>
+                    <small>
+                      {t('Are you a business')} ?<br />
+                      {t(
+                        'Empower your employees to protect their passwords and your data for 2€ / month / user'
+                      )}
+                    </small>
+                  </p>
+                  <FAIconButton
+                    icon={emailing ? 'spinner' : 'envelope'}
+                    animate={emailing && 'spin'}
+                    disabled={emailing}
+                    color='info'
+                    href={`mailto:?${toSearchParams({
+                      to: 'contact@zenyway.com',
+                      subject: t('ZenyPass Business'),
+                      body: `${t(
+                        'I wish to be contacted regarding "ZenyPass Business"'
+                      )}.\n\n${t('Company')}: \n\n${t(
+                        'Number of users'
+                      )}: \n\n${t('Contact details')}: ${session}`
+                    })}`}
+                    onClick={onContact}
+                  >
+                    &nbsp;{t('Email us')}
+                  </FAIconButton>
+                </CardBody>
+              </SplashFooterCard>
+            </Row>
           </Fragment>
         )}
       </main>
     </section>
   )
+}
+
+function toSearchParams (obj: { [key: string]: string }): string {
+  const keys = Object.keys(obj)
+  let params = new Array(keys.length)
+  for (const i in keys) {
+    const key = keys[i]
+    params[i] = `${key}=${encodeURIComponent(obj[key])}`
+  }
+  return params.join('&')
 }
 
 interface StorageOfferCardsProps extends StorageOfferBaseSpec {

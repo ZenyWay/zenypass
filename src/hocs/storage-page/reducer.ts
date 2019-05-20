@@ -18,7 +18,7 @@ import { Uiid, StorageOfferSpec } from '../storage-offer'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { forType, mapPayload, mergePayload, omit, pick } from 'utils'
+import { always, forType, mapPayload, mergePayload, omit, pick } from 'utils'
 
 const DEFAULT_OFFERS: Partial<StorageOfferSpec>[] = [
   { uiid: Uiid.Unit, quantity: 1 },
@@ -77,6 +77,8 @@ export default compose.into(0)(
     )
   ),
   forType('CHANGE')(into('value')(mapPayload())),
+  forType('CONTACT')(into('emailing')(always(true))),
+  forType('CLEAR_EMAILING')(into('emailing')(always(false))),
   forType('INPUT_REF')(into('input')(mapPayload())),
   forType('SERVICE')(into('service')(mapPayload())),
   forType('PROPS')(

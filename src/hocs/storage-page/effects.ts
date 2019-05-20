@@ -38,6 +38,8 @@ import { pick, ERROR_STATUS, shallowEqual } from 'utils'
 // const log = (label: string) => console.log.bind(console, label)
 
 const RETRY_DELAY = 3000 // ms
+const EMAILING_DELAY = 5000 // ms
+const clearEmailing = createActionFactory('CLEAR_EMAILING')
 const service = createActionFactory('SERVICE')
 const pricing = createActionFactory('PRICING')
 const info = createActionFactory('INFO')
@@ -58,6 +60,16 @@ export function injectServiceOnSessionProp (
     switchMap(getService),
     map(service),
     catchError(err => observableOf(error(err)))
+  )
+}
+
+export function clearEmailingOnDelayAfterContact (
+  event$: Observable<StandardAction<any>>
+) {
+  return event$.pipe(
+    filter(({ type }) => type === 'CONTACT'),
+    delay(EMAILING_DELAY),
+    map(() => clearEmailing())
   )
 }
 

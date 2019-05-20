@@ -22,9 +22,10 @@ import reducer, {
 import {
   injectPricingFactoryOnSpecUpdate,
   injectServiceOnSessionProp,
-  injectStorageStatusOnMount
+  injectStorageStatusOnMount,
+  clearEmailingOnDelayAfterContact
 } from './effects'
-import { Currency, Uiid, StorageOfferSpec } from '../storage-offer'
+import { Currency, StorageOfferSpec } from '../storage-offer'
 import componentFromEvents, {
   ComponentConstructor,
   Rest,
@@ -53,11 +54,13 @@ export interface StoragePageSFCProps extends StoragePageSFCHandlerProps {
   country?: string
   currency?: Currency
   init?: boolean
+  emailing?: boolean
   offline?: boolean
 }
 
 export interface StoragePageSFCHandlerProps {
   onClose?: (event?: MouseEvent) => void
+  onContact?: (event?: MouseEvent) => void
   onError?: (error?: any) => void
   onChange?: (value: string, item?: HTMLElement) => void
   onOfferQuantityChange?: (id: string, quantity?: number) => void
@@ -78,6 +81,7 @@ interface StoragePageState extends HoistedStoragePageHocProps {
   offers?: StorageOfferSpec[]
   country?: string
   currency?: Currency
+  emailing?: boolean
 }
 
 function mapStateToProps ({
@@ -91,7 +95,8 @@ function mapStateToProps ({
   session,
   state,
   value,
-  ucid
+  ucid,
+  emailing
 }: StoragePageState): Rest<StoragePageSFCProps, StoragePageSFCHandlerProps> {
   return {
     ...attrs,
@@ -105,7 +110,8 @@ function mapStateToProps ({
     maxdocs,
     session,
     value,
-    ucid
+    ucid,
+    emailing
   }
 }
 
@@ -115,6 +121,7 @@ const mapDispatchToProps: (
   onClose: 'CLOSE',
   onError: 'ERROR',
   onChange: 'CHANGE',
+  onContact: 'CONTACT',
   onOfferQuantityChange: [
     'OFFER_QUANTITY_CHANGE',
     (id: string, quantity: number) => [id, quantity]
@@ -133,6 +140,7 @@ export function storagePage<P extends StoragePageSFCProps> (
       injectServiceOnSessionProp,
       injectStorageStatusOnMount,
       injectPricingFactoryOnSpecUpdate,
+      clearEmailingOnDelayAfterContact,
       callHandlerOnEvent('TOGGLE_OFFLINE', 'onToggleOffline'),
       callHandlerOnEvent('CLOSE', 'onClose'),
       callHandlerOnEvent('ERROR', 'onError')
