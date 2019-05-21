@@ -208,6 +208,26 @@ export function AuthenticationPage ({
           onSignin={onSignin}
           onSignup={onSignup}
         />
+        {type !== 'signin' ? null : (
+          <Row className='justify-content-center'>
+            <Button
+              color='none'
+              className='bg-white text-info border-info'
+              href={`https://docs.google.com/forms/d/e/1FAIpQLSenbbcL7_aFnbQ9GpK9fBrnONdtJx9syGYIEUxzccGZqocpcA/viewform?emailAddress=${email}&entry.45434680=ZenyPass`}
+              target='_blank'
+              rel='noopener'
+            >
+              <strong className='d-block'>
+                {t('Vote for ZenyPass')}&nbsp;!
+              </strong>
+              <img
+                src='next-innov-2019.png'
+                alt='Next-Innov 2019'
+                className='img-fluid'
+              />
+            </Button>
+          </Row>
+        )}
       </section>
     </Fragment>
   )
@@ -297,7 +317,7 @@ function TogglePageCard ({
     <SplashFooterCard>
       <CardBody>
         <p>
-          <small>{t(question)} ?</small>
+          <small>{t(question)}&nbsp;?</small>
         </p>
         <Button color='info' onClick={onClick} disabled={disabled}>
           {t(title)}

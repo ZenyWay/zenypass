@@ -1,7 +1,7 @@
 {
   "name": "@zenyway/zenypass",
   "configPublish": "http://npm.zenyway.com:5984",
-  "version": "2.3.2",
+  "version": "2.3.3",
   "description": "zero-knowledge open source password manager web-app that syncs and runs everywhere",
   "main": "dist/index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "pretest:ci": "mkdirp spec/reports/coverage && rimraf spec/reports/coverage",
     "serve": "http-server -c-1 -i -e html -o -p 6510 dist",
     "debug:ssl": "budo --ssl --live --open --port 6510 --dir src/static/ --dir src/favicons src/index.tsx:index.js -- -g [ envify purge --NODE_ENV development ] -t [ browserify-markdown --breaks false ] -p [ tsify -p src ] -t imgurify --debug -v",
-    "storybook": "start-storybook --ci -s ./src/static -p 9001 -c .storybook",
+    "storybook": "start-storybook --ci -s ./src/static/immutable,./src/static/versioned -p 9001 -c .storybook",
     "start": "npm run dist && npm run serve",
     "test:ci:coveralls": "cat spec/reports/coverage/lcov.info | sed -e 's/SF:\\.\\.\\//SF:/' | coveralls",
     "test:ci": "karma start spec/karma-coverage.conf.js --single-run && remap-istanbul -i spec/reports/coverage/chrom*/coverage.json -o spec/reports/coverage/lcov.info -t lcovonly"
