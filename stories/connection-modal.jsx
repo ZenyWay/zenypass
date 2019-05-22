@@ -23,12 +23,15 @@ import { action } from '@storybook/addon-actions'
 import withL10n from 'zenyway-storybook-addon-l10n'
 import { RECORDS, PASSWORD } from './helpers/consts'
 
-const connections = RECORDS.map(({ name, url, username, password }) => ({
-  name,
-  url,
-  username,
-  password: password === '' ? '' : PASSWORD
-}))
+const connections = RECORDS.map(
+  ({ name, url, username, password, comments }) => ({
+    name,
+    url,
+    username,
+    password: password === '' ? '' : PASSWORD,
+    comments
+  })
+)
 
 const attrs = {
   open: true,

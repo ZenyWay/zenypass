@@ -40,6 +40,14 @@ export enum ClipboardFsmState {
   Dirty = 'DIRTY'
 }
 
+const windowOpen = {
+  WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
+  WINDOW_OPEN_REJECTED: compose.into(0)(
+    clearWindowRef,
+    into('manual')(always(true))
+  )
+}
+
 const connectionFsm: AutomataSpec<ConnectionFsmState> = {
   [ConnectionFsmState.Closed]: {
     OPEN: ConnectionFsmState.CopyAny,
@@ -47,6 +55,7 @@ const connectionFsm: AutomataSpec<ConnectionFsmState> = {
     OPEN_NO_PASSWORD: ConnectionFsmState.CopyUsername
   },
   [ConnectionFsmState.CopyAny]: {
+    ...windowOpen,
     CANCEL: ConnectionFsmState.Cancelling,
     TIMEOUT: ConnectionFsmState.Closing,
     CLICK_COPY: ConnectionFsmState.CopyingAny
@@ -56,11 +65,7 @@ const connectionFsm: AutomataSpec<ConnectionFsmState> = {
     PASSWORD_COPIED: ConnectionFsmState.CopyUsername
   },
   [ConnectionFsmState.CopyPassword]: {
-    WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
-    WINDOW_OPEN_REJECTED: compose.into(0)(
-      clearWindowRef,
-      into('manual')(always(true))
-    ),
+    ...windowOpen,
     CANCEL: ConnectionFsmState.Cancelling,
     TIMEOUT: ConnectionFsmState.Closing,
     CLICK_COPY: ConnectionFsmState.CopyingPassword
@@ -70,11 +75,7 @@ const connectionFsm: AutomataSpec<ConnectionFsmState> = {
     PASSWORD_COPIED: ConnectionFsmState.Closing
   },
   [ConnectionFsmState.CopyUsername]: {
-    WINDOW_OPEN_RESOLVED: mapPayloadIntoWindowref,
-    WINDOW_OPEN_REJECTED: compose.into(0)(
-      clearWindowRef,
-      into('manual')(always(true))
-    ),
+    ...windowOpen,
     CANCEL: ConnectionFsmState.Cancelling,
     TIMEOUT: ConnectionFsmState.Closing,
     CLICK_COPY: ConnectionFsmState.CopyingUsername

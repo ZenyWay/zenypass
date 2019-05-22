@@ -20,6 +20,7 @@ import {
   Button,
   FormGroup,
   Input,
+  InputGroup,
   InputGroupAppend,
   Label,
   Modal,
@@ -38,6 +39,7 @@ export interface ConnectionModalProps {
   username: string
   password: string
   locale: string
+  comments?: string
   open?: boolean
   manual?: boolean
   copy?: 'all' | 'username' | 'password' | '' | false
@@ -47,6 +49,7 @@ export interface ConnectionModalProps {
   onToggleManual?: (event: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onClickCopy?: (event: MouseEvent) => void
+  onClickLink?: (event: MouseEvent) => void
   onUsernameCopied?: (success: boolean) => void
   onPasswordCopied?: (success: boolean) => void
   onDefaultActionButtonRef?: (element?: HTMLElement | null) => void
@@ -65,6 +68,7 @@ export function ConnectionModal ({
   url,
   username,
   password,
+  comments,
   copy,
   error,
   cleartext,
@@ -73,6 +77,7 @@ export function ConnectionModal ({
   onToggleManual,
   onToggleCleartext,
   onClickCopy,
+  onClickLink,
   onUsernameCopied,
   onPasswordCopied,
   onDefaultActionButtonRef,
@@ -99,6 +104,7 @@ export function ConnectionModal ({
           color='light'
           disabled={!url}
           className='text-truncate mw-100 mb-3'
+          onClick={!manual && onClickLink}
         >
           {name}
         </Button>
@@ -162,6 +168,18 @@ export function ConnectionModal ({
               </CopyButton>
             </InputGroupAppend>
           </RecordField>
+        )}
+        {!comments ? null : (
+          <RecordField
+            id='connection-modal-comments-field'
+            locale={locale}
+            type='textarea'
+            className='mb-2'
+            icon='sticky-note'
+            value={comments}
+            rows='3'
+            disabled
+          />
         )}
         {!url || !copy || (!!username && copy !== 'all') ? null : (
           <FormGroup check onChange={onToggleManual}>

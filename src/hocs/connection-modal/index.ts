@@ -20,7 +20,7 @@ import {
   timeoutCopy,
   closeOnCancellingOrClosing,
   openOnOpenProp,
-  openWindowOnUsernameOrPasswordCopiedWhenNotManual
+  openWindowOnUsernameOrPasswordCopiedWhenNotManualOrOnClickLink
 } from './effects'
 import componentFromEvents, {
   ComponentConstructor,
@@ -124,6 +124,7 @@ const mapDispatchToProps: (
   onToggleManual: 'TOGGLE_MANUAL',
   onToggleCleartext: 'TOGGLE_CLEARTEXT',
   onClickCopy: ['CLICK_COPY', preventDefault],
+  onClickLink: ['CLICK_LINK', preventDefault],
   onUsernameCopied: onFieldCopied('username'),
   onPasswordCopied: onFieldCopied('password'),
   onDefaultActionButtonRef: 'DEFAULT_ACTION_BUTTON_REF'
@@ -152,7 +153,7 @@ export function connectionModal<P extends ConnectionModalSFCProps> (
       timeoutCopy,
       closeOnCancellingOrClosing,
       openOnOpenProp,
-      openWindowOnUsernameOrPasswordCopiedWhenNotManual
+      openWindowOnUsernameOrPasswordCopiedWhenNotManualOrOnClickLink
     ),
     log('state'),
     connect<ConnectionModalState, ConnectionModalSFCProps>(

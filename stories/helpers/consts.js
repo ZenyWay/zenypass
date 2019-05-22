@@ -22,7 +22,8 @@ export const RECORDS = [
     url: 'https://zenyway.com',
     username: 'me@zenyway.com',
     keywords: ['comma', 'separated', 'values'],
-    comments: '42 is *'
+    comments:
+      'a very, very, very, very, very, very, very, very, very, very, very, very, very, very long comment'
   },
   {
     name: '1-Note',

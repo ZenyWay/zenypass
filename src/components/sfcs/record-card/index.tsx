@@ -235,6 +235,7 @@ export function RecordCard ({
             url={record.url}
             username={record.username}
             password={record.password}
+            comments={record.comments}
             locale={locale}
           />
         )}

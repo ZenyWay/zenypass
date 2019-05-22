@@ -44,11 +44,7 @@ const automata: AutomataSpec<AuthenticationFsmState> = {
     SUBMIT: AuthenticationFsmState.Authenticating
   },
   [AuthenticationFsmState.Authenticating]: {
-    UNAUTHORIZED: [
-      AuthenticationFsmState.Idle,
-      clearPassphrase,
-      into('error')(mapPayload())
-    ],
+    UNAUTHORIZED: [AuthenticationFsmState.Idle, into('error')(mapPayload())],
     AUTHENTICATED: [AuthenticationFsmState.Idle, clearPassphrase]
   }
 }

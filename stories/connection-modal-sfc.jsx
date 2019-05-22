@@ -24,12 +24,14 @@ import withL10n from 'zenyway-storybook-addon-l10n'
 import { RECORD, PASSWORD } from './helpers/consts'
 import preventDefaultAction from './helpers/prevent-default'
 
-const { name, username } = RECORD
+const { url, name, username, comments } = RECORD
 
 const attrs = {
   open: true,
+  url,
   name,
   username,
+  comments,
   password: PASSWORD,
   onCancel: action('CANCELLED'),
   onToggleManual: action('TOGGLE_MANUAL'),

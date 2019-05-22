@@ -27,7 +27,7 @@ import {
   withLatestFrom,
   switchMap
 } from 'rxjs/operators'
-import { EMPTY, Observable, of as observableOf } from 'rxjs'
+import { EMPTY, Observable, merge, of as observableOf } from 'rxjs'
 // const log = (label: string) => console.log.bind(console, label)
 
 const COPY_TIMEOUT = 90 * 1000 // ms
@@ -85,17 +85,24 @@ export function closeOnCancellingOrClosing (_: any, state$: Observable<any>) {
   )
 }
 
-export function openWindowOnUsernameOrPasswordCopiedWhenNotManual (
+export function openWindowOnUsernameOrPasswordCopiedWhenNotManualOrOnClickLink (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  return event$.pipe(
+  const copiedNotManual$ = event$.pipe(
     filter(
       ({ type }) => type === 'USERNAME_COPIED' || type === 'PASSWORD_COPIED'
     ),
     pluck('payload'),
     withLatestFrom(state$),
-    filter(([_, { manual }]) => !manual),
+    filter(([_, { manual }]) => !manual)
+  )
+  const clickLink$ = event$.pipe(
+    filter(({ type }) => type === 'CLICK_LINK'),
+    pluck('payload', 'currentTarget'),
+    withLatestFrom(state$)
+  )
+  return merge(clickLink$, copiedNotManual$).pipe(
     map(([target, { windowref }]) => openWindow(target, windowref)),
     map(ref => (ref ? windowOpenResolved(ref) : windowOpenRejected()))
   )

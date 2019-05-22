@@ -20,11 +20,14 @@ import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import withL10n from 'zenyway-storybook-addon-l10n'
 import { AuthenticationModal } from 'components'
+import { USERNAME } from '../stubs/zenypass-service'
 
 const attrs = {
+  session: USERNAME,
   authenticate: true,
+  onError: action('ERROR'),
   onCancelled: action('CANCEL'),
-  onAuthenticated: action('SUBMIT')
+  onAuthenticated: action('AUTHENTICATED')
 }
 
 storiesOf('AuthenticationModal', module)

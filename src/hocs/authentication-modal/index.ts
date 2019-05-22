@@ -30,13 +30,7 @@ import componentFromEvents, {
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
 import compose from 'basic-compose'
-import {
-  callHandlerOnEvent,
-  focus,
-  pluck,
-  preventDefault,
-  tapOnEvent
-} from 'utils'
+import { callHandlerOnEvent, pluck, preventDefault, tapOnEvent } from 'utils'
 // const log = logger('authentication-modal')
 
 export type AuthenticationModalProps<
@@ -115,7 +109,10 @@ export function authenticationModal<P extends AuthenticationModalSFCProps> (
       callHandlerOnEvent('ERROR', 'onError'),
       callHandlerOnEvent('CANCEL', 'onCancelled'),
       callHandlerOnEvent('AUTHENTICATED', 'onAuthenticated'),
-      tapOnEvent('UNAUTHORIZED', compose.into(0)(focus, pluck('1', 'input')))
+      tapOnEvent(
+        'UNAUTHORIZED',
+        compose.into(0)(focusAndSelectAll, pluck('1', 'input'))
+      )
     ),
     // log('state'),
     connect<AuthenticationModalState, AuthenticationModalSFCProps>(
@@ -124,4 +121,10 @@ export function authenticationModal<P extends AuthenticationModalSFCProps> (
     )
     // log('view-props')
   )
+}
+
+function focusAndSelectAll (elem: HTMLInputElement) {
+  if (!elem) return
+  elem.focus()
+  elem.setSelectionRange(0, elem.value.length, 'forward')
 }
