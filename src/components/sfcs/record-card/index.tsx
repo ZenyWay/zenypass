@@ -43,6 +43,7 @@ export interface RecordCardProps {
   onConnectClose?: (dirty?: boolean) => void
   onCopied?: (success: boolean, target?: HTMLElement) => void
   onDefaultActionButtonRef?: (element: HTMLElement) => void
+  onError?: (error?: any) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onToggleExpanded?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
@@ -91,6 +92,7 @@ export function RecordCard ({
   onConnectClose,
   onCopied,
   onDefaultActionButtonRef,
+  onError,
   onToggleCleartext,
   onToggleExpanded,
   onEditRecordRequest,
@@ -158,6 +160,7 @@ export function RecordCard ({
               errors={errors}
               onChange={onChange}
               onCopied={onCopied}
+              onError={onError}
               onToggleCheckbox={onToggleCheckbox}
               onConnectRequest={onConnectRequest}
               onToggleCleartext={onToggleCleartext}
@@ -195,6 +198,7 @@ export function RecordCard ({
           )}
         </CardFooter>
         <InfoModal
+          id={`record-card-${_id}-security-advice-modal`}
           expanded={pending === 'clear-clipboard'}
           title={t('Security advice')}
           cancel={t('Close')}
@@ -210,6 +214,7 @@ export function RecordCard ({
           </p>
         </InfoModal>
         <InfoModal
+          id={`record-card-${_id}-delete-confirmation-modal`}
           expanded={confirmCancel || pending === 'confirm-delete'}
           title={t('Please confirm')}
           cancel={!confirmCancel && t('Cancel')}
@@ -293,7 +298,7 @@ function ToggleButton ({
   pending,
   onToggleExpanded
 }: ToggleButtonProps) {
-  const icon = !expanded ? 'caret-down' : edit ? 'close' : 'caret-up'
+  const icon = !expanded ? 'caret-down' : edit ? 'times' : 'caret-up'
   const classNames = classes('float-right py-2', !!pending && 'invisible')
   return (
     <FAIconButton

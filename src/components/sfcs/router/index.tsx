@@ -70,6 +70,7 @@ export function Router ({
     <Fragment>
       <InfoModal
         locale={locale}
+        id='router-leaving-app-warning-modal'
         expanded={info}
         title={t('Info')}
         onCancel={onCloseInfo}

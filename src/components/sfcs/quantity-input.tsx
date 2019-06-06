@@ -22,14 +22,17 @@ import {
   InputGroupPrepend,
   InputGroupAppend
 } from 'bootstrap'
-import { FAIconButton } from '../fa-icon'
+import { FAIconButton } from './fa-icon'
 import { style } from 'typestyle'
 import { classes } from 'utils'
 
 export interface QuantityInputProps {
   value: number
+  label?: string
   disabled?: boolean
   invisible?: boolean
+  className?: string
+  onBlurInput?: (event?: Event) => void
   onClickMinus?: (event?: MouseEvent) => void
   onClickPlus?: (event?: MouseEvent) => void
   onInput?: (event?: Event) => void
@@ -62,14 +65,17 @@ const quantityInputClassName = classes(
 
 export function QuantityInput ({
   value,
+  label,
   disabled,
   invisible,
+  onBlurInput,
   onClickMinus,
   onClickPlus,
-  onInput
+  onInput,
+  ...attrs
 }: QuantityInputProps) {
   return (
-    <InputGroup className='justify-content-center'>
+    <InputGroup {...attrs}>
       {disabled ? null : (
         <InputGroupPrepend>
           <FAIconButton
@@ -82,11 +88,12 @@ export function QuantityInput ({
       )}
       <Input
         type='number'
-        value={Number.isNaN(value) ? '' : '' + value}
+        value={value}
         readOnly={disabled}
         autoCorrect='off'
         autoComplete='off'
         className={classes(quantityInputClassName, invisible && 'invisible')}
+        onBlur={onBlurInput}
         onInput={onInput}
       />
       {disabled ? null : (

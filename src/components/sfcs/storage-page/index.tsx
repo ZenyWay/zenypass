@@ -95,7 +95,12 @@ export function StoragePage ({
       <header className='sticky-top'>
         <NavbarMenu onClickToggle={onClose} className='shadow' />
       </header>
-      <InfoModal locale={locale} title={t('Please wait')} expanded={init}>
+      <InfoModal
+        locale={locale}
+        id='storage-page-update-progress-modal'
+        title={t('Please wait')}
+        expanded={init}
+      >
         <p>{t('Updating storage offers')}</p>
         <ProgressBar ratio={'100'} animated striped bg='info' />
       </InfoModal>

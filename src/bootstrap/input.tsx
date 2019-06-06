@@ -20,7 +20,7 @@ import { classes } from 'utils'
 export interface InputProps {
   id?: string
   type?: string
-  value?: string
+  value?: string | number
   defaultChecked?: boolean
   placeholder?: string
   rows?: string
@@ -32,6 +32,7 @@ export interface InputProps {
   invalid?: boolean
   className?: string
   innerRef?: (ref: HTMLElement) => void
+  onBlur?: (event?: Event) => void
   onInput?: (event?: Event) => void
 }
 

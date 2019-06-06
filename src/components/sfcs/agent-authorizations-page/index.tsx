@@ -68,7 +68,12 @@ export function AgentAuthorizationsPage ({
       <header className='sticky-top'>
         <NavbarMenu onClickToggle={onClose} className='shadow' />
       </header>
-      <InfoModal locale={locale} title={t('Please wait')} expanded={init}>
+      <InfoModal
+        locale={locale}
+        id='agent-authorizations-page-decryption-progress-modal'
+        title={t('Please wait')}
+        expanded={init}
+      >
         <p>{t('Decrypting your authorizations')}</p>
         <ProgressBar ratio={'100'} animated striped bg='info' />
       </InfoModal>

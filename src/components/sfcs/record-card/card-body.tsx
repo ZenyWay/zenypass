@@ -18,11 +18,11 @@ import { createElement } from 'create-element'
 import { InputGroupAppend } from 'bootstrap'
 import { RecordField } from '../record-field'
 import { SerializedRecordField } from '../../serialized-record-field'
+import { PasswordGenerator } from '../../password-generator'
 import { CopyButton } from '../../copy-button'
 import { CheckboxRecordField } from '../checkbox-record-field'
 import { FAIconButton } from '../fa-icon'
 import createL10ns, { L10nTag } from 'basic-l10n'
-import { classes } from 'utils'
 const l10ns = createL10ns(require('./locales.json'))
 
 export const DEFAULT_ICONS: Partial<RecordCardBodyIcons> = {
@@ -54,6 +54,7 @@ export interface RecordCardBodyProps {
   className?: string
   onChange?: (value: string[] | string, target?: HTMLElement) => void
   onCopied?: (success: boolean, target?: HTMLElement) => void
+  onError?: (error?: any) => void
   onToggleCheckbox?: (event?: Event) => void
   onConnectRequest?: (event: MouseEvent) => void
   onToggleCleartext?: (event: MouseEvent) => void
@@ -103,6 +104,7 @@ export function RecordCardBody ({
   placeholders = DEFAULT_PLACEHOLDERS,
   onChange,
   onCopied,
+  onError,
   onToggleCheckbox,
   onConnectRequest,
   onToggleCleartext,
@@ -162,18 +164,19 @@ export function RecordCardBody ({
         disabled={!edit}
         locale={locale}
       >
-        <InputGroupAppend>
-          <CopyButton
-            id={`${key}_copy-button`}
-            value={username}
-            data-id='username'
-            onCopied={onCopied}
-            className={!username && 'd-none'}
-            outline
-            color='info'
-            fw
-          />
-        </InputGroupAppend>
+        {!username ? null : (
+          <InputGroupAppend>
+            <CopyButton
+              id={`${key}_copy-button`}
+              value={username}
+              data-id='username'
+              onCopied={onCopied}
+              outline
+              color='info'
+              fw
+            />
+          </InputGroupAppend>
+        )}
       </RecordField>
       <RecordField
         type={cleartext ? 'text' : 'password'}
@@ -190,26 +193,39 @@ export function RecordCardBody ({
         locale={locale}
       >
         <InputGroupAppend>
+          {!edit ? null : (
+            <PasswordGenerator
+              id={`${key}_password-generator-button`}
+              value={password}
+              icon='tools'
+              color='info'
+              outline
+              fw
+              locale={locale}
+              data-id='csprpg'
+              onChange={onChange}
+              onError={onError}
+            />
+          )}
           {!edit && !cleartext ? (
             <FAIconButton
               id={`${key}_connexion-button`}
-              icon='external-link'
+              icon='external-link-alt'
               pending={pending === 'connect'}
               outline
               color='info'
               fw
               onClick={onConnectRequest}
             />
-          ) : (
+          ) : /* edit || cleartext */ !password ? null : (
             <CopyButton
-              id={`${key}_password_copy-button`}
+              id={`${key}_password-copy-button`}
               value={password}
               onCopied={onCopied}
               data-id='password'
               outline
               color='info'
               fw
-              className={!password && 'd-none'}
             />
           )}
         </InputGroupAppend>
@@ -241,7 +257,8 @@ export function RecordCardBody ({
       />
       <CheckboxRecordField
         id={`${key}_unrestricted`}
-        icon={unrestricted ? 'clock-o' : 'lock'}
+        icon={unrestricted ? 'clock' : 'lock'}
+        regular={unrestricted}
         label={t(unrestricted ? 'Lock on timeout' : 'Strict lock')}
         value={unrestricted}
         disabled={!edit}

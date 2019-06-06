@@ -38,6 +38,7 @@ export {
   FilteredRecordCardsProps
 } from './filtered-record-cards'
 export { homePage, HomePageProps } from './home-page'
+export { passwordGenerator, PasswordGeneratorProps } from './password-generator'
 export { recordCard, RecordCardProps } from './record-card'
 export { router, RouterProps } from './router'
 export { signinPage, SigninPageProps } from './signin-page'

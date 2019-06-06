@@ -37,6 +37,7 @@ import {
 } from 'basic-fsa-factories'
 import {
   applyHandlerOnEvent,
+  focus,
   preventDefault,
   shallowEqual,
   tapOnEvent
@@ -163,8 +164,4 @@ export function connectionModal<P extends ConnectionModalSFCProps> (
     () => distinctUntilChanged(shallowEqual),
     log('view-props')
   )
-}
-
-function focus (element?: HTMLElement) {
-  element && element.focus()
 }

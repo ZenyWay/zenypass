@@ -27,6 +27,7 @@ import componentFromEvents, {
   redux
 } from 'component-from-events'
 import { createActionDispatchers } from 'basic-fsa-factories'
+import { isString } from 'utils'
 const log = logger('copy-button')
 
 export type CopyButtonProps<P extends ButtonProps> = CopyButtonControllerProps &
@@ -36,16 +37,20 @@ export interface CopyButtonControllerProps {
   value?: string
   timeout?: number
   icons?: {
-    disabled: string
-    enabled: string
+    disabled: string | IconProps
+    enabled: string | IconProps
   }
   onClick?: (event: MouseEvent) => void
   onCopied?: (success: boolean, target?: HTMLElement) => void
 }
 
-export interface ButtonProps extends ButtonHandlerProps {
-  icon?: string
+export interface ButtonProps extends ButtonHandlerProps, IconProps {
   disabled?: boolean
+}
+
+export interface IconProps {
+  icon?: string
+  regular?: boolean
 }
 
 export interface ButtonHandlerProps {
@@ -57,7 +62,7 @@ const DEFAULT_PROPS: Partial<CopyButtonProps<ButtonProps>> = {
   timeout: 500, // ms
   icons: {
     disabled: 'check',
-    enabled: 'copy'
+    enabled: { icon: 'copy', regular: true }
   }
 }
 
@@ -71,9 +76,13 @@ function mapStateToProps ({
   state
 }: CopyButtonState): Rest<ButtonProps, ButtonHandlerProps> {
   const disabled = state === 'disabled'
-  const icon = props && props.icons && props.icons[state]
   const { value, timeout, icons, onCopied, onClick, ...attrs } = props
-  return { ...attrs, disabled, icon }
+  const iconProps = toIconProps(icons && icons[state])
+  return { ...attrs, disabled, ...iconProps }
+}
+
+function toIconProps (icon: string | IconProps): IconProps {
+  return isString(icon) ? { icon } : icon
 }
 
 const mapDispatchToProps: (

@@ -1,0 +1,28 @@
+{
+  "fr": {
+    "Cancel": "Annuler",
+    "Characters": "Caractères",
+    "Current password": "Mot de passe actuel",
+    "Password generator": "Générateur de mot de passe",
+    "Lowercase": "Minuscules",
+    "New password": "Nouveau mot de passe",
+    "Numbers": "Chiffres",
+    "Replace": "Remplacer",
+    "Select": "Choisir",
+    "Symbols": "Symboles",
+    "Uppercase": "Majuscules"
+  },
+  "en": {
+    "Cancel": "Cancel",
+    "Characters": "Characters",
+    "Current password": "Current password",
+    "Password generator": "Password generator",
+    "Lowercase": "Lowercase",
+    "New password": "New password",
+    "Numbers": "Numbers",
+    "Replace": "Replace",
+    "Select": "Select",
+    "Symbols": "Symbols",
+    "Uppercase": "Uppercase"
+  }
+}

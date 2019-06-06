@@ -83,12 +83,13 @@ export function AuthenticationModal ({
       <ModalFooter className='bg-light'>
         <FAIconButton
           type='submit'
+          icon='sign-in-alt'
           pending={pending}
           form='PasswordModalForm'
           color='info'
           fw
         >
-          {t('Authorize')}
+          &nbsp;{t('Authorize')}
         </FAIconButton>
       </ModalFooter>
     </Modal>

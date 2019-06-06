@@ -40,7 +40,7 @@ const inputFocusStyle = style({
   }
 })
 
-const iconSpanClassName = `d-flex align-items-center ${foreground} ml-n4 pr-1`
+const iconSpanClassName = `align-items-center ${foreground} ml-n4 pr-1`
 
 export function ClearableInput ({
   value,
@@ -66,7 +66,12 @@ export function ClearableInput ({
         innerRef={inputRef}
         {...attrs}
       />
-      <span className={iconSpanClassName}>
+      <span
+        className={classes(
+          iconSpanClassName,
+          disabled || !value ? 'd-none' : 'd-flex'
+        )}
+      >
         <FAIcon
           icon='times'
           fw

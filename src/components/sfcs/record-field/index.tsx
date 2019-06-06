@@ -108,7 +108,11 @@ export function RecordField ({
       <ControlledInput
         type={type}
         id={`${id}${type ? `_${type}` : ''}_input`}
-        className={classes('form-control', bold && 'font-weight-bold')}
+        className={classes(
+          'form-control',
+          !disabled && 'overflow-hidden',
+          bold && 'font-weight-bold'
+        )}
         invalid={!!error}
         value={value}
         placeholder={

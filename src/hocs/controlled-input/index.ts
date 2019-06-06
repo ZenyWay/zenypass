@@ -50,7 +50,7 @@ export type ControlledInputProps<
 > = ControlledInputHocProps & Rest<P, InputProps>
 
 export interface InputProps extends InputHandlerProps {
-  value?: string
+  value?: string | number
   autoFocus?: boolean
   autocorrect?: 'off' | 'on' | '' | false
   autocomplete?: 'off' | 'on' | '' | false

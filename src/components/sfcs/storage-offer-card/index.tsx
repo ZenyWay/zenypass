@@ -16,7 +16,7 @@
 
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { QuantityInput } from './quantity-input'
+import { QuantityInput } from '../quantity-input'
 import { Card, CardBody, CardFooter, CardHeader, CardTitle } from 'bootstrap'
 import { FAIconButton } from '../fa-icon'
 import { style } from 'typestyle'
@@ -89,6 +89,7 @@ export function StorageOfferCard ({
             value={quantity}
             disabled={!editable}
             invisible={premium}
+            className='justify-content-center'
             onClickMinus={onClickMinus}
             onClickPlus={onClickPlus}
             onInput={onInput}

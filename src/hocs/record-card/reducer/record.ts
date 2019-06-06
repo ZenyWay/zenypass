@@ -55,6 +55,7 @@ const inChanges = prop =>
   )
 const clearPassword = inChanges('password')(always(void 0))
 const clearChanges = into('changes')(always(void 0))
+const clearCsprp = into('csprp')(always(void 0))
 const clearErrors = into('errors')(always(void 0))
 const mergePayloadIntoChanges = compose<Reducer<any>>(
   propCursor('changes'),
@@ -69,22 +70,22 @@ const mergePayloadIntoErrors = <I, O>(project?: (val: I) => O) =>
   )
 const toggleUnrestricted = inChanges('unrestricted')(not())
 const toggleRecordDeleted = inChanges('_deleted')(not())
-const mapPayloadToPassword = inChanges('password')(mapPayload(alt('')))
+const mapPayloadToPassword = inChanges('password')(mapPayload(alt()('')))
 const mapPayloadRevToRev = into('rev')(mapPayload(pluck('_rev')))
 const mapPayloadToError = into('error')(mapPayload())
-const reset = [clearChanges, clearPassword, clearErrors]
+const reset = [clearChanges, clearPassword, clearCsprp, clearErrors]
+
+const mergePayloadIntoChangesAndErrors = [
+  mergePayloadIntoChanges(pluck('change')),
+  mergePayloadIntoErrors(pluck('error'))
+]
 
 const RecordFsmStateEdit = {
   RECORD_PENDING: [RecordFsmState.PendingRecord, ...reset],
   RECORD_READY: [RecordFsmState.Thumbnail, ...reset],
-  VALID_CHANGE: [
-    mergePayloadIntoChanges(pluck('change')),
-    mergePayloadIntoErrors(pluck('error'))
-  ],
-  INVALID_CHANGE: [
-    mergePayloadIntoChanges(pluck('change')),
-    mergePayloadIntoErrors(pluck('error'))
-  ],
+  CSPRPG: into('csprp')(mapPayload()),
+  VALID_CHANGE: mergePayloadIntoChangesAndErrors,
+  INVALID_CHANGE: mergePayloadIntoChangesAndErrors,
   TOGGLE_CHECKBOX: toggleUnrestricted,
   TOGGLE_EXPANDED: RecordFsmState.PendingConfirmCancel,
   UPDATE_RECORD_REQUESTED: RecordFsmState.PendingSave,
@@ -105,7 +106,7 @@ const recordAutomata: AutomataSpec<RecordFsmState> = {
         inChanges('username')(pluck('1')),
         pluck('0', 'props', 'session')
       ),
-      propCursor('password')(alt('')),
+      propCursor('password')(alt()('')),
       mergePayloadIntoErrors()
     ]
   },
@@ -181,6 +182,7 @@ const reducer = compose.into(0)(
 
 const recordPending = createActionFactory('RECORD_PENDING')
 const recordReady = createActionFactory('RECORD_READY')
+const change = createActionFactory('CHANGE')
 const validChange = createActionFactory('VALID_CHANGE')
 const invalidChange = createActionFactory('INVALID_CHANGE')
 const invalidRecord = createActionFactory('INVALID_RECORD')
@@ -188,11 +190,14 @@ const validateRecord = errors => errors && invalidRecord(errors)
 
 export default withEventGuards({
   RECORD_READY: record => validateRecord(errorsFromRecord(record)),
+  TOGGLE_EXPANDED: (_, { state, props }) =>
+    state === RecordFsmState.Thumbnail && recordReady(props.record),
   PROPS: ({ pending, record }, { state, rev } = {} as any) =>
     pending
       ? recordPending(record)
       : (state === RecordFsmState.PendingRecord || record._rev !== rev) &&
         recordReady(record),
+  CSPRPG: value => change(['password', value]),
   CHANGE: ([key, value]) =>
     isValidRecordEntry(key, value)
       ? validChange(toChangeError(key, formatRecordEntry(key, value)))

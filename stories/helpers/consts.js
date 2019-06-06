@@ -147,7 +147,7 @@ export const MENU = [
   {
     'data-id': 'authorizations',
     label: 'authorizations',
-    icon: 'fa fa-mobile fa-lg'
+    icon: 'fa fa-mobile-alt fa-lg'
   },
   {
     'data-id': 'storage',

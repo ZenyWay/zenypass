@@ -102,6 +102,7 @@ export function HomePage ({
     <Fragment>
       <InfoModal
         locale={locale}
+        id='home-page-progress-or-error-modal'
         title={t(
           busy ? 'Please wait' : error === 'limit' ? 'Vault full' : 'Error'
         )}

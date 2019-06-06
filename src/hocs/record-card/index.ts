@@ -29,7 +29,7 @@ import {
   Rest,
   SFC,
   connect,
-  logger,
+  // logger,
   redux
 } from 'component-from-events'
 import {
@@ -42,7 +42,8 @@ import {
 } from 'utils'
 import {
   createActionDispatchers,
-  createActionFactories
+  createActionFactories,
+  createActionFactory
 } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
 // const log = logger('record-card')
@@ -104,6 +105,7 @@ export interface RecordCardSFCHandlerProps {
   onConnectClose?: (dirty: boolean) => void
   onCopied?: (success: boolean, target?: HTMLElement) => void
   onDefaultActionButtonRef?: (element: HTMLElement) => void
+  onError?: (error?: any) => void
   onToggleCleartext?: (event: MouseEvent) => void
   onEditRecordRequest?: (event: MouseEvent) => void
   onChange?: (value: string[] | string, target: HTMLElement) => void
@@ -120,6 +122,7 @@ interface RecordCardState {
   state: RecordFsmState
   connect: ConnectFsmState
   changes?: Partial<ZenypassRecord>
+  csprp?: string // password from csprpg
   rev?: string
   error?: string
   errors?: Partial<RecordCardSFCErrors>
@@ -225,6 +228,9 @@ const COPIED_ACTIONS = {
   })
 }
 
+const change = createActionFactory('CHANGE')
+const csprpg = createActionFactory('CSPRPG')
+
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => RecordCardSFCHandlerProps = createActionDispatchers({
@@ -235,13 +241,12 @@ const mapDispatchToProps: (
       dirty ? 'dirty' : 'pristine'
     ](),
   onDefaultActionButtonRef: 'DEFAULT_ACTION_BUTTON_REF',
+  onError: 'ERROR',
   onToggleCleartext: 'TOGGLE_CLEARTEXT',
   onToggleExpanded: ['TOGGLE_EXPANDED', stopPropagation],
   onEditRecordRequest: 'EDIT_RECORD_REQUESTED',
-  onChange: [
-    'CHANGE',
-    (value: string[] | string, input: HTMLElement) => [input.dataset.id, value]
-  ],
+  onChange: (value: string[] | string, { dataset: { id } }: HTMLElement) =>
+    id === 'csprpg' ? csprpg(value) : change([id, value]),
   onCopied: (success: boolean, btn: HTMLElement) =>
     COPIED_ACTIONS[success ? 'success' : 'error'][btn.dataset.id](),
   onToggleCheckbox: [

@@ -45,7 +45,7 @@ const inChanges = prop =>
   )
 
 const clearPassword = inChanges('password')(always(void 0))
-const mapPayloadToPassword = inChanges('password')(mapPayload(alt('')))
+const mapPayloadToPassword = inChanges('password')(mapPayload(alt()('')))
 const mapPayloadToError = into('error')(mapPayload())
 
 const connectAutomata: AutomataSpec<ConnectFsmState> = {

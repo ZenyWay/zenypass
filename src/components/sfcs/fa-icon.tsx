@@ -21,6 +21,7 @@ import { classes } from 'utils'
 
 export interface FAIconProps {
   icon?: string[] | string
+  regular?: boolean
   color?: IconColor | '' | false
   size?: IconSize | '' | false
   rotate?: '90' | '180' | '270' | '' | false
@@ -29,6 +30,7 @@ export interface FAIconProps {
   border?: boolean
   pull?: 'left' | 'right' | '' | false
   fw?: boolean
+  invisible?: boolean
   className?: string
   innerRef?: (ref: HTMLElement) => void
   [prop: string]: unknown
@@ -45,6 +47,7 @@ export type IconColor =
 
 export function FAIcon ({
   icon,
+  regular,
   color,
   size,
   rotate,
@@ -53,14 +56,14 @@ export function FAIcon ({
   border,
   pull,
   fw,
+  invisible,
   className,
   innerRef,
   ...attrs
 }: FAIconProps) {
-  if (!icon) return null
   const classNames = classes(
-    'fa',
-    `fa-${icon}`,
+    regular ? 'far' : 'fas',
+    icon && `fa-${icon}`,
     color && `text-${color}`,
     size && `fa-${size}`,
     rotate && `fa-rotate-${rotate}`,
@@ -69,6 +72,7 @@ export function FAIcon ({
     border && `fa-${border}`,
     pull && `fa-pull-${pull}`,
     fw && 'fa-fw',
+    invisible && 'invisible',
     className
   )
   return <i ref={innerRef} className={classNames} {...attrs} />
@@ -76,7 +80,9 @@ export function FAIcon ({
 
 export interface FAIconButtonProps extends ButtonProps {
   icon?: string
+  regular?: boolean
   iconSize?: IconSize | '' | false
+  iconInvisible?: boolean
   fw?: boolean
   pending?: boolean
   rotate?: '90' | '180' | '270' | '' | false
@@ -86,8 +92,10 @@ export interface FAIconButtonProps extends ButtonProps {
 
 export function FAIconButton ({
   icon,
+  regular,
   iconSize,
   fw,
+  iconInvisible,
   pending,
   rotate,
   flip,
@@ -100,11 +108,13 @@ export function FAIconButton ({
     <Button disabled={disabled || pending} {...attrs}>
       <FAIcon
         icon={!pending ? icon : 'spinner'}
+        regular={regular}
         size={iconSize}
         rotate={!pending && rotate}
         flip={!pending && flip}
         animate={!pending ? animate : 'spin'}
         fw={fw}
+        invisible={iconInvisible}
       />
       {children}
     </Button>

@@ -20,7 +20,6 @@ import {
   Button,
   FormGroup,
   Input,
-  InputGroup,
   InputGroupAppend,
   Label,
   Modal,
@@ -58,7 +57,7 @@ export interface ConnectionModalProps {
 
 const DEFAULT_COPY_BUTTON_ICONS = {
   disabled: 'check',
-  enabled: 'external-link'
+  enabled: 'external-link-alt'
 }
 
 export function ConnectionModal ({

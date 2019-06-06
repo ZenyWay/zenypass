@@ -91,6 +91,11 @@ export { NavbarMenu, NavBarMenuProps } from './navbar-menu'
 export { Onboarding, OnboardingProps } from './sfcs/onboarding'
 export { RecordField, RecordFieldProps } from './sfcs/record-field'
 export {
+  PasswordGenerator as PasswordGeneratorSFC,
+  PasswordGeneratorProps as PasswordGeneratorSFCProps
+} from './sfcs/password-generator'
+export { PasswordGenerator, PasswordGeneratorProps } from './password-generator'
+export {
   RecordCard as RecordCardSFC,
   RecordCardProps as RecordCardSFCProps
 } from './sfcs/record-card'

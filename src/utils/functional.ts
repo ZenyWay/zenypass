@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-import { identity } from './basic'
+import { identity, isUndefined } from './basic'
 
 export function pluck<T> (...keys: string[])
 export function pluck<T> (keys: string[] | string)
@@ -61,9 +61,11 @@ export function omit<T> (keys: string[] | string, ...rest: string[]) {
       }
 }
 
-export function alt<T> (alt: T) {
-  return function (val?: T): T {
-    return typeof val === 'undefined' ? alt : val
+export function alt<T> (predicate: (args: T) => boolean = isUndefined) {
+  return function (alt: T) {
+    return function (val?: T): T {
+      return predicate(val) ? alt : val
+    }
   }
 }
 
@@ -71,6 +73,14 @@ export function always<T> (value?: T) {
   return function (): T {
     return value
   }
+}
+
+export function max (limit: number) {
+  return alt(val => val > limit)(limit)
+}
+
+export function min (limit: number) {
+  return alt(val => val < limit)(limit)
 }
 
 export function assign<A extends object> (alt: A) {

@@ -25,6 +25,7 @@ export interface InfoModalProps {
   title?: string
   cancel?: string
   confirm?: string
+  pending?: boolean
   children?: any
   onCancel?: (event: MouseEvent) => void
   onConfirm?: (event: MouseEvent) => void
@@ -40,6 +41,7 @@ export function InfoModal ({
   title,
   cancel,
   confirm,
+  pending,
   onCancel,
   onConfirm,
   onOpened,
@@ -58,24 +60,25 @@ export function InfoModal ({
       onClosed={onClosed}
     >
       {!title ? null : (
-        <ModalHeader toggle={onCancel} className='bg-info text-white'>
-          {title}...
+        <ModalHeader tag='h5' toggle={onCancel} className='bg-info text-white'>
+          {title}
         </ModalHeader>
       )}
       <ModalBody {...attrs} />
       {!onConfirm && !onCancel ? null : (
         <ModalFooter className='bg-light'>
           {!onConfirm ? null : (
-            <Button color='info' outline onClick={onConfirm}>
-              {confirm || t('Yes')}
+            <Button color='info' outline disabled={pending} onClick={onCancel}>
+              {cancel || t('No')}
             </Button>
           )}
           <Button
             color='info'
-            onClick={onCancel}
             innerRef={onDefaultActionButtonRef}
+            disabled={pending}
+            onClick={onConfirm || onCancel}
           >
-            {(!onConfirm && confirm) || cancel || t(!onConfirm ? 'Ok' : 'No')}
+            {!onConfirm ? cancel || t('Ok') : confirm || t('Yes')}
           </Button>
         </ModalFooter>
       )}
