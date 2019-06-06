@@ -140,16 +140,19 @@ export function saveRecordOnPendingSaveOrDeleteRecord (
       ({
         props: { onAuthenticationRequest, session, record },
         changes = {},
+        password,
         csprp
       }) =>
         updateRecord(toProjection(onAuthenticationRequest), session, true, {
           ...record,
+          password,
           ...changes,
-          csprp: isNewCsprp(changes, csprp)
-            ? Date.now() // effect
-            : isUnchangedPassword(record, changes)
-            ? ((record as any).csprp as number)
-            : void 0
+          csprp:
+            csprp && csprp === changes.password
+              ? Date.now() // effect
+              : !('password' in changes) || changes.password === password
+              ? record.csprp
+              : void 0
         }).pipe(
           delayWhen(recordInProps),
           map(changes._deleted ? deleteRecordResolved : updateRecordResolved),
@@ -171,17 +174,6 @@ export function saveRecordOnPendingSaveOrDeleteRecord (
       filter(({ _id, _rev }) => _id === record._id && _rev === record._rev)
     )
   }
-}
-
-function isNewCsprp (changes: ZenypassRecord, csprp: string): boolean {
-  return csprp && csprp === changes.password
-}
-
-function isUnchangedPassword (
-  record: ZenypassRecord,
-  changes: ZenypassRecord
-): boolean {
-  return !('password' in changes) || changes.password === record.password
 }
 
 const cleartext = createPrivilegedRequest(({ records }, ref: PouchDoc) =>

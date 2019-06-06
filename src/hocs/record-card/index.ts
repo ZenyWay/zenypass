@@ -123,6 +123,7 @@ interface RecordCardState {
   connect: ConnectFsmState
   changes?: Partial<ZenypassRecord>
   csprp?: string // password from csprpg
+  password?: string // original cleartext password from current record
   rev?: string
   error?: string
   errors?: Partial<RecordCardSFCErrors>
@@ -171,19 +172,19 @@ const CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE: {
 }
 
 function mapStateToProps ({
-  props,
+  props: { record, session, onAuthenticationRequest, ...attrs },
   changes = {},
+  password,
   errors,
-  state: recordFsm,
-  connect: connectFsm
+  state: recordFsmState,
+  connect: connectFsmState
 }: RecordCardState): RecordCardSFCProps {
-  const { record, session, onAuthenticationRequest, ...attrs } = props
   const sfcState = {
-    ...RECORD_FSM_STATE_TO_RECORD_CARD_SFC_STATE[recordFsm],
-    ...CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE[connectFsm]
+    ...RECORD_FSM_STATE_TO_RECORD_CARD_SFC_STATE[recordFsmState],
+    ...CONNECT_FSM_STATE_TO_RECORD_CARD_SFC_STATE[connectFsmState]
   }
   const { cleartext, edit } = sfcState
-  const connect = connectFsm === ConnectFsmState.Connecting
+  const connect = connectFsmState === ConnectFsmState.Connecting
   return {
     ...attrs,
     ...sfcState,
@@ -191,20 +192,9 @@ function mapStateToProps ({
     record: !edit
       ? !connect && !cleartext
         ? record
-        : {
-            ...record,
-            password: orDefaultString(record.password, changes.password)
-          }
-      : {
-          ...record,
-          ...changes,
-          password: orDefaultString(record.password, changes.password)
-        }
+        : { ...record, password }
+      : { ...record, password, ...changes }
   }
-}
-
-function orDefaultString (alt = '', val?: string) {
-  return isString(val) ? val : alt
 }
 
 const CONNECT_CLOSE_ACTIONS = {

@@ -48,15 +48,6 @@ export enum RecordFsmState {
   PendingDelete = 'PENDING_DELETE'
 }
 
-const inChanges = prop =>
-  compose<Reducer<any>>(
-    propCursor('changes'),
-    propCursor(prop)
-  )
-const clearPassword = inChanges('password')(always(void 0))
-const clearChanges = into('changes')(always(void 0))
-const clearCsprp = into('csprp')(always(void 0))
-const clearErrors = into('errors')(always(void 0))
 const mergePayloadIntoChanges = compose<Reducer<any>>(
   propCursor('changes'),
   mergePayload
@@ -68,11 +59,20 @@ const mergePayloadIntoErrors = <I, O>(project?: (val: I) => O) =>
       mapPayload(project)
     )
   )
+const inChanges = prop =>
+  compose<Reducer<any>>(
+    propCursor('changes'),
+    propCursor(prop)
+  )
 const toggleUnrestricted = inChanges('unrestricted')(not())
 const toggleRecordDeleted = inChanges('_deleted')(not())
-const mapPayloadToPassword = inChanges('password')(mapPayload(alt()('')))
+const mapPayloadToPassword = into('password')(mapPayload(alt()('')))
 const mapPayloadRevToRev = into('rev')(mapPayload(pluck('_rev')))
 const mapPayloadToError = into('error')(mapPayload())
+const clearPassword = into('password')(always(void 0))
+const clearChanges = into('changes')(always(void 0))
+const clearCsprp = into('csprp')(always(void 0))
+const clearErrors = into('errors')(always(void 0))
 const reset = [clearChanges, clearPassword, clearCsprp, clearErrors]
 
 const mergePayloadIntoChangesAndErrors = [

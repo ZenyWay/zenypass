@@ -38,14 +38,8 @@ export enum ConnectFsmState {
   PendingClearClipboard = 'PENDING_CLEAR_CLIPBOARD'
 }
 
-const inChanges = prop =>
-  compose<Reducer<any>>(
-    propCursor('changes'),
-    propCursor(prop)
-  )
-
-const clearPassword = inChanges('password')(always(void 0))
-const mapPayloadToPassword = inChanges('password')(mapPayload(alt()('')))
+const clearPassword = into('password')(always(void 0))
+const mapPayloadToPassword = into('password')(mapPayload(alt()('')))
 const mapPayloadToError = into('error')(mapPayload())
 
 const connectAutomata: AutomataSpec<ConnectFsmState> = {
