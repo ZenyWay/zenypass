@@ -139,14 +139,15 @@ export function AuthenticationPage ({
         <Row className='justify-content-center'>
           <SplashCard>
             <FAIconButton
-              icon='newspaper-o'
+              icon='newspaper'
+              regular
               color='info'
               href={t('news-link')}
               target='_blank'
               rel='noopener noreferer'
             >
               <span className='ml-1'>
-                {t('ZenyPass v2: discover the new features')}
+                {t('New: discover the password generator')}
               </span>
             </FAIconButton>
             <CardTitle className='mt-3'>{title}</CardTitle>
