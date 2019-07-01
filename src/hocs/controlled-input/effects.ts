@@ -37,7 +37,7 @@ export function debounceInputWhenDebounce (
     map((delay: number | string) =>
       isString(delay) ? Number.parseInt(delay, 10) : delay
     ),
-    filter(Boolean),
+    filter<number>(Boolean),
     switchMap(delay =>
       event$.pipe(
         filter(({ type }) => type === 'INPUT'),
