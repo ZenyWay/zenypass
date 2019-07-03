@@ -1,7 +1,22 @@
+/**
+ * Copyright 2019 ZenyWay S.A.S., Stephane M. Catala
+ * @author Stephane M. Catala
+ * @license Apache Version 2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * Limitations under the License.
+ */
 // https://storybook.js.org/configurations/custom-webpack-config/#full-control-mode--default
 const path = require('path')
 
-module.exports = (baseConfig, env, config) => {
+module.exports = ({ config }) => {
   // markdown loader: replace default md loader (= raw-loader)
   upsertRule(config.module.rules, {
     test: /\.md$/,
@@ -47,9 +62,12 @@ module.exports = (baseConfig, env, config) => {
     'browser'
   )
 
-  // replace react with inferno
   config.resolve.alias = Object.assign({}, config.resolve.alias, {
-    react: 'inferno-compat',
+    // inferno dev build
+    inferno: 'inferno/dist/index.dev.esm.js',
+    'inferno-create-element': 'inferno-create-element/dist/index.dev.esm.js',
+    // replace react with inferno
+    react: path.resolve(__dirname, './react-compat'),
     'react-devtools': 'inferno-devtools',
     'react-dom': 'inferno-compat',
     '@zenyway/zenypass-service': path.resolve(
@@ -58,10 +76,6 @@ module.exports = (baseConfig, env, config) => {
     ),
     'zenypass-service': path.resolve(__dirname, '../stubs')
   })
-
-  config.resolve.aliasFields = (config.resolve.aliasFields || []).concat(
-    'browser'
-  )
 
   return config
 }

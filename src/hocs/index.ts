@@ -14,8 +14,6 @@
  * Limitations under the License.
  */
 //
-export { Component, ComponentConstructor, SFC } from 'component-from-events'
-export { serializedInput, SerializedInputProps } from './serialized-input'
 export {
   agentAuthorization,
   AgentAuthorizationProps
@@ -41,6 +39,7 @@ export { homePage, HomePageProps } from './home-page'
 export { passwordGenerator, PasswordGeneratorProps } from './password-generator'
 export { recordCard, RecordCardProps } from './record-card'
 export { router, RouterProps } from './router'
+export { serializedInput, SerializedInputProps } from './serialized-input'
 export { signinPage, SigninPageProps } from './signin-page'
 export { signupPage, SignupPageProps } from './signup-page'
 export {

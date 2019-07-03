@@ -38,7 +38,7 @@ const Router = withAuthentication(withAuthenticationModal(RouterSFC))
 
 storiesOf('Router (SFC)', module)
   .addDecorator(withL10n({ locales: ['fr', 'en'] }))
-  .add('/', () => ({ locale }) => (
+  .add('path /', () => ({ locale }) => (
     <Router
       locale={locale}
       path='/'
@@ -46,18 +46,18 @@ storiesOf('Router (SFC)', module)
       {...attrs}
     />
   ))
-  .add('/authorize', () => ({ locale }) => (
+  .add('path /authorize', () => ({ locale }) => (
     <Router locale={locale} path='/authorize' menu={LANG_MENU} {...attrs} />
   ))
-  .add('/signup', () => ({ locale }) => (
+  .add('path /signup', () => ({ locale }) => (
     <Router locale={locale} path='/signup' menu={LANG_MENU} {...attrs} />
   ))
-  .add('/signin', () => ({ locale }) => (
+  .add('path /signin', () => ({ locale }) => (
     <Router locale={locale} path='/signin' menu={LANG_MENU} {...attrs} />
   ))
-  .add('/fatal', () => ({ locale }) => (
+  .add('path /fatal', () => ({ locale }) => (
     <Router locale={locale} path='/fatal' error={INTERNAL_ERROR} {...attrs} />
   ))
-  .add('/unknown/route', () => ({ locale }) => (
+  .add('path /unknown/route', () => ({ locale }) => (
     <Router locale={locale} path='/unknown/route' {...attrs} />
   ))
