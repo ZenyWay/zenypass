@@ -88,7 +88,9 @@ export interface PouchDbChange<D extends PouchDoc> {
 }
 export interface ZenypassRecordService {
   records$: Observable<IndexedMap<ZenypassRecord>>
-  newRecord(): Promise<ZenypassRecord>
+  newRecord(
+    props?: Partial<Rest<ZenypassRecord, PouchDoc>>
+  ): Promise<ZenypassRecord>
   putRecord(record: ZenypassRecord): Promise<ZenypassRecord>
   getRecord(ref: PouchDoc): Promise<ZenypassRecord>
   getDocCount(): Promise<number>
@@ -165,3 +167,7 @@ export interface Locale {
 export declare type LocaleMaps = { [lang: string]: LocaleMap }
 export declare type LocaleMap = { [key: string]: string }
 export type IndexedMap<V> = { [key: string]: V }
+export type Rest<T extends U, U extends {} = {}> = Pick<
+  T,
+  Exclude<keyof T, keyof U>
+>

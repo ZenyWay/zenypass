@@ -1,7 +1,6 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
- * @author Hadrien Boulanger
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-/** @jsx createElement */
-import { createElement } from 'create-element'
-import { NavbarMenu } from 'components'
-import { storiesOf } from '@storybook/react'
-import preventDefaultAction from './helpers/prevent-default'
-import { MENU } from './helpers/consts'
+//
+import {
+  csvRecordItem,
+  CsvRecordItemProps as GenericCsvRecordItemProps
+} from 'hocs'
+import {
+  CsvRecord,
+  CsvRecordItem as CsvRecordItemSFC,
+  CsvRecordItemProps as CsvRecordItemSFCProps
+} from './sfcs/csv-record-item'
 
-const attr = {
-  menu: MENU,
-  onSelectItem: preventDefaultAction('SELECT_ITEM')
-}
+export { CsvRecord }
 
-storiesOf('NavbarMenu', module).add('default', () => (
-  <NavbarMenu {...attr}>
-    <span className='text-light'>***</span>
-  </NavbarMenu>
-))
+export const CsvRecordItem = csvRecordItem<CsvRecordItemSFCProps>(
+  CsvRecordItemSFC
+)
+
+export type CsvRecordItemProps = GenericCsvRecordItemProps<
+  CsvRecordItemSFCProps
+>

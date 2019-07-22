@@ -22,7 +22,7 @@ import reducer, {
 import {
   injectPricingFactoryOnSpecUpdate,
   injectServiceOnSessionProp,
-  injectStorageStatusOnMount,
+  injectStorageStatusOnService,
   clearEmailingOnDelayAfterContact
 } from './effects'
 import { Currency, StorageOfferSpec } from '../storage-offer'
@@ -138,7 +138,7 @@ export function storagePage<P extends StoragePageSFCProps> (
     redux(
       reducer,
       injectServiceOnSessionProp,
-      injectStorageStatusOnMount,
+      injectStorageStatusOnService,
       injectPricingFactoryOnSpecUpdate,
       clearEmailingOnDelayAfterContact,
       callHandlerOnEvent('TOGGLE_OFFLINE', 'onToggleOffline'),

@@ -26,6 +26,7 @@ const attr = {
   menu: MENU,
   onClickItem: preventDefaultAction('CLICK_ITEM'),
   onClickToggle: preventDefaultAction('CLICK_TOGGLE'),
+  onSelectItem: preventDefaultAction('SELECT_ITEM'),
   innerRef: action('INNER_REF')
 }
 

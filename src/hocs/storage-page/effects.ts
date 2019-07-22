@@ -26,11 +26,13 @@ import {
   concat,
   delay,
   distinctUntilChanged,
+  distinctUntilKeyChanged,
   filter,
   pluck,
   map,
   retryWhen,
-  switchMap
+  switchMap,
+  take
   // tap
 } from 'rxjs/operators'
 import { Observable, defer, of as observableOf } from 'rxjs'
@@ -38,6 +40,7 @@ import { pick, ERROR_STATUS, shallowEqual } from 'utils'
 // const log = (label: string) => console.log.bind(console, label)
 
 const RETRY_DELAY = 3000 // ms
+const MAX_OFFLINE_ERROR_RETRY_COUNT = 3
 const EMAILING_DELAY = 5000 // ms
 const clearEmailing = createActionFactory('CLEAR_EMAILING')
 const service = createActionFactory('SERVICE')
@@ -89,7 +92,7 @@ function getPricing$ (service: ZenypassService, ucid: string) {
   return defer(() => service.payments.getPricing({ ucid })).pipe(
     map(factory => pricing(factory)),
     catchError((err, retry$) =>
-      isOfflineError(err)
+      !isOfflineError(err)
         ? observableOf((ERRORS[err && err.status] || error)(err))
         : observableOf(offline(err)).pipe(
             delay(RETRY_DELAY),
@@ -99,12 +102,15 @@ function getPricing$ (service: ZenypassService, ucid: string) {
   )
 }
 
-export function injectStorageStatusOnMount (_: any, state$: Observable<any>) {
-  return state$.pipe(
-    pluck('service'),
-    distinctUntilChanged(),
-    filter(Boolean),
-    switchMap(getStorageInfo$)
+export function injectStorageStatusOnService (
+  event$: Observable<StandardAction<any>>
+) {
+  return event$.pipe(
+    filter(({ type }) => type === 'SERVICE'),
+    pluck('payload'),
+    distinctUntilKeyChanged('username'),
+    switchMap(getStorageInfo$),
+    catchError(err => observableOf(error(err)))
   )
 }
 
@@ -114,13 +120,14 @@ function getStorageInfo$ (service: ZenypassService) {
     retryWhen(err$ =>
       err$.pipe(
         filter(isOfflineError),
+        take(MAX_OFFLINE_ERROR_RETRY_COUNT),
         delay(RETRY_DELAY)
       )
     ),
-    catchError(err => observableOf(error(err)))
+    catchError(err => observableOf(((err && ERRORS[err.status]) || error)(err)))
   )
 }
 
 function isOfflineError (err: any) {
-  return err && err.status !== ERROR_STATUS.GATEWAY_TIMEOUT
+  return err && err.status === ERROR_STATUS.GATEWAY_TIMEOUT
 }

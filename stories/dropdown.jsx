@@ -38,7 +38,7 @@ export const [props, ...items] = [
 ]
 
 const attrs = {
-  onClickItem: preventDefaultAction('CLICK_ITEM')
+  onSelectItem: preventDefaultAction('SELECT_ITEM')
 }
 
 storiesOf('Dropdown', module).add('default', () => (

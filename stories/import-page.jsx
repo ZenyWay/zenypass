@@ -1,7 +1,6 @@
 /**
- * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
+ * Copyright 2019 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
- * @author Hadrien Boulanger
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
+
 /** @jsx createElement */
 import { createElement } from 'create-element'
-import { NavbarMenu } from 'components'
 import { storiesOf } from '@storybook/react'
-import preventDefaultAction from './helpers/prevent-default'
-import { MENU } from './helpers/consts'
+import { action } from '@storybook/addon-actions'
+import withL10n from 'zenyway-storybook-addon-l10n'
+import { ImportPage } from 'components'
+import { USERNAME } from '../stubs/zenypass-service'
 
-const attr = {
-  menu: MENU,
-  onSelectItem: preventDefaultAction('SELECT_ITEM')
+const attrs = {
+  session: USERNAME,
+  onAddStorage: action('ADD_STORAGE'),
+  onClose: action('CLOSE'),
+  onError: action('ERROR'),
+  onImport: action('IMPORT')
 }
 
-storiesOf('NavbarMenu', module).add('default', () => (
-  <NavbarMenu {...attr}>
-    <span className='text-light'>***</span>
-  </NavbarMenu>
-))
+storiesOf('ImportPage', module)
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('default', () => ({ locale }) => (
+    <ImportPage locale={locale} {...attrs} />
+  ))

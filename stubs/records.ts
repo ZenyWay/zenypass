@@ -25,6 +25,7 @@ import {
 } from 'rxjs/operators'
 import {
   PouchDoc,
+  Rest,
   ZenypassRecord,
   ZenypassRecordService
 } from './@zenyway/zenypass-service'
@@ -153,7 +154,10 @@ function updateRecords (
   setTimeout(() => recordsUpdate$.next(update))
 }
 
-const newRecord = accessRecordService<void, ZenypassRecord>(function () {
+const newRecord = accessRecordService<
+  Partial<Rest<ZenypassRecord, PouchDoc>> | void,
+  ZenypassRecord
+>(function (props?: Partial<Rest<ZenypassRecord, PouchDoc>>) {
   const record = records$
     .pipe(
       first(),
@@ -162,8 +166,15 @@ const newRecord = accessRecordService<void, ZenypassRecord>(function () {
     .toPromise()
   updateRecords(function (records) {
     const _id = '' + (getMaxId(records) + 1)
-    const empty = incrementRecordRevision({ _id } as ZenypassRecord)
-    return { ...records, [_id]: empty }
+    return {
+      ...records,
+      [_id]: incrementRecordRevision({
+        ...props,
+        _id,
+        _rev: void 0,
+        _deleted: void 0
+      } as ZenypassRecord)
+    }
   })
   return record
 })

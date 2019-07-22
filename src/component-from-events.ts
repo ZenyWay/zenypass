@@ -48,7 +48,9 @@ export type Rest<T extends U, U extends {} = {}> = Pick<
 
 export function connect<S = {}, P = {}> (
   mapStateToProps: (state: S) => Partial<P>,
-  mapDispatchToProps: (dispatch: (...args: any[]) => void) => Partial<P>
+  mapDispatchToProps = (() => void 0) as (
+    dispatch: (...args: any[]) => void
+  ) => Partial<P>
 ): OperatorFactory<any, S, P> {
   return compose.into(0)(map, _connect(mapStateToProps, mapDispatchToProps))
 }

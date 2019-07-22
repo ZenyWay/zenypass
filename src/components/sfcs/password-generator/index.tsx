@@ -16,7 +16,6 @@
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
 import {
-  ButtonGroup,
   Col,
   FormGroup,
   Input,
@@ -27,6 +26,7 @@ import {
   Row
 } from 'bootstrap'
 import { CopyButton } from '../../copy-button'
+import { Checkbox } from '../checkbox'
 import { FAIconButton, FAIconButtonProps } from '../fa-icon'
 import { InfoModal } from '../info-modal'
 import { QuantityInput } from '../quantity-input'
@@ -212,34 +212,5 @@ export function PasswordGenerator ({
       </InfoModal>
       <FAIconButton onClick={onToggleGenerator} pending={open} {...attrs} />
     </Fragment>
-  )
-}
-
-interface CheckboxProps {
-  label?: string
-  checked?: boolean
-  onClick?: (event?: MouseEvent) => void
-}
-
-function Checkbox ({ label, checked, onClick, ...attrs }: CheckboxProps) {
-  return (
-    <InputGroup {...attrs}>
-      <InputGroupPrepend>
-        <ButtonGroup toggle>
-          <FAIconButton
-            type='checkbox'
-            icon='check'
-            checked={checked}
-            color='info'
-            iconInvisible={!checked}
-            outline
-            onClick={onClick}
-          />
-        </ButtonGroup>
-      </InputGroupPrepend>
-      <Label className='form-control form-control-plaintext pl-2'>
-        {label}
-      </Label>
-    </InputGroup>
   )
 }

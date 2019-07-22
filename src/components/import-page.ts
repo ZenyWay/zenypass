@@ -1,7 +1,6 @@
 /**
  * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
- * @author Hadrien Boulanger
  * @license Apache Version 2.0
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +13,13 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-/** @jsx createElement */
-import { createElement } from 'create-element'
-import { NavbarMenu } from 'components'
-import { storiesOf } from '@storybook/react'
-import preventDefaultAction from './helpers/prevent-default'
-import { MENU } from './helpers/consts'
+//
+import { importPage, ImportPageProps as GenericImportPageProps } from 'hocs'
+import {
+  ImportPage as ImportPageSFC,
+  ImportPageProps as ImportPageSFCProps
+} from './sfcs/import-page'
 
-const attr = {
-  menu: MENU,
-  onSelectItem: preventDefaultAction('SELECT_ITEM')
-}
+export const ImportPage = importPage<ImportPageSFCProps>(ImportPageSFC)
 
-storiesOf('NavbarMenu', module).add('default', () => (
-  <NavbarMenu {...attr}>
-    <span className='text-light'>***</span>
-  </NavbarMenu>
-))
+export type ImportPageProps = GenericImportPageProps<ImportPageSFCProps>

@@ -21,6 +21,7 @@ export interface InputProps {
   id?: string
   type?: string
   value?: string | number
+  checked?: boolean
   defaultChecked?: boolean
   placeholder?: string
   rows?: string
@@ -42,7 +43,7 @@ export function Input ({
   className,
   innerRef,
   ...attrs
-}: InputProps) {
+}: InputProps & { [prop: string]: unknown }) {
   const Tag = (type === 'textarea' ? type : 'input') as 'input'
   if (!attrs.autoComplete) delete attrs.autoComplete
   if (!attrs.autoCorrect) delete attrs.autoCorrect
