@@ -29,9 +29,11 @@ export interface ImportPageProps {
   alert?: boolean
   configs?: string[]
   entries?: RecordSelectorEntry[]
+  index?: number
   max?: number
   offline?: boolean
   pending?: boolean
+  selected?: number
   onAddStorage?: (event?: MouseEvent) => void
   onClose: (event?: MouseEvent) => void
   onCloseInfo: (event?: MouseEvent) => void
@@ -45,9 +47,11 @@ export function ImportPage ({
   alert,
   configs = [],
   entries = [],
+  index,
   max,
   offline,
   pending,
+  selected,
   onAddStorage,
   onClose,
   onCloseInfo,
@@ -64,6 +68,8 @@ export function ImportPage ({
           <PendingAlert locale={locale} />
         ) : offline ? (
           <OfflineAlert locale={locale} onClose={onClose} />
+        ) : selected ? (
+          <ImportingAlert locale={locale} index={index} total={selected} />
         ) : max === 0 ? (
           <NoStorageAlert
             locale={locale}
@@ -124,6 +130,29 @@ function PendingAlert ({ locale }: PendingAlertProps) {
     <InfoModal locale={locale} expanded title={t('Please wait')}>
       <p>{t('Checking the available storage space of your ZenyPass Vault')}</p>
       <ProgressBar ratio={'100'} animated striped bg='info' />
+    </InfoModal>
+  )
+}
+
+interface ImportingAlertProps {
+  locale: string
+  index: number
+  total: number
+}
+
+function ImportingAlert ({ locale, index, total }: ImportingAlertProps) {
+  const t = l10ns[locale]
+  const ratio = (Math.ceil((4 * index) / total) * 25).toString() as
+    | '25'
+    | '50'
+    | '75'
+    | '100'
+  return (
+    <InfoModal locale={locale} expanded title={t('Please wait')}>
+      <p>
+        {t('Import in progress')}: {`${index}/${total}`}
+      </p>
+      <ProgressBar ratio={ratio} animated striped bg='info' />
     </InfoModal>
   )
 }

@@ -15,12 +15,17 @@
  */
 
 import reducer, {
+  CsvRecord,
   HoistedImportPageHocProps,
   ImportPageFsm,
   ImportPageHocProps,
   RecordSelectorEntry
 } from './reducer'
-import { readCsvFileOnSelectFile, CONFIG_KEYS } from './effects'
+import {
+  importRecordsOnImport,
+  readCsvFileOnSelectFile,
+  CONFIG_KEYS
+} from './effects'
 import {
   injectServiceOnSessionProp,
   injectStorageStatusOnService
@@ -46,9 +51,11 @@ export interface ImportPageSFCProps extends ImportPageSFCHandlerProps {
   alert?: boolean
   configs?: string[]
   entries?: RecordSelectorEntry[]
+  index?: number // one-based index of selected record currently being imported
   offline?: any
   max?: number
   pending?: boolean
+  selected?: number
 }
 
 export interface ImportPageSFCHandlerProps {
@@ -70,7 +77,9 @@ interface ImportPageState extends HoistedImportPageHocProps {
   >
   entries?: RecordSelectorEntry[] // CsvRecord[]
   error?: any
+  index?: number // zero-based index of selected record currently being imported
   max?: number
+  selected?: CsvRecord[]
   session?: string
   state: ImportPageFsm
   onClose?: (event?: MouseEvent) => void
@@ -82,18 +91,22 @@ const ALERT_STATES = [
   ImportPageFsm.InsufficienStorage,
   ImportPageFsm.NoStorage,
   ImportPageFsm.Offline,
-  ImportPageFsm.Pending
+  ImportPageFsm.Pending,
+  ImportPageFsm.ImportRecords
 ]
 
 function mapStateToProps ({
   attrs,
   entries,
   error,
+  index,
   max,
+  selected,
   state
 }: ImportPageState): Rest<ImportPageSFCProps, ImportPageSFCHandlerProps> {
   const isSelectFileState = state === ImportPageFsm.SelectFile
   const pending = state === ImportPageFsm.Pending
+  const importing = state === ImportPageFsm.ImportRecords
   const alert = ALERT_STATES.indexOf(state) >= 0
   return {
     ...attrs,
@@ -101,8 +114,10 @@ function mapStateToProps ({
     configs: isSelectFileState && CONFIG_KEYS,
     offline: state === ImportPageFsm.Offline,
     entries,
+    index: importing ? index + 1 : void 0,
     max,
-    pending
+    pending,
+    selected: importing ? selected.length : void 0
   }
 }
 
@@ -135,12 +150,16 @@ export function importPage<P extends ImportPageSFCProps> (
       injectServiceOnSessionProp,
       injectStorageStatusOnService,
       readCsvFileOnSelectFile,
+      importRecordsOnImport,
+      callHandlerOnEvent('ADD_STORAGE', 'onAddStorage'),
       callHandlerOnEvent('CLOSE', 'onClose'),
       callHandlerOnEvent('ERROR', 'onError'),
-      callHandlerOnEvent('ADD_STORAGE', 'onAddStorage'),
+      callHandlerOnEvent('IMPORT_COMPLETE', 'onClose')
+      /*
       callHandlerOnEvent('IMPORT', 'onImport', ({ entries }) =>
         entries.filter(({ selected }) => selected).map(({ record }) => record)
       )
+      */
     ),
     log('state'),
     connect<ImportPageState, ImportPageSFCProps>(

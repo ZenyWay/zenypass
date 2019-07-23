@@ -65,15 +65,20 @@ export enum ImportPageFsm {
   SelectFile = 'SELECT_FILE',
   InsufficienStorage = 'INSUFFICIENT_STORAGE',
   SelectRecords = 'SELECT_RECORDS',
+  ImportRecords = 'IMPORT_RECORDS',
   Exit = 'EXIT'
 }
 
 const reset = [
   into('entries')(always()),
   into('error')(always()),
+  into('index')(always()),
   into('max')(always()),
+  into('selected')(always()),
   into('service')(always())
 ]
+
+const isSelectedEntry = ({ selected }: RecordSelectorEntry) => selected
 
 const importPageFsm: AutomataSpec<ImportPageFsm> = {
   [ImportPageFsm.Pending]: {
@@ -103,7 +108,18 @@ const importPageFsm: AutomataSpec<ImportPageFsm> = {
     REJECT_SELECT: [
       ImportPageFsm.InsufficienStorage,
       propCursor('entries')(toggleSelected)
+    ],
+    IMPORT: [
+      ImportPageFsm.ImportRecords,
+      into('selected')(({ entries }) =>
+        entries.filter(isSelectedEntry).map(({ record }) => record)
+      )
     ]
+  },
+  [ImportPageFsm.ImportRecords]: {
+    OFFLINE: [ImportPageFsm.Offline, into('error')(mapPayload())],
+    IMPORTING_RECORD: into('index')(mapPayload()),
+    IMPORT_COMPLETE: [ImportPageFsm.Exit, ...reset]
   },
   [ImportPageFsm.Exit]: {}
 }
@@ -140,7 +156,7 @@ export default withEventGuards<string, any>({
   ENTRIES: (entries, { max }) =>
     entries.length > max ? insufficientStorage() : sufficientStorage(),
   TOGGLE_SELECT: (id, { entries, max }) =>
-    entries.filter(({ selected }) => selected).length > max && rejectSelect(id)
+    entries.filter(isSelectedEntry).length > max && rejectSelect(id)
 })(reducer)
 
 function toggleSelected (

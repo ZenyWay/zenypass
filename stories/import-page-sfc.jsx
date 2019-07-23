@@ -76,3 +76,15 @@ storiesOf('ImportPage (SFC)', module)
       {...attrs}
     />
   ))
+  .add('import-records-1-of-7', () => ({ locale }) => (
+    <ImportPage locale={locale} alert selected={7} index={1} {...attrs} />
+  ))
+  .add('import-records-3-of-7', () => ({ locale }) => (
+    <ImportPage locale={locale} alert selected={7} index={3} {...attrs} />
+  ))
+  .add('import-records-5-of-7', () => ({ locale }) => (
+    <ImportPage locale={locale} alert selected={7} index={5} {...attrs} />
+  ))
+  .add('import-records-7-of-7', () => ({ locale }) => (
+    <ImportPage locale={locale} alert selected={7} index={7} {...attrs} />
+  ))
