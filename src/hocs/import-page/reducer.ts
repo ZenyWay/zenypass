@@ -29,7 +29,7 @@ import {
 } from 'utils'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
 import createL10ns from 'basic-l10n'
-const l10ns = createL10ns(require('./locales.json'))
+export const l10ns = createL10ns(require('./locales.json'))
 
 export interface ImportPageHocProps extends HoistedImportPageHocProps {}
 
@@ -108,6 +108,15 @@ const appendKeywordsAndComments = ({ keywords, comments, entries }) =>
     }
   }))
 const isSelectedEntry = ({ selected }: RecordSelectorEntry) => selected
+const countSelected = ({ entries }: any) =>
+  entries.filter(isSelectedEntry).length
+const setSelected = (
+  predicate: (max: number, index: number, entry: RecordSelectorEntry) => boolean
+) => ({ entries, max }) =>
+  entries.map((entry, index) => ({
+    ...entry,
+    selected: predicate(max, index, entry)
+  }))
 
 const importPageFsm: AutomataSpec<ImportPageFsm> = {
   [ImportPageFsm.Pending]: {
@@ -134,10 +143,24 @@ const importPageFsm: AutomataSpec<ImportPageFsm> = {
     ADD_STORAGE: [ImportPageFsm.Exit, ...reset]
   },
   [ImportPageFsm.SelectRecords]: {
-    TOGGLE_SELECT: propCursor('entries')(toggleSelected),
+    TOGGLE_SELECT: [
+      into('selected')(countSelected),
+      propCursor('entries')(toggleSelected)
+    ],
     REJECT_SELECT: [
       ImportPageFsm.InsufficienStorage,
+      into('selected')(countSelected),
       propCursor('entries')(toggleSelected)
+    ],
+    DESELECT_ALL: [
+      into('selected')(always(0)),
+      into('entries')(setSelected(always(false)))
+    ],
+    SELECT_ALL: [
+      into('selected')(({ entries: { length }, max }) =>
+        length > max ? max : length
+      ),
+      into('entries')(setSelected((max, index) => index < max))
     ],
     SUBMIT: [ImportPageFsm.EditRecords, into('comments')(defaultComment)]
   },
@@ -191,8 +214,7 @@ export default withEventGuards<string, any>({
     max === 0 ? insufficientStorage() : sufficientStorage(0),
   ENTRIES: (entries, { max }) =>
     entries.length > max ? insufficientStorage() : sufficientStorage(),
-  TOGGLE_SELECT: (id, { entries, max }) =>
-    entries.filter(isSelectedEntry).length > max && rejectSelect(id)
+  TOGGLE_SELECT: (id, { selected, max }) => selected > max && rejectSelect(id)
 })(reducer)
 
 function toggleSelected (

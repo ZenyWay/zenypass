@@ -15,7 +15,7 @@
  */
 
 import reducer, {
-  CsvRecord,
+  l10ns,
   HoistedImportPageHocProps,
   ImportPageFsm,
   ImportPageHocProps,
@@ -61,6 +61,7 @@ export interface ImportPageSFCProps extends ImportPageSFCHandlerProps {
   index?: number
   keywords?: string[]
   max?: number
+  selected?: number
 }
 
 export type Alert = 'edit' | 'import' | 'offline' | 'pending' | 'storage'
@@ -70,6 +71,8 @@ export interface ImportPageSFCHandlerProps {
   onChange?: (value: string[] | string, target?: HTMLElement) => void
   onClose?: (event?: MouseEvent) => void
   onCloseInfo?: (event?: MouseEvent) => void
+  onDeselectAll?: (event?: MouseEvent) => void
+  onSelectAll?: (event?: MouseEvent) => void
   onSelectFile?: (event?: Event) => void
   onSubmit?: (event?: MouseEvent) => void
   onToggleSelect?: (id?: string) => void
@@ -94,6 +97,7 @@ interface ImportPageState extends HoistedImportPageHocProps {
   index?: number
   keywords?: string[]
   max?: number
+  selected?: number
   session?: string
   state: ImportPageFsm
   onClose?: (event?: MouseEvent) => void
@@ -110,6 +114,12 @@ const STATE_TO_ALERT: Partial<{ [state in ImportPageFsm]: Alert }> = {
   [ImportPageFsm.ImportRecords]: 'import'
 }
 
+const CONFIG_KEYS_L10NS = Object.keys(l10ns).reduce(function (configs, locale) {
+  const t = l10ns[locale]
+  configs[locale] = CONFIG_KEYS.map(t)
+  return configs
+}, Object.create(null))
+
 function mapStateToProps ({
   attrs,
   locale,
@@ -118,6 +128,7 @@ function mapStateToProps ({
   index,
   keywords,
   max,
+  selected,
   state
 }: ImportPageState): Rest<ImportPageSFCProps, ImportPageSFCHandlerProps> {
   const isSelectFileState = state === ImportPageFsm.SelectFile
@@ -126,11 +137,12 @@ function mapStateToProps ({
     locale,
     alert: STATE_TO_ALERT[state],
     comments,
-    configs: isSelectFileState && CONFIG_KEYS,
+    configs: isSelectFileState && CONFIG_KEYS_L10NS[locale],
     entries,
     index,
     keywords,
-    max
+    max,
+    selected
   }
 }
 
@@ -148,6 +160,8 @@ const mapDispatchToProps: (
   onClose: 'CLOSE',
   onCloseInfo: 'CLOSE_INFO',
   onError: 'ERROR',
+  onDeselectAll: 'DESELECT_ALL',
+  onSelectAll: 'SELECT_ALL',
   onSelectFile: [
     'SELECT_FILE',
     ({ currentTarget: { files, dataset } }) => ({

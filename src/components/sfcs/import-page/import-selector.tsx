@@ -52,7 +52,7 @@ export function ImportSelector ({
         key={`import-selector-item-${i}`}
       >
         <Input type='file' class='d-none' onInput={onSelect} data-index={i} />
-        {t`Import from a ${config} csv file`}
+        {t`Import from a ${config} CSV file`}
       </Label>
     )
   }

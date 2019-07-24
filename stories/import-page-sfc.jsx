@@ -22,10 +22,9 @@ import withL10n from 'zenyway-storybook-addon-l10n'
 import { RECORDS, PASSWORD } from './helpers/consts'
 import { ImportPageSFC as ImportPage } from 'components'
 
-const CONFIGS = ['keepass', 'excel', 'standard']
+const CONFIGS = ['KeePass', 'Excel', 'standard']
 
 const MAX_ENTRIES = 3
-
 const ENTRIES = RECORDS.map((record, id) => ({
   id,
   record: { ...record, password: PASSWORD },
@@ -37,7 +36,9 @@ const attrs = {
   onChange: action('CHANGE'),
   onClose: action('CLOSE'),
   onCloseInfo: action('CLOSE_INFO'),
+  onDeselectAll: action('DESELECT_ALL'),
   onError: action('ERROR'),
+  onSelectAll: action('SELECT_ALL'),
   onSelectFile: action('SELECT_FILE'),
   onSubmit: action('SUBMIT'),
   onToggleSelect: action('TOGGLE_SELECT')
@@ -63,17 +64,24 @@ storiesOf('ImportPage (SFC)', module)
       entries={ENTRIES.slice(0, 5)}
       alert='storage'
       max={1}
+      selected={MAX_ENTRIES}
       {...attrs}
     />
   ))
   .add('select-records', () => ({ locale }) => (
-    <ImportPage locale={locale} entries={ENTRIES} {...attrs} />
+    <ImportPage
+      locale={locale}
+      entries={ENTRIES}
+      selected={MAX_ENTRIES}
+      {...attrs}
+    />
   ))
   .add('select-records-3-from-all', () => ({ locale }) => (
     <ImportPage
       locale={locale}
       entries={ENTRIES}
       max={MAX_ENTRIES}
+      selected={MAX_ENTRIES}
       {...attrs}
     />
   ))

@@ -67,7 +67,7 @@ export function BulkEditAlert ({
         id='edit-import-keywords'
         className='mb-2'
         icon='tags'
-        placeholder={t('keywords')}
+        placeholder={t('Keywords')}
         value={keywords}
         data-id='keywords'
         onChange={onChange}
@@ -78,7 +78,7 @@ export function BulkEditAlert ({
         id='edit-import-comments'
         className='mb-2'
         icon='sticky-note'
-        placeholder={t('comments')}
+        placeholder={t('Comments')}
         value={comments}
         rows='3'
         data-id='comments'

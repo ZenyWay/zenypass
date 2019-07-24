@@ -34,10 +34,13 @@ export interface ImportPageProps {
   index?: number
   keywords?: string[]
   max?: number
+  selected?: number
   onAddStorage?: (event?: MouseEvent) => void
   onChange: (value: string[] | string, target?: HTMLElement) => void
   onClose: (event?: MouseEvent) => void
   onCloseInfo: (event?: MouseEvent) => void
+  onDeselectAll?: (event?: MouseEvent) => void
+  onSelectAll?: (event?: MouseEvent) => void
   onSelectFile?: (event?: Event) => void
   onSubmit?: (event?: MouseEvent) => void
   onToggleSelect?: (id?: string) => void
@@ -54,10 +57,13 @@ export function ImportPage ({
   index,
   keywords,
   max,
+  selected,
   onAddStorage,
+  onDeselectAll,
   onChange,
   onClose,
   onCloseInfo,
+  onSelectAll,
   onSelectFile,
   onSubmit,
   onToggleSelect
@@ -100,7 +106,10 @@ export function ImportPage ({
               className='my-2'
               entries={entries}
               max={max}
+              selected={selected}
               onAddStorage={onAddStorage}
+              onDeselectAll={onDeselectAll}
+              onSelectAll={onSelectAll}
               onSubmit={onSubmit}
               onToggleSelect={onToggleSelect}
             />
