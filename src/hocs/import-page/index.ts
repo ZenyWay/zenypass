@@ -22,7 +22,7 @@ import reducer, {
   RecordSelectorEntry
 } from './reducer'
 import {
-  importRecordsOnImport,
+  importRecordsOnImportRecords,
   readCsvFileOnSelectFile,
   CONFIG_KEYS
 } from './effects'
@@ -38,7 +38,10 @@ import componentFromEvents, {
   logger,
   redux
 } from 'component-from-events'
-import { createActionDispatchers } from 'basic-fsa-factories'
+import {
+  createActionDispatchers,
+  createActionFactories
+} from 'basic-fsa-factories'
 import { callHandlerOnEvent, shallowEqual } from 'utils'
 import { distinctUntilChanged } from 'rxjs/operators'
 const log = logger('import-page')
@@ -47,23 +50,28 @@ export type ImportPageProps<P extends ImportPageSFCProps> = ImportPageHocProps &
   Rest<P, ImportPageSFCProps>
 
 export interface ImportPageSFCProps extends ImportPageSFCHandlerProps {
-  // locale: string
-  alert?: boolean
+  locale: string
+  alert?: Alert
+  comments?: string
   configs?: string[]
   entries?: RecordSelectorEntry[]
-  index?: number // one-based index of selected record currently being imported
-  offline?: any
+  /**
+   * zero-based index of selected record currently being imported
+   */
+  index?: number
+  keywords?: string[]
   max?: number
-  pending?: boolean
-  selected?: number
 }
+
+export type Alert = 'edit' | 'import' | 'offline' | 'pending' | 'storage'
 
 export interface ImportPageSFCHandlerProps {
   onAddStorage?: (event?: MouseEvent) => void
+  onChange?: (value: string[] | string, target?: HTMLElement) => void
   onClose?: (event?: MouseEvent) => void
   onCloseInfo?: (event?: MouseEvent) => void
-  onImport?: (event?: MouseEvent) => void
   onSelectFile?: (event?: Event) => void
+  onSubmit?: (event?: MouseEvent) => void
   onToggleSelect?: (id?: string) => void
 }
 
@@ -75,11 +83,17 @@ interface ImportPageState extends HoistedImportPageHocProps {
       keyof HoistedImportPageHocProps
     >
   >
-  entries?: RecordSelectorEntry[] // CsvRecord[]
+  locale: string
+  comments?: string
+  entries?: RecordSelectorEntry[]
   error?: any
-  index?: number // zero-based index of selected record currently being imported
+  filename?: string
+  /**
+   * zero-based index of selected record currently being imported
+   */
+  index?: number
+  keywords?: string[]
   max?: number
-  selected?: CsvRecord[]
   session?: string
   state: ImportPageFsm
   onClose?: (event?: MouseEvent) => void
@@ -87,48 +101,53 @@ interface ImportPageState extends HoistedImportPageHocProps {
   onAddStorage?: (event?: MouseEvent) => void
 }
 
-const ALERT_STATES = [
-  ImportPageFsm.InsufficienStorage,
-  ImportPageFsm.NoStorage,
-  ImportPageFsm.Offline,
-  ImportPageFsm.Pending,
-  ImportPageFsm.ImportRecords
-]
+const STATE_TO_ALERT: Partial<{ [state in ImportPageFsm]: Alert }> = {
+  [ImportPageFsm.InsufficienStorage]: 'storage',
+  [ImportPageFsm.NoStorage]: 'storage',
+  [ImportPageFsm.Offline]: 'offline',
+  [ImportPageFsm.Pending]: 'pending',
+  [ImportPageFsm.EditRecords]: 'edit',
+  [ImportPageFsm.ImportRecords]: 'import'
+}
 
 function mapStateToProps ({
   attrs,
+  locale,
+  comments,
   entries,
-  error,
   index,
+  keywords,
   max,
-  selected,
   state
 }: ImportPageState): Rest<ImportPageSFCProps, ImportPageSFCHandlerProps> {
   const isSelectFileState = state === ImportPageFsm.SelectFile
-  const pending = state === ImportPageFsm.Pending
-  const importing = state === ImportPageFsm.ImportRecords
-  const alert = ALERT_STATES.indexOf(state) >= 0
   return {
     ...attrs,
-    alert,
+    locale,
+    alert: STATE_TO_ALERT[state],
+    comments,
     configs: isSelectFileState && CONFIG_KEYS,
-    offline: state === ImportPageFsm.Offline,
     entries,
-    index: importing ? index + 1 : void 0,
-    max,
-    pending,
-    selected: importing ? selected.length : void 0
+    index,
+    keywords,
+    max
   }
 }
+
+const CHANGE_ACTIONS = createActionFactories({
+  keywords: 'CHANGE_KEYWORDS',
+  comments: 'CHANGE_COMMENTS'
+})
 
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => ImportPageSFCHandlerProps = createActionDispatchers({
   onAddStorage: 'ADD_STORAGE',
+  onChange: (value: string[] | string, { dataset: { id } }: HTMLElement) =>
+    CHANGE_ACTIONS[id](value),
   onClose: 'CLOSE',
   onCloseInfo: 'CLOSE_INFO',
   onError: 'ERROR',
-  onImport: 'IMPORT',
   onSelectFile: [
     'SELECT_FILE',
     ({ currentTarget: { files, dataset } }) => ({
@@ -136,6 +155,7 @@ const mapDispatchToProps: (
       key: CONFIG_KEYS[dataset.index]
     })
   ],
+  onSubmit: 'SUBMIT',
   onToggleSelect: 'TOGGLE_SELECT'
 })
 
@@ -150,7 +170,7 @@ export function importPage<P extends ImportPageSFCProps> (
       injectServiceOnSessionProp,
       injectStorageStatusOnService,
       readCsvFileOnSelectFile,
-      importRecordsOnImport,
+      importRecordsOnImportRecords,
       callHandlerOnEvent('ADD_STORAGE', 'onAddStorage'),
       callHandlerOnEvent('CLOSE', 'onClose'),
       callHandlerOnEvent('ERROR', 'onError'),

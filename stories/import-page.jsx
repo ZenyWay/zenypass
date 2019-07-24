@@ -26,8 +26,7 @@ const attrs = {
   session: USERNAME,
   onAddStorage: action('ADD_STORAGE'),
   onClose: action('CLOSE'),
-  onError: action('ERROR'),
-  onImport: action('IMPORT')
+  onError: action('ERROR')
 }
 
 storiesOf('ImportPage', module)

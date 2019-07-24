@@ -16,7 +16,7 @@
 
 import { ZenypassService, ZenypassRecord } from 'zenypass-service'
 import { getCsvParser, CSV_PARSER_SPEC } from 'basic-csv-parser'
-import { CsvRecord, RecordSelectorEntry } from './reducer'
+import { CsvRecord, ImportPageFsm, RecordSelectorEntry } from './reducer'
 import {
   createActionFactories,
   createActionFactory,
@@ -32,12 +32,12 @@ import {
 import {
   catchError,
   concatMap,
+  distinctUntilKeyChanged,
   filter,
   ignoreElements,
   pluck,
   map,
-  switchMap,
-  withLatestFrom
+  switchMap
 } from 'rxjs/operators'
 
 const entries = createActionFactory<RecordSelectorEntry[]>('ENTRIES')
@@ -74,22 +74,24 @@ const CONFIGS: CSV_PARSER_SPECS = {
 
 export const CONFIG_KEYS = Object.keys(CONFIGS) as CSV_PARSER_SPECS_KEYS[]
 
-export function importRecordsOnImport (
-  event$: Observable<StandardAction<any>>,
-  state$: Observable<any>
-) {
-  return event$.pipe(
-    filter(({ type }) => type === 'IMPORT'),
-    withLatestFrom(state$),
-    pluck('1'),
-    concatMap(({ selected, service }) => importEntries(service, selected)),
+export function importRecordsOnImportRecords (_: any, state$: Observable<any>) {
+  return state$.pipe(
+    distinctUntilKeyChanged('state'),
+    filter(({ state }) => state === ImportPageFsm.ImportRecords),
+    concatMap(({ entries, service }) => importEntries(service, entries)),
     catchError(err => observableOf(((err && ERRORS[err.status]) || error)(err)))
   )
 }
 
-function importEntries (service: ZenypassService, selected: CsvRecord[]) {
+function importEntries (
+  service: ZenypassService,
+  selected: RecordSelectorEntry[]
+) {
   return concat(
-    observableFrom(selected).pipe(concatMap(importRecord)),
+    observableFrom(selected).pipe(
+      pluck('record'),
+      concatMap(importRecord)
+    ),
     observableOf(importComplete())
   )
 

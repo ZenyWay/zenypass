@@ -18,6 +18,7 @@
 import { createElement, Fragment } from 'create-element'
 import { ProgressBar } from 'bootstrap'
 import { ImportSelector } from './import-selector'
+import { BulkEditAlert, BulkEditAlertProps } from './bulk-edit-alert'
 import { RecordSelector, RecordSelectorEntry } from './record-selector'
 import { InfoModal } from '../info-modal'
 import { NavbarMenu } from '../navbar-menu'
@@ -26,69 +27,59 @@ const l10ns = createL10ns(require('./locales.json'))
 
 export interface ImportPageProps {
   locale: string
-  alert?: boolean
+  alert?: Alert
+  comments?: string
   configs?: string[]
   entries?: RecordSelectorEntry[]
   index?: number
+  keywords?: string[]
   max?: number
-  offline?: boolean
-  pending?: boolean
-  selected?: number
   onAddStorage?: (event?: MouseEvent) => void
+  onChange: (value: string[] | string, target?: HTMLElement) => void
   onClose: (event?: MouseEvent) => void
   onCloseInfo: (event?: MouseEvent) => void
   onSelectFile?: (event?: Event) => void
-  onImport?: (event?: MouseEvent) => void
+  onSubmit?: (event?: MouseEvent) => void
   onToggleSelect?: (id?: string) => void
 }
+
+export type Alert = 'edit' | 'import' | 'offline' | 'pending' | 'storage'
 
 export function ImportPage ({
   locale,
   alert,
+  comments,
   configs = [],
   entries = [],
   index,
+  keywords,
   max,
-  offline,
-  pending,
-  selected,
   onAddStorage,
+  onChange,
   onClose,
   onCloseInfo,
   onSelectFile,
-  onImport,
+  onSubmit,
   onToggleSelect
 }: ImportPageProps) {
-  const t = l10ns[locale]
   const total = entries.length
   return (
     <Fragment>
-      {alert ? (
-        pending ? (
-          <PendingAlert locale={locale} />
-        ) : offline ? (
-          <OfflineAlert locale={locale} onClose={onClose} />
-        ) : selected ? (
-          <ImportingAlert locale={locale} index={index} total={selected} />
-        ) : max === 0 ? (
-          <NoStorageAlert
-            locale={locale}
-            onClose={onClose}
-            onAddStorage={onAddStorage}
-          />
-        ) : max < total ? (
-          <InsufficientStorageAlert
-            locale={locale}
-            max={max}
-            total={total}
-            onCloseInfo={onCloseInfo}
-            onAddStorage={onAddStorage}
-          />
-        ) : (
-          <InfoModal locale={locale} />
-        )
-      ) : (
-        <InfoModal locale={locale} />
+      {!alert ? null : (
+        <AlertModal
+          alert={alert}
+          comments={comments}
+          index={index}
+          keywords={keywords}
+          locale={locale}
+          max={max}
+          total={total}
+          onAddStorage={onAddStorage}
+          onChange={onChange}
+          onClose={onClose}
+          onCloseInfo={onCloseInfo}
+          onSubmit={onSubmit}
+        />
       )}
       <section>
         <header className='sticky-top'>
@@ -110,7 +101,7 @@ export function ImportPage ({
               entries={entries}
               max={max}
               onAddStorage={onAddStorage}
-              onImport={onImport}
+              onSubmit={onSubmit}
               onToggleSelect={onToggleSelect}
             />
           )}
@@ -118,6 +109,69 @@ export function ImportPage ({
       </section>
     </Fragment>
   )
+}
+
+interface AlertModalProps
+  extends ImportingAlertProps,
+    BulkEditAlertProps,
+    OfflineAlertProps,
+    PendingAlertProps,
+    NoStorageAlertProps,
+    InsufficientStorageAlertProps {
+  alert: Alert
+}
+
+function AlertModal ({
+  alert,
+  comments,
+  index,
+  keywords,
+  locale,
+  max,
+  total,
+  onAddStorage,
+  onChange,
+  onClose,
+  onCloseInfo,
+  onSubmit
+}: AlertModalProps) {
+  switch (alert) {
+    case 'edit':
+      return (
+        <BulkEditAlert
+          locale={locale}
+          comments={comments}
+          keywords={keywords}
+          onChange={onChange}
+          onCloseInfo={onCloseInfo}
+          onSubmit={onSubmit}
+        />
+      )
+    case 'import':
+      return <ImportingAlert locale={locale} index={index} total={total} />
+    case 'offline':
+      return <OfflineAlert locale={locale} onClose={onClose} />
+    case 'pending':
+      return <PendingAlert locale={locale} />
+    case 'storage':
+      return max === 0 ? (
+        <NoStorageAlert
+          locale={locale}
+          onClose={onClose}
+          onAddStorage={onAddStorage}
+        />
+      ) : (
+        <InsufficientStorageAlert
+          locale={locale}
+          max={max}
+          total={total}
+          onCloseInfo={onCloseInfo}
+          onAddStorage={onAddStorage}
+        />
+      )
+    default:
+      return <InfoModal locale={locale} />
+  }
 }
 
 interface PendingAlertProps {
@@ -142,7 +196,8 @@ interface ImportingAlertProps {
 
 function ImportingAlert ({ locale, index, total }: ImportingAlertProps) {
   const t = l10ns[locale]
-  const ratio = (Math.ceil((4 * index) / total) * 25).toString() as
+  const count = index + 1
+  const ratio = (Math.ceil((4 * count) / total) * 25).toString() as
     | '25'
     | '50'
     | '75'
@@ -150,7 +205,7 @@ function ImportingAlert ({ locale, index, total }: ImportingAlertProps) {
   return (
     <InfoModal locale={locale} expanded title={t('Please wait')}>
       <p>
-        {t('Import in progress')}: {`${index}/${total}`}
+        {t('Import in progress')}: {`${count}/${total}`}
       </p>
       <ProgressBar ratio={ratio} animated striped bg='info' />
     </InfoModal>
@@ -159,7 +214,7 @@ function ImportingAlert ({ locale, index, total }: ImportingAlertProps) {
 
 interface OfflineAlertProps {
   locale: string
-  onClose?: (event?: MouseEvent) => void
+  onClose: (event?: MouseEvent) => void
 }
 
 function OfflineAlert ({ locale, onClose }: OfflineAlertProps) {
@@ -181,8 +236,8 @@ function OfflineAlert ({ locale, onClose }: OfflineAlertProps) {
 
 interface NoStorageAlertProps {
   locale: string
-  onClose?: (event?: MouseEvent) => void
-  onAddStorage?: (event?: MouseEvent) => void
+  onClose: (event?: MouseEvent) => void
+  onAddStorage: (event?: MouseEvent) => void
 }
 
 function NoStorageAlert ({
@@ -211,10 +266,10 @@ function NoStorageAlert ({
 
 interface InsufficientStorageAlertProps {
   locale: string
-  max?: number
-  total?: number
-  onCloseInfo?: (event?: MouseEvent) => void
-  onAddStorage?: (event?: MouseEvent) => void
+  max: number
+  total: number
+  onCloseInfo: (event?: MouseEvent) => void
+  onAddStorage: (event?: MouseEvent) => void
 }
 
 function InsufficientStorageAlert ({

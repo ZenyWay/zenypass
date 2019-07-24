@@ -30,7 +30,7 @@ export interface RecordSelectorProps {
   max?: number
   className?: string
   onAddStorage?: (event?: MouseEvent) => void
-  onImport?: (event?: MouseEvent) => void
+  onSubmit?: (event?: MouseEvent) => void
   onToggleSelect?: (id?: string) => void
 }
 
@@ -46,7 +46,7 @@ export function RecordSelector ({
   max,
   className,
   onAddStorage,
-  onImport,
+  onSubmit,
   onToggleSelect
 }: RecordSelectorProps) {
   const t = l10ns[locale]
@@ -71,7 +71,7 @@ export function RecordSelector ({
       icon='download'
       color='info'
       disabled={max === 0}
-      onClick={onImport}
+      onClick={onSubmit}
     >
       &nbsp;{t('Import selection')}
     </FAIconButton>

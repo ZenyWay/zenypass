@@ -18,24 +18,23 @@ import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into, propCursor } from 'basic-cursors'
 import compose from 'basic-compose'
 import {
-  alt,
   always,
   forType,
-  max,
   mapPayload,
   mergePayload,
-  min,
-  not,
   omit,
   pick,
   pluck,
   withEventGuards
 } from 'utils'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
+import createL10ns from 'basic-l10n'
+const l10ns = createL10ns(require('./locales.json'))
 
 export interface ImportPageHocProps extends HoistedImportPageHocProps {}
 
 export interface HoistedImportPageHocProps {
+  locale: string
   session?: string
   onAddStorage?: (event?: MouseEvent) => void
   onClose?: (event?: MouseEvent) => void
@@ -65,19 +64,49 @@ export enum ImportPageFsm {
   SelectFile = 'SELECT_FILE',
   InsufficienStorage = 'INSUFFICIENT_STORAGE',
   SelectRecords = 'SELECT_RECORDS',
+  EditRecords = 'EDIT_RECORDS',
   ImportRecords = 'IMPORT_RECORDS',
   Exit = 'EXIT'
 }
 
 const reset = [
-  into('entries')(always()),
-  into('error')(always()),
-  into('index')(always()),
-  into('max')(always()),
-  into('selected')(always()),
-  into('service')(always())
-]
+  'comments',
+  'entries',
+  'error',
+  'filename',
+  'index',
+  'keywords',
+  'max',
+  'service'
+].map(prop => into(prop)(always()))
 
+const DATE_OPTIONS = {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+}
+
+const formaters = Object.keys(l10ns).reduce(function (formaters, locale) {
+  formaters[locale] = new Intl.DateTimeFormat(locale, DATE_OPTIONS)
+  return formaters
+}, {})
+
+const defaultComment = ({ filename, locale }: any) =>
+  l10ns[locale]`Imported on ${formaters[locale].format(
+    new Date()
+  )}, from file "${filename}"`
+const appendLines = (text, lines) => (text ? `${text}\n${lines}` : lines)
+const appendElements = (array = [], elements = []) => [].concat(array, elements)
+const appendKeywordsAndComments = ({ keywords, comments, entries }) =>
+  entries.map(entry => ({
+    ...entry,
+    record: {
+      ...entry.record,
+      keywords: appendElements(entry.record.keywords, keywords),
+      comments: appendLines(entry.record.comments, comments)
+    }
+  }))
 const isSelectedEntry = ({ selected }: RecordSelectorEntry) => selected
 
 const importPageFsm: AutomataSpec<ImportPageFsm> = {
@@ -95,6 +124,7 @@ const importPageFsm: AutomataSpec<ImportPageFsm> = {
   },
   [ImportPageFsm.SelectFile]: {
     CLOSE: [ImportPageFsm.Exit, ...reset],
+    SELECT_FILE: into('filename')(mapPayload(pluck('file', 'name'))),
     ENTRIES: into('entries')(mapPayload()),
     SUFFICIENT_STORAGE: ImportPageFsm.SelectRecords,
     INSUFFICIENT_STORAGE: ImportPageFsm.InsufficienStorage
@@ -109,12 +139,17 @@ const importPageFsm: AutomataSpec<ImportPageFsm> = {
       ImportPageFsm.InsufficienStorage,
       propCursor('entries')(toggleSelected)
     ],
-    IMPORT: [
+    SUBMIT: [ImportPageFsm.EditRecords, into('comments')(defaultComment)]
+  },
+  [ImportPageFsm.EditRecords]: {
+    CHANGE_KEYWORDS: into('keywords')(mapPayload()),
+    CHANGE_COMMENTS: into('comments')(mapPayload()),
+    SUBMIT: [
       ImportPageFsm.ImportRecords,
-      into('selected')(({ entries }) =>
-        entries.filter(isSelectedEntry).map(({ record }) => record)
-      )
-    ]
+      into('entries')(appendKeywordsAndComments),
+      into('entries')(({ entries }) => entries.filter(isSelectedEntry))
+    ],
+    CLOSE_INFO: ImportPageFsm.SelectRecords
   },
   [ImportPageFsm.ImportRecords]: {
     OFFLINE: [ImportPageFsm.Offline, into('error')(mapPayload())],
@@ -125,6 +160,7 @@ const importPageFsm: AutomataSpec<ImportPageFsm> = {
 }
 
 const SELECTED_PROPS: (keyof HoistedImportPageHocProps)[] = [
+  'locale',
   'session',
   'onAddStorage',
   'onClose',

@@ -34,24 +34,25 @@ const ENTRIES = RECORDS.map((record, id) => ({
 
 const attrs = {
   onAddStorage: action('ADD_STORAGE'),
+  onChange: action('CHANGE'),
   onClose: action('CLOSE'),
   onCloseInfo: action('CLOSE_INFO'),
   onError: action('ERROR'),
-  onImport: action('IMPORT'),
   onSelectFile: action('SELECT_FILE'),
+  onSubmit: action('SUBMIT'),
   onToggleSelect: action('TOGGLE_SELECT')
 }
 
 storiesOf('ImportPage (SFC)', module)
   .addDecorator(withL10n({ locales: ['fr', 'en'] }))
   .add('pending', () => ({ locale }) => (
-    <ImportPage locale={locale} alert pending {...attrs} />
+    <ImportPage locale={locale} alert='pending' {...attrs} />
   ))
   .add('offline', () => ({ locale }) => (
-    <ImportPage locale={locale} alert offline {...attrs} />
+    <ImportPage locale={locale} alert='offline' {...attrs} />
   ))
   .add('max-0', () => ({ locale }) => (
-    <ImportPage locale={locale} alert max={0} {...attrs} />
+    <ImportPage locale={locale} alert='storage' max={0} {...attrs} />
   ))
   .add('select-file', () => ({ locale }) => (
     <ImportPage locale={locale} configs={CONFIGS} {...attrs} />
@@ -60,7 +61,7 @@ storiesOf('ImportPage (SFC)', module)
     <ImportPage
       locale={locale}
       entries={ENTRIES.slice(0, 5)}
-      alert
+      alert='storage'
       max={1}
       {...attrs}
     />
@@ -76,15 +77,49 @@ storiesOf('ImportPage (SFC)', module)
       {...attrs}
     />
   ))
+  .add('edit-keywords-and-comments', () => ({ locale }) => (
+    <ImportPage
+      locale={locale}
+      alert='edit'
+      entries={ENTRIES.filter(({ selected }) => selected)}
+      keywords={[]}
+      comments={'imported from file.csv on 23.07.2019'}
+      {...attrs}
+    />
+  ))
   .add('import-records-1-of-7', () => ({ locale }) => (
-    <ImportPage locale={locale} alert selected={7} index={1} {...attrs} />
+    <ImportPage
+      locale={locale}
+      alert='import'
+      entries={ENTRIES.slice(0, 7)}
+      index={0}
+      {...attrs}
+    />
   ))
   .add('import-records-3-of-7', () => ({ locale }) => (
-    <ImportPage locale={locale} alert selected={7} index={3} {...attrs} />
+    <ImportPage
+      locale={locale}
+      alert='import'
+      entries={ENTRIES.slice(0, 7)}
+      index={2}
+      {...attrs}
+    />
   ))
   .add('import-records-5-of-7', () => ({ locale }) => (
-    <ImportPage locale={locale} alert selected={7} index={5} {...attrs} />
+    <ImportPage
+      locale={locale}
+      alert='import'
+      entries={ENTRIES.slice(0, 7)}
+      index={4}
+      {...attrs}
+    />
   ))
   .add('import-records-7-of-7', () => ({ locale }) => (
-    <ImportPage locale={locale} alert selected={7} index={7} {...attrs} />
+    <ImportPage
+      locale={locale}
+      alert='import'
+      entries={ENTRIES.slice(0, 7)}
+      index={6}
+      {...attrs}
+    />
   ))

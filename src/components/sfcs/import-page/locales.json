@@ -14,6 +14,7 @@
       "peut être importé",
       "peuvent être importés"
     ],
+    "Add keywords and comments": "Ajout de mots-clés et commentaires",
     "Add storage": "Ajouter du stockage",
     "Add storage space to your vault to import more items": "Ajoutez de l'espace de stockage à votre coffre-fort pour pouvoir importer plus d'éléments",
     "Add websites and identifiers to your vault by importing them from a CSV file": "Ajouter des sites et identifiants à votre coffre-fort en les important depuis un fichier CSV",
@@ -26,6 +27,7 @@
       "Au plus cinq",
       "Au plus %0"
     ],
+    "By default, the comments include the origin and date of import": "Par défaut, les commentaires incluent l'origine et la date d'importation",
     "Cancel": "Annuler",
     "Checking the available storage space of your ZenyPass Vault": "Vérification de l'espace de stockage disponible dans votre coffre-fort ZenyPass",
     "continue and select at most": "continuer et sélectionner au plus",
@@ -47,7 +49,10 @@
     "Please wait": "Veuillez patienter",
     "Select which items to import": "Selectioner les éléments à importer",
     "that you wish to import": "que vous souhaitez importer",
+    "This is optional": "Ceci est facultatif",
     "You may chose to": "Vous pouvez choisir de",
+    "You may delete or extend this information": "Vous pouvez supprimer ou compléter ces informations",
+    "You may enter keywords and comments that will be added to all imported items": "Vous pouvez saisir des mots-clés et des commentaires qui seront ajoutés à tous les articles importés",
     "Your ZenyPass vault is full": "Votre coffre-fort ZenyPass est plein"
   },
   "en": {
@@ -61,6 +66,7 @@
       "%0 items"
     ],
     "%s may be imported": "may be imported",
+    "Add keywords and comments": "Add keywords and comments",
     "Add websites and identifiers to your vault by importing them from a CSV file": "Add websites and identifiers to your vault by importing them from a CSV file",
     "Add storage": "Add storage",
     "Add storage space to your vault to import more items": "Add storage space to your vault to import more items",
@@ -73,6 +79,7 @@
       "At most five",
       "At most %0"
     ],
+    "By default, the comments include the origin and date of import": "By default, the comments include the origin and date of import",
     "Cancel": "Cancel",
     "Checking the available storage space of your ZenyPass Vault": "Checking the available storage space of your ZenyPass Vault",
     "Continue": "Continue",
@@ -93,7 +100,10 @@
     "Please wait": "Please wait",
     "Select which items to import": "Select which items to import",
     "that you wish to import": "that you wish to import",
+    "This is optional": "This is optional",
     "You may chose to": "You may chose to",
+    "You may delete or extend this information": "You may delete or extend this information",
+    "You may enter keywords and comments that will be added to all imported items": "You may enter keywords and comments that will be added to all imported items",
     "Your ZenyPass vault is full": "Your ZenyPass vault is full"
   }
 }
