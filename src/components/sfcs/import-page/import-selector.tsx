@@ -17,6 +17,7 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { Label, Input } from 'bootstrap'
+import { NavbarMenu } from '../navbar-menu'
 import { classes } from 'utils'
 import { style } from 'typestyle'
 import createL10ns from 'basic-l10n'
@@ -24,9 +25,10 @@ const l10ns = createL10ns(require('./locales.json'))
 
 export interface ImportSelectorProps {
   locale: string
-  configs: string[]
+  configs?: string[]
   className?: string
-  onSelect: (event?: Event) => void
+  onClose?: (event?: MouseEvent) => void
+  onSelect?: (event?: Event) => void
 }
 
 const pointer = style({
@@ -37,6 +39,7 @@ export function ImportSelector ({
   locale,
   configs = [],
   className,
+  onClose,
   onSelect
 }: ImportSelectorProps) {
   const t = l10ns[locale]
@@ -57,25 +60,32 @@ export function ImportSelector ({
     )
   }
   return (
-    <div className={classes('text-center', className)}>
-      <h3 className='text-info'>
-        <strong>{t('Import websites and identifiers')}</strong>
-      </h3>
-      <p>
-        {t(
-          'Add websites and identifiers to your vault by importing them from a CSV file'
-        )}
-        .
-      </p>
-      <a
-        href={t('help-link')}
-        target='_blank'
-        rel='noopener noreferer'
-        className='text-right'
-      >
-        <small>{t('Need help')} ?</small>
-      </a>
-      <div className={'list-group text-center'}>{items}</div>
-    </div>
+    <section>
+      <header className='sticky-top shadow'>
+        <NavbarMenu onClickToggle={onClose} />
+      </header>
+      <main className='container'>
+        <div className={classes('text-center', className)}>
+          <h3 className='text-info'>
+            <strong>{t('Import websites and identifiers')}</strong>
+          </h3>
+          <p>
+            {t(
+              'Add websites and identifiers to your vault by importing them from a CSV file'
+            )}
+            .
+          </p>
+          <a
+            href={t('help-link')}
+            target='_blank'
+            rel='noopener noreferer'
+            className='text-right'
+          >
+            <small>{t('Need help')} ?</small>
+          </a>
+          <div className={'list-group text-center'}>{items}</div>
+        </div>
+      </main>
+    </section>
   )
 }

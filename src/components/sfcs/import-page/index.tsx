@@ -36,9 +36,9 @@ export interface ImportPageProps {
   max?: number
   selected?: number
   onAddStorage?: (event?: MouseEvent) => void
-  onChange: (value: string[] | string, target?: HTMLElement) => void
-  onClose: (event?: MouseEvent) => void
-  onCloseInfo: (event?: MouseEvent) => void
+  onChange?: (value: string[] | string, target?: HTMLElement) => void
+  onClose?: (event?: MouseEvent) => void
+  onCloseInfo?: (event?: MouseEvent) => void
   onDeselectAll?: (event?: MouseEvent) => void
   onSelectAll?: (event?: MouseEvent) => void
   onSelectFile?: (event?: Event) => void
@@ -87,35 +87,30 @@ export function ImportPage ({
           onSubmit={onSubmit}
         />
       )}
-      <section>
-        <header className='sticky-top'>
-          <NavbarMenu onClickToggle={onClose} className='shadow' />
-        </header>
-        <main className='container'>
-          {!configs || !configs.length ? null : (
-            <ImportSelector
-              locale={locale}
-              className='my-2'
-              configs={configs}
-              onSelect={onSelectFile}
-            />
-          )}
-          {!entries || !total ? null : (
-            <RecordSelector
-              locale={locale}
-              className='my-2'
-              entries={entries}
-              max={max}
-              selected={selected}
-              onAddStorage={onAddStorage}
-              onDeselectAll={onDeselectAll}
-              onSelectAll={onSelectAll}
-              onSubmit={onSubmit}
-              onToggleSelect={onToggleSelect}
-            />
-          )}
-        </main>
-      </section>
+      {!configs || !configs.length ? null : (
+        <ImportSelector
+          locale={locale}
+          className='my-2'
+          configs={configs}
+          onClose={onClose}
+          onSelect={onSelectFile}
+        />
+      )}
+      {!entries || !total ? null : (
+        <RecordSelector
+          locale={locale}
+          className='my-2'
+          entries={entries}
+          max={max}
+          selected={selected}
+          onAddStorage={onAddStorage}
+          onClose={onClose}
+          onDeselectAll={onDeselectAll}
+          onSelectAll={onSelectAll}
+          onSubmit={onSubmit}
+          onToggleSelect={onToggleSelect}
+        />
+      )}
     </Fragment>
   )
 }
@@ -191,7 +186,7 @@ function PendingAlert ({ locale }: PendingAlertProps) {
   const t = l10ns[locale]
   return (
     <InfoModal locale={locale} expanded title={t('Please wait')}>
-      <p>{t('Checking the available storage space of your ZenyPass Vault')}</p>
+      <p>{t('Checking the available storage space of your ZenyPass vault')}</p>
       <ProgressBar ratio={'100'} animated striped bg='info' />
     </InfoModal>
   )
@@ -302,7 +297,7 @@ function InsufficientStorageAlert ({
       <p>
         {t`At most ${max}`} {t('of the')} {t`${total} items`}{' '}
         {t('in this CSV file')} {t`${max} may be imported`}{' '}
-        {t('into the available space of your ZenyPass Vault')}.
+        {t('into the available space of your ZenyPass vault')}.
       </p>
       <p>
         {t('You may chose to')}:

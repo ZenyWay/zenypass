@@ -161,7 +161,7 @@ const PROP_MAPS: Partial<
     Comments: 'comments'
   },
   standard: {
-    name: 'name',
+    title: 'name',
     url: 'url',
     username: 'username',
     password: 'password',

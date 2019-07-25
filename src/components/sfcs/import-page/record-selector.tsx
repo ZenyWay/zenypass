@@ -15,11 +15,11 @@
  */
 
 /** @jsx createElement */
-import { createElement } from 'create-element'
-import { Button } from 'bootstrap'
+import { createElement, Fragment } from 'create-element'
+import { Button, Row } from 'bootstrap'
 import { CsvRecordItem, CsvRecord } from '../../csv-record-item'
 import { FAIconButton } from '../fa-icon'
-import { classes } from 'utils'
+import { NavbarMenu } from '../navbar-menu'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
@@ -29,6 +29,7 @@ export interface RecordSelectorProps extends RecordsListProps {
   selected?: number
   className?: string
   onAddStorage?: (event?: MouseEvent) => void
+  onClose?: (event?: MouseEvent) => void
   onDeselectAll?: (event?: MouseEvent) => void
   onSelectAll?: (event?: MouseEvent) => void
   onSubmit?: (event?: MouseEvent) => void
@@ -45,71 +46,109 @@ export function RecordSelector ({
   entries = [],
   max,
   selected,
-  className,
   onAddStorage,
+  onClose,
   onDeselectAll,
   onSelectAll,
   onSubmit,
-  onToggleSelect
+  onToggleSelect,
+  ...attrs
 }: RecordSelectorProps) {
   const t = l10ns[locale]
   const isLimited = isFinite(max)
   const isAllSelected = selected === (isLimited ? max : entries.length)
   const isNoneSelected = !selected
-  return (
-    <div className={classes('text-center', className)}>
-      <h3 className='text-info'>
-        <strong>{t('Select which items to import')}</strong>
-      </h3>
-      {!isLimited ? null : (
-        <p>
-          {t`At most ${max}`} {t('of the')} {t`${entries.length} items`}{' '}
-          {t('in this CSV file')} {t`${max} may be imported`}{' '}
-          {t('into the available space of your ZenyPass Vault')}.
-        </p>
-      )}
-      <div className='btn-toolbar justify-content-around'>
-        {!isLimited ? null : (
-          <Button color='info' outline onClick={onAddStorage} className='mb-2'>
+  const footer = !isLimited ? null : (
+    <Row>
+      <div className='col-12'>
+        <div className='clearfix d-sm-flex p-2'>
+          <small className='align-self-center'>
+            {t`At most ${max}`} {t('of the')} {t`${entries.length} items`}{' '}
+            {t('in this CSV file')} {t`${max} may be imported`}{' '}
+            {t('into the available space of your ZenyPass vault')}.
+          </small>
+          <Button
+            color='info'
+            outline
+            className='float-right flex-shrink-0 ml-auto h-100 align-self-center'
+            onClick={onAddStorage}
+          >
             {t('Add storage')}
           </Button>
-        )}
-        <FAIconButton
-          icon='download'
-          color={isNoneSelected ? 'secondary' : 'info'}
-          disabled={isNoneSelected}
-          className='mb-2'
-          onClick={onSubmit}
-        >
-          &nbsp;{t('Import selection')}
-        </FAIconButton>
+        </div>
       </div>
-      <div className='btn-toolbar justify-content-around'>
-        <FAIconButton
-          icon='square'
-          regular
-          color={isNoneSelected ? 'secondary' : 'info'}
-          outline
-          disabled={isNoneSelected}
-          className='mb-2'
-          onClick={onDeselectAll}
-        >
-          &nbsp;{t('Deselect all')}
-        </FAIconButton>
-        <FAIconButton
-          icon='check-square'
-          regular
-          color={isAllSelected ? 'secondary' : 'info'}
-          outline
-          disabled={isAllSelected}
-          className='mb-2'
-          onClick={onSelectAll}
-        >
-          &nbsp;{t('Select all')}
-        </FAIconButton>
-      </div>
-      <RecordsList entries={entries} onToggleSelect={onToggleSelect} />
-    </div>
+    </Row>
+  )
+  return (
+    <section>
+      <header className='sticky-top shadow-sm'>
+        <NavbarMenu onClickToggle={onClose} />
+        <div className='container bg-light text-center py-2'>
+          <Row>
+            <div className='col-12'>
+              <h4 className='text-info'>
+                <strong>{t('Select which items to import')}</strong>
+              </h4>
+              <div className='btn-toolbar justify-content-start'>
+                <FAIconButton
+                  icon='square'
+                  regular
+                  color={isNoneSelected ? 'secondary' : 'info'}
+                  outline
+                  disabled={isNoneSelected}
+                  className='mr-2'
+                  onClick={onDeselectAll}
+                >
+                  <small className='d-none d-sm-inline'>
+                    {' '}
+                    {t('Deselect all')}
+                  </small>
+                </FAIconButton>
+                <FAIconButton
+                  icon='check-square'
+                  regular
+                  color={isAllSelected ? 'secondary' : 'info'}
+                  outline
+                  disabled={isAllSelected}
+                  className='mr-auto'
+                  onClick={onSelectAll}
+                >
+                  <small className='d-none d-sm-inline'>
+                    {' '}
+                    {t('Select all')}
+                  </small>
+                </FAIconButton>
+                <Button
+                  color={isNoneSelected ? 'secondary' : 'info'}
+                  disabled={isNoneSelected}
+                  onClick={onSubmit}
+                >
+                  {' '}
+                  {t('Import selection')}
+                </Button>
+              </div>
+            </div>
+          </Row>
+        </div>
+      </header>
+      <main className='container'>
+        <Row {...attrs}>
+          <div className='col-12'>
+            <RecordsList entries={entries} onToggleSelect={onToggleSelect} />
+          </div>
+        </Row>
+      </main>
+      {!isLimited ? null : (
+        <Fragment>
+          <footer className='container invisible'>
+            {footer /* required as padding below fixed-bottom footer */}
+          </footer>
+          <footer className='container fixed-bottom bg-light border rounded shadow-sm'>
+            {footer}
+          </footer>
+        </Fragment>
+      )}
+    </section>
   )
 }
 
@@ -125,7 +164,7 @@ function RecordsList ({ entries, onToggleSelect }: RecordsListProps) {
   while (i--) {
     const { id, record, selected } = entries[i]
     items[i] = (
-      <li className='list-group-item'>
+      <li className='pb-2'>
         <CsvRecordItem
           id={id}
           record={record}
@@ -135,5 +174,5 @@ function RecordsList ({ entries, onToggleSelect }: RecordsListProps) {
       </li>
     )
   }
-  return <ul className='list-group text-left'>{items}</ul>
+  return <ul className='list-unstyled text-left mb-0'>{items}</ul>
 }

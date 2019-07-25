@@ -15,8 +15,8 @@
  */
 
 /** @jsx createElement */
-import { createElement } from 'create-element'
-import { Input, InputGroup, InputGroupAppend } from 'bootstrap'
+import { createElement, Fragment } from 'create-element'
+import { Input, InputProps, InputGroupAppend } from 'bootstrap'
 import { Checkbox } from './checkbox'
 import { FAIconButton } from './fa-icon'
 import { IconLabelInputGroup } from './icon-label-input-group'
@@ -52,13 +52,25 @@ export function CsvRecordItem ({
 }: CsvRecordItemProps) {
   return (
     <article {...attrs}>
-      <Checkbox id={id} checked={selected} onClick={onToggleSelect}>
-        <FormControlPlaintext className='text-truncate'>
-          {name}
-        </FormControlPlaintext>
-        <FormControlPlaintext className='text-truncate'>
-          {username}
-        </FormControlPlaintext>
+      <Checkbox
+        id={id}
+        checked={selected}
+        className='bg-white'
+        onClick={onToggleSelect}
+      >
+        <FormControlPlaintext
+          value={name}
+          overflow={details && 'hidden'}
+          className={!details && 'text-truncate border-right-0'}
+        />
+        {details ? null : (
+          <Fragment>
+            <FormControlPlaintext
+              value={username}
+              className='text-truncate border-left-0'
+            />
+          </Fragment>
+        )}
         <InputGroupAppend>
           <FAIconButton
             tag='span'
@@ -71,19 +83,14 @@ export function CsvRecordItem ({
         </InputGroupAppend>
       </Checkbox>
       {!details ? null : (
-        <div class='pb-3 px-sm-2'>
-          <InputGroup id={`${id}_name-field`} className='pt-2'>
-            <FormControlPlaintext overflow='hidden'>
-              {name}
-            </FormControlPlaintext>
-          </InputGroup>
+        <div class={'pb-2 px-1 px-sm-2'}>
           <IconLabelInputGroup
             id={`${id}_url-field`}
             className='pt-2'
             color='info'
             icon='bookmark'
           >
-            <FormControlPlaintext overflow='hidden'>{url}</FormControlPlaintext>
+            <FormControlPlaintext value={url} overflow='hidden' />
           </IconLabelInputGroup>
           <IconLabelInputGroup
             id={`${id}_username-field`}
@@ -91,9 +98,7 @@ export function CsvRecordItem ({
             color='info'
             icon='user'
           >
-            <FormControlPlaintext overflow='hidden'>
-              {username}
-            </FormControlPlaintext>
+            <FormControlPlaintext value={username} overflow='hidden' />
           </IconLabelInputGroup>
           <IconLabelInputGroup
             id={`${id}_password-field`}
@@ -101,9 +106,7 @@ export function CsvRecordItem ({
             color='info'
             icon='key'
           >
-            <FormControlPlaintext overflow='hidden'>
-              {password}
-            </FormControlPlaintext>
+            <FormControlPlaintext value={password} overflow='hidden' />
           </IconLabelInputGroup>
           <IconLabelInputGroup
             id={`${id}_comments-field`}
@@ -111,12 +114,7 @@ export function CsvRecordItem ({
             color='info'
             icon='sticky-note'
           >
-            <Input
-              type='textarea'
-              value={comments}
-              className='form-control form-control-plaintext border bg-light pl-2'
-              disabled
-            />
+            <FormControlPlaintext type='textarea' value={comments} />
           </IconLabelInputGroup>
         </div>
       )}
@@ -124,8 +122,8 @@ export function CsvRecordItem ({
   )
 }
 
-interface FormControlPlaintextProps {
-  overflow?: 'auto' | 'hidden'
+interface FormControlPlaintextProps extends InputProps {
+  overflow?: 'auto' | 'hidden' | '' | false
   className?: string
 }
 
@@ -135,9 +133,10 @@ function FormControlPlaintext ({
   ...attrs
 }: FormControlPlaintextProps) {
   return (
-    <span
+    <Input
+      disabled
       className={classes(
-        'form-control form-control-plaintext border bg-light px-2',
+        'form-control form-control-plaintext border bg-transparent px-2',
         overflow && `overflow-${overflow}`,
         className
       )}
