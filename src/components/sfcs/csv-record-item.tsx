@@ -89,7 +89,7 @@ export function CsvRecordItem ({
         </InputGroupAppend>
       </Checkbox>
       {!details ? null : (
-        <div class={'pb-2 px-1 px-sm-2'}>
+        <div class={'pb-2 px-1 px-sm-2 bg-light border rounded'}>
           <IconLabelInputGroup
             id={`${id}_url-field`}
             className='pt-2'

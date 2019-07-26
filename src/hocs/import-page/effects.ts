@@ -14,7 +14,7 @@
  * Limitations under the License.
  */
 
-import { ZenypassService, ZenypassRecord } from 'zenypass-service'
+import { createPrivilegedRequest, ZenypassRecord } from 'zenypass-service'
 import { getCsvParser, CSV_PARSER_SPEC } from 'basic-csv-parser'
 import { CsvRecord, ImportPageFsm, RecordSelectorEntry } from './reducer'
 import {
@@ -22,21 +22,18 @@ import {
   createActionFactory,
   StandardAction
 } from 'basic-fsa-factories'
-import { ERROR_STATUS } from 'utils'
-import {
-  Observable,
-  concat,
-  from as observableFrom,
-  of as observableOf
-} from 'rxjs'
+import { ERROR_STATUS, toProjection } from 'utils'
+import { Observable, from as observableFrom, of as observableOf } from 'rxjs'
 import {
   catchError,
   concatMap,
   distinctUntilKeyChanged,
+  endWith,
   filter,
   ignoreElements,
   pluck,
   map,
+  startWith,
   switchMap
 } from 'rxjs/operators'
 
@@ -78,34 +75,37 @@ export function importRecordsOnImportRecords (_: any, state$: Observable<any>) {
   return state$.pipe(
     distinctUntilKeyChanged('state'),
     filter(({ state }) => state === ImportPageFsm.ImportRecords),
-    concatMap(({ entries, service }) => importEntries(service, entries)),
+    switchMap(({ entries, onAuthenticationRequest, session }) =>
+      importEntries(toProjection(onAuthenticationRequest), session, entries)
+    ),
     catchError(err => observableOf(((err && ERRORS[err.status]) || error)(err)))
   )
 }
 
+const createRecord$ = createPrivilegedRequest<ZenypassRecord>(
+  ({ records }, record: ZenypassRecord) => records.newRecord(record)
+)
+
 function importEntries (
-  service: ZenypassService,
+  authenticate: (username: string) => Observable<string> | Promise<string>,
+  username: string,
   selected: RecordSelectorEntry[]
 ) {
-  return concat(
-    observableFrom(selected).pipe(
-      pluck('record'),
-      concatMap(importRecord)
-    ),
-    observableOf(importComplete())
-  )
-
-  function importRecord (
-    record: Partial<CsvRecord>,
-    index: number
-  ): Observable<StandardAction<any>> {
-    return concat(
-      observableOf(importingRecord(index)),
-      observableFrom(service.records.newRecord(record as ZenypassRecord)).pipe(
-        ignoreElements() // complete or error
+  return observableFrom(selected).pipe(
+    pluck('record'),
+    concatMap((record, index) =>
+      createRecord$(
+        authenticate,
+        username,
+        true, // unrestricted
+        record
+      ).pipe(
+        ignoreElements(), // complete or error
+        startWith(importingRecord(index))
       )
-    )
-  }
+    ),
+    endWith(importComplete())
+  )
 }
 
 export function readCsvFileOnSelectFile (

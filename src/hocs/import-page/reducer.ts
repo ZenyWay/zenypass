@@ -28,6 +28,7 @@ import {
   withEventGuards
 } from 'utils'
 import { createActionFactory, StandardAction } from 'basic-fsa-factories'
+import { Observer } from 'rxjs'
 import createL10ns from 'basic-l10n'
 export const l10ns = createL10ns(require('./locales.json'))
 
@@ -37,6 +38,7 @@ export interface HoistedImportPageHocProps {
   locale: string
   session?: string
   onAddStorage?: (event?: MouseEvent) => void
+  onAuthenticationRequest?: (res$: Observer<string>) => void
   onClose?: (event?: MouseEvent) => void
   onError?: (error?: any) => void
   onImport?: (records?: CsvRecord[]) => void
@@ -62,7 +64,7 @@ export enum ImportPageFsm {
   Offline = 'OFFLINE',
   NoStorage = 'NO_STORAGE',
   SelectFile = 'SELECT_FILE',
-  InsufficienStorage = 'INSUFFICIENT_STORAGE',
+  InsufficientStorage = 'INSUFFICIENT_STORAGE',
   SelectRecords = 'SELECT_RECORDS',
   EditRecords = 'EDIT_RECORDS',
   ImportRecords = 'IMPORT_RECORDS',
@@ -136,9 +138,9 @@ const importPageFsm: AutomataSpec<ImportPageFsm> = {
     SELECT_FILE: into('filename')(mapPayload(pluck('file', 'name'))),
     ENTRIES: into('entries')(mapPayload()),
     SUFFICIENT_STORAGE: ImportPageFsm.SelectRecords,
-    INSUFFICIENT_STORAGE: ImportPageFsm.InsufficienStorage
+    INSUFFICIENT_STORAGE: ImportPageFsm.InsufficientStorage
   },
-  [ImportPageFsm.InsufficienStorage]: {
+  [ImportPageFsm.InsufficientStorage]: {
     CLOSE_INFO: ImportPageFsm.SelectRecords,
     ADD_STORAGE: [ImportPageFsm.Exit, ...reset]
   },
@@ -148,7 +150,7 @@ const importPageFsm: AutomataSpec<ImportPageFsm> = {
       propCursor('entries')(toggleSelected)
     ],
     REJECT_SELECT: [
-      ImportPageFsm.InsufficienStorage,
+      ImportPageFsm.InsufficientStorage,
       into('selected')(countSelected),
       propCursor('entries')(toggleSelected)
     ],
@@ -186,6 +188,7 @@ const SELECTED_PROPS: (keyof HoistedImportPageHocProps)[] = [
   'locale',
   'session',
   'onAddStorage',
+  'onAuthenticationRequest',
   'onClose',
   'onError',
   'onImport'

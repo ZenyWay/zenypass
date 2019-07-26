@@ -4,11 +4,7 @@
     "label": "authorizations",
     "icon": "fa fa-mobile-alt fa-lg"
   },
-  {
-    "data-id": "storage",
-    "label": "storage",
-    "icon": "fa fa-database"
-  },
+  "storage",
   "locale",
   "help",
   {

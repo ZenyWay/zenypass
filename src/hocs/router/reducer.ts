@@ -25,6 +25,7 @@ export const enum RouteAutomataState {
   Authorize = '/authorize',
   Fatal = '/fatal',
   Homepage = '/',
+  Import = '/import',
   Signin = '/signin',
   SigningOut = '/signin;signing-out',
   Signup = '/signup',
@@ -37,6 +38,7 @@ const paths = createActionFactories({
   [RouteAutomataState.Authorize]: 'AUTHORIZE',
   [RouteAutomataState.Fatal]: 'FATAL',
   [RouteAutomataState.Homepage]: 'HOMEPAGE',
+  [RouteAutomataState.Import]: 'IMPORT',
   [RouteAutomataState.Signin]: 'SIGNIN',
   [RouteAutomataState.Signup]: 'SIGNUP',
   [RouteAutomataState.Storage]: 'STORAGE'
@@ -79,8 +81,15 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
   },
   [RouteAutomataState.Homepage]: {
     AUTHORIZATIONS: RouteAutomataState.Authorizations,
+    IMPORT: RouteAutomataState.Import,
     STORAGE: RouteAutomataState.Storage,
     LOGOUT: RouteAutomataState.SigningOut,
+    EMAIL: RouteAutomataState.SigningOut,
+    FATAL_ERROR: RouteAutomataState.Fatal
+  },
+  [RouteAutomataState.Import]: {
+    STORAGE: RouteAutomataState.Storage,
+    CLOSE: RouteAutomataState.Homepage,
     EMAIL: RouteAutomataState.SigningOut,
     FATAL_ERROR: RouteAutomataState.Fatal
   },

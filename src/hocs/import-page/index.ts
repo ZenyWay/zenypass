@@ -44,6 +44,7 @@ import {
 } from 'basic-fsa-factories'
 import { callHandlerOnEvent, focus, shallowEqual, tapOnEvent } from 'utils'
 import { distinctUntilChanged } from 'rxjs/operators'
+import { Observer } from 'rxjs'
 const log = logger('import-page')
 
 export type ImportPageProps<P extends ImportPageSFCProps> = ImportPageHocProps &
@@ -101,13 +102,14 @@ interface ImportPageState extends HoistedImportPageHocProps {
   selected?: number
   session?: string
   state: ImportPageFsm
+  onAuthenticationRequest?: (res$: Observer<string>) => void
   onClose?: (event?: MouseEvent) => void
   onError?: (error?: any) => void
   onAddStorage?: (event?: MouseEvent) => void
 }
 
 const STATE_TO_ALERT: Partial<{ [state in ImportPageFsm]: Alert }> = {
-  [ImportPageFsm.InsufficienStorage]: 'storage',
+  [ImportPageFsm.InsufficientStorage]: 'storage',
   [ImportPageFsm.NoStorage]: 'storage',
   [ImportPageFsm.Offline]: 'offline',
   [ImportPageFsm.Pending]: 'pending',

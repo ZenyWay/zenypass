@@ -18,6 +18,7 @@ import { createElement, Fragment } from 'create-element'
 import { AuthorizationPage } from '../../authorization-page'
 import { AgentAuthorizationsPage } from '../../agent-authorizations-page'
 import { HomePage, MenuSpecs, DropdownItemSpec } from '../../home-page'
+import { ImportPage } from '../../import-page'
 import { SigninPage } from '../../signin-page'
 import { SignupPage } from '../../signup-page'
 import { SignupDonePage } from '../signup-done-page'
@@ -186,6 +187,17 @@ function CoreRouter ({
         <StoragePage
           locale={locale}
           session={session}
+          onClose={onClose}
+          onError={onError}
+        />
+      )
+    case '/import':
+      return (
+        <ImportPage
+          locale={locale}
+          session={session}
+          onAuthenticationRequest={onAuthenticationRequest}
+          onAddStorage={onStorage}
           onClose={onClose}
           onError={onError}
         />

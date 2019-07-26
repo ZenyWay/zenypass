@@ -23,6 +23,7 @@ import {
 const MENU_ACTIONS = createActionFactories({
   authorizations: 'AUTHORIZATIONS',
   storage: 'STORAGE',
+  import: 'IMPORT',
   locale: ['UPDATE_QUERY_PARAM', lang => ['lang', lang]],
   help: 'HELP',
   logout: 'LOGOUT'

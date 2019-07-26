@@ -55,7 +55,7 @@ export function RecordSelector ({
   ...attrs
 }: RecordSelectorProps) {
   const t = l10ns[locale]
-  const isLimited = isFinite(max)
+  const isLimited = entries.length > max
   const isAllSelected = selected === (isLimited ? max : entries.length)
   const isNoneSelected = !selected
   const footer = !isLimited ? null : (
@@ -81,9 +81,9 @@ export function RecordSelector ({
   )
   return (
     <section>
-      <header className='sticky-top shadow-sm'>
+      <header className='sticky-top shadow-sm bg-grey'>
         <NavbarMenu onClickToggle={onClose} />
-        <div className='container bg-light text-center py-2'>
+        <div className='container text-center py-2'>
           <Row>
             <div className='col-12'>
               <h4 className='text-info'>
