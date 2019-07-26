@@ -42,6 +42,7 @@ export function BulkEditAlert ({
   const t = l10ns[locale]
   return (
     <InfoModal
+      tag='form'
       locale={locale}
       expanded
       title={t('Add keywords and comments')}

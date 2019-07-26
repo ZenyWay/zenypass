@@ -26,6 +26,8 @@ export interface InfoModalProps {
   cancel?: string
   confirm?: string
   pending?: boolean
+  id?: string
+  tag?: string
   children?: any
   onCancel?: (event: MouseEvent) => void
   onConfirm?: (event: MouseEvent) => void
@@ -42,6 +44,8 @@ export function InfoModal ({
   cancel,
   confirm,
   pending,
+  id,
+  tag,
   onCancel,
   onConfirm,
   onOpened,
@@ -50,6 +54,9 @@ export function InfoModal ({
   ...attrs
 }: InfoModalProps) {
   const t = l10ns[locale]
+  const isForm = tag === 'form'
+  const _id = id || (isForm ? `form_${title || confirm}` : void 0)
+  const onClickConfirm = onConfirm || onCancel
 
   return (
     <Modal
@@ -64,7 +71,12 @@ export function InfoModal ({
           {title}
         </ModalHeader>
       )}
-      <ModalBody {...attrs} />
+      <ModalBody
+        tag={tag}
+        id={_id}
+        onSubmit={isForm ? onClickConfirm : void 0}
+        {...attrs}
+      />
       {!onConfirm && !onCancel ? null : (
         <ModalFooter className='bg-light'>
           {!onConfirm ? null : (
@@ -73,10 +85,12 @@ export function InfoModal ({
             </Button>
           )}
           <Button
+            type={isForm ? 'submit' : void 0}
+            form={isForm ? _id : void 0}
             color='info'
             innerRef={onDefaultActionButtonRef}
             disabled={pending}
-            onClick={onConfirm || onCancel}
+            onClick={!isForm ? onClickConfirm : void 0}
           >
             {!onConfirm ? cancel || t('Ok') : confirm || t('Yes')}
           </Button>

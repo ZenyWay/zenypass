@@ -18,6 +18,7 @@
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import preventDefaultAction from './helpers/prevent-default'
 import withL10n from 'zenyway-storybook-addon-l10n'
 import { RECORDS, PASSWORD } from './helpers/consts'
 import { ImportPageSFC as ImportPage } from 'components'
@@ -40,7 +41,7 @@ const attrs = {
   onError: action('ERROR'),
   onSelectAll: action('SELECT_ALL'),
   onSelectFile: action('SELECT_FILE'),
-  onSubmit: action('SUBMIT'),
+  onSubmit: preventDefaultAction('SUBMIT'),
   onToggleSelect: action('TOGGLE_SELECT')
 }
 

@@ -17,7 +17,6 @@
 /** @jsx createElement */
 import { createElement } from 'create-element'
 import { storiesOf } from '@storybook/react'
-import { action } from '@storybook/addon-actions'
 import preventDefaultAction from './helpers/prevent-default'
 import { RECORDS, PASSWORD } from './helpers/consts'
 import { CsvRecordItemSFC as CsvRecordItem } from 'components'
