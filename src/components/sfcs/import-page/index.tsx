@@ -21,7 +21,6 @@ import { ImportSelector } from './import-selector'
 import { BulkEditAlert, BulkEditAlertProps } from './bulk-edit-alert'
 import { RecordSelector, RecordSelectorEntry } from './record-selector'
 import { InfoModal } from '../info-modal'
-import { NavbarMenu } from '../navbar-menu'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
 
@@ -39,6 +38,7 @@ export interface ImportPageProps {
   onChange?: (value: string[] | string, target?: HTMLElement) => void
   onClose?: (event?: MouseEvent) => void
   onCloseInfo?: (event?: MouseEvent) => void
+  onDefaultActionButtonRef?: (element: HTMLElement) => void
   onDeselectAll?: (event?: MouseEvent) => void
   onSelectAll?: (event?: MouseEvent) => void
   onSelectFile?: (event?: Event) => void
@@ -59,10 +59,11 @@ export function ImportPage ({
   max,
   selected,
   onAddStorage,
-  onDeselectAll,
   onChange,
   onClose,
   onCloseInfo,
+  onDefaultActionButtonRef,
+  onDeselectAll,
   onSelectAll,
   onSelectFile,
   onSubmit,
@@ -80,6 +81,7 @@ export function ImportPage ({
           locale={locale}
           max={max}
           total={total}
+          onDefaultActionButtonRef={onDefaultActionButtonRef}
           onAddStorage={onAddStorage}
           onChange={onChange}
           onClose={onClose}
@@ -137,6 +139,7 @@ function AlertModal ({
   onChange,
   onClose,
   onCloseInfo,
+  onDefaultActionButtonRef,
   onSubmit
 }: AlertModalProps) {
   switch (alert) {
@@ -148,13 +151,20 @@ function AlertModal ({
           keywords={keywords}
           onChange={onChange}
           onCloseInfo={onCloseInfo}
+          onDefaultActionButtonRef={onDefaultActionButtonRef}
           onSubmit={onSubmit}
         />
       )
     case 'import':
       return <ImportingAlert locale={locale} index={index} total={total} />
     case 'offline':
-      return <OfflineAlert locale={locale} onClose={onClose} />
+      return (
+        <OfflineAlert
+          locale={locale}
+          onClose={onClose}
+          onDefaultActionButtonRef={onDefaultActionButtonRef}
+        />
+      )
     case 'pending':
       return <PendingAlert locale={locale} />
     case 'storage':
@@ -163,14 +173,16 @@ function AlertModal ({
           locale={locale}
           onClose={onClose}
           onAddStorage={onAddStorage}
+          onDefaultActionButtonRef={onDefaultActionButtonRef}
         />
       ) : (
         <InsufficientStorageAlert
           locale={locale}
           max={max}
           total={total}
-          onCloseInfo={onCloseInfo}
           onAddStorage={onAddStorage}
+          onCloseInfo={onCloseInfo}
+          onDefaultActionButtonRef={onDefaultActionButtonRef}
         />
       )
     default:
@@ -218,10 +230,15 @@ function ImportingAlert ({ locale, index, total }: ImportingAlertProps) {
 
 interface OfflineAlertProps {
   locale: string
+  onDefaultActionButtonRef?: (element: HTMLElement) => void
   onClose: (event?: MouseEvent) => void
 }
 
-function OfflineAlert ({ locale, onClose }: OfflineAlertProps) {
+function OfflineAlert ({
+  locale,
+  onClose,
+  onDefaultActionButtonRef
+}: OfflineAlertProps) {
   const t = l10ns[locale]
   return (
     <InfoModal
@@ -229,6 +246,7 @@ function OfflineAlert ({ locale, onClose }: OfflineAlertProps) {
       expanded
       title={t('Connection error')}
       onCancel={onClose}
+      onDefaultActionButtonRef={onDefaultActionButtonRef}
     >
       <p>
         {t('Disconnected from the ZenyPass server')}:<br />
@@ -242,12 +260,14 @@ interface NoStorageAlertProps {
   locale: string
   onClose: (event?: MouseEvent) => void
   onAddStorage: (event?: MouseEvent) => void
+  onDefaultActionButtonRef?: (element: HTMLElement) => void
 }
 
 function NoStorageAlert ({
   locale,
   onClose,
-  onAddStorage
+  onAddStorage,
+  onDefaultActionButtonRef
 }: NoStorageAlertProps) {
   const t = l10ns[locale]
   return (
@@ -259,6 +279,7 @@ function NoStorageAlert ({
       cancel={t('Cancel')}
       onConfirm={onAddStorage}
       onCancel={onClose}
+      onDefaultActionButtonRef={onDefaultActionButtonRef}
     >
       <p>
         {t('Your ZenyPass vault is full')}:<br />
@@ -272,16 +293,18 @@ interface InsufficientStorageAlertProps {
   locale: string
   max: number
   total: number
-  onCloseInfo: (event?: MouseEvent) => void
   onAddStorage: (event?: MouseEvent) => void
+  onCloseInfo: (event?: MouseEvent) => void
+  onDefaultActionButtonRef?: (element: HTMLElement) => void
 }
 
 function InsufficientStorageAlert ({
   locale,
   max,
   total,
+  onAddStorage,
   onCloseInfo,
-  onAddStorage
+  onDefaultActionButtonRef
 }: InsufficientStorageAlertProps) {
   const t = l10ns[locale]
   return (
@@ -293,6 +316,7 @@ function InsufficientStorageAlert ({
       cancel={t('Continue')}
       onConfirm={onAddStorage}
       onCancel={onCloseInfo}
+      onDefaultActionButtonRef={onDefaultActionButtonRef}
     >
       <p>
         {t`At most ${max}`} {t('of the')} {t`${total} items`}{' '}

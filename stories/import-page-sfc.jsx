@@ -37,6 +37,7 @@ const attrs = {
   onChange: action('CHANGE'),
   onClose: action('CLOSE'),
   onCloseInfo: action('CLOSE_INFO'),
+  onDefaultActionButtonRef: action('DEFAULT_ACTION_BUTTON_REF'),
   onDeselectAll: action('DESELECT_ALL'),
   onError: action('ERROR'),
   onSelectAll: action('SELECT_ALL'),

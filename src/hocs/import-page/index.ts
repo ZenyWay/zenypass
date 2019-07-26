@@ -42,7 +42,7 @@ import {
   createActionDispatchers,
   createActionFactories
 } from 'basic-fsa-factories'
-import { callHandlerOnEvent, shallowEqual } from 'utils'
+import { callHandlerOnEvent, focus, shallowEqual, tapOnEvent } from 'utils'
 import { distinctUntilChanged } from 'rxjs/operators'
 const log = logger('import-page')
 
@@ -71,6 +71,7 @@ export interface ImportPageSFCHandlerProps {
   onChange?: (value: string[] | string, target?: HTMLElement) => void
   onClose?: (event?: MouseEvent) => void
   onCloseInfo?: (event?: MouseEvent) => void
+  onDefaultActionButtonRef?: (element?: HTMLElement) => void
   onDeselectAll?: (event?: MouseEvent) => void
   onSelectAll?: (event?: MouseEvent) => void
   onSelectFile?: (event?: Event) => void
@@ -161,6 +162,7 @@ const mapDispatchToProps: (
   onCloseInfo: 'CLOSE_INFO',
   onError: 'ERROR',
   onDeselectAll: 'DESELECT_ALL',
+  onDefaultActionButtonRef: 'DEFAULT_ACTION_BUTTON_REF',
   onSelectAll: 'SELECT_ALL',
   onSelectFile: [
     'SELECT_FILE',
@@ -185,6 +187,7 @@ export function importPage<P extends ImportPageSFCProps> (
       injectStorageStatusOnService,
       readCsvFileOnSelectFile,
       importRecordsOnImportRecords,
+      tapOnEvent('DEFAULT_ACTION_BUTTON_REF', focus),
       callHandlerOnEvent('ADD_STORAGE', 'onAddStorage'),
       callHandlerOnEvent('CLOSE', 'onClose'),
       callHandlerOnEvent('ERROR', 'onError'),

@@ -28,6 +28,7 @@ export interface BulkEditAlertProps {
   keywords: string[]
   onChange: (value: string[] | string, target?: HTMLElement) => void
   onCloseInfo: (event?: MouseEvent) => void
+  onDefaultActionButtonRef?: (element: HTMLElement) => void
   onSubmit?: (event?: MouseEvent) => void
 }
 
@@ -37,12 +38,12 @@ export function BulkEditAlert ({
   keywords,
   onChange,
   onCloseInfo,
+  onDefaultActionButtonRef,
   onSubmit
 }: BulkEditAlertProps) {
   const t = l10ns[locale]
   return (
     <InfoModal
-      tag='form'
       locale={locale}
       expanded
       title={t('Add keywords and comments')}
@@ -50,6 +51,7 @@ export function BulkEditAlert ({
       confirm={t('Import')}
       onCancel={onCloseInfo}
       onConfirm={onSubmit}
+      onDefaultActionButtonRef={onDefaultActionButtonRef}
     >
       <small>
         <p>

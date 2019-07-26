@@ -19,7 +19,6 @@ import { Observable, Observer, Subject, defer, noop } from 'rxjs'
 import {
   distinctUntilChanged,
   filter,
-  first,
   ignoreElements,
   map,
   pluck,
@@ -57,7 +56,10 @@ export function tapOnEvent<S = any> (
     state$: Observable<S>
   ) {
     return getTrigger$Factory(type)(event$, state$).pipe(
-      tap(([{ payload }, state]) => effect(payload, state)),
+      tap(
+        ([{ payload }, state]) =>
+          Promise.resolve().then(() => effect(payload, state)) // asap
+      ),
       ignoreElements()
     )
   }
