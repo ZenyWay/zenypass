@@ -28,6 +28,7 @@ const ENTRY = {
 }
 
 const attrs = {
+  onToggleCleartext: preventDefaultAction('TOGGLE_CLEARTEXT'),
   onToggleDetails: preventDefaultAction('TOGGLE_DETAILS'),
   onToggleSelect: preventDefaultAction('TOGGLE_SELECT')
 }
@@ -35,3 +36,6 @@ const attrs = {
 storiesOf('CsvRecordItem (SFC)', module)
   .add('default', () => <CsvRecordItem {...ENTRY} {...attrs} />)
   .add('details', () => <CsvRecordItem {...ENTRY} details {...attrs} />)
+  .add('details-cleartext', () => (
+    <CsvRecordItem {...ENTRY} cleartext details {...attrs} />
+  ))

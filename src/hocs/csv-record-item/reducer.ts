@@ -43,6 +43,7 @@ const SELECTED_PROPS: (keyof HoistedCsvRecordItemHocProps)[] = [
 ]
 
 export default compose.into(0)(
+  forType('TOGGLE_CLEARTEXT')(propCursor('cleartext')(not())),
   forType('TOGGLE_DETAILS')(propCursor('details')(not())),
   forType('PROPS')(
     compose.into(0)(

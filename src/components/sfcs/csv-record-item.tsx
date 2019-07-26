@@ -26,11 +26,13 @@ import { style } from 'typestyle'
 export interface CsvRecordItemProps {
   id: string
   record: Partial<CsvRecord>
-  selected?: boolean
-  details?: boolean
   className?: string
-  onToggleSelect?: (event?: MouseEvent) => void
+  cleartext?: boolean
+  details?: boolean
+  selected?: boolean
+  onToggleCleartext?: (event?: MouseEvent) => void
   onToggleDetails?: (event?: MouseEvent) => void
+  onToggleSelect?: (event?: MouseEvent) => void
 }
 
 export interface CsvRecord {
@@ -41,13 +43,17 @@ export interface CsvRecord {
   comments: string
 }
 
+const CONCEALED_PASSWORD = '*****'
+
 export function CsvRecordItem ({
   id,
   record: { name, url, username, password, comments },
-  selected,
+  cleartext,
   details,
-  onToggleSelect,
+  selected,
+  onToggleCleartext,
   onToggleDetails,
+  onToggleSelect,
   ...attrs
 }: CsvRecordItemProps) {
   return (
@@ -104,9 +110,13 @@ export function CsvRecordItem ({
             id={`${id}_password-field`}
             className='pt-2'
             color='info'
-            icon='key'
+            icon={cleartext ? 'eye-slash' : 'eye'}
+            onIconClick={onToggleCleartext}
           >
-            <FormControlPlaintext value={password} overflow='hidden' />
+            <FormControlPlaintext
+              value={cleartext ? password : CONCEALED_PASSWORD}
+              overflow='hidden'
+            />
           </IconLabelInputGroup>
           <IconLabelInputGroup
             id={`${id}_comments-field`}

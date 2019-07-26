@@ -39,13 +39,15 @@ export type CsvRecordItemProps<
 export interface CsvRecordItemSFCProps extends CsvRecordItemSFCHandlerProps {
   id: string
   record: Partial<CsvRecord>
-  selected?: boolean
+  cleartext?: boolean
   details?: boolean
+  selected?: boolean
 }
 
 export interface CsvRecordItemSFCHandlerProps {
-  onToggleSelect?: (event?: MouseEvent) => void
+  onToggleCleartext?: (event?: MouseEvent) => void
   onToggleDetails?: (event?: MouseEvent) => void
+  onToggleSelect?: (event?: MouseEvent) => void
 }
 
 interface CsvRecordItemState extends HoistedCsvRecordItemHocProps {
@@ -57,23 +59,26 @@ interface CsvRecordItemState extends HoistedCsvRecordItemHocProps {
     >
   >
   id: string
+  cleartext?: boolean
   details?: boolean
 }
 
 function mapStateToProps ({
   attrs,
   id,
+  cleartext,
   details
 }: CsvRecordItemState): Rest<
   CsvRecordItemSFCProps,
   CsvRecordItemSFCHandlerProps
 > {
-  return { ...attrs, id, details }
+  return { ...attrs, id, cleartext, details }
 }
 
 const mapDispatchToProps: (
   dispatch: (event: any) => void
 ) => CsvRecordItemSFCHandlerProps = createActionDispatchers({
+  onToggleCleartext: 'TOGGLE_CLEARTEXT',
   onToggleDetails: 'TOGGLE_DETAILS',
   onToggleSelect: 'TOGGLE_SELECT'
 })
