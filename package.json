@@ -1,7 +1,7 @@
 {
   "name": "@zenyway/zenypass",
   "configPublish": "http://npm.zenyway.com:5984",
-  "version": "2.5.2",
+  "version": "2.6.0",
   "description": "zero-knowledge open source password manager web-app that syncs and runs everywhere",
   "main": "dist/index.js",
   "scripts": {
@@ -104,7 +104,7 @@
     "browserify-licenses": "1.4.6",
     "browserify-markdown": "2.0.1",
     "budo": "11.6.2",
-    "common-shakeify": "0.6.2",
+    "common-shakeify": "0.6.0",
     "concurrently": "4.1.1",
     "connect-modrewrite": "0.10.2",
     "coveralls": "3.0.5",

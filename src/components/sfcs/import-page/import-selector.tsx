@@ -54,7 +54,7 @@ export function ImportSelector ({
         className={`list-group-item list-group-item-action ${pointer}`}
         key={`import-selector-item-${i}`}
       >
-        <Input type='file' class='d-none' onInput={onSelect} data-index={i} />
+        <Input type='file' class='d-none' onChange={onSelect} data-index={i} />
         {t`Import from a ${config} CSV file`}
       </Label>
     )
