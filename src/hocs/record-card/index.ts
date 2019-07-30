@@ -29,7 +29,7 @@ import {
   Rest,
   SFC,
   connect,
-  // logger,
+  logger,
   redux
 } from 'component-from-events'
 import {
@@ -46,7 +46,7 @@ import {
   createActionFactory
 } from 'basic-fsa-factories'
 import { Observer } from 'rxjs'
-// const log = logger('record-card')
+const log = logger('record-card')
 
 export type RecordCardProps<P extends RecordCardSFCProps> = RecordCardHocProps &
   Rest<P, RecordCardSFCProps>
@@ -252,7 +252,7 @@ export function recordCard<P extends RecordCardSFCProps> (
 ): ComponentConstructor<RecordCardProps<P>> {
   return componentFromEvents(
     RecordCardSFC,
-    // log('event'),
+    log('event'),
     redux(
       reducer,
       callHandlerOnEvent('ERROR', ['props', 'onError']),
@@ -263,11 +263,11 @@ export function recordCard<P extends RecordCardSFCProps> (
       timeoutCleartextOnReadonlyCleartext,
       saveRecordOnPendingSaveOrDeleteRecord
     ),
-    // log('state'),
+    log('state'),
     connect<RecordCardState, RecordCardSFCProps>(
       mapStateToProps,
       mapDispatchToProps
-    )
-    // log('view-props')
+    ),
+    log('view-props')
   )
 }

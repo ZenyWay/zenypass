@@ -88,13 +88,11 @@ function signout (username: string): Promise<void> {
     .catch(log('signout:ignored:'))
 }
 
-// support url hash in storybook (iframe in development mode)
-const win = window.top
 importV1Params()
 
 export function urlPathUpdateAndQsParamActionsFromLocationHash () {
-  const hash$ = fromEvent(win, 'hashchange').pipe(
-    map(() => win.location.hash.slice(1)), // remove leading hash
+  const hash$ = fromEvent(window, 'hashchange').pipe(
+    map(() => window.location.hash.slice(1)), // remove leading hash
     share()
   )
   const params$ = hash$.pipe(
@@ -163,9 +161,9 @@ function replaceLocationHash (update: string | URLSearchParams) {
   const params = !isPathUpdate
     ? (update as URLSearchParams)
     : parseQueryParamsFromLocationHash()
-  const url = new URL(win.location.toString())
+  const url = new URL(window.location.toString())
   url.hash = `#${path}${toSearchString(params)}`
-  win.location.replace(url.toString())
+  window.location.replace(url.toString())
 }
 
 function parsePathFromLocationHash () {
@@ -178,7 +176,7 @@ function parseQueryParamsFromLocationHash () {
 }
 
 function parseUrlFromLocationHash () {
-  return new URL(win.location.hash.slice(1), win.location.origin)
+  return new URL(window.location.hash.slice(1), window.location.origin)
 }
 
 function getSearchParam (params: URLSearchParams, key: string): string {
@@ -196,14 +194,14 @@ function isValidBoolean (val: string) {
 }
 
 function importV1Params () {
-  const url = new URL(win.location.href)
+  const url = new URL(window.location.href)
   if (!url.search) return
   for (const key of Object.keys(V1_PARAMS)) {
     importV1ParamToHashQS(key, getSearchParam(url.searchParams, key))
   }
   url.search = ''
-  url.hash = win.location.hash
-  win.location.replace(url.href)
+  url.hash = window.location.hash
+  window.location.replace(url.href)
 }
 
 function importV1ParamToHashQS (key: string, value: string) {

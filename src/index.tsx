@@ -15,8 +15,7 @@
  */
 /** @jsx createElement */
 import 'symbol-observable' // polyfill
-import { initDevTools } from 'inferno-devtools'
-import { createElement, render } from 'create-element'
+import { createElement, initDevTools, render } from 'create-element'
 import { Router as App } from 'components'
 
 if (process.env.NODE_ENV !== 'production') {

@@ -29,6 +29,7 @@ export default {
     l10ns,
     assemble(require('./homepage.json'), {
       locale,
+      storage: require('./storage.json'),
       help: require('./help.json')
     }),
     excludeCurrentLocale

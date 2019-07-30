@@ -1,0 +1,14 @@
+{
+  "fr": {
+    "excel": "Excel",
+    "Imported on %s, from file \"%s\"": "Importé le %0, depuis le fichier \"%1\"",
+    "keepass": "KeePass",
+    "standard": "standard"
+  },
+  "en": {
+    "excel": "Excel",
+    "Imported on %s, from file \"%s\"": "Imported on %0, from file \"%1\"",
+    "keepass": "KeePass",
+    "standard": "standard"
+  }
+}

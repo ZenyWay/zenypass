@@ -34,7 +34,6 @@ export interface FilteredRecordEntry {
 
 export function FilteredRecordCards ({
   records = [],
-  filter,
   className,
   ...attrs
 }: FilteredRecordCardsProps & { [prop: string]: unknown }) {

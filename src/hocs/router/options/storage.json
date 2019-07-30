@@ -1,0 +1,17 @@
+[
+  {
+    "data-id": "storage",
+    "label": "storage",
+    "icon": "fa fa-database"
+  },
+  {
+    "data-id": "storage",
+    "label": "setup",
+    "icon": "fa fa-cog"
+  },
+  {
+    "data-id": "import",
+    "label": "import",
+    "icon": "fa fa-download"
+  }
+]

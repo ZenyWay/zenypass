@@ -15,7 +15,7 @@
 //
 import { decorateAction } from '@storybook/addon-actions'
 
-export default function (effect: (event: any) => any) {
+export default function (effect) {
   return decorateAction([
     function (args) {
       const [event] = args

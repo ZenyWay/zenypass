@@ -6,9 +6,11 @@
     "fr": "Français",
     "en": "English",
     "help": "Aide",
+    "import": "Import",
     "online-help": "Aide en ligne",
     "first-steps": "Premiers Pas",
     "help-link": "https://medium.com/zenypass-fr/tagged/aide-zenypass",
+    "setup": "Configuration",
     "storage": "Stockage",
     "sign-out": "Déconnexion"
   },
@@ -19,9 +21,11 @@
     "fr": "Français",
     "en": "English",
     "help": "Help",
+    "import": "Import",
     "online-help": "Online help",
     "first-steps": "First Steps",
     "help-link": "https://medium.com/zenypass-en/tagged/zenypass-help",
+    "setup": "Setup",
     "storage": "Storage",
     "sign-out": "Sign out"
   }

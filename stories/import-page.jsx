@@ -14,19 +14,23 @@
  * Limitations under the License.
  */
 
-import 'symbol-observable' // polyfill
-import { addDecorator, addParameters, configure } from '@storybook/react'
-import { themes } from '@storybook/theming'
-import { initDevTools } from 'inferno-devtools'
+/** @jsx createElement */
+import { createElement } from 'create-element'
+import { storiesOf } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
+import withL10n from 'zenyway-storybook-addon-l10n'
+import { ImportPage } from 'components'
+import { USERNAME } from '../stubs/zenypass-service'
 
-initDevTools()
-
-addParameters({ options: { theme: themes.dark } })
-
-const req = require.context('../stories', true, /\.jsx$/)
-
-function loadStories () {
-  req.keys().forEach(filename => req(filename))
+const attrs = {
+  session: USERNAME,
+  onAddStorage: action('ADD_STORAGE'),
+  onClose: action('CLOSE'),
+  onError: action('ERROR')
 }
 
-configure(loadStories, module)
+storiesOf('ImportPage', module)
+  .addDecorator(withL10n({ locales: ['fr', 'en'] }))
+  .add('default', () => ({ locale }) => (
+    <ImportPage locale={locale} {...attrs} />
+  ))

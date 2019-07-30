@@ -14,19 +14,22 @@
  * Limitations under the License.
  */
 
-import 'symbol-observable' // polyfill
-import { addDecorator, addParameters, configure } from '@storybook/react'
-import { themes } from '@storybook/theming'
-import { initDevTools } from 'inferno-devtools'
+/** @jsx createElement */
+import { createElement } from 'create-element'
+import { storiesOf } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
+import { RECORDS, PASSWORD } from './helpers/consts'
+import { CsvRecordItem } from 'components'
 
-initDevTools()
-
-addParameters({ options: { theme: themes.dark } })
-
-const req = require.context('../stories', true, /\.jsx$/)
-
-function loadStories () {
-  req.keys().forEach(filename => req(filename))
+const ENTRY = {
+  id: '0',
+  record: { ...RECORDS[0], password: PASSWORD }
 }
 
-configure(loadStories, module)
+const attrs = {
+  onToggleSelect: action('TOGGLE_SELECT')
+}
+
+storiesOf('CsvRecordItem', module).add('default', () => (
+  <CsvRecordItem {...ENTRY} {...attrs} />
+))

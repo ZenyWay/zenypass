@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 ZenyWay S.A.S., Stephane M. Catala
+ * Copyright 2018 ZenyWay S.A.S., Stephane M. Catala
  * @author Stephane M. Catala
  * @license Apache Version 2.0
  *
@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
+//
+import {
+  csvRecordItem,
+  CsvRecordItemProps as GenericCsvRecordItemProps
+} from 'hocs'
+import {
+  CsvRecord,
+  CsvRecordItem as CsvRecordItemSFC,
+  CsvRecordItemProps as CsvRecordItemSFCProps
+} from './sfcs/csv-record-item'
 
-import 'symbol-observable' // polyfill
-import { addDecorator, addParameters, configure } from '@storybook/react'
-import { themes } from '@storybook/theming'
-import { initDevTools } from 'inferno-devtools'
+export { CsvRecord }
 
-initDevTools()
+export const CsvRecordItem = csvRecordItem<CsvRecordItemSFCProps>(
+  CsvRecordItemSFC
+)
 
-addParameters({ options: { theme: themes.dark } })
-
-const req = require.context('../stories', true, /\.jsx$/)
-
-function loadStories () {
-  req.keys().forEach(filename => req(filename))
-}
-
-configure(loadStories, module)
+export type CsvRecordItemProps = GenericCsvRecordItemProps<
+  CsvRecordItemSFCProps
+>

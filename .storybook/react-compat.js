@@ -13,20 +13,9 @@
  * See the License for the specific language governing permissions and
  * Limitations under the License.
  */
-
-import 'symbol-observable' // polyfill
-import { addDecorator, addParameters, configure } from '@storybook/react'
-import { themes } from '@storybook/theming'
-import { initDevTools } from 'inferno-devtools'
-
-initDevTools()
-
-addParameters({ options: { theme: themes.dark } })
-
-const req = require.context('../stories', true, /\.jsx$/)
-
-function loadStories () {
-  req.keys().forEach(filename => req(filename))
-}
-
-configure(loadStories, module)
+import React from 'inferno-compat'
+export default React
+export * from 'inferno-compat'
+// bypass export of React.createContext
+import createContext from 'create-react-context/lib/implementation'
+export { createContext }

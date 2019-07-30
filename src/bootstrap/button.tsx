@@ -15,11 +15,16 @@
  */
 /** @jsx createElement */
 import { createElement } from 'create-element'
+import { Label } from './label'
+import { Input } from './input'
 import { classes } from 'utils'
 import { BasicColor } from './types'
+import { from } from 'rxjs'
 
 export interface ButtonProps {
+  tag?: string
   type?: 'button' | 'reset' | 'submit' | 'checkbox'
+  id?: string
   active?: boolean
   /**
    * for `type === 'checkbox'`
@@ -39,6 +44,7 @@ export interface ButtonProps {
 }
 
 export function Button ({
+  tag = 'button',
   type = 'button',
   active,
   checked,
@@ -51,9 +57,10 @@ export function Button ({
   disabled,
   children,
   innerRef,
+  onClick,
   ...attrs
 }: ButtonProps) {
-  const Tag: any = href ? 'a' : 'button'
+  const Tag: any = href ? 'a' : tag
   const classNames = classes(
     'btn',
     color !== 'none' && `btn${outline ? '-outline' : ''}-${color}`,
@@ -66,26 +73,28 @@ export function Button ({
 
   return type !== 'checkbox' ? (
     <Tag
-      type={!href && type}
+      type={Tag === 'button' && type}
       className={classNames}
       href={href}
       disabled={disabled}
       ref={innerRef}
+      onClick={onClick}
       {...attrs}
     >
       {children}
     </Tag>
   ) : (
-    <label className={classNames}>
-      <input
+    <Label check className={classNames}>
+      <Input
         type='checkbox'
         checked={checked}
         disabled={disabled}
         autoComplete='off'
         ref={innerRef}
+        onClick={onClick}
         {...attrs}
       />
       {children}
-    </label>
+    </Label>
   )
 }

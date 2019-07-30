@@ -14,26 +14,15 @@
  * Limitations under the License.
  */
 
-export {
-  AgentAuthorizationCard,
-  AgentAuthorizationCardProps
-} from './agent-authorization-card'
+// SFCs
 export {
   AgentAuthorizationCard as AgentAuthorizationCardSFC,
   AgentAuthorizationCardProps as AgentAuthorizationCardSFCProps
 } from './sfcs/agent-authorization-card'
 export {
-  AgentAuthorizationsPage,
-  AgentAuthorizationsPageProps
-} from './agent-authorizations-page'
-export {
   AgentAuthorizationsPage as AgentAuthorizationsPageSFC,
   AgentAuthorizationsPageProps as AgentAuthorizationsPageSFCProps
 } from './sfcs/agent-authorizations-page'
-export {
-  AuthenticationModal,
-  AuthenticationModalProps
-} from './authentication-modal'
 export {
   AuthenticationModal as AuthenticationModalSFC,
   AuthenticationModalProps as AuthenticationModalSFCProps
@@ -42,7 +31,6 @@ export {
   AuthenticationPage as AuthenticationPageSFC,
   AuthenticationPageProps as AuthenticationPageSFCProps
 } from './sfcs/authentication-page'
-export { AuthorizationPage, AuthorizationPageProps } from './authorization-page'
 export {
   AuthorizedAgentCard,
   AuthorizedAgentCardProps
@@ -52,21 +40,18 @@ export {
   InfoModalProps as InfoModalSFCProps
 } from './sfcs/info-modal'
 export {
-  CheckboxRecordField,
-  CheckboxRecordFieldProps
-} from './sfcs/checkbox-record-field'
-export { ConnectionModal, ConnectionModalProps } from './connection-modal'
-export {
   ConnectionModal as ConnectionModalSFC,
   ConnectionModalProps as ConnectionModalSFCProps
 } from './sfcs/connection-modal'
-export { ControlledInput, ControlledInputProps } from './controlled-input'
-export { CopyButton, CopyButtonProps } from './copy-button'
+export {
+  CsvRecord,
+  CsvRecordItem as CsvRecordItemSFC,
+  CsvRecordItemProps as CsvRecordItemSFCProps
+} from './sfcs/csv-record-item'
 export {
   Dropdown as DropdownSFC,
   DropdownProps as DropdownSFCProps
 } from './sfcs/dropdown'
-export { Dropdown, DropdownProps } from './dropdown'
 export { ErrorPage, ErrorPageProps } from './sfcs/error-page'
 export {
   FAIcon,
@@ -78,50 +63,79 @@ export {
   HomePage as HomePageSFC,
   HomePageProps as HomePageSFCProps
 } from './sfcs/home-page'
-export { HomePage, HomePageProps } from './home-page'
 export {
   IconLabelInputGroup,
   IconLabelInputGroupProps
 } from './sfcs/icon-label-input-group'
 export {
+  ImportPage as ImportPageSFC,
+  ImportPageProps as ImportPageSFCProps
+} from './sfcs/import-page'
+export {
   NavbarMenu as NavbarMenuSFC,
   NavbarMenuProps as NavbarMenuSFCProps
 } from './sfcs/navbar-menu'
-export { NavbarMenu, NavBarMenuProps } from './navbar-menu'
 export { Onboarding, OnboardingProps } from './sfcs/onboarding'
-export { RecordField, RecordFieldProps } from './sfcs/record-field'
 export {
   PasswordGenerator as PasswordGeneratorSFC,
   PasswordGeneratorProps as PasswordGeneratorSFCProps
 } from './sfcs/password-generator'
-export { PasswordGenerator, PasswordGeneratorProps } from './password-generator'
 export {
   RecordCard as RecordCardSFC,
   RecordCardProps as RecordCardSFCProps
 } from './sfcs/record-card'
-export { RecordCard, RecordCardProps } from './record-card'
+export { RecordField, RecordFieldProps } from './sfcs/record-field'
 export {
   Router as RouterSFC,
   RouterProps as RouterSFCProps
 } from './sfcs/router'
+export { SignupDonePage, SignupDonePageProps } from './sfcs/signup-done-page'
+export { SplashCard, SplashCardProps } from './sfcs/splash-card'
+export {
+  StorageOfferCard as StorageOfferCardSFC,
+  StorageOfferCardProps as StorageOfferCardSFCProps
+} from './sfcs/storage-offer-card'
+export {
+  StoragePage as StoragePageSFC,
+  StoragePageProps as StoragePageSFCProps
+} from './sfcs/storage-page'
+export { withAuthenticationModal } from './sfcs/with-authentication'
+
+// HOCs
+export {
+  AgentAuthorizationCard,
+  AgentAuthorizationCardProps
+} from './agent-authorization-card'
+export {
+  AgentAuthorizationsPage,
+  AgentAuthorizationsPageProps
+} from './agent-authorizations-page'
+export {
+  AuthenticationModal,
+  AuthenticationModalProps
+} from './authentication-modal'
+export { AuthorizationPage, AuthorizationPageProps } from './authorization-page'
+export {
+  CheckboxRecordField,
+  CheckboxRecordFieldProps
+} from './sfcs/checkbox-record-field'
+export { ConnectionModal, ConnectionModalProps } from './connection-modal'
+export { ControlledInput, ControlledInputProps } from './controlled-input'
+export { CopyButton, CopyButtonProps } from './copy-button'
+export { CsvRecordItem, CsvRecordItemProps } from './csv-record-item'
+export { Dropdown, DropdownProps } from './dropdown'
+export { HomePage, HomePageProps } from './home-page'
+export { ImportPage, ImportPageProps } from './import-page'
+export { NavbarMenu, NavBarMenuProps } from './navbar-menu'
+export { PasswordGenerator, PasswordGeneratorProps } from './password-generator'
+export { RecordCard, RecordCardProps } from './record-card'
 export { Router, RouterProps } from './router'
 export { SerializedInput, SerializedInputProps } from './serialized-input'
 export {
   SerializedRecordField,
   SerializedRecordFieldProps
 } from './serialized-record-field'
-export { SignupDonePage, SignupDonePageProps } from './sfcs/signup-done-page'
 export { SigninPage, SigninPageProps } from './signin-page'
 export { SignupPage, SignupPageProps } from './signup-page'
-export { SplashCard, SplashCardProps } from './sfcs/splash-card'
-export {
-  StorageOfferCard as StorageOfferCardSFC,
-  StorageOfferCardProps as StorageOfferCardSFCProps
-} from './sfcs/storage-offer-card'
 export { StorageOfferCard, StorageOfferCardProps } from './storage-offer-card'
-export {
-  StoragePage as StoragePageSFC,
-  StoragePageProps as StoragePageSFCProps
-} from './sfcs/storage-page'
 export { StoragePage, StoragePageProps } from './storage-page'
-export { withAuthenticationModal } from './sfcs/with-authentication'

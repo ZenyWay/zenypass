@@ -20,7 +20,7 @@ import { RecordField } from '../record-field'
 import { SerializedRecordField } from '../../serialized-record-field'
 import { PasswordGenerator } from '../../password-generator'
 import { CopyButton } from '../../copy-button'
-import { CheckboxRecordField } from '../checkbox-record-field'
+import { Checkbox } from '../checkbox'
 import { FAIconButton } from '../fa-icon'
 import createL10ns, { L10nTag } from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
@@ -255,12 +255,13 @@ export function RecordCardBody ({
         disabled={!edit}
         locale={locale}
       />
-      <CheckboxRecordField
+      <Checkbox
         id={`${key}_unrestricted`}
         icon={unrestricted ? 'clock' : 'lock'}
         regular={unrestricted}
+        fw
         label={t(unrestricted ? 'Lock on timeout' : 'Strict lock')}
-        value={unrestricted}
+        checked={unrestricted}
         disabled={!edit}
         data-id='unrestricted'
         onClick={onToggleCheckbox}
