@@ -15,6 +15,7 @@
  */
 
 import { createPrivilegedRequest, ZenypassRecord } from 'zenypass-service'
+import formatRecordEntry from '../record-card/reducer/formaters'
 import { getCsvParser, CSV_PARSER_SPEC } from 'basic-csv-parser'
 import { CsvRecord, ImportPageFsm, RecordSelectorEntry } from './reducer'
 import {
@@ -199,7 +200,8 @@ function convertProps (
 ): CsvRecord {
   const propMap = PROP_MAPS[key] || PROP_MAPS.standard
   return Object.keys(propMap).reduce(function (record, prop) {
-    record[propMap[prop]] = csv[prop]
+    const key = propMap[prop]
+    record[key] = formatRecordEntry(key, csv[prop])
     return record
   }, Object.create(null))
 }
