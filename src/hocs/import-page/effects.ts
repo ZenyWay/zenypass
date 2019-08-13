@@ -201,7 +201,8 @@ function convertProps (
   const propMap = PROP_MAPS[key] || PROP_MAPS.standard
   return Object.keys(propMap).reduce(function (record, prop) {
     const key = propMap[prop]
-    record[key] = formatRecordEntry(key, csv[prop])
+    const val = csv[prop]
+    record[key] = val && formatRecordEntry(key, val)
     return record
   }, Object.create(null))
 }
