@@ -23,7 +23,7 @@ import withL10n from 'zenyway-storybook-addon-l10n'
 import { RECORDS, PASSWORD } from './helpers/consts'
 import { ImportPageSFC as ImportPage } from 'components'
 
-const CONFIGS = ['KeePass', 'Excel', 'standard']
+const CONFIGS = ['standard', 'Excel', 'KeePass']
 
 const MAX_ENTRIES = 3
 const ENTRIES = RECORDS.map((record, id) => ({

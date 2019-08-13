@@ -69,7 +69,11 @@ const CONFIGS: CSV_PARSER_SPECS = {
   }
 }
 
-export const CONFIG_KEYS = Object.keys(CONFIGS) as CSV_PARSER_SPECS_KEYS[]
+export const CONFIG_KEYS: CSV_PARSER_SPECS_KEYS[] = [
+  'standard',
+  'excel',
+  'keepass'
+]
 
 export function importRecordsOnImportRecords (_: any, state$: Observable<any>) {
   return state$.pipe(
@@ -161,7 +165,7 @@ const PROP_MAPS: Partial<
     Comments: 'comments'
   },
   standard: {
-    title: 'name',
+    name: 'name',
     url: 'url',
     username: 'username',
     password: 'password',
