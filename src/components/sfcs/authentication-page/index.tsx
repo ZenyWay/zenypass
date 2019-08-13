@@ -146,9 +146,7 @@ export function AuthenticationPage ({
               target='_blank'
               rel='noopener noreferer'
             >
-              <span className='ml-1'>
-                {t('New: discover the password generator')}
-              </span>
+              <span className='ml-1'>{t('New: import your credentials')}</span>
             </FAIconButton>
             <CardTitle className='mt-3'>{title}</CardTitle>
             <CardBody className='px-0'>
@@ -194,7 +192,7 @@ export function AuthenticationPage ({
         </Row>
         <Row className='justify-content-center'>
           <a
-            href={t('help-link')}
+            href={t('help-index-link')}
             target='_blank'
             rel='noopener noreferer'
             className='text-info'

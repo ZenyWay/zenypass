@@ -105,13 +105,25 @@ const SUBMIT_ERRORS = {
   }
 }
 
-const INFO = {
+const INFO: {
+  [key in AuthenticationPageType]: {
+    label: string
+    link: string
+    message?: string
+  }
+} = {
   [AuthenticationPageType.Authorize]: {
+    label: 'More information',
     link: 'authorize-help-link',
     message:
       "To authorize access to your ZenyPass Vault from this browser, open your ZenyPass Vault on an already authorized device, click on 'Authorizations' in the menu, then click on 'Add an authorization' and copy the resulting authorization code into the above field"
   },
+  [AuthenticationPageType.Signin]: {
+    label: 'Troubleshooting',
+    link: 'signin-troubleshooting-link'
+  },
   [AuthenticationPageType.Signup]: {
+    label: 'More information',
     link: 'signup-help-link',
     message:
       "For enhanced security, please choose a password that you don't use elsewhere, and make sure you don't forget or loose it"
@@ -214,25 +226,29 @@ export function AuthenticationForm ({
           innerRef={onConfirmInputRef}
         />
       )}
-      <p>
-        {!submitError ? null : (
+      {!submitError ? null : (
+        <p>
           <small className='text-danger'>
             {t(submitError[0])}:<br />
             {t(submitError[1])}.
           </small>
-        )}
-      </p>
+        </p>
+      )}
       {!info ? null : (
         <p>
           <small>
-            {t(info.message)}.<br />
+            {!info.message ? null : (
+              <Fragment>
+                {t(info.message)}.<br />
+              </Fragment>
+            )}
             <a
               href={t(info.link)}
               target='_blank'
               rel='noopener noreferer'
               className='text-info'
             >
-              {t('More information')}...
+              {t(info.label)}
             </a>
           </small>
         </p>
