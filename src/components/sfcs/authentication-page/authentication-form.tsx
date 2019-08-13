@@ -235,7 +235,7 @@ export function AuthenticationForm ({
         </p>
       )}
       {!info ? null : (
-        <p>
+        <p className='clearfix'>
           <small>
             {!info.message ? null : (
               <Fragment>
@@ -246,7 +246,7 @@ export function AuthenticationForm ({
               href={t(info.link)}
               target='_blank'
               rel='noopener noreferer'
-              className='text-info'
+              className='text-info float-right'
             >
               {t(info.label)}
             </a>

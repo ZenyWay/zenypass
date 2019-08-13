@@ -53,7 +53,7 @@
     "This device appears to be offline. The ZenyPass server cannot be accessed. Please check your connection and try again": "Cet appareil semble être déconnecté. Le serveur ZenyPass n’est pas joignable. Vérifiez votre connexion et essayez à nouveau.",
     "tnc-link": "https://www.zenyway.com/password-manager/conditions/fr/index.html",
     "To authorize access to your ZenyPass Vault from this browser, open your ZenyPass Vault on an already authorized device, click on 'Authorizations' in the menu, then click on 'Add an authorization' and copy the resulting authorization code into the above field": "Pour autoriser l’accès à votre Coffre-fort ZenyPass à partir de ce navigateur, ouvrez votre Coffre-fort ZenyPass sur un appareil déjà autorisé, cliquez sur 'Autorisations' dans le menu, puis sur 'Ajouter une autorisation' et copiez le code d’autorisation obtenu dans le champ ci-dessus",
-    "Troubleshooting": "Dépannage",
+    "Troubleshooting": "Problème de connexion ?",
     "Try again": "Réessayez",
     "Unauthorized access": "Accès refusé",
     "Unlock": "Déverrouiller",
