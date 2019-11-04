@@ -12,7 +12,11 @@
     "help-link": "https://medium.com/zenypass-fr/tagged/aide-zenypass",
     "setup": "Configuration",
     "storage": "Stockage",
-    "sign-out": "Déconnexion"
+    "sign-out": "Déconnexion",
+    "user-guide": "Documentation PDF",
+    "user-guide-link": "https://zenyway.com/assets/pdf/Guide_Utilisateur_ZenyPass.pdf",
+    "video-tutorials": "Tutoriels vidéo",
+    "video-tutorials-link": "https://zenyway.com/password-manager/tutorials/fr/index.html"
   },
   "en": {
     "authorizations": "Authorizations",
@@ -27,6 +31,10 @@
     "help-link": "https://medium.com/zenypass-en/tagged/zenypass-help",
     "setup": "Setup",
     "storage": "Storage",
-    "sign-out": "Sign out"
+    "sign-out": "Sign out",
+    "user-guide": "PDF User Guide",
+    "user-guide-link": "https://zenyway.com/assets/pdf/ZenyPass_User_Guide.pdf",
+    "video-tutorials": "Video tutorials",
+    "video-tutorials-link": "https://zenyway.com/password-manager/tutorials/en/index.html"
   }
 }

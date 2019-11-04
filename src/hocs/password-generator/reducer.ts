@@ -67,7 +67,7 @@ const limitLength = compose.into(0)(
   min(MIN_LENGTH),
   alt(isNaN)(DEFAULT_SETTINGS.length)
 )
-const addPayload = (val, { payload }) =>
+const addPayload = (val: number, { payload }: { payload?: number }) =>
   Number.isNaN(val) ? DEFAULT_SETTINGS.length : limitLength(val + payload)
 const mapPayloadIntoValue = into('value')(mapPayload())
 const clearValue = propCursor('value')(always(''))

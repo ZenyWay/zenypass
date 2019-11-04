@@ -59,7 +59,7 @@ export default function (text: string): Promise<void> {
     : clipboard.writeText(text)
 }
 
-function legacyCopyToClipboard (text: string, win = window): boolean {
+function legacyCopyToClipboard (text: string, win: Window = window): boolean {
   const selection = win.getSelection()
   if (!selection) {
     return win !== window && legacyCopyToClipboard(text) // retry from window
@@ -80,7 +80,7 @@ function legacyCopyToClipboard (text: string, win = window): boolean {
   return success
 }
 
-function execCommand (command: string, win = window): boolean {
+function execCommand (command: string, win: Window = window): boolean {
   try {
     return win.document.execCommand(command)
   } catch (err) {

@@ -1,10 +1,24 @@
 {
   "fr": {
+    "Feel free to contact us if needed": "N'hésitez pas à nous contacter si besoin",
+    "help-config-link": "https://medium.com/zenypass-fr/comment-configurer-son-navigateur-web-pour-utiliser-zenypass-fac54a77c5e8",
+    "Please ensure that": "Assurez-vous que",
+    "Please click here": "Cliquez ici",
     "Please reload this page to restart ZenyPass": "Veuillez recharger cette page pour relancer ZenyPass",
-    "Sorry, an unrecoverable error occurred": "Désolé, une erreur irrémédiable est survenue"
+    "this device is not running out of storage space": "cet appareil n'est pas à court d'espace de stockage",
+    "to learn how to configure your browser": "pour en savoir plus sur la configuration de votre navigateur",
+    "ZenyPass cannot run properly in this browser": "ZenyPass ne fonctionne pas correctement dans ce navigateur",
+    "ZenyPass is not in a Private-Browsing window": "ZenyPass n'est pas dans une fenêtre de Navigation Privée"
   },
   "en": {
+    "Feel free to contact us if needed": "Feel free to contact us if needed",
+    "help-config-link": "https://medium.com/zenypass-en/how-to-configure-your-web-browser-to-use-zenypass-e638d082c1c1",
+    "Please click here": "Please click here",
+    "Please ensure that": "Please ensure that",
     "Please reload this page to restart ZenyPass": "Please reload this page to restart ZenyPass",
-    "Sorry, an unrecoverable error occurred": "Sorry, an unrecoverable error occurred"
+    "this device is not running out of storage space": "this device is not running out of storage space",
+    "to learn how to configure your browser": "to learn how to configure your browser",
+    "ZenyPass cannot run properly in this browser": "ZenyPass cannot run properly in this browser",
+    "ZenyPass is not in a Private-Browsing window": "ZenyPass is not in a Private-Browsing window"
   }
 }

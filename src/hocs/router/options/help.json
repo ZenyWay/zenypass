@@ -5,9 +5,21 @@
     "icon": "fa fa-question-circle"
   },
   {
+    "data-id": "help/video-tutorials",
+    "label": "video-tutorials",
+    "icon": "fa fa-film",
+    "href": "video-tutorials-link"
+  },
+  {
+    "data-id": "help/user-guide",
+    "label": "user-guide",
+    "icon": "fa fa-book",
+    "href": "user-guide-link"
+  },
+  {
     "data-id": "help/online-help",
     "label": "online-help",
-    "icon": "fa fa-question-circle",
+    "icon": "fa fa-info-circle",
     "href": "help-link"
   }
 ]

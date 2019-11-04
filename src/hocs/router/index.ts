@@ -146,6 +146,7 @@ export function router<P extends RouterSFCProps> (
       tapOnEvent('UPDATE_QUERY_PARAM', ([key, value]) =>
         replaceLocationHashQueryParam(key, value)
       ),
+      tapOnEvent('INTERNAL_LINK', openItemLink),
       tapOnEvent(
         'CLOSE_INFO',
         compose.into(0)(openItemLink, pluck('1', 'link'))

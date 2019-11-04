@@ -28,24 +28,31 @@ const MENU_ACTIONS = createActionFactories({
   help: 'HELP',
   logout: 'LOGOUT'
 })
-const link = createActionFactory('LINK')
+const externalLink = createActionFactory('EXTERNAL_LINK')
+const internalLink = createActionFactory('INTERNAL_LINK')
 const selectMenuItem = createActionFactory('SELECT_MENU_ITEM')
 const fatalError = createActionFactory('FATAL_ERROR')
 
 export function actionFromMenuItem (item: HTMLElement) {
-  return isExternalLinkItem(item) ? link(item) : actionFromNonLinkMenuItem(item)
+  return !isLinkMenuItem(item)
+    ? actionFromNonLinkMenuItem(item)
+    : isExternalLinkItem(item)
+    ? externalLink(item)
+    : internalLink(item)
 }
 
-function isExternalLinkItem (item: any): item is HTMLLinkElement {
-  const { baseURI, href } = item || ({} as HTMLLinkElement)
-  return domain(href) !== domain(baseURI)
+/**
+ * assert that item.href is a different URL than item.baseURI with an empty hash.
+ */
+function isLinkMenuItem (item: any): item is HTMLAnchorElement {
+  if (!item || !(item as any).href) return false
+  const baseURL = new URL(item.baseURI)
+  baseURL.hash = ''
+  return item.href !== baseURL.href + '#'
 }
 
-const DOMAIN_REGEXP = /(?:https?:\/\/)?([^/]+)\//i
-
-function domain (url?: string): string {
-  const match = url && DOMAIN_REGEXP.exec(url)
-  return match && match[1].toLowerCase()
+function isExternalLinkItem (item: HTMLAnchorElement): boolean {
+  return item.origin !== new URL(item.baseURI).origin
 }
 
 const MENU_ITEM_REGEX = /^([\w-]+)(?:\/([\w-]+))?$/

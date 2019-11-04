@@ -110,7 +110,7 @@ const routeAutomata: AutomataSpec<RouteAutomataState> = {
 
 const linkAutomata: AutomataSpec<LinkAutomataState> = {
   [LinkAutomataState.Idle]: {
-    LINK: [LinkAutomataState.Info, into('link')(mapPayload())]
+    EXTERNAL_LINK: [LinkAutomataState.Info, into('link')(mapPayload())]
   },
   [LinkAutomataState.Info]: {
     CLOSE_INFO: LinkAutomataState.Idle

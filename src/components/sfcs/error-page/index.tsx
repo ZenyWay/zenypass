@@ -14,10 +14,14 @@
  * Limitations under the License.
  */
 /** @jsx createElement */
-import { createElement } from 'create-element'
+import { createElement, Fragment } from 'create-element'
 import { FAIcon } from '../fa-icon'
+import { SplashCard } from '../splash-card'
+import { Row } from 'bootstrap'
 import createL10ns from 'basic-l10n'
-import { newStatusError, StatusError } from 'utils'
+import { newStatusError } from 'utils'
+import { style } from 'typestyle'
+import { classes } from 'utils'
 const l10ns = createL10ns(require('./locales.json'))
 
 export interface ErrorPageProps {
@@ -39,6 +43,27 @@ const ERROR_TYPES = {
 
 const INTERNAL_SERVER_ERROR = newStatusError(500)
 
+const PRODUCTION = true // process.env.NODE_ENV === 'production'
+
+const BROWSER_COLORS = {
+  chrome: '#4587F3',
+  firefox: '#e66000',
+  opera: '#cc0f16',
+  safari: '#1B88CA'
+}
+
+const BROWSER_LOGOS = Object.keys(BROWSER_COLORS).map(browser => (
+  <i
+    class={classes(
+      `fab fa-2x fa-${browser}`,
+      style({ color: BROWSER_COLORS[browser] }),
+      'pr-3'
+    )}
+  />
+))
+
+const BOMBS = [0, 1, 2].map(() => <FAIcon icon='bomb' />)
+
 export function ErrorPage ({
   locale,
   error = INTERNAL_SERVER_ERROR,
@@ -49,23 +74,55 @@ export function ErrorPage ({
   const { status = INTERNAL_SERVER_ERROR.status, message = null } = error
   const type = ERROR_TYPES[status] || null
   return (
-    <section {...attrs}>
-      <h3>
-        <FAIcon icon='bomb' /> <FAIcon icon='bomb' /> <FAIcon icon='bomb' />
-      </h3>
-      <p>
-        {t('Sorry, an unrecoverable error occurred')}...
-        <br />
-        {t('Please reload this page to restart ZenyPass')}.
-      </p>
-      <div>
-        <p>
-          {status} {type}
-          <br />
-          {message}
-        </p>
-      </div>
-      {children}
+    <section className='container' {...attrs}>
+      <Row className='justify-content-center'>
+        <SplashCard>
+          <p className='text-center'>
+            {t('ZenyPass cannot run properly in this browser')}...
+          </p>
+          <p className='text-left'>
+            {t('Please ensure that')}:
+            <ul>
+              <li>{t('ZenyPass is not in a Private-Browsing window')},</li>
+              <li>{t('this device is not running out of storage space')}.</li>
+            </ul>
+          </p>
+          <p className='text-center'>
+            <a
+              href={t('help-config-link')}
+              target='_blank'
+              rel='noopener noreferer'
+              className='text-info text-center'
+            >
+              {BROWSER_LOGOS}
+              <br />
+              {t('Please click here')}
+            </a>
+            <br />
+            {t('to learn how to configure your browser')}.
+          </p>
+          <p className='text-center'>
+            {t('Feel free to contact us if needed')}:{' '}
+            <a href='mailto:contact@zenyway.com'>contact@zenyway.com</a>.
+          </p>
+          <p className='text-center'>
+            {t('Please reload this page to restart ZenyPass')}.
+          </p>
+          {PRODUCTION ? null : (
+            <Fragment>
+              <hr />
+              <div>
+                <p>
+                  {BOMBS} {status} {type}
+                  <br />
+                  {message}
+                </p>
+                {children}
+              </div>
+            </Fragment>
+          )}
+        </SplashCard>
+      </Row>
     </section>
   )
 }

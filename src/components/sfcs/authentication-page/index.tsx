@@ -24,7 +24,7 @@ import { ConsentsModal } from './consents-modal'
 import { SplashCard, SplashFooterCard } from '../splash-card'
 import { InfoModal } from '../info-modal'
 import { Dropdown, DropdownItemSpec } from '../../dropdown'
-import { FAIcon, FAIconButton } from '../fa-icon'
+import { FAIcon } from '../fa-icon'
 import { Button, CardBody, CardTitle, Row } from 'bootstrap'
 import createL10ns from 'basic-l10n'
 const l10ns = createL10ns(require('./locales.json'))
@@ -138,6 +138,7 @@ export function AuthenticationPage ({
       <section className='container' {...attrs}>
         <Row className='justify-content-center'>
           <SplashCard>
+            {/*
             <FAIconButton
               icon='newspaper'
               regular
@@ -148,6 +149,7 @@ export function AuthenticationPage ({
             >
               <span className='ml-1'>{t('New: import your credentials')}</span>
             </FAIconButton>
+            */}
             <CardTitle className='mt-3'>{title}</CardTitle>
             <CardBody className='px-0'>
               <AuthenticationForm
