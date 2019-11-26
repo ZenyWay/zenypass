@@ -43,8 +43,6 @@ const ERROR_TYPES = {
 
 const INTERNAL_SERVER_ERROR = newStatusError(500)
 
-const PRODUCTION = true // process.env.NODE_ENV === 'production'
-
 const BROWSER_COLORS = {
   chrome: '#4587F3',
   firefox: '#e66000',
@@ -108,19 +106,15 @@ export function ErrorPage ({
           <p className='text-center'>
             {t('Please reload this page to restart ZenyPass')}.
           </p>
-          {PRODUCTION ? null : (
-            <Fragment>
-              <hr />
-              <div>
-                <p>
-                  {BOMBS} {status} {type}
-                  <br />
-                  {message}
-                </p>
-                {children}
-              </div>
-            </Fragment>
-          )}
+          <hr />
+          <div>
+            <p>
+              {BOMBS} {status} {type}
+              <br />
+              {message}
+            </p>
+            {children}
+          </div>
         </SplashCard>
       </Row>
     </section>
