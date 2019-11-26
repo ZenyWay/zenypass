@@ -48,6 +48,7 @@ const pricing = createActionFactory('PRICING')
 const info = createActionFactory('INFO')
 const error = createActionFactory('ERROR')
 const ERRORS = createActionFactories({
+  [ERROR_STATUS.BAD_REQUEST]: 'BAD_REQUEST',
   [ERROR_STATUS.GATEWAY_TIMEOUT]: 'OFFLINE',
   [ERROR_STATUS.NOT_FOUND]: 'NOT_FOUND'
 })
