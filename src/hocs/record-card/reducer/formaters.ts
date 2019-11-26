@@ -31,13 +31,21 @@ export default function formatRecordEntry (
   return format ? format(value) : value
 }
 
-const HAS_PROTOCOL = /^\w+:\/\//
+const HAS_PROTOCOL_REGEXP = /^\w+:\/\//
+const DEFAULT_PROTOCOL = 'https:'
 
-function formatUrl (url: string): string {
-  const trimmed = url.trim()
-  return !trimmed || HAS_PROTOCOL.test(trimmed) ? trimmed : `https://${trimmed}`
+export function formatUrl (url: string): string {
+  const trimmed = url && url.trim()
+  return (
+    trimmed &&
+    new URL(
+      HAS_PROTOCOL_REGEXP.test(trimmed)
+        ? trimmed
+        : `${DEFAULT_PROTOCOL}//${trimmed}`
+    ).href
+  )
 }
 
-function trim (str: string): string {
+export function trim (str: string): string {
   return str.trim()
 }

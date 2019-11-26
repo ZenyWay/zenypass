@@ -14,6 +14,7 @@
  * Limitations under the License.
  */
 
+import { formatUrl } from './formaters'
 import { ZenypassRecord } from 'zenypass-service'
 
 const RECORD_FIELD_VALIDATORS: Partial<
@@ -52,11 +53,14 @@ function withError (
   return errors
 }
 
-const IS_ACCEPTABLE_URL = /^(?:\w+?:\/\/)?(?:[^@\s/?]+@)?(?:(?:[^.:\s/?]+\.)+?[^.:\s/?]+)(?::\d{2,5})?(?:[/?][^\s]*)?$/ // 1 = protocol, 2 = auth, 3 = domain, 4 = port, 5 = path
-
 function isAcceptableUrl (value: string) {
-  const trimmed = value && value.trim()
-  return !trimmed || IS_ACCEPTABLE_URL.test(trimmed)
+  if (!value) return true
+  try {
+    formatUrl(value)
+    return true
+  } catch (err) {
+    return false
+  }
 }
 
 function isNotEmptyString (str: string) {
