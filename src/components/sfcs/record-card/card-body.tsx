@@ -217,7 +217,7 @@ export function RecordCardBody ({
               fw
               onClick={onConnectRequest}
             />
-          ) : /* edit || cleartext */ !password ? null : (
+          ) : !password ? null : (
             <CopyButton
               id={`${key}_password-copy-button`}
               value={password}

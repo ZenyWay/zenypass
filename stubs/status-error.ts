@@ -13,6 +13,7 @@
  * Limitations under the License.
  */
 
+export const BAD_REQUEST = newStatusError(400, 'BAD_REQUEST')
 export const UNAUTHORIZED = newStatusError(401, 'UNAUTHORIZED')
 export const FORBIDDEN = newStatusError(403, 'FORBIDDEN')
 export const NOT_FOUND = newStatusError(404, 'NOT_FOUND')

@@ -39,6 +39,7 @@ const SIGNIN_ERRORS = createActionFactories({
 })
 
 const AUTHORIZATION_ERRORS = createActionFactories({
+  [ERROR_STATUS.BAD_REQUEST]: 'BAD_REQUEST', // e.g. error in authorization token
   [ERROR_STATUS.FORBIDDEN]: 'FORBIDDEN',
   [ERROR_STATUS.GATEWAY_TIMEOUT]: 'GATEWAY_TIMEOUT'
 })

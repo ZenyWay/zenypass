@@ -37,6 +37,7 @@ import getRecordService, { KVMap, USERNAME } from './records'
 import meta from './meta'
 import payments from './payment-service'
 import {
+  BAD_REQUEST,
   UNAUTHORIZED,
   FORBIDDEN,
   NOT_FOUND,
@@ -133,8 +134,9 @@ function requestAccess (
   { username, passphrase },
   secret: string
 ): Promise<string> {
+  const isValidRequest = passphrase === PASSWORD && secret === RAW_TOKEN
   return stall(AUTHENTICATION_DELAY)(() =>
-    secret === RAW_TOKEN ? observableOf(username) : throwError(UNAUTHORIZED)
+    isValidRequest ? observableOf(username) : throwError(BAD_REQUEST)
   ).toPromise()
 }
 
@@ -177,9 +179,10 @@ function authorize (
   passphrase: string,
   secret: string
 ): Promise<AuthorizationDoc> {
-  return (passphrase === PASSWORD && secret === RAW_TOKEN
+  const isValidSecret = secret === RAW_TOKEN
+  return (passphrase === PASSWORD && isValidSecret
     ? observableOf(AUTHORIZATIONS[0]).pipe(delay(AUTHORIZATION_DELAY))
-    : throwError(UNAUTHORIZED)
+    : throwError(isValidSecret ? UNAUTHORIZED : BAD_REQUEST)
   ).toPromise()
 }
 

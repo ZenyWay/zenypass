@@ -96,6 +96,7 @@ const automata: AutomataSpec<AuthorizationFsm> = {
     SIGNED_IN: [AuthorizationFsm.Editing, clearPassword, clearToken]
   },
   [AuthorizationFsm.Authorizing]: {
+    BAD_REQUEST: [AuthorizationFsm.Forbidden, clearPassword, clearToken],
     GATEWAY_TIMEOUT: [AuthorizationFsm.Offline, clearPassword, clearToken],
     FORBIDDEN: [AuthorizationFsm.Forbidden, clearPassword, clearToken],
     ERROR: [AuthorizationFsm.Editing, clearPassword, clearToken],

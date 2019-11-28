@@ -65,7 +65,8 @@ const automata: AutomataSpec<AgentAuthorizationFsm> = {
     ]
   },
   [AgentAuthorizationFsm.PendingAuthorization]: {
-    CANCEL: AgentAuthorizationFsm.Idle,
+    CLIENT_CLOSED_REQUEST: [AgentAuthorizationFsm.Idle, clearToken],
+    REQUEST_TIMEOUT: [AgentAuthorizationFsm.Idle, clearToken],
     ERROR: [AgentAuthorizationFsm.Error, mapPayloadIntoError],
     AUTHORIZING: AgentAuthorizationFsm.Authorizing
   },
@@ -76,7 +77,9 @@ const automata: AutomataSpec<AgentAuthorizationFsm> = {
       clearToken,
       mapPayloadIntoError
     ],
-    CANCEL: [AgentAuthorizationFsm.Idle, clearToken],
+    BAD_REQUEST: [AgentAuthorizationFsm.Idle, clearToken],
+    CLIENT_CLOSED_REQUEST: [AgentAuthorizationFsm.Idle, clearToken],
+    REQUEST_TIMEOUT: [AgentAuthorizationFsm.Idle, clearToken],
     ERROR: [AgentAuthorizationFsm.Error, clearToken]
   },
   [AgentAuthorizationFsm.Error]: {

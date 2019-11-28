@@ -18,7 +18,11 @@
 //
 import { AgentAuthorizationFsm } from './reducer'
 import { createPrivilegedRequest, getService } from 'zenypass-service'
-import { createActionFactory, StandardAction } from 'basic-fsa-factories'
+import {
+  createActionFactories,
+  createActionFactory,
+  StandardAction
+} from 'basic-fsa-factories'
 import { toProjection, ERROR_STATUS, newStatusError } from 'utils'
 import {
   catchError,
@@ -39,9 +43,12 @@ export { StandardAction }
 const token = createActionFactory('TOKEN')
 const authorizing = createActionFactory('AUTHORIZING')
 const authorizationResolved = createActionFactory('AUTHORIZATION_RESOLVED')
-const authorizationRejected = createActionFactory('AUTHORIZATION_REJECTED')
 const error = createActionFactory('ERROR')
-const cancel = createActionFactory('CANCEL')
+const AUTHORIZATION_ERRORS = createActionFactories({
+  [ERROR_STATUS.BAD_REQUEST]: 'BAD_REQUEST', // e.g. error in authorization token
+  [ERROR_STATUS.CLIENT_CLOSED_REQUEST]: 'CLIENT_CLOSED_REQUEST',
+  [ERROR_STATUS.REQUEST_TIMEOUT]: 'REQUEST_TIMEOUT'
+})
 
 // const log = (label: string) => console.log.bind(console, label)
 
@@ -89,23 +96,22 @@ export function authorizeOnPendingAuthorization (
         passphrase,
         secret
       ).pipe(
+        takeUntil(cancel$),
+        throwIfEmpty(() => newStatusError(ERROR_STATUS.CLIENT_CLOSED_REQUEST)),
         map(() => authorizationResolved()),
         catchError(err =>
           observableOf(
-            err && err.status !== ERROR_STATUS.REQUEST_TIMEOUT
-              ? authorizationRejected(err)
-              : cancel(err)
+            ((err && AUTHORIZATION_ERRORS[err.status]) || error)(err)
           )
         ),
-        takeUntil(cancel$),
-        throwIfEmpty(() => newStatusError(ERROR_STATUS.CLIENT_CLOSED_REQUEST)),
         startWith(authorizing())
       )
     ),
     catchError((err, authorize$) =>
-      err && err.status !== ERROR_STATUS.CLIENT_CLOSED_REQUEST
-        ? observableOf(error(err))
-        : authorize$.pipe(startWith(cancel()))
+      // catch canceled authentication (CLIENT_CLOSED_REQUEST)
+      err && err.status === ERROR_STATUS.CLIENT_CLOSED_REQUEST
+        ? authorize$.pipe(startWith(AUTHORIZATION_ERRORS[err.status](err)))
+        : observableOf(error(err))
     )
   )
 }
