@@ -1,7 +1,7 @@
 {
   "name": "@zenyway/zenypass",
   "configPublish": "http://npm.zenyway.com:5984",
-  "version": "2.7.3",
+  "version": "2.7.4",
   "description": "zero-knowledge open source password manager web-app that syncs and runs everywhere",
   "main": "dist/index.js",
   "scripts": {
@@ -59,7 +59,7 @@
   "dependencies": {
     "automata-reducer": "3.2.1",
     "basic-compose": "4.0.1",
-    "basic-csv-parser": "1.0.1",
+    "basic-csv-parser": "1.0.2",
     "basic-cursors": "2.2.0",
     "basic-fsa-factories": "1.1.0",
     "basic-l10n": "2.0.0",
