@@ -60,7 +60,7 @@ export function AgentAuthorizationsPage ({
   onClose,
   onError,
   ...attrs
-}: Partial<AgentAuthorizationsPageProps> & UnknownProps) {
+}: AgentAuthorizationsPageProps & UnknownProps) {
   const t = l10ns[locale]
   const authId = agentId('_auth')
   return (
