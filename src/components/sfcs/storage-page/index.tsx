@@ -17,18 +17,17 @@
 /** @jsx createElement */
 import { createElement, Fragment } from 'create-element'
 import {
-  CardBody,
   InputGroup,
   InputGroupPrepend,
   InputGroupText,
   ProgressBar,
   Row
 } from 'bootstrap'
-import { SplashFooterCard } from '../splash-card'
 import { ControlledInput } from '../../controlled-input'
-import { FAIcon, FAIconButton } from '../fa-icon'
+import { FAIcon } from '../fa-icon'
 import { InfoModal } from '../info-modal'
 import { NavbarMenu } from '../navbar-menu'
+import { BusinessOfferCard } from '../storage-offer-card'
 import {
   StorageOfferCard,
   StorageOfferBaseSpec,
@@ -159,54 +158,19 @@ export function StoragePage ({
                 onChange={onOfferQuantityChange}
                 onToggleOffline={onToggleOffline}
               />
-            </Row>
-            <Row className='justify-content-center'>
-              <SplashFooterCard>
-                <CardBody>
-                  <p>
-                    <small>
-                      {t('Are you a business')} ?<br />
-                      {t(
-                        'Empower your employees to protect their passwords and your data for 2€ / month / user'
-                      )}
-                    </small>
-                  </p>
-                  <FAIconButton
-                    icon={emailing ? 'spinner' : 'envelope'}
-                    animate={emailing && 'spin'}
-                    disabled={emailing}
-                    color='info'
-                    href={`mailto:?${toSearchParams({
-                      to: 'contact@zenyway.com',
-                      subject: t('ZenyPass Business'),
-                      body: `${t(
-                        'I wish to be contacted regarding "ZenyPass Business"'
-                      )}.\n\n${t('Company')}: \n\n${t(
-                        'Number of users'
-                      )}: \n\n${t('Contact details')}: ${session}`
-                    })}`}
-                    onClick={onContact}
-                  >
-                    &nbsp;{t('Email us')}
-                  </FAIconButton>
-                </CardBody>
-              </SplashFooterCard>
+              <BusinessOfferCard
+                locale={locale}
+                currency={currency}
+                email={session}
+                emailing={emailing}
+                onContact={onContact}
+              />
             </Row>
           </Fragment>
         )}
       </main>
     </section>
   )
-}
-
-function toSearchParams (obj: { [key: string]: string }): string {
-  const keys = Object.keys(obj)
-  let params = new Array(keys.length)
-  for (const i in keys) {
-    const key = keys[i]
-    params[i] = `${key}=${encodeURIComponent(obj[key])}`
-  }
-  return params.join('&')
 }
 
 interface StorageOfferCardsProps extends StorageOfferBaseSpec {

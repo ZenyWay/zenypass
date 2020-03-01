@@ -104,10 +104,7 @@ export function createRecordOnCreateRecordRequested (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  const records$ = state$.pipe(
-    pluck('records'),
-    distinctUntilChanged()
-  )
+  const records$ = state$.pipe(pluck('records'), distinctUntilChanged())
   return event$.pipe(
     filter(({ type }) => type === 'CREATE_RECORD_REQUESTED'),
     withLatestFrom(state$),
@@ -119,10 +116,7 @@ export function createRecordOnCreateRecordRequested (
         true // unrestricted
       ).pipe(
         switchMap((record: ZenypassRecord) =>
-          records$.pipe(
-            filter(includesDefinedRecord(record)),
-            first()
-          )
+          records$.pipe(filter(includesDefinedRecord(record)), first())
         ),
         map(() => createRecordResolved()),
         catchError(err =>
@@ -282,10 +276,7 @@ const upsertSettings$ = createPrivilegedRequest<SettingsDoc>(
 
 export function persistSettings$ToService (_: any, state$: Observable<any>) {
   const setting$s = ['locale', 'onboarding'].map(setting =>
-    state$.pipe(
-      pluck(setting),
-      distinctUntilChanged()
-    )
+    state$.pipe(pluck(setting), distinctUntilChanged())
   )
   return combineLatest(...setting$s).pipe(
     skip(1), // initial state

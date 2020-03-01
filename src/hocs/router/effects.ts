@@ -123,10 +123,7 @@ export function replaceLocationHashPathOnUrlPathUpdateOrPathState (
   event$: Observable<StandardAction<any>>,
   state$: Observable<any>
 ) {
-  const path$ = state$.pipe(
-    pluck('path'),
-    distinctUntilChanged()
-  )
+  const path$ = state$.pipe(pluck('path'), distinctUntilChanged())
   const urlPathUpdate$ = event$.pipe(
     filter(({ type }) => type === 'URL_PATH_UPDATE')
   )

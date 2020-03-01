@@ -68,15 +68,12 @@ const AUTHORIZATIONS = [
   'Ubuntu Opera',
   'MacOS Safari',
   'Windows Chrome'
-].reduce(
-  function (agents, identifier, index) {
-    const _id = String(index)
-    const certified = Date.now() - Math.floor(Math.random() * MAX_CERTIFIED_MS)
-    agents[_id] = { _id, _rev: '1-0', identifier, certified }
-    return agents
-  },
-  {} as KVMap<AuthorizationDoc>
-)
+].reduce(function (agents, identifier, index) {
+  const _id = String(index)
+  const certified = Date.now() - Math.floor(Math.random() * MAX_CERTIFIED_MS)
+  agents[_id] = { _id, _rev: '1-0', identifier, certified }
+  return agents
+}, {} as KVMap<AuthorizationDoc>)
 const DOCS = 14
 const MAX_DOCS = 15
 const DATE = new Date('2018-07-27').valueOf()
@@ -146,7 +143,8 @@ function signup (
 ): Promise<string> {
   return stall(AUTHENTICATION_DELAY)(() =>
     username !== USERNAME &&
-    (passphrase && passphrase.length >= MIN_PASSWORD_LENGTH)
+    passphrase &&
+    passphrase.length >= MIN_PASSWORD_LENGTH
       ? observableOf(username)
       : throwError(FORBIDDEN)
   ).toPromise()
@@ -189,13 +187,14 @@ function authorize (
 export function getAuthorizations$ (
   username: string
 ): Observable<KVMap<AuthorizationDoc>> {
-  const authorizations = Object.keys(AUTHORIZATIONS).reduce(
-    function (agents, _id) {
-      agents[_id] = { ...AUTHORIZATIONS[_id] }
-      return agents
-    },
-    {} as KVMap<AuthorizationDoc>
-  )
+  const authorizations = Object.keys(AUTHORIZATIONS).reduce(function (
+    agents,
+    _id
+  ) {
+    agents[_id] = { ...AUTHORIZATIONS[_id] }
+    return agents
+  },
+  {} as KVMap<AuthorizationDoc>)
   return username === USERNAME
     ? observableOf(authorizations).pipe(concat(NEVER))
     : throwError(UNAUTHORIZED)

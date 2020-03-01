@@ -99,10 +99,7 @@ export function copyButton<P extends ButtonProps> (
     log('event'),
     redux(reducer, timeoutAfterDisabled, copyToClipboardAndCallOnClickOnClick),
     log('state'),
-    connect<CopyButtonState, ButtonProps>(
-      mapStateToProps,
-      mapDispatchToProps
-    ),
+    connect<CopyButtonState, ButtonProps>(mapStateToProps, mapDispatchToProps),
     log('view-props')
   )
   ;(CopyButton as any).defaultProps = DEFAULT_PROPS as CopyButtonProps<P>

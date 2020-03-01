@@ -103,13 +103,10 @@ const RECORDS = [
     _id: '' + index
   }))
   .map(incrementRecordRevision)
-  .reduce(
-    function (records, record) {
-      records[record._id] = record
-      return records
-    },
-    {} as KVMap<Partial<ZenypassRecord>>
-  )
+  .reduce(function (records, record) {
+    records[record._id] = record
+    return records
+  }, {} as KVMap<Partial<ZenypassRecord>>)
 
 export default function getRecordService (username: string) {
   return {

@@ -11,7 +11,7 @@
     "dist:clean": "mkdirp dist && rimraf dist/* && mkdirp dist/$npm_package_version",
     "dist": "npm run dist:production",
     "dist:production": "npm run dist:clean && npm run dist:static && browserify src/index.tsx -g [ envify purge --NODE_ENV=production --ZP_VERSION=$npm_package_version ] -t [ browserify-markdown --breaks false ] -p [ tsify -p src ] -t imgurify -g uglifyify -p [ common-shakeify -v ] | terser -c -m --toplevel > dist/${npm_package_version}/index.js",
-    "dist:staging": "npm run dist:clean && npm run dist:static && browserify src/index.tsx -g [ envify purge --NODE_ENV=staging --ZP_VERSION=$npm_package_version ] -t [ browserify-markdown --breaks false ] -p [ tsify -p src ] -t imgurify -g uglifyify -p [ common-shakeify -v ] | terser -c -m --toplevel > dist/${npm_package_version}/index.js",
+    "dist:staging": "npm run dist:clean && npm run dist:static && browserify src/index.tsx -g [ envify purge --NODE_ENV=staging --ZP_VERSION=$npm_package_version ] -t [ browserify-markdown --breaks false ] -p [ tsify -p src ] -t imgurify -g uglifyify -p [ common-shakeify -v ] --debug | terser -c -m --toplevel -o dist/${npm_package_version}/index.js --source-map \"content=inline\"",
     "dist:static": "cpx \"src/static/immutable/**/*\" dist && cpx \"src/static/versioned/**/*\" dist/$npm_package_version && npm run prepend-version",
     "format": "prettier-standard \"{bin,src,spec,stories,stubs}/**/*.[jt]@(s|sx)\"",
     "prepend-version": "node bin/html-prepend-url.js -i src/static/index.html -o dist/index.html ${npm_package_version}/",

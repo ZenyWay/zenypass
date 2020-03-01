@@ -52,7 +52,7 @@ export function Input ({
       ref={innerRef}
       type={type}
       className={classes(invalid && 'is-invalid', className)}
-      {...attrs as any}
+      {...(attrs as any)}
     />
   )
 }

@@ -208,7 +208,7 @@ function CoreRouter ({
         <ErrorPage
           locale={locale}
           error={error || newStatusError(404)}
-          {...attrs as any}
+          {...(attrs as any)}
         >
           {path === '/fatal' ? null : <p>path: {path}</p>}
           {children}

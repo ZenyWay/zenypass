@@ -21,9 +21,6 @@ export const USERNAME = 'me@zw.fr'
 
 export function stall (ms: number) {
   return function<T> (fn: () => Observable<T> | Promise<T>) {
-    return interval(ms).pipe(
-      take(1),
-      switchMap(fn)
-    )
+    return interval(ms).pipe(take(1), switchMap(fn))
   }
 }

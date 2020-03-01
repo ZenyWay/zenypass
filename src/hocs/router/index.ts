@@ -159,10 +159,7 @@ export function router<P extends RouterSFCProps> (
       signoutOnSigningOut
     ),
     log('state'),
-    connect<RouterState, RouterSFCProps>(
-      mapStateToProps,
-      mapDispatchToProps
-    ),
+    connect<RouterState, RouterSFCProps>(mapStateToProps, mapDispatchToProps),
     () => distinctUntilChanged(shallowEqual),
     log('view-props')
   )

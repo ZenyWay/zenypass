@@ -95,10 +95,7 @@ function getPricing$ (service: ZenypassService, ucid: string) {
     catchError((err, retry$) =>
       !isOfflineError(err)
         ? observableOf((ERRORS[err && err.status] || error)(err))
-        : observableOf(offline(err)).pipe(
-            delay(RETRY_DELAY),
-            concat(retry$)
-          )
+        : observableOf(offline(err)).pipe(delay(RETRY_DELAY), concat(retry$))
     )
   )
 }

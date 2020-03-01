@@ -32,26 +32,27 @@ export function localizeMenu (
   menu: MenuSpec,
   exclude: (locale: string, item: MenuItemSpec) => boolean = always(false)
 ): KVs<MenuSpec> {
-  return Object.keys(l10ns).reduce(
-    function (specs: KVs<MenuSpec>, locale: string) {
-      const t = l10ns[locale]
-      specs[locale] = menu
-        .filter(item => Array.isArray(item) || !exclude(locale, item))
-        .map(localizeItem)
-      return specs
+  return Object.keys(l10ns).reduce(function (
+    specs: KVs<MenuSpec>,
+    locale: string
+  ) {
+    const t = l10ns[locale]
+    specs[locale] = menu
+      .filter(item => Array.isArray(item) || !exclude(locale, item))
+      .map(localizeItem)
+    return specs
 
-      function localizeItem (item: MenuItemSpec[] | MenuItemSpec) {
-        return Array.isArray(item)
-          ? item.filter(item => !exclude(locale, item)).map(localizeItem)
-          : {
-              ...item,
-              label: t(item.label),
-              href: t(item.href)
-            }
-      }
-    },
-    {} as KVs<MenuSpec>
-  )
+    function localizeItem (item: MenuItemSpec[] | MenuItemSpec) {
+      return Array.isArray(item)
+        ? item.filter(item => !exclude(locale, item)).map(localizeItem)
+        : {
+            ...item,
+            label: t(item.label),
+            href: t(item.href)
+          }
+    }
+  },
+  {} as KVs<MenuSpec>)
 }
 
 export function mergeLocalizedMenus (

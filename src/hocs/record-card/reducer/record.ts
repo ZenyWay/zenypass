@@ -53,17 +53,9 @@ const mergePayloadIntoChanges = compose<Reducer<any>>(
   mergePayload
 )
 const mergePayloadIntoErrors = <I, O>(project?: (val: I) => O) =>
-  propCursor('errors')(
-    compose(
-      updateErrors,
-      mapPayload(project)
-    )
-  )
+  propCursor('errors')(compose(updateErrors, mapPayload(project)))
 const inChanges = prop =>
-  compose<Reducer<any>>(
-    propCursor('changes'),
-    propCursor(prop)
-  )
+  compose<Reducer<any>>(propCursor('changes'), propCursor(prop))
 const toggleUnrestricted = inChanges('unrestricted')(not())
 const toggleRecordDeleted = inChanges('_deleted')(not())
 const mapPayloadToPassword = into('password')(mapPayload(alt()('')))

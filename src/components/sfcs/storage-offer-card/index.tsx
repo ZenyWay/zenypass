@@ -24,9 +24,10 @@ import { ZENYPASS_PREMIUM_SVG, ZENYPASS_A_LA_CARTE_SVG } from 'static'
 import createL10ns from 'basic-l10n'
 import { Currency, classes, localizePrice } from 'utils'
 
-const l10ns = createL10ns(require('./locales.json'))
-
+export { BusinessOfferCard } from './business-offer-card'
 export { Currency }
+
+const l10ns = createL10ns(require('./locales.json'))
 
 export interface StorageOfferCardProps extends StorageOfferSpec {
   locale: string
@@ -107,7 +108,7 @@ export function StorageOfferCard ({
           <p>
             {t(
               premium
-                ? t('Unlimited storage')
+                ? 'Unlimited storage'
                 : editable
                 ? 'Tailored storage'
                 : 'Express checkout'

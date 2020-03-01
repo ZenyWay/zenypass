@@ -63,11 +63,5 @@ function plug<T> (
   alt: Observable<T>
 ) {
   // unsubscribe when source errors or completes
-  source$$
-    .pipe(
-      defaultIfEmpty(alt),
-      first(),
-      switchAll()
-    )
-    .subscribe(sink$)
+  source$$.pipe(defaultIfEmpty(alt), first(), switchAll()).subscribe(sink$)
 }
