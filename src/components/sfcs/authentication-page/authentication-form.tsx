@@ -126,7 +126,7 @@ const INFO: {
     label: 'More information',
     link: 'signup-help-link',
     message:
-      "For enhanced security, please choose a password that you don't use elsewhere, and make sure you don't forget or loose it"
+      'Your ZenyPass password cannot be reset or changed. Choose a password that you do not use elsewhere, and memorize it. As it is used to decipher your data, if you forget it, the content of your vault cannot be recovered'
   }
 }
 

@@ -23,7 +23,6 @@
     "Enter your password": "Entrez votre mot de passe",
     "facebook-link": "https://www.facebook.com/zenypass",
     "follow the instructions in that email to validate your ZenyPass Vault, then login below": "suivez les instructions fournies dans cet email pour valider votre Coffre-fort ZenyPass, puis connectez vous ci-dessous",
-    "For enhanced security, please choose a password that you don't use elsewhere, and make sure you don't forget or loose it": "Pour plus de sécurité, choisissez un mot de passe que vous n'utilisez pas ailleurs, et assurez-vous de ne pas l'oublier ou le perdre.",
     "from this browser": "depuis ce navigateur",
     "General Terms and Conditions of Use (T&Cs)": "Conditions Générales d'Utilisation (CGU)",
     "help-index-link": "https://medium.com/zenypass-fr/table-des-mati%C3%A8res-de-laide-zenypass-5516b97d070c",
@@ -59,7 +58,8 @@
     "Unlock": "Déverrouiller",
     "Unrecognized password": "Mot de passe non reconnu",
     "View the T&Cs online": "Consulter les CGU en ligne",
-    "You don't have a ZenyPass Vault": "Vous n'avez pas encore de Coffre-fort ZenyPass"
+    "You don't have a ZenyPass Vault": "Vous n'avez pas encore de Coffre-fort ZenyPass",
+    "Your ZenyPass password cannot be reset or changed. Choose a password that you do not use elsewhere, and memorize it. As it is used to decipher your data, if you forget it, the content of your vault cannot be recovered": "Votre mot de passe ZenyPass ne peut être ni réinitialisé, ni modifié. Choisissez un mot de passe que vous n'utilisez pas ailleurs, et mémorisez-le. Comme il est utilisé pour déchiffrer vos données, si vous l’oubliiez, le contenu de votre coffre-fort ne pourrait pas être récupéré"
   },
   "en": {
     "Accept": "Accept",
@@ -85,7 +85,6 @@
     "Enter your password": "Enter your password",
     "facebook-link": "https://www.facebook.com/zenypass",
     "follow the instructions in that email to validate your ZenyPass Vault, then login below": "follow the instructions in that email to validate your ZenyPass Vault, then login below",
-    "For enhanced security, please choose a password that you don't use elsewhere, and make sure you don't forget or loose it": "For enhanced security, please choose a password that you don't use elsewhere, and make sure you don't forget or loose it",
     "from this browser": "from this browser",
     "General Terms and Conditions of Use (T&Cs)": "General Terms and Conditions of Use (T&Cs)",
     "help-index-link": "https://medium.com/zenypass-en/zenypass-help-table-of-content-d59ad58b4caf",
@@ -122,6 +121,7 @@
     "Unrecognized password": "Unrecognized password",
     "View the T&Cs online": "View the T&Cs online",
     "You don't have a ZenyPass Vault": "You don't have a ZenyPass Vault",
+    "Your ZenyPass password cannot be reset or changed. Choose a password that you do not use elsewhere, and memorize it. As it is used to decipher your data, if you forget it, the content of your vault cannot be recovered": "Your ZenyPass password cannot be reset or changed. Choose a password that you do not use elsewhere, and memorize it. As it is used to decipher your data, if you forget it, the content of your vault cannot be recovered",
     "ZenyPass now generates your secure passwords": "ZenyPass now generates your secure passwords"
   }
 }
