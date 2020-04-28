@@ -158,13 +158,15 @@ export function StoragePage ({
                 onChange={onOfferQuantityChange}
                 onToggleOffline={onToggleOffline}
               />
-              <BusinessOfferCard
-                locale={locale}
-                currency={currency}
-                email={session}
-                emailing={emailing}
-                onContact={onContact}
-              />
+              {i18nkey ? null : (
+                <BusinessOfferCard
+                  locale={locale}
+                  currency={currency}
+                  email={session}
+                  emailing={emailing}
+                  onContact={onContact}
+                />
+              )}
             </Row>
           </Fragment>
         )}
