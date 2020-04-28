@@ -139,7 +139,7 @@ export function AuthenticationPage ({
         <Row className='justify-content-center'>
           <SplashCard>
             <FAIconButton
-              icon='exclamation-triangle'
+              icon='external-link-alt'
               color='info'
               href={t('news-link')}
               target='_blank'
