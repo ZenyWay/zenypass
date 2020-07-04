@@ -43,6 +43,7 @@ export interface StoragePageProps extends StorageOfferBaseSpec {
   locale: string
   docs?: number
   maxdocs?: number
+  isDefaultUcid?: boolean
   i18nkey?: string
   offers?: Rest<StorageOfferSpec, StorageOfferBaseSpec>[]
   value?: string
@@ -69,6 +70,7 @@ export function StoragePage ({
   offers = [],
   value,
   ucid,
+  isDefaultUcid,
   country,
   currency,
   debounce = DEFAULT_DEBOUNCE,
@@ -158,7 +160,7 @@ export function StoragePage ({
                 onChange={onOfferQuantityChange}
                 onToggleOffline={onToggleOffline}
               />
-              {i18nkey ? null : (
+              {!isDefaultUcid ? null : (
                 <BusinessOfferCard
                   locale={locale}
                   currency={currency}

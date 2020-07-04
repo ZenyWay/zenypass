@@ -49,6 +49,7 @@ export interface StoragePageSFCProps extends StoragePageSFCHandlerProps {
   docs?: number
   maxdocs?: number
   ucid?: string
+  isDefaultUcid?: boolean
   i18nkey?: string
   offers?: StorageOfferSpec[]
   country?: string
@@ -76,6 +77,7 @@ interface StoragePageState extends HoistedStoragePageHocProps {
   input?: HTMLElement
   docs?: number
   maxdocs?: number
+  ucid0?: string
   ucid?: string
   i18nkey?: string
   offers?: StorageOfferSpec[]
@@ -95,6 +97,7 @@ function mapStateToProps ({
   session,
   state,
   value,
+  ucid0,
   ucid,
   emailing
 }: StoragePageState): Rest<StoragePageSFCProps, StoragePageSFCHandlerProps> {
@@ -111,6 +114,7 @@ function mapStateToProps ({
     session,
     value,
     ucid,
+    isDefaultUcid: ucid === ucid0,
     emailing
   }
 }

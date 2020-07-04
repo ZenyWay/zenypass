@@ -18,7 +18,15 @@ import { Uiid, StorageOfferSpec } from '../storage-offer'
 import createAutomataReducer, { AutomataSpec } from 'automata-reducer'
 import { into } from 'basic-cursors'
 import compose from 'basic-compose'
-import { always, forType, mapPayload, mergePayload, omit, pick } from 'utils'
+import {
+  always,
+  forType,
+  mapPayload,
+  mergePayload,
+  pluck,
+  omit,
+  pick
+} from 'utils'
 
 const DEFAULT_OFFERS: Partial<StorageOfferSpec>[] = [
   { uiid: Uiid.Unit, quantity: 1 },
@@ -44,7 +52,10 @@ export enum StoragePageAutomataState {
 const automata: AutomataSpec<StoragePageAutomataState> = {
   [StoragePageAutomataState.Pending]: {
     // NOT_FOUND: TODO consider how to handle 404 during init
-    PRICING: StoragePageAutomataState.Idle
+    PRICING: [
+      StoragePageAutomataState.Idle,
+      into('ucid0')(mapPayload(pluck('ucid')))
+    ]
   },
   [StoragePageAutomataState.Idle]: {
     OFFLINE: StoragePageAutomataState.Offline
