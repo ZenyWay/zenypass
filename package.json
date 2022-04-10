@@ -111,7 +111,7 @@
     "jasmine-core": "3.5.0",
     "jasmine-ts": "0.3.0",
     "lint-staged": "10.2.0",
-    "minimist": "1.2.5",
+    "minimist": "1.2.6",
     "mkdirp": "1.0.4",
     "pkg-dir-cli": "2.1.0",
     "prettier-standard": "16.3.0",
