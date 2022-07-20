@@ -118,7 +118,7 @@
     "rimraf": "3.0.2",
     "standard": "14.3.3",
     "subarg": "1.0.0",
-    "terser": "4.6.12",
+    "terser": "4.8.1",
     "transform-loader": "0.2.4",
     "trumpet": "1.7.2",
     "ts-loader": "7.0.1",
